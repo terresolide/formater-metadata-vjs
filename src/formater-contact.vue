@@ -17,6 +17,8 @@
  </span>
 </template>
 <script>
+
+console.log(process.env.GEONETWORK)
 export default {
   name: 'FormaterContact',
   components: {

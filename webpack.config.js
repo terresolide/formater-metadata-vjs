@@ -1,6 +1,7 @@
 var path = require('path')
 var webpack = require('webpack')
 var PACKAGE = require('./package.json');
+var env = require('./config');
 var buildVersion = PACKAGE.version;
 var buildName = PACKAGE.name;
 var CleanWebpackPlugin = require('clean-webpack-plugin');
@@ -84,8 +85,14 @@ module.exports = {
   },
   devtool: '#eval-source-map'
 }
+module.exports.plugins = (module.exports.plugins || []).concat([
+  new webpack.DefinePlugin({
+    'process.env': env
+  })
+])
 if (process.env.NODE_ENV === 'development') {
 	module.exports.output.filename='build.js'
+
 }
 if (process.env.NODE_ENV === 'production') {
   module.exports.devtool = '#source-map';
@@ -93,11 +100,7 @@ if (process.env.NODE_ENV === 'production') {
 
   // http://vue-loader.vuejs.org/en/workflow/production.html
   module.exports.plugins = (module.exports.plugins || []).concat([
-    new webpack.DefinePlugin({
-      'process.env': {
-        NODE_ENV: '"production"'
-      }
-    }),
+
     new CleanWebpackPlugin(pathsToClean),
     new UglifyJsPlugin({
         sourceMap: true
@@ -120,11 +123,6 @@ if (process.env.NODE_ENV === 'preproduction') {
 
     // http://vue-loader.vuejs.org/en/workflow/production.html
     module.exports.plugins = (module.exports.plugins || []).concat([
-      new webpack.DefinePlugin({
-        'process.env': {
-          NODE_ENV: '"production"'
-        }
-      }),
     //  new CleanWebpackPlugin(["webcomponents/*.*"]),
       new UglifyJsPlugin({
           sourceMap: true
