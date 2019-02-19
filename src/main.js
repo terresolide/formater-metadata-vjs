@@ -15,6 +15,9 @@ Vue.use(VueResource);
 // import {VueTools} from 'formater-commons-components-vjs'
 // Vue.use(VueTools)
 
+import Tools from './formater-metadata-tools.js'
+Vue.use(Tools)
+
 import FormaterMetadata from './formater-metadata.vue'
 
 

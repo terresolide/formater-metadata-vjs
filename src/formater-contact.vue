@@ -2,12 +2,13 @@
    "en":{
    },
    "fr":{
+      
    }
 }
 </i18n>
 <template>
  <span class="formater-contact" v-if="fields">
-   <h3><i class="fa fa-user"></i>{{fields[0]}}</h3>
+   <h3><i class="fa fa-user"></i>{{$gn(fields[0])}}</h3>
    <div>({{fields[1]}})</div>
    <div class="formater-address">
      <div class="formater-organism">{{fields[2]}}</div>
@@ -36,6 +37,7 @@ export default {
   watch: {
     lang (newvalue) {
     	this.$i18n.locale = newvalue
+    	this.$setGnLocale(this.lang)
     }
   },
   data() {
@@ -45,9 +47,11 @@ export default {
   },
   
   mounted () {
-    console.log(this.contact)
+    console.log(this.lang)
     this.fields = this.contact.split('|')
     this.$i18n.locale = this.lang
+    this.$setGnLocale(this.lang)
+    console.log(this.$gnLang)
   },
   methods: {
 
