@@ -18,7 +18,7 @@ Vue.use(VueResource);
 import Tools from './formater-metadata-tools.js'
 Vue.use(Tools)
 
-import FormaterMetadata from './formater-metadata.vue'
+import FormaterCatalogue from './formater-catalogue.vue'
 
 
 
@@ -32,6 +32,6 @@ ljs.addAliases({
       ]
 })
 ljs.load('dep', function() {
-  Vue.customElement('formater-metadata', FormaterMetadata) 
+  Vue.customElement('formater-catalogue', FormaterCatalogue) 
 })
 

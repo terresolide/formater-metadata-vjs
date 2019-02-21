@@ -1,10 +1,3 @@
-<i18n>{
-   "en":{
-   },
-   "fr":{
-      
-   }
-}
 </i18n>
 <template>
  <span class="formater-export-links">
@@ -12,7 +5,7 @@
     <i class="fa fa-chevron-down"></i>
   	<span style="">{{$gn('export')}}</span>
   </div>
-  <div class="formater-expand" style="position:absolute;min-width:102px;">
+  <div class="formater-expand">
      <div><a :href="xml">{{$gn('exportXML')}}</a></div>
      <div><a :href="pdf" target="_blank">{{$gn('exportPDF')}}</a></div>
   </div>
@@ -33,12 +26,6 @@ export default {
       default: 'en'
     }
   },
-  watch: {
-    lang (newvalue) {
-    	this.$i18n.locale = newvalue
-    	this.$setGnLocale(this.lang)
-    }
-  },
   data() {
     return {
       xml: null,
@@ -52,9 +39,6 @@ export default {
     this.xml = process.env.GEONETWORK +'srv/api/records/'+ this.uuid + '/formatters/xml?attachment=true'
     this.pdf = process.env.GEONETWORK + 'srv/api/records/'+ this.uuid + '/formatters/xsl-view?root=div&output=pdf'
     console.log(this.$gnLang)
-  },
-  methods: {
-
   }
 }
 </script>
@@ -70,6 +54,8 @@ export default {
 .formater-export-links div.formater-expand{
   display: none;
   text-align: center;
+  position:absolute;
+  min-width:102px;
 }
 .formater-export-links div.formater-expand div{
    line-height:2;

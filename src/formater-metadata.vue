@@ -8,26 +8,32 @@
 }
 </i18n>
 <template>
- <div class="formater-metadata">
+ <div class="fmt-metadata fmt-capsule">
+    
+   <span class="fmt-metadata-close fa fa-close" @click="close"></span>
    <div v-if="meta">
-      <h1>
-          <i class="fa fa-database" v-if="['dataset','serie'].indexOf(meta.type) >= 0"></i>
-          {{meta.title ? meta.title: meta.defaultTitle}}
-          <a v-if="meta.groupWebsite" :href="meta.groupWebsite" :title="$gn('group-'+ meta.groupOwner)" starget="_blank" class="formater-group-logo">
+      <h1 class="fmt-metadata-header">
+           <a v-if="meta.groupWebsite" :href="meta.groupWebsite" :title="$gn('group-'+ meta.groupOwner)" starget="_blank" class="fmt-group-logo">
              <img :src="meta.logo"/>
           </a>
-          <a v-else href="#" :alt="$gn('group-'+ meta.groupOwner)" :title="$gn('group-'+ meta.groupOwner)" class="formater-group-logo">
+          <a v-else href="#" :alt="$gn('group-'+ meta.groupOwner)" :title="$gn('group-'+ meta.groupOwner)" class="fmt-group-logo">
               <img :src="meta.logo"  />
           </a>
+          <i class="fa fa-database" v-if="['dataset','serie'].indexOf(meta.type) >= 0"></i>
+          <div>
+          
+          {{meta.title ? meta.title: meta.defaultTitle}}
+          </div>
+        
       </h1> 
-      <hr style="border:1px solid grey;margin-bottom:0px;"/>
-      <div class="formater-tabs">
-         <div v-for="(tab,index) in tabs" class="formater-tab" :class="{'selected': currentTab === tab.value}" @click="currentTab = tab.value">{{tab.title}}</div>
+      <hr style="border:1px solid grey;margin-bottom:0px;clear:both;"/>
+      <div class="fmt-tabs">
+         <div v-for="(tab,index) in tabs" class="fmt-tab" :class="{'selected': currentTab === tab.value}" @click="currentTab = tab.value">{{tab.title}}</div>
          <formater-export-links :uuid="uuid" v-if="uuid"></formater-export-links>
       </div>
       <div v-if="currentTab === 'tab1'" style="margin-top:20px;">
-	      <div class="formater-description">
-	        <formater-quicklooks :quicklooks="meta.image"></formater-quicklooks>
+	      <div class="fmt-description">
+	        <formater-quicklooks :quicklooks="meta.images"></formater-quicklooks>
 	        <span v-html="meta.description"></span>
 	      </div>
 	      
@@ -78,39 +84,48 @@ export default {
      ],
      currentTab: 'tab1',
      meta: null,
-     uuid: null
+     uuid: null,
+     popstateListener: null,
+     keydownListener: null
     }
   },
+  created () {
+    this.$i18n.locale = this.lang
+    this.$setGnLocale(this.lang)
+    this.popstateListener = this.close.bind(this)
+    document.addEventListener('popstate', this.popstateListener)
+    this.keydownListener = this.checkEscape.bind(this)
+    document.addEventListener('keydown', this.keydownListener)
+  },
   mounted () {
-   console.log(this.lang)
-   this.$i18n.locale = this.lang
-   this.$setGnLocale(this.lang)
    if (this.metadata) {
      this.meta = this.metadata
    }
-   if (this.url) {
-     // get meta from url
-     this.getMetaFromUrl()
-     
-   }
+  },
+  destroyed () {
+    document.removeEventListener('popstate', this.popstateListener)
+    this.popstateListener = null
+    document.removeEventListener('keydown', this.keydownListener)
+    this.keydownListener = this.checkEscape.bind(this)
   },
   methods: {
-      getMetaFromUrl () {
-        let _this = this
-        this.$http.get(this.url).then(
-            response => { _this.handleSuccess(response) },
-            response => { _this.handleError('no_file')}
-         )
+      checkEscape (event) {
+        var event = event || window.event
+        var isEscape = false;
+        if ("key" in event) {
+          isEscape = (event.key === "Escape" || event.key === "Esc");
+        } else {
+          isEscape = (event.keyCode === 27);
+        }
+        if (isEscape) {
+          this.close(event);
+        }
       },
-      handleSuccess (response) {
-        console.log(response.body.metadata[0])
-        this.meta = response.body.metadata[25]
-        // this.meta.abstract = this.meta.abstract.replace(/(?:\\[rn]|[\r\n])/g, '<br />');
-        this.fillMetadata();
+      close (event) {
+        event.preventDefault();
+        this.$emit('close');
       },
-      handleError () {
-        console.log('metadata_not_find')
-      },
+
 	  fillMetadata () {
 	     //get meta from other language if meta._locale != meta.docLocale
 	     this.uuid = this.meta['geonet:info'].uuid;
@@ -130,21 +145,7 @@ export default {
 	  },
       extract (meta2) {
         // search info in the other language
-        // l'uuid est geonet:info > uuid
-        // pour obtenir sous forme de json xml affichage "complet"
-        // url process.env.GEONETWORK + srv/api/records/+ uuid
-        // url pour le xml? process.env.GEONETWORK + 'srv/api/records/''+ uuid + 'formatters/xml?attachment=true'
-        // url pour le pdf (qu'en est-il de la langue)? process.env.GEONETWORK + 'srv/api/records/''+ uuid + 'formatters/xsl-view?root=div&output=pdf'
-        this.meta.url = {}
-        var uuid = this.meta['geonet:info'].uuid
-        this.meta.logo = process.env.GEONETWORK + this.meta.logo
-        if (this.meta.abstract) {
-          this.meta.abstract = this.meta.abstract.replace(/(?:\\[rn]|[\r\n])/g, '<br />');
-        }
-        if (this.meta.defaultAbstract) {
-          this.meta.defaultAbstract = this.meta.defaultAbstract.replace(/(?:\\[rn]|[\r\n])/g, '<br />');
-        }
-        this.meta.description = this.meta.abstract ? this.meta.abstract: this.meta.defaultAbstract
+
         this.extractContact(meta2)
 	  },
 	  extractContact (meta2 =[]) {
@@ -167,30 +168,53 @@ export default {
 }
 </script>
 <style>
-.formater-metadata{
-  font-size: 12px;
+.fmt-metadata{
+  position:relative;
+  padding: 10px;
   max-width: 900px;
   margin: auto;
+  height: auto;
+  overflow: hidden;
+ 
 }
-.formater-metadata i.fa {
+.fmt-metadata span.fmt-metadata-close{
+  position: absolute;
+  top:3px;
+  right:5px;
+  cursor: pointer;
+  opacity:0.5;
+}
+.fmt-metadata span.fmt-metadata-close:hover{
+  opacity:1;
+}
+.fmt-metadata h1.fmt-metadata-header div{
+  float:left;
+  width:calc(100% - 130px);
+  display:inline-block;
+}
+.fmt-metadata h1.fmt-metadata-header i.fa{
+  float:left;
+}
+.fmt-metadata i.fa {
   margin-right: 12px;
 }
-.formater-metadata h1,
-.formater-metadata h2,
-.formater-metadata h3,
-.formater-metadata h4{
-    color:#8C0209;
+.fmt-metadata h1,
+.fmt-metadata h2,
+.fmt-metadata h3,
+.fmt-metadata h4{
+    max-width: 100%;
+    color:#754a15;
 }
-.formater-metadata h2 {
+.fmt-metadata h2 {
 
   font-size: 1.2rem;
   margin-bottom:0;
 }
-.formater-metadata h1{
+.fmt-metadata h1{
   font-size:1.5rem;
 }
-.formater-metadata div.formater-tab,
-.formater-metadata .formater-tab-export{
+.fmt-metadata div.fmt-tab,
+.fmt-metadata .fmt-tab-export{
   display:inline-block;
   padding: 5px 10px;
   border:1px dotted grey;
@@ -198,21 +222,21 @@ export default {
   background: #eee;
   cursor: pointer;
 }
-.formater-metadata div.formater-tab:hover,
-.formater-metadata .formater-tab-export:hover{
+.fmt-metadata div.fmt-tab:hover,
+.fmt-metadata .fmt-tab-export:hover{
    background: #ccc;
 }
-.formater-metadata div.formater-tab.selected{
+.fmt-metadata div.fmt-tab.selected{
   background: #ddd;
 }
-.formater-metadata div.formater-description{
+.fmt-metadata div.fmt-description{
   line-height:1.5;
 }
-.formater-metadata .formater-group-logo{
+.fmt-metadata .fmt-group-logo{
     float:right;
     margin-top:-5px;
 }
-.formater-metadata .formater-group-logo img{
+.fmt-metadata .fmt-group-logo img{
 	max-width:100px; 
 	height:40px;
 }
