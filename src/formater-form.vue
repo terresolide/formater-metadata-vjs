@@ -8,7 +8,7 @@
 </i18n>
 <template>
  <span class="fmt-form">
-  FORM
+  <input type="text" name="any" />
  </span>
 </template>
 <script>
@@ -48,9 +48,11 @@ export default {
         fast: 'index',
         // 'facet.q': '',
         // bucket: 's101',
+        isChild: false,
         from: 1,
-        to: 12,
-        isChild: false
+        to: 24,
+        resultType: 'details',
+        sortBy: 'relevance'
       }
     }
   },
@@ -63,21 +65,16 @@ export default {
   },
   methods: {
     getRecords () {
-      var parameters = Object.assign(this.parameters , {
-        //  resultType: 'details',
-          sortBy: 'relevance'
-      })
-      var url = this.srv + 'q?' + Object.keys(parameters).map(function (prop) {
-        return prop + '=' + parameters[prop]
+      var self = this
+      var url = this.srv + 'q?' + Object.keys(this.parameters).map(function (prop) {
+        return prop + '=' + self.parameters[prop]
       }).join('&');
       this.$http.get(url).then(
-          response => { console.log(response.body);this.fill(response.body);}
+          response => { this.fill(response.body);}
        )
     },
     fill (data) {
-      console.log(data)
       this.fields = data.summary
-      console.log(data.metadata)
       if (data.metadata) {
         var event = new CustomEvent('metadataListEvent', {detail: data.metadata})
         document.dispatchEvent(event)

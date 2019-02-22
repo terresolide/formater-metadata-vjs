@@ -1,9 +1,11 @@
 <i18n>{
    "en":{
-     "contact": "Contact | Contacts"
+     "contact": "Contact | Contacts",
+     "children": "Children"
    },
    "fr":{
-     "contact": "Contact | Contacts"
+     "contact": "Contact | Contacts",
+     "children": "Fiches Enfants"
    }
 }
 </i18n>
@@ -25,6 +27,27 @@
           <a v-else href="#" :alt="$gn('group-'+ meta.groupOwner)" :title="$gn('group-'+ meta.groupOwner)" class="fmt-group-logo">
               <img :src="meta.logo"  />
           </a>
+	   </div>
+	   <div class="fmt-related" v-if="meta.related">
+	     <div v-if="(meta.related.children || meta.related.parent)" style="position:relative;">
+		     <div class="fmt-related-type fa fa-code-fork">
+		        <span class="fa fa-caret-down"></span>
+		     </div>
+		     <div class="fmt-expand">
+		         <label v-if="meta.related.parent">{{$t('parent')}}</label>
+		         <ul v-if="meta.related.parent">
+		          <li v-for="(item,index) in meta.related.children">
+			        {{item.title[(lang === 'fr'? 'fre' : 'eng')]}}
+			     </li>
+		         </ul>	
+		         <label v-if="meta.related.children">{{$t('children')}}</label>
+		         <ul v-if="meta.related.children">
+		          <li v-for="(item,index) in meta.related.children">
+			       {{item.title[(lang === 'fr'? 'fre' : 'eng')]}}
+			     </li>
+		         </ul>		
+		     </div>
+	     </div>
 	   </div>
 	 </div>
  </div>
@@ -76,12 +99,11 @@ export default {
   max-width: 370px;
   min-width: 300px;
   margin: 5px;
-  overflow:hidden;
   height: 250px;
   max-height:250px;
-  overflow:hidden;
   text-align:left;
   display: inline-block;
+  float:left;
 }
 .fmt-cartouche-metadata div.fmt-header{
   color: white;
@@ -125,9 +147,74 @@ export default {
   position: absolute;
   margin: 0 2px;
   bottom:0;
+  width:100%;
+}
+.fmt-cartouche-metadata .fmt-footer > div{
+  display: inline-block;
 }
 .fmt-cartouche-metadata .fmt-footer .fmt-group-logo img{
   max-width:80px;
   max-height:25px;
+}
+.fmt-cartouche-metadata .fmt-footer .fmt-related{
+ float: right;
+ margin-right:3px;
+ max-height: 25px;
+ max-width: 50%;
+}
+.fmt-cartouche-metadata .fmt-footer .fmt-related-type{
+ text-align:center;
+ min-width:20px;
+ vertical-align:bottom;
+ cursor:pointer;
+ border-radius:3px;
+ /*background:#8c0209;*/
+ background:#754a15;
+ padding:3px 5px;
+ color:white;
+ font-size:1.3em;
+ margin-right:3px;
+}
+.fmt-cartouche-metadata .fmt-footer .fmt-related-type:hover{
+  background:#8c0209;
+}
+.fmt-related-type + .fmt-expand{
+	display:none;
+	position:absolute;
+	top: 23px;
+	right:0;
+	z-index:100;
+	height:auto;
+	min-width:200px;
+	background:white;
+	padding:5px;
+	border-radius:3px;
+	border:1px dotted grey;
+	box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.5);
+	width:auto;
+	text-align:left;
+}
+.fmt-expand:hover {
+  display: block;
+}
+.fmt-cartouche-metadata .fmt-footer .fmt-related-type:hover + .fmt-expand{
+  display:block;
+}
+.fmt-cartouche-metadata .fmt-footer .fmt-related-type span{
+ font-size:0.8em;
+ margin-left:3px;
+}
+.fmt-cartouche-metadata .fmt-expand label{
+  font-weight: 800;
+}
+ 
+.fmt-cartouche-metadata .fmt-expand ul {
+  padding:0;
+  list-style-position: outside;
+  margin:  5px 3px 5px 9px;
+}
+.fmt-cartouche-metadata .fmt-expand ul li {
+  padding: 0px;
+  margin:  0;
 }
 </style>

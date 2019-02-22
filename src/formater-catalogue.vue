@@ -82,7 +82,7 @@ export default {
   }
 .fmt-capsule{
   border: 1px solid #ccc;
-  border-radius: 10px;
+  border-radius: 0 0 5px 5px;
   box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.2);
 }
 </style>

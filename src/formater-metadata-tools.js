@@ -53,8 +53,6 @@ const MetadataToolsPlugin = {
          return myArray;
        }
 		   Vue.prototype.$gn = function (str) {
-		     console.log(str)
-		     console.log(this.$gnLang[str])
 		     if (this.$gnLang && this.$gnLang[str]) {
 		       return this.$gnLang[str];
 		     } else {

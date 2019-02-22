@@ -8,7 +8,7 @@
 </i18n>
 <template>
  <div class="fmt-list">
-    <formater-cartouche-metadata v-for="(meta, index) in metadatas" :key="index" :metadata="meta" v-if="meta"></formater-cartouche-metadata>
+    <formater-cartouche-metadata v-for="(meta, index) in metadatas" :key="index" :metadata="meta" v-if="meta" :lang="lang"></formater-cartouche-metadata>
   </div>
 </template>
 <script>
@@ -36,7 +36,7 @@ export default {
   },
   data() {
     return {
-      metadatas:[],
+      metadatas: {},
       // list of children
       related: [],
       metadataListListener: null
@@ -58,13 +58,14 @@ export default {
      receiveMetadatas (event) {
        console.log(event)
        var self = this
-       var metadatas = event.detail;
-       metadatas.forEach( function (meta, index) {
+       var metadatas = {}
+       event.detail.forEach( function (meta, index) {
          var uuid = meta['geonet:info'].uuid
-         metadatas[index] = self.treatment(meta ,uuid)
+         metadatas[uuid] = self.treatment(meta ,uuid)
        })
        this.metadatas = metadatas;
-       // this.searchRelated()
+       console.log(this.metadatas)
+       this.searchRelated()
      },
      treatment (meta) {
        meta.logo = process.env.GEONETWORK + meta.logo
@@ -84,6 +85,7 @@ export default {
              }
            })
        }
+       return meta;
      },
      searchRelated () {
         var headers =  {
@@ -91,8 +93,20 @@ export default {
           'Accept-Language': this.lang === 'fr' ? 'fre': 'eng'
         }
         var url = process.env.GEONETWORK + 'srv/api/related?type=parent&type=children&type=services&type=datasets'
-        console.log(this.metadatas)
+        url += '&uuid=' + Object.keys(this.metadatas).join('&uuid=')
+        var self = this
+        this.$http.get(url, {
+              headers: headers
+            }).then( response => { self.addRelated(response.body)})
          
+     },
+     addRelated (related) {
+       var self = this
+       for(var key in related){
+         
+         this.$set(this.metadatas[key],'related', related[key])
+       }
+       console.log(this.metadatas)
      }
   }
 }
