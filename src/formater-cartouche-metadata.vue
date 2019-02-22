@@ -10,16 +10,16 @@
 <template>
  <div class="fmt-cartouche-metadata fmt-capsule">
 	 <div class="fmt-header" @click="displayMetadata">
-		<i class="fa fa-database" style="float:left;vertical-align:middle;" v-if="['dataset','serie'].indexOf(meta.type) >= 0" ></i>
-		<div style="display:inline-block;float:left;width:calc(100% - 20px); margin-left:5px;">{{meta.title ? meta.title: meta.defaultTitle}}</div>
+		<i class="fa fa-database" v-if="['dataset','serie'].indexOf(meta.type) >= 0" :title="$gn(meta.type)"></i>
+		<div>{{meta.title ? meta.title: meta.defaultTitle}}</div>
 	 </div>
-	 <div class="fmt-description" style="max-height:190px;overflow:hidden;padding: 5px;font-size:0.9em;">
+	 <div class="fmt-description" style="">
 	    <img :src="meta.thumbnail" v-if="meta.thumbnail"/>
 	 	<span v-html="meta.description"></span>
 	 </div>
 	 <div class="fmt-footer">
 	   <div class="fmt-group">
-	     <a v-if="meta.groupWebsite" :href="meta.groupWebsite" :title="$gn('group-'+ meta.groupOwner)" starget="_blank" class="fmt-group-logo">
+	     <a v-if="meta.groupWebsite" :href="meta.groupWebsite" :title="$gn('group-'+ meta.groupOwner)" target="_blank" class="fmt-group-logo">
              <img :src="meta.logo"/>
           </a>
           <a v-else href="#" :alt="$gn('group-'+ meta.groupOwner)" :title="$gn('group-'+ meta.groupOwner)" class="fmt-group-logo">
@@ -77,8 +77,8 @@ export default {
   min-width: 300px;
   margin: 5px;
   overflow:hidden;
-  height: 270px;
-  max-height:270px;
+  height: 250px;
+  max-height:250px;
   overflow:hidden;
   text-align:left;
   display: inline-block;
@@ -89,9 +89,29 @@ export default {
   margin: 0;
   font-weight:600;
   font-size: 1.1em;
-  min-height:30px;
+  min-height:29px;
   padding: 5px;
   cursor: pointer;
+}
+.fmt-cartouche-metadata div.fmt-header div{
+	display:inline-block;
+	float:left;
+	width:calc(100% - 23px); 
+	margin-left:7px;
+		overflow: hidden;
+	max-height:29px;
+}
+.fmt-cartouche-metadata div.fmt-header i.fa{
+	float:left;
+	vertical-align:middle;
+	font-size: 18px;
+
+}
+.fmt-cartouche-metadata div.fmt-description{
+	max-height:165px;
+	overflow:hidden;
+	padding: 5px;
+	font-size:0.9em;
 }
 .fmt-cartouche-metadata div.fmt-description img {
   position: relative;

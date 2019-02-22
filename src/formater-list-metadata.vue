@@ -8,7 +8,7 @@
 </i18n>
 <template>
  <div class="fmt-list">
-    <formater-cartouche-metadata v-for="(meta, index) in metadatas" :key="index" :metadata="meta"></formater-cartouche-metadata>
+    <formater-cartouche-metadata v-for="(meta, index) in metadatas" :key="index" :metadata="meta" v-if="meta"></formater-cartouche-metadata>
   </div>
 </template>
 <script>
@@ -36,7 +36,9 @@ export default {
   },
   data() {
     return {
-      metadatas: [],
+      metadatas:[],
+      // list of children
+      related: [],
       metadataListListener: null
     }
   },
@@ -58,12 +60,13 @@ export default {
        var self = this
        var metadatas = event.detail;
        metadatas.forEach( function (meta, index) {
-         metadatas[index] = self.treatment(meta)
+         var uuid = meta['geonet:info'].uuid
+         metadatas[index] = self.treatment(meta ,uuid)
        })
        this.metadatas = metadatas;
+       // this.searchRelated()
      },
      treatment (meta) {
-       var uuid = meta['geonet:info'].uuid
        meta.logo = process.env.GEONETWORK + meta.logo
        if (meta.abstract) {
          meta.abstract = meta.abstract.replace(/(?:\\[rn]|[\r\n])/g, '<br />');
@@ -81,7 +84,15 @@ export default {
              }
            })
        }
-       return meta;
+     },
+     searchRelated () {
+        var headers =  {
+          'Accept': 'application/json, text/plain, */*',
+          'Accept-Language': this.lang === 'fr' ? 'fre': 'eng'
+        }
+        var url = process.env.GEONETWORK + 'srv/api/related?type=parent&type=children&type=services&type=datasets'
+        console.log(this.metadatas)
+         
      }
   }
 }

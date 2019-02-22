@@ -100,6 +100,7 @@ export default {
   mounted () {
    if (this.metadata) {
      this.meta = this.metadata
+     this.fillMetadata()
    }
   },
   destroyed () {
@@ -129,6 +130,7 @@ export default {
 	  fillMetadata () {
 	     //get meta from other language if meta._locale != meta.docLocale
 	     this.uuid = this.meta['geonet:info'].uuid;
+	     console.log(this.uuid)
 	     if (this.meta._locale ===  this.meta.docLocale) {
 	       this.extract()
 	       return

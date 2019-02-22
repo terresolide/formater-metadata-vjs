@@ -49,7 +49,8 @@ export default {
         // 'facet.q': '',
         // bucket: 's101',
         from: 1,
-        to: 12
+        to: 12,
+        isChild: false
       }
     }
   },
@@ -63,20 +64,24 @@ export default {
   methods: {
     getRecords () {
       var parameters = Object.assign(this.parameters , {
-          resultType: 'details',
+        //  resultType: 'details',
           sortBy: 'relevance'
       })
       var url = this.srv + 'q?' + Object.keys(parameters).map(function (prop) {
         return prop + '=' + parameters[prop]
       }).join('&');
       this.$http.get(url).then(
-          response => this.fill(response.body)
+          response => { console.log(response.body);this.fill(response.body);}
        )
     },
     fill (data) {
+      console.log(data)
       this.fields = data.summary
-      var event = new CustomEvent('metadataListEvent', {detail: data.metadata})
-      document.dispatchEvent(event)
+      console.log(data.metadata)
+      if (data.metadata) {
+        var event = new CustomEvent('metadataListEvent', {detail: data.metadata})
+        document.dispatchEvent(event)
+      }
     }
   }
 }
