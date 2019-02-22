@@ -8,6 +8,7 @@
 </i18n>
 <template>
  <span class="fmt-catalogue">
+  <aeris-theme primary="#dd9946"></aeris-theme>
   <div v-if="metadata === null">
    <div style="width:300px;float:left;">
     <formater-form :lang="lang"></formater-form>
@@ -25,12 +26,14 @@
 import FormaterForm from './formater-form.vue';
 import FormaterListMetadata from './formater-list-metadata.vue';
 import FormaterMetadata from './formater-metadata.vue';
+import AerisTheme from 'aeris-commons-components-vjs/src/aeris-theme/aeris-theme.vue'
 export default {
   name: 'FormaterCatalogue',
   components: {
     FormaterForm,
     FormaterListMetadata,
-    FormaterMetadata
+    FormaterMetadata,
+    AerisTheme
   },
   props: {
 //     geonetwork: {

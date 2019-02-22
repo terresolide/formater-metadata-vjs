@@ -9,12 +9,16 @@
 <template>
  <span class="fmt-form">
   <input type="text" name="any" />
+  <formater-temporal-search :lang="lang" daymin="1900-01-01"></formater-temporal-search>
  </span>
 </template>
 <script>
+
+import {FormaterTemporalSearch} from 'formater-commons-components-vjs'
 export default {
   name: 'FormaterForm',
   components: {
+    FormaterTemporalSearch
   },
   props: {
     list: {

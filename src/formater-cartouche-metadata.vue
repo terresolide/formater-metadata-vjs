@@ -181,7 +181,7 @@ export default {
 .fmt-related-type + .fmt-expand{
 	display:none;
 	position:absolute;
-	top: 23px;
+	top: 21px;
 	right:0;
 	z-index:100;
 	height:auto;
