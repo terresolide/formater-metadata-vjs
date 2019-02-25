@@ -8,12 +8,12 @@
 </i18n>
 <template>
  <span class="fmt-catalogue">
-  <aeris-theme primary="#dd9946"></aeris-theme>
+  <aeris-theme primary="#dd9946" :active="true" emphasis="#dd9946"></aeris-theme>
   <div v-if="metadata === null">
    <div style="width:300px;float:left;">
     <formater-form :lang="lang"></formater-form>
     </div>
-    <div style="width:calc(100% - 300px);float:left;">
+    <div style="width:calc(100% - 300px);float:left;margin-bottom:120px;">
      <formater-list-metadata :lang="lang"></formater-list-metadata>
     </div>
   </div>

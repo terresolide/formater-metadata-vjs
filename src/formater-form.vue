@@ -8,9 +8,14 @@
 </i18n>
 <template>
  <span class="fmt-form">
-  <input type="text" name="any" />
+  <div style="max-width:250px;">
+  <div class="formater-input-group" >
+ <input id="any" placeholder="any" >
+ </div>
   <formater-temporal-search :lang="lang" daymin="1900-01-01"></formater-temporal-search>
+   </div>
  </span>
+
 </template>
 <script>
 
@@ -54,7 +59,7 @@ export default {
         // bucket: 's101',
         isChild: false,
         from: 1,
-        to: 24,
+        to: 18,
         resultType: 'details',
         sortBy: 'relevance'
       }
