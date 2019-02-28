@@ -26,9 +26,9 @@ export default {
     FormaterTemporalSearch
   },
   props: {
-    list: {
-      type: Array,
-      default: null
+    nbRecord: {
+      type: Number,
+      default: 12
     },
     lang: {
       type: String,
@@ -55,21 +55,32 @@ export default {
       parameters: {
         _content_type: 'json',
         fast: 'index',
-        // 'facet.q': '',
-        // bucket: 's101',
+        'facet.q': '',
+        bucket: '26041996',
         isChild: false,
         from: 1,
         to: 18,
         resultType: 'details',
         sortBy: 'relevance'
-      }
+      },
+      changePageListener:null
     }
   },
-  
-  mounted () {
+  created () {
+    this.parameters.from = 1
+    this.parameters.to = this.nbRecord
     this.$i18n.locale = this.lang
     this.$setGnLocale(this.lang)
     this.getRecords()
+    this.pageChangedListener = this.changePage.bind(this)
+    document.addEventListener('fmt:pageChangedEvent', this.pageChangedListener);
+  },
+  destroyed () {
+    document.removeEventListener('fmt:pageChangedEvent', this.pageChangedListener);
+    this.pageChangedListener = null;
+  },
+  mounted () {
+  
     // url="http://demo.formater/geonetwork/srv/fre/qi?_content_type=json&bucket=2365825987452666&fast=index&from=1&to=41"
   },
   methods: {
@@ -85,9 +96,13 @@ export default {
     fill (data) {
       this.fields = data.summary
       if (data.metadata) {
-        var event = new CustomEvent('metadataListEvent', {detail: data.metadata})
+        var event = new CustomEvent('fmt:metadataListEvent', {detail:  data})
         document.dispatchEvent(event)
       }
+    },
+    changePage (event) {
+      this.parameters = Object.assign(this.parameters, event.detail)
+      this.getRecords()
     }
   }
 }

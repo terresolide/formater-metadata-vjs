@@ -46,23 +46,30 @@ export default {
     this.$i18n.locale = this.lang
     this.$setGnLocale(this.lang)
     this.metadataListListener = this.receiveMetadatas.bind(this)
-    document.addEventListener('metadataListEvent', this.metadataListListener);
+    document.addEventListener('fmt:metadataListEvent', this.metadataListListener);
   },
   destroyed () {
-    document.removeEventListener('metadataListEvent', this.metadataListListener);
+    document.removeEventListener('fmt:metadataListEvent', this.metadataListListener);
     this.metadataListListener = null;
   },
   mounted () {
   },
   methods: {
      receiveMetadatas (event) {
-       console.log(event)
+       if (!event.detail.metadata) {
+         return;
+       }
        var self = this
        var metadatas = {}
-       event.detail.forEach( function (meta, index) {
-         var uuid = meta['geonet:info'].uuid
-         metadatas[uuid] = self.treatment(meta ,uuid)
-       })
+       if (event.detail.metadata && !event.detail.metadata.forEach) {
+         var uuid = event.detail.metadata['geonet:info'].uuid
+         metadatas[uuid] = self.treatment(event.detail.metadata ,uuid)
+       } else {
+	       event.detail.metadata.forEach( function (meta, index) {
+	         var uuid = meta['geonet:info'].uuid
+	         metadatas[uuid] = self.treatment(meta ,uuid)
+	       })
+       }
        this.metadatas = metadatas;
        console.log(this.metadatas)
        this.searchRelated()
@@ -113,8 +120,8 @@ export default {
 </script>
 <style>
 .fmt-list{
-  max-width:1200px;
   width: 100%;
   text-align:center;
+  margin: 20px auto;
 }
 </style>

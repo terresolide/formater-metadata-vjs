@@ -2,7 +2,6 @@
    "en":{
    },
    "fr":{
-      
    }
 }
 </i18n>
@@ -10,11 +9,14 @@
  <span class="fmt-catalogue">
   <aeris-theme primary="#dd9946" :active="true" emphasis="#dd9946"></aeris-theme>
   <div v-if="metadata === null">
-   <div style="width:300px;float:left;">
-    <formater-form :lang="lang"></formater-form>
+   <div class="fmt-column-left" >
+    <formater-form :lang="lang" :nb-record="nbRecord"></formater-form>
     </div>
-    <div style="width:calc(100% - 300px);float:left;margin-bottom:120px;">
+   
+    <div class="fmt-column-right" >
+     <formater-paging :lang="lang" :nb-record="nbRecord"></formater-paging>
      <formater-list-metadata :lang="lang"></formater-list-metadata>
+
     </div>
   </div>
   <div v-if="metadata">
@@ -26,6 +28,7 @@
 import FormaterForm from './formater-form.vue';
 import FormaterListMetadata from './formater-list-metadata.vue';
 import FormaterMetadata from './formater-metadata.vue';
+import FormaterPaging from './formater-paging.vue';
 import AerisTheme from 'aeris-commons-components-vjs/src/aeris-theme/aeris-theme.vue'
 export default {
   name: 'FormaterCatalogue',
@@ -33,6 +36,7 @@ export default {
     FormaterForm,
     FormaterListMetadata,
     FormaterMetadata,
+    FormaterPaging,
     AerisTheme
   },
   props: {
@@ -43,6 +47,11 @@ export default {
     lang: {
       type: String,
       default: 'en'
+    },
+    nbRecord: {
+      type: Number,
+      coerce: str => parseInt(str),
+      default:12
     }
   },
   watch: {
@@ -59,13 +68,14 @@ export default {
   },
   
   created () {
+    console.log(this.nbRecord)
     this.$i18n.locale = this.lang
     this.$setGnLocale(this.lang)
     this.metadataListener = this.receiveMetadata.bind(this)
-    document.addEventListener('metadataEvent', this.metadataListener);
+    document.addEventListener('fmt:metadataEvent', this.metadataListener);
   },
   destroyed () {
-    document.removeEventListener('metadataEvent', this.metadataListener);
+    document.removeEventListener('fmt:metadataEvent', this.metadataListener);
     this.metadataListener = null;
   },
   methods: {
@@ -87,5 +97,14 @@ export default {
   border: 1px solid #ccc;
   border-radius: 0 0 5px 5px;
   box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.2);
+}
+.fmt-catalogue .fmt-column-left{
+  width:300px;
+  float:left;
+}
+.fmt-catalogue .fmt-column-right{
+  width:calc(100% - 320px);
+  float:left;
+  margin-bottom:120px;
 }
 </style>

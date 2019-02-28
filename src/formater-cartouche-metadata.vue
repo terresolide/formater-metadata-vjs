@@ -85,7 +85,7 @@ export default {
   },
   methods: {
     displayMetadata () {
-      var event = new CustomEvent('metadataEvent', {detail: this.meta})
+      var event = new CustomEvent('fmt:metadataEvent', {detail: this.meta})
       document.dispatchEvent(event)
     }
   }
@@ -95,9 +95,9 @@ export default {
 .fmt-cartouche-metadata{
   position: relative;
   font-size: 12px;
-  width: calc(30% - 15px);
+/*  width: calc(30% - 15px);*/
   max-width: 370px;
-  min-width: 300px;
+  min-width: 370px;
   margin: 5px;
   height: 250px;
   max-height:250px;
@@ -120,7 +120,7 @@ export default {
 	float:left;
 	width:calc(100% - 23px); 
 	margin-left:7px;
-		overflow: hidden;
+	overflow: hidden;
 	max-height:29px;
 }
 .fmt-cartouche-metadata div.fmt-header i.fa{
