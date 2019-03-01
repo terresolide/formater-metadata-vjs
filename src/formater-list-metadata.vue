@@ -1,13 +1,15 @@
 <i18n>{
    "en":{
+     "no_result": "No record for this request"
    },
    "fr":{
-      
+     "no_result": "Aucune fiche ne correspond!"
    }
 }
 </i18n>
 <template>
  <div class="fmt-list">
+    <div v-if="!metadatas" style="width:calc(100% - 150px);">{{$t('no_result')}}</div>
     <formater-cartouche-metadata v-for="(meta, index) in metadatas" :key="index" :metadata="meta" v-if="meta" :lang="lang"></formater-cartouche-metadata>
   </div>
 </template>
@@ -56,12 +58,12 @@ export default {
   },
   methods: {
      receiveMetadatas (event) {
-       if (!event.detail.metadata) {
-         return;
-       }
+       
        var self = this
        var metadatas = {}
-       if (event.detail.metadata && !event.detail.metadata.forEach) {
+       if (!event.detail.metadata){
+         metadatas = null
+       } else if (event.detail.metadata && !event.detail.metadata.forEach) {
          var uuid = event.detail.metadata['geonet:info'].uuid
          metadatas[uuid] = self.treatment(event.detail.metadata ,uuid)
        } else {
@@ -95,6 +97,9 @@ export default {
        return meta;
      },
      searchRelated () {
+       if (!this.metadatas) {
+         return
+       }
         var headers =  {
           'Accept': 'application/json, text/plain, */*',
           'Accept-Language': this.lang === 'fr' ? 'fre': 'eng'
@@ -109,11 +114,9 @@ export default {
      },
      addRelated (related) {
        var self = this
-       for(var key in related){
-         
-         this.$set(this.metadatas[key],'related', related[key])
+       for(var key in this.metadatas){
+           this.$set(this.metadatas[key],'related', related[key])
        }
-       console.log(this.metadatas)
      }
   }
 }

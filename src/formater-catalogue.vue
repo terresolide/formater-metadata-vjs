@@ -103,8 +103,8 @@ export default {
   float:left;
 }
 .fmt-catalogue .fmt-column-right{
-  width:calc(100% - 320px);
-  float:left;
+  width:calc(100% - 330px);
+  float:right;
   margin-bottom:120px;
 }
 </style>

@@ -24,7 +24,8 @@
     "build": "cross-env NODE_ENV=production webpack --progress --hide-modules"
   },
   "dependencies": {
-    "formater-commons-components-vjs": "github:terresolide/formater-commons-components-vjs#0.13.2",
+    "formater-commons-components-vjs": "github:terresolide/formater-commons-components-vjs#0.13.3",
+    "leaflet": "^1.4.0",
     "vue": "^2.6.7",
     "vue-custom-element": "^1.4.4",
     "vue-i18n": "7.0.5",

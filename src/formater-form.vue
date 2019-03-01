@@ -1,25 +1,54 @@
 <i18n>{
    "en":{
+     "search": "Search ...",
+     "reset": "Reset search"
    },
    "fr":{
-      
+      "search": "Rechercher ...",
+      "reset": "Initialiser"
    }
 }
 </i18n>
 <template>
- <span class="fmt-form">
-  <div style="max-width:250px;">
+ <div class="fmt-form">
+  <div style="text-align:center;margin: -10px 0 30px 0;"><input type="button" @click="handleReset" :value="$t('reset')"/></div>
   <div class="formater-input-group" >
- <input id="any" placeholder="any" >
+     <input id="any" name="any" v-model="parameters.any" :placeholder="$t('search')" @change="changeSearch"  /><i class="fa fa-search"></i>
  </div>
-  <formater-temporal-search :lang="lang" daymin="1900-01-01"></formater-temporal-search>
-   </div>
- </span>
+ <div style="width:250px;">
+  <formater-temporal-search :lang="lang" daymin="1900-01-01" daymax="2020-02-01"></formater-temporal-search>
+  </div>
+  
+ </div>
 
 </template>
 <script>
 
 import {FormaterTemporalSearch} from 'formater-commons-components-vjs'
+
+Object.defineProperty(
+    Object.prototype, 
+    'renameProperty',
+    {
+        writable : false, // Cannot alter this property
+        enumerable : false, // Will not show up in a for-in loop.
+        configurable : false, // Cannot be deleted via the delete operator
+        value : function (oldName, newName) {
+            // Do nothing if the names are the same
+            if (oldName == newName) {
+                return this;
+            }
+            // Check for the old property name to 
+            // avoid a ReferenceError in strict mode.
+            if (this.hasOwnProperty(oldName)) {
+                this[newName] = this[oldName];
+                delete this[oldName];
+            }
+            return this;
+        }
+    }
+);
+
 export default {
   name: 'FormaterForm',
   components: {
@@ -61,7 +90,8 @@ export default {
         from: 1,
         to: 18,
         resultType: 'details',
-        sortBy: 'relevance'
+        sortBy: 'title',
+        sortOrder: 'reverse'
       },
       changePageListener:null
     }
@@ -71,13 +101,17 @@ export default {
     this.parameters.to = this.nbRecord
     this.$i18n.locale = this.lang
     this.$setGnLocale(this.lang)
-    this.getRecords()
+    // this.getRecords() done when <formater-paging> is mounted with its pageChangeEvent on order control change
     this.pageChangedListener = this.changePage.bind(this)
     document.addEventListener('fmt:pageChangedEvent', this.pageChangedListener);
+    this.temporalChangedListener = this.getRecords.bind(this)
+    document.addEventListener('temporalChangeEvent', this.temporalChangedListener);
   },
   destroyed () {
     document.removeEventListener('fmt:pageChangedEvent', this.pageChangedListener);
     this.pageChangedListener = null;
+    document.removeEventListener('temporalChangeEvent', this.temporalChangedListener);
+    this.temporalChangedListener = null;
   },
   mounted () {
   
@@ -85,9 +119,18 @@ export default {
   },
   methods: {
     getRecords () {
+      // trigger search event like breadcrumb
+      var e = new CustomEvent("aerisSearchEvent", { detail: {}});
+	  document.dispatchEvent(e);
+	  e.detail.renameProperty('start', 'extFrom')
+	  e.detail.renameProperty('end', 'extTo')
+	  //delete(e.detail.extTo)
+	  //delete(e.detail.extFrom)
+      this.parameters = Object.assign(this.parameters, e.detail)	  
       var self = this
+      this.parameters.sortOrder =  this.parameters.sortBy === 'title' ? 'ordering': 'reverse';
       var url = this.srv + 'q?' + Object.keys(this.parameters).map(function (prop) {
-        return prop + '=' + self.parameters[prop]
+        return prop + '=' + encodeURI(self.parameters[prop])
       }).join('&');
       this.$http.get(url).then(
           response => { this.fill(response.body);}
@@ -95,18 +138,70 @@ export default {
     },
     fill (data) {
       this.fields = data.summary
-      if (data.metadata) {
-        var event = new CustomEvent('fmt:metadataListEvent', {detail:  data})
-        document.dispatchEvent(event)
-      }
+      var event = new CustomEvent('fmt:metadataListEvent', {detail:  data})
+      document.dispatchEvent(event)
+    },
+    handleReset () {
+      console.log('reset')
+      this.parameters.any = ""
+      var event = new CustomEvent('aerisResetEvent')
+      document.dispatchEvent(event)
+      this.getRecords()
     },
     changePage (event) {
-      this.parameters = Object.assign(this.parameters, event.detail)
+      this.getRecords()
+    },
+    changeSearch (event) {
+      this.parameters.any = event.target.value
       this.getRecords()
     }
   }
 }
 </script>
 <style>
-
+.fmt-form{
+  padding: 0px 10px 30px 10px;
+ border: 1px solid #ccc;
+  box-shadow: 1px 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+.fmt-form .formater-input-group {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    margin: 5px 0;
+    width: 100%;
+    overflow: hidden;
+    background: #f8ebda;
+    margin: 0 0 10px 0;
+}
+.fmt-form  .formater-input-group input {
+    border: none;
+    background-color: transparent;
+    padding: 0 10px;
+    outline: none;
+}
+.fmt-form input[type="button"] {
+    margin: 0 0 3px 7px;
+    padding: 3px 12px;
+    text-align: center;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 1px;
+    font-size: 16px;
+    line-height: 1.7;
+    border-color: #e5b171 #cb8025 #cb8025;
+    background:#754a15;
+    color: #fff;
+    text-decoration: none;
+    vertical-align: top;
+    cursor: pointer;
+    pointer-events: auto;
+    box-sizing: border-box;
+    box-shadow: 0 1px 5px rgba(0,0,0,.65);
+}
+.fmt-form  .formater-input-group input[name="any"] {
+    line-height:35px;
+    height:35px;
+    width: calc(100% - 40px);
+}
 </style>

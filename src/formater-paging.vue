@@ -7,7 +7,7 @@
      "sortBy": "Order by"
    },
    "fr":{
-     "results":  "Resultats: {from} à {to} sur {count}",
+     "results":  "Résultats: <strong>{from}</strong> à <strong>{to}</strong> sur {count}",
      "title": "Titre",
      "relevance": "Pertinence",
      "changeDate": "Mise à jour",
@@ -22,13 +22,13 @@
   	<span class="fa fa-angle-double-left" @click="goToFirst()"></span>
   	<span class="fa fa-angle-left" @click="changePage(-1)" ></span>
   </span>
-  <span style="margin: 0 10px;">{{$tc('results', count, {from: from, to: to, count: count})}}</span>
-   <span :class="{disabled: (currentPage===nbPage ? 'disabled': ''), 'fmt-navigation':true}">
+  <span style="margin: 0 10px;" v-html="$tc('results', count, {from: (count === 0) ? 0 : from, to: to, count: count})"></span>
+   <span :class="{disabled: (currentPage===nbPage || count=== 0 ? 'disabled': ''), 'fmt-navigation':true}">
 	   <span class="fa fa-angle-right " @click="changePage(1)" ></span>
 	   <span class="fa fa-angle-double-right" @click="goToLast()"></span>
   </span>
   <div style="float:right;display:inline-block;">
-    {{$t('sortBy')}} <formater-select :options="options" name="orderBy" type="associative" @input="sortChange" color="#ffffff"></formater-select>
+    {{$t('sortBy')}} <formater-select :options="options" name="sortBy" type="associative" defaut="title" @input="sortChange" color="#ffffff"></formater-select>
   </div>
    </div>
  </span>
@@ -62,6 +62,8 @@ export default {
     this.$i18n.locale = this.lang
     this.metadataListListener = this.receiveTotalRecord.bind(this)
     document.addEventListener('fmt:metadataListEvent', this.metadataListListener);
+    this.searchEventListener = this.handleSearch.bind(this) 
+	document.addEventListener('aerisSearchEvent', this.searchEventListener);
     var self = this
     this.orders.forEach( function (order) {
       self.options[order] = self.$i18n.t(order)
@@ -71,6 +73,8 @@ export default {
   destroyed () {
     document.removeEventListener('fmt:metadataListEvent', this.metadataListListener);
     this.metadataListListener = null;
+    document.addEventListener('aerisSearchEvent', this.searchEventListener);
+    this.searchEventListener = null;
   },
 
   data() {
@@ -81,21 +85,27 @@ export default {
       nbPage: 0,
       from: 1,
       to: 12,
-      sortBy: 'relevance',
-      orders: ['title', 'relevance', 'changeDate'],
-      options: {}
+      sortBy: 'title',
+      orders: ['title', 'changeDate'],
+      options: {},
+      metadataListListener: null,
+      searchEventListener: null
     }
   },
   
   methods: {
    receiveTotalRecord (event) {
-     console.log(event.detail.summary)
      this.count = parseInt(event.detail.summary['@count'])
      this.from = parseInt(event.detail['@from'])
-     console.log(this.recordPerPage)
      this.to = parseInt(event.detail['@to'])
      this.nbPage = Math.ceil(event.detail.summary['@count'] / this.recordPerPage) 
-     
+     if (this.count === 0) {
+       this.from = 1
+       this.currentPage = 1
+     }
+     if (this.count!=0 && this.currentPage > this.nbPage) {
+       this.goToLast()
+     }
    },
    goToFirst () {
      this.from = 1
@@ -106,6 +116,11 @@ export default {
      this.from = (this.nbPage -1) * this.recordPerPage + 1
      this.currentPage = this.nbPage
      this.emitChange()
+   },
+   handleSearch (event) {
+     event.detail.from = this.from
+     event.detail.to = this.from + this.recordPerPage - 1
+     event.detail.sortBy = this.sortBy
    },
    changePage(sens) {
      if (sens < 0 && this.currentPage === 1 ){
@@ -125,7 +140,7 @@ export default {
    },
    emitChange() {
      var to = this.from + this.recordPerPage - 1
-     var event = new CustomEvent('fmt:pageChangedEvent', {detail: {from: this.from, to: to, sortBy: this.sortBy}})
+     var event = new CustomEvent('fmt:pageChangedEvent')
      document.dispatchEvent(event)
    }
   }
