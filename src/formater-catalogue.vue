@@ -7,21 +7,26 @@
 </i18n>
 <template>
  <span class="fmt-catalogue">
-  <aeris-theme primary="#dd9946" :active="true" emphasis="#dd9946"></aeris-theme>
-  <div v-if="metadata === null">
+  <aeris-theme primary="#754a15" :active="true" emphasis="#dd9946"></aeris-theme>
+  <formater-draw-bbox></formater-draw-bbox>
+  <div >
    <div class="fmt-column-left" >
     <formater-form :lang="lang" :nb-record="nbRecord"></formater-form>
     </div>
    
     <div class="fmt-column-right" >
-     <formater-paging :lang="lang" :nb-record="nbRecord"></formater-paging>
-     <formater-list-metadata :lang="lang"></formater-list-metadata>
+     <div v-show="metadata === null">
+       <formater-paging :lang="lang" :nb-record="nbRecord"></formater-paging>
+       <formater-list-metadata :lang="lang" ></formater-list-metadata>
+     </div>
+      <div v-if="metadata">
+    	<formater-metadata :metadata="metadata" :lang="lang" @close="resetMetadata"></formater-metadata>
+  	 </div>
 
     </div>
+   
   </div>
-  <div v-if="metadata">
-    <formater-metadata :metadata="metadata" :lang="lang" @close="resetMetadata"></formater-metadata>
-  </div>
+  
  </span>
 </template>
 <script>
@@ -29,10 +34,12 @@ import FormaterForm from './formater-form.vue';
 import FormaterListMetadata from './formater-list-metadata.vue';
 import FormaterMetadata from './formater-metadata.vue';
 import FormaterPaging from './formater-paging.vue';
+import FormaterDrawBbox from './formater-draw-bbox.vue';
 import AerisTheme from 'aeris-commons-components-vjs/src/aeris-theme/aeris-theme.vue'
 export default {
   name: 'FormaterCatalogue',
   components: {
+    FormaterDrawBbox,
     FormaterForm,
     FormaterListMetadata,
     FormaterMetadata,
@@ -80,10 +87,11 @@ export default {
   },
   methods: {
 	receiveMetadata (event) {
-	  console.log(event)
 	  this.metadata = event.detail
 	},
 	resetMetadata (event) {
+	  var event = new CustomEvent('fmt:closeMetadataEvent')
+	  document.dispatchEvent(event)
 	  this.metadata = null
 	}
   }

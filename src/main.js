@@ -32,6 +32,8 @@ ljs.addAliases({
     dep: [
        // font-awesome
        'https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css', 
+       // leaflet
+       'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.4.0/leaflet.css',
        //regiter element
        //-------------
        'https://cdnjs.cloudflare.com/ajax/libs/document-register-element/1.4.1/document-register-element.js',

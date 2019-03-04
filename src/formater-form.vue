@@ -1,31 +1,41 @@
 <i18n>{
    "en":{
      "search": "Search ...",
-     "reset": "Reset search"
+     "reset": "Reset search",
+     "time_slot": "Time slot",
+     "spatial_extend": "Spatial extend"
    },
    "fr":{
       "search": "Rechercher ...",
-      "reset": "Initialiser"
+      "reset": "Initialiser",
+      "time_slot": "Intervalle temporel",
+      "spatial_extend": "Zone géographique"
    }
 }
 </i18n>
 <template>
  <div class="fmt-form">
   <div style="text-align:center;margin: -10px 0 30px 0;"><input type="button" @click="handleReset" :value="$t('reset')"/></div>
-  <div class="formater-input-group" >
+  <div class="formater-input-group" style="margin:10px; width:calc(100% - 20px);">
      <input id="any" name="any" v-model="parameters.any" :placeholder="$t('search')" @change="changeSearch"  /><i class="fa fa-search"></i>
  </div>
- <div style="width:250px;">
+ <formater-map></formater-map>
+ <formater-search-box header-icon-class="fa fa-globe" open-icon-class="fa fa-caret-right" :title="$t('spatial_extend')" :deployed="false" type="empty">
+ <formater-spatial-search></formater-spatial-search>
+ </formater-search-box>
+<formater-search-box header-icon-class="fa fa-calendar" open-icon-class="fa fa-caret-right" :title="$t('time_slot')" :deployed="true" type="empty">
   <formater-temporal-search :lang="lang" daymin="1900-01-01" daymax="2020-02-01"></formater-temporal-search>
-  </div>
-  
+</formater-search-box>
+
  </div>
 
 </template>
 <script>
 
-import {FormaterTemporalSearch} from 'formater-commons-components-vjs'
-
+import {FormaterTemporalSearch, FormaterSearchBox} from 'formater-commons-components-vjs'
+import FormaterSpatialSearch from './formater-spatial-search.vue'
+import FormaterMap from './formater-map.vue'
+// import FormaterSearchBox from './formater-search-box.vue'
 Object.defineProperty(
     Object.prototype, 
     'renameProperty',
@@ -52,7 +62,10 @@ Object.defineProperty(
 export default {
   name: 'FormaterForm',
   components: {
-    FormaterTemporalSearch
+    FormaterMap,
+    FormaterTemporalSearch,
+    FormaterSpatialSearch,
+    FormaterSearchBox
   },
   props: {
     nbRecord: {
@@ -126,6 +139,7 @@ export default {
 	  e.detail.renameProperty('end', 'extTo')
 	  //delete(e.detail.extTo)
 	  //delete(e.detail.extFrom)
+	  delete(e.detail.box)
       this.parameters = Object.assign(this.parameters, e.detail)	  
       var self = this
       this.parameters.sortOrder =  this.parameters.sortBy === 'title' ? 'ordering': 'reverse';
@@ -160,7 +174,7 @@ export default {
 </script>
 <style>
 .fmt-form{
-  padding: 0px 10px 30px 10px;
+  padding: 0px 0px 30px 0px;
  border: 1px solid #ccc;
   box-shadow: 1px 1px 1px 2px rgba(0, 0, 0, 0.1);
 }
@@ -171,8 +185,14 @@ export default {
     margin: 5px 0;
     width: 100%;
     overflow: hidden;
-    background: #f8ebda;
+   background: #f8ebda;
+    /* background: #e3dbd0;*/
     margin: 0 0 10px 0;
+}
+.fmt-form .formater-search-box{
+  margin: 5px 0;
+  width:100%;
+  box-shadow: 0 2px 5px -5px rgba(0, 0, 0, 0.2);
 }
 .fmt-form  .formater-input-group input {
     border: none;

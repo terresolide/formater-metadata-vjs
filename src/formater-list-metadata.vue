@@ -121,7 +121,7 @@ export default {
   }
 }
 </script>
-<style>
+<style scoped>
 .fmt-list{
   width: 100%;
   text-align:center;

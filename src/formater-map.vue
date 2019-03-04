@@ -1,0 +1,203 @@
+<i18n>{
+   "en":{
+
+   },
+   "fr":{
+
+   }
+}
+</i18n>
+<template>
+ <span class="fmt-map">
+  <div id="fmtMap" class="fmt-small"></div>
+ </span>
+</template>
+<script>
+var L = require("leaflet");
+// import {Map, Control, LatLng, tileLayer, TileLayer} from 'leaflet'
+// import L from 'leaflet'
+export default {
+  name: 'FormaterMap',
+  components: {
+  },
+  props: {
+    lang: {
+      type: String,
+      default: 'en'
+    }
+  },
+  watch: {
+    lang (newvalue) {
+    	this.$i18n.locale = newvalue    	
+    }
+  },
+  created: function() {
+    this.$i18n.locale = this.lang
+    this.metadataListListener = this.receiveMetadatas.bind(this)
+    document.addEventListener('fmt:metadataListEvent', this.metadataListListener);
+    this.metadataListener = this.selectLayer.bind(this)
+    document.addEventListener('fmt:metadataEvent', this.metadataListener);
+    this.closeMetadataListener = this.unselectLayer.bind(this)
+    document.addEventListener('fmt:closeMetadataEvent', this.closeMetadataListener);
+  },
+  destroyed () {
+    document.removeEventListener('fmt:metadataListEvent', this.metadataListListener);
+    this.metadataListListener = null;
+    document.removeEventListener('fmt:metadataEvent', this.metadataListener);
+    this.metadataListener = null;
+    document.removeEventListener('fmt:closeMetadataEvent', this.closeMetadataListener);
+    this.closeMetadataListener = null
+  },
+  mounted: function () {
+    this.init()
+  },
+  data() {
+    return {
+     map: null,
+     metadataListListener: null,
+     metadataListener: null,
+     closeMetadataListener: null,
+     bboxLayer: null,
+     selected: null,
+     bounds: null,
+     defaultRectangleOptions: {
+       interactive: false,
+       fillColor:'orange', 
+       fillOpacity:0.05, 
+       stroke: true, 
+       weight:1, 
+       color: 'orange'
+     },
+     selectedOptions: {
+       color: 'red',
+       fillColor: 'red',
+       fillOpacity: 0.4
+     }
+    }
+  },
+  
+  methods: {
+   init () {
+     var container = this.$el.querySelector('#fmtMap');
+     this.map = L.map( container).setView([51.505, -0.09], 2);
+     this.bounds = this.map.getBounds()
+ 		
+     L.tileLayer('//server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
+			{
+			  attribution: 'Tiles © <a href="https://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer">ArcGIS</a>',
+		      maxZoom: 18,
+		      minZoom:2
+		      
+		    }).addTo( this.map );
+     this.bboxLayer = L.layerGroup();
+     this.bboxLayer.addTo(this.map);
+	
+   },
+   receiveMetadatas (event) {
+     this.bounds = null;
+     this.bboxLayer.clearLayers();
+     var self = this
+     if (!event.detail.metadata) {
+       // no record
+       return
+     }
+     if (!event.detail.metadata.forEach) {
+       // only one record
+       var uuid = event.detail.metadata['geonet:info'].uuid
+       this.extractBbox(event.detail.metadata.geoBox, uuid)
+       
+     } else {
+       // array of records
+       event.detail.metadata.forEach( function (meta, index) {
+         var uuid = meta['geonet:info'].uuid
+         self.extractBbox(meta.geoBox, uuid)
+       })
+     }
+     if (this.bounds) {
+       this.map.fitBounds(this.bounds)
+     }
+     this.bboxLayer.addTo(this.map)
+   },
+   extractBbox(geoBox, uuid) {
+     if (!geoBox) {
+       return
+     }
+     //trouble with rectangle ??? add polygon!
+     var tab = geoBox.split('|') 
+     tab = tab.map(x => parseFloat(x))
+     var latmin = Math.min(tab[3], tab[1])
+     var latmax = Math.max(tab[3], tab[1])
+     var lngmin = Math.min(tab[0], tab[2])
+     var lngmax = Math.max(tab[0], tab[2])
+     var path = [[latmin, lngmin], [latmax, lngmin], [latmax, lngmax], [latmin, lngmax], [latmin, lngmin]]
+     var bounds = L.latLngBounds(L.latLng(latmax, lngmin), L.latLng(latmin, lngmax));
+     var options = Object.assign({uuid:uuid}, this.defaultRectangleOptions)
+     var rectangle = L.polygon(path,options)
+     console.log(rectangle)
+//      rectangle.on('mouseover', function(layer) {
+//        console.log(layer.target.options.id)
+//      })
+     this.bboxLayer.addLayer(rectangle)
+     if (!this.bounds) {
+       this.bounds = bounds
+     } else {
+       this.bounds.extend(bounds)
+     }
+   },
+   selectLayer (event) {
+     this.unselectLayer()
+     if (event.detail && event.detail['geonet:info'] && event.detail['geonet:info'].uuid) {
+       this.selectLayerByUuid(event.detail['geonet:info'].uuid)
+     } 
+   },
+   unselectLayer (event) {
+     if (this.selected) {
+       this.selected.setStyle(
+           {
+             color: this.defaultRectangleOptions.color, 
+             fillColor: this.defaultRectangleOptions.fillColor,
+             fillOpacity: this.defaultRectangleOptions.fillOpacity
+           })
+       this.selected = null
+     }
+   },
+   selectLayerByUuid (uuid) {
+     var self = this
+     this.bboxLayer.eachLayer(function(layer) {
+       if (layer.options.uuid === uuid) {
+         self.setSelected(layer)
+       }
+     })
+   },
+   setSelected (layer) {
+     this.selected = layer
+     this.selected.setStyle(this.selectedOptions)
+   }
+   
+  }
+}
+</script>
+<style scoped>
+div[id="fmtMap"]{
+  width:100%;
+  margin:0;
+  padding:0;
+  height:200px;
+}
+div[id="fmtMap"].fmt-small .leaflet-top .leaflet-control{
+   margin-top: 3px;
+}
+div[id="fmtMap"].fmt-small .leaflet-left .leaflet-control{
+   margin-left: 3px;
+}
+div[id="fmtMap"].fmt-small .leaflet-control .leaflet-control-zoom-in, 
+div[id="fmtMap"].fmt-small .leaflet-control .leaflet-control-zoom-out{
+  font-size:16px;
+}
+div[id="fmtMap"].fmt-small .leaflet-bar a{
+
+ width: 15px;
+ height:15px;
+ line-height:15px;
+ }
+</style>
