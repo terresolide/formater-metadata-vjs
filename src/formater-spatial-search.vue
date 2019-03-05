@@ -21,14 +21,14 @@
 </i18n>
 <template>
 <span class="formater-spatial-search">
-	<div class="box-toolbar">
+	<div class="box-toolbar" style="background: none;">
 	   <button class="spatial-edit-button" :title="$t('draw')" @click="handleDraw"><i class="fa fa-pencil-square-o"></i></button>
 	   <button class="spatial-reset-button" :title="$t('reset')" @click="handleReset"><i class="fa fa-remove"></i></button>
 	</div>
 	<div class="formater-spatial-search-content">
 		<div class="formater-input-group cardinal-center">
 			<span class="right">{{$t('north_symbol')}}</span>
-			<input    v-model="north" :pattern="patternLatitude" @click="handleChange"></input>
+			<input    v-model="north" :pattern="patternLatitude" @change="handleChange"></input>
 		</div>
 		<div class="formater-input-group cardinal-left">
 			<span class="right">{{$t('west_symbol')}}</span>
@@ -76,8 +76,12 @@ export default {
 		this.resetEventListener = null;
 		document.removeEventListener('aerisSearchEvent', this.searchEventListener);
 		this.searchEventListener = null;
-		 document.removeEventListener('aerisTheme', this.aerisThemeListener);
-         this.aerisThemeListener = null;
+		document.removeEventListener('aerisTheme', this.aerisThemeListener);
+        this.aerisThemeListener = null;
+        document.removeEventListener('fmt:selectAreaChange', this.selectAreaChangeListener);
+        this.selectAreaChangeListener = null
+     	document.removeEventListener('fmt:drawClose', this.drawCloseListener)
+     	this.drawCloseListener = null
   },
   
   created: function () {
@@ -89,7 +93,10 @@ export default {
 		this.aerisThemeListener = this.handleTheme.bind(this) 
 	    document.addEventListener('aerisTheme', this.aerisThemeListener);
 		this.selectAreaChangeListener = this.handleBounds.bind(this) 
-	    document.addEventListener('selectAreaChange', this.selectAreaChangeListener);
+	    document.addEventListener('fmt:selectAreaChange', this.selectAreaChangeListener);
+		this.drawCloseListener = this.handleDraw.bind(this)
+		document.addEventListener('fmt:drawClose', this.drawCloseListener)
+		
   },
 
   mounted: function(){
@@ -100,7 +107,7 @@ export default {
     methods:{
         bbox: function(){
             return {
-	            north: this.north,
+	            north: this.north === "" ? null: parseFloat(this.north),
 	            south: this.south,
 	            east: this.east,
 	            west: this.west
@@ -108,16 +115,16 @@ export default {
     	},
         handleChange: function(e){
         	this.areaSelect = false;
-             var event = new CustomEvent( 'selectAreaDrawEnd', { detail:this.bbox()});
+             var event = new CustomEvent( 'fmt:bboxChange', { detail:this.bbox()});
        	    document.dispatchEvent( event);
             return;
     	},
     	handleDraw:function(){ 
     	   if(this.areaSelect){
-    	       var event = new CustomEvent( 'selectAreaDrawEnd', {detail: this.bbox()});
+    	       var event = new CustomEvent( 'fmt:selectAreaDrawEnd', {detail: this.bbox()});
           	   
     	   }else{
-    		   var event = new CustomEvent( 'selectAreaDrawStart', {detail: this.bbox()});
+    		   var event = new CustomEvent( 'fmt:selectAreaDrawStart', {detail: this.bbox()});
     	   }  
     	   this.areaSelect = !this.areaSelect;
     	   document.dispatchEvent( event);
@@ -135,7 +142,7 @@ export default {
 	  	       this.areaSelect = false;
 		      
 			 }
-			 var event = new CustomEvent( 'selectAreaDrawEnd', { detail: this.bbox()});
+			 var event = new CustomEvent( 'fmt:bboxChange', { detail: this.bbox()});
 		       document.dispatchEvent( event);
 
 			  

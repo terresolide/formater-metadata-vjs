@@ -6,9 +6,11 @@
 }
 </i18n>
 <template>
- <span class="fmt-catalogue">
-  <aeris-theme primary="#754a15" :active="true" emphasis="#dd9946"></aeris-theme>
-  <formater-draw-bbox></formater-draw-bbox>
+ <div class="fmt-catalogue">
+  <aeris-theme :primary="primary" :active="true" :emphasis="emphasis"></aeris-theme>
+ <!-- <formater-draggable-block :show="true">  -->
+  <formater-draw-bbox color="#fff" :lang="lang" :background="primary"></formater-draw-bbox>
+ <!--  </formater-draggable-block>  -->
   <div >
    <div class="fmt-column-left" >
     <formater-form :lang="lang" :nb-record="nbRecord"></formater-form>
@@ -27,13 +29,15 @@
    
   </div>
   
- </span>
+ </div>
 </template>
 <script>
 import FormaterForm from './formater-form.vue';
 import FormaterListMetadata from './formater-list-metadata.vue';
 import FormaterMetadata from './formater-metadata.vue';
 import FormaterPaging from './formater-paging.vue';
+// import {FormaterDraggableBlock} from 'formater-commons-components-vjs';
+import FormaterDraggableBlock from './formater-draggable-block.vue';
 import FormaterDrawBbox from './formater-draw-bbox.vue';
 import AerisTheme from 'aeris-commons-components-vjs/src/aeris-theme/aeris-theme.vue'
 export default {
@@ -44,6 +48,7 @@ export default {
     FormaterListMetadata,
     FormaterMetadata,
     FormaterPaging,
+    FormaterDraggableBlock,
     AerisTheme
   },
   props: {
@@ -59,6 +64,14 @@ export default {
       type: Number,
       coerce: str => parseInt(str),
       default:12
+    },
+    primary: {
+      type: String,
+      default: '#754a15'
+    },
+    emphasis: {
+      type: String,
+      default: '#dd9946'
     }
   },
   watch: {
@@ -70,12 +83,12 @@ export default {
   data() {
     return {
       metadata: null,
-      metadataListener: null
+      metadataListener: null,
+      drawing: false
     }
   },
   
   created () {
-    console.log(this.nbRecord)
     this.$i18n.locale = this.lang
     this.$setGnLocale(this.lang)
     this.metadataListener = this.receiveMetadata.bind(this)
@@ -100,6 +113,8 @@ export default {
 <style>
 .fmt-catalogue{
   font-size: 12px;
+  height:auto;
+  width:100%;
   }
 .fmt-capsule{
   border: 1px solid #ccc;

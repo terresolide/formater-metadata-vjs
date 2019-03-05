@@ -135,8 +135,18 @@ export default {
       // trigger search event like breadcrumb
       var e = new CustomEvent("aerisSearchEvent", { detail: {}});
 	  document.dispatchEvent(e);
+	  if (!e.detail.startDefault) {
 	  e.detail.renameProperty('start', 'extFrom')
-	  e.detail.renameProperty('end', 'extTo')
+	  } else {
+	    delete e.detail.startDefault
+	    delete e.detail.start
+	  }
+	  if (e.detail.endDefault) {
+	    delete e.detail.endDefault
+	    delete e.detail.end
+	  } else {
+	    e.detail.renameProperty('end', 'extTo')
+      }
 	  //delete(e.detail.extTo)
 	  //delete(e.detail.extFrom)
 	  delete(e.detail.box)

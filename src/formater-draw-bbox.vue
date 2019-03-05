@@ -1,20 +1,24 @@
 <i18n>{
    "en":{
-
+       "draw_bbox": "Draw a bounding box"
    },
    "fr":{
-
+       "draw_bbox": "Dessiner / Modifier les limites sur la carte"
    }
 }
 </i18n>
 <template>
- <span class="fmt-draw-bbox">
+ <div class="fmt-draw-bbox"  v-show="drawing">
+ <div class="fmt-header" >
+  	<span class="close fa fa-close" @click="drawEnd" ></span>
+	<h3  @mousedown="movestart" style="padding:10px;margin:0;">{{$t('draw_bbox')}}</h3>
+</div>
   <div id="fmtDraw" class="fmt-small"></div>
- </span>
+ </div>
 </template>
 <script>
 import L from 'leaflet';
-L.Draw = require('leaflet-draw');
+require('leaflet-draw')
 // import {Map, Control, LatLng, tileLayer, TileLayer} from 'leaflet'
 // import L from 'leaflet'
 export default {
@@ -25,79 +29,119 @@ export default {
     lang: {
       type: String,
       default: 'en'
+    },
+    color: {
+      type: String,
+      default: 'black'
+    },
+    background: {
+      type: String,
+      default: 'none'
     }
   },
   watch: {
     lang (newvalue) {
-    	this.$i18n.locale = newvalue    	
+    	this.$i18n.locale = newvalue  
+    	if (newvalue === 'fr') {
+          L.drawLocal = require('formater-geotiff-visualizer-vjs/src/module/leaflet.draw.fr.js')
+        } else {
+          L.drawLocal = require('formater-geotiff-visualizer-vjs/src/module/leaflet.draw.en.js')
+        }
+        // rerender leaflet draw
+        if (this.drawControl) {
+          this.drawControl.remove()
+          this.drawControl.addTo(this.mapObject)
+        }
+    },
+    color (newvalue) {
+      this.$el.querySelector(".fmt-header").style.color = newvalue
+    },
+    background (newvalue) {
+      this.$el.querySelector(".fmt-header").style.background = newvalue
     }
   },
   created: function() {
     this.$i18n.locale = this.lang
-    this.metadataListListener = this.receiveMetadatas.bind(this)
-    document.addEventListener('fmt:metadataListEvent', this.metadataListListener);
-    this.metadataListener = this.selectLayer.bind(this)
-    document.addEventListener('fmt:metadataEvent', this.metadataListener);
-    this.closeMetadataListener = this.unselectLayer.bind(this)
-    document.addEventListener('fmt:closeMetadataEvent', this.closeMetadataListener);
+  	if (this.lang === 'fr') {
+      L.drawLocal = require('formater-geotiff-visualizer-vjs/src/module/leaflet.draw.fr.js')
+    } 
+    // open and close
+    this.drawStartListener = this.open.bind(this)
+    document.addEventListener('fmt:selectAreaDrawStart', this.drawStartListener)
+    this.drawEndListener = this.close.bind(this)
+    document.addEventListener('fmt:selectAreaDrawEnd', this.drawEndListener)
+    this.bboxChangeListener = this.selectAreaChange.bind(this)
+    document.addEventListener('fmt:bboxChange', this.bboxChangeListener)
+    // drag and drop
+  	this.mousemoveListener = this.move.bind(this)
+    document.addEventListener('mousemove', this.mousemoveListener)
+    this.mouseupListener = this.moveEnd.bind(this)
+    document.addEventListener('mouseup', this.mouseupListener)
+    this.resizeListener = this.resize.bind(this)
+    window.addEventListener('resize', this.resizeListener)
+
   },
   destroyed () {
-    document.removeEventListener('fmt:metadataListEvent', this.metadataListListener);
-    this.metadataListListener = null;
-    document.removeEventListener('fmt:metadataEvent', this.metadataListener);
-    this.metadataListener = null;
-    document.removeEventListener('fmt:closeMetadataEvent', this.closeMetadataListener);
-    this.closeMetadataListener = null
+    document.removeEventListener('fmt:selectAreaDrawStart', this.drawStartListener)
+    this.drawStartListener = null
+    document.removeEventListener('fmt:selectAreaDrawEnd', this.drawEndListener)
+    this.drawEndListener = null
+    document.removeEventListener('fmt:bboxChange', this.bboxChangeListener)
+    this.bboxChangeListener = null
+    document.removeEventListener('mousemove', this.mousemoveListener)
+    this.mousemoveListener = null
+    document.removeEventListener('mouseup', this.mouseupListener)
+    this.mouseupListener = null
+    window.removeEventListener('resize', this.resizeListener)
+    this.resizeListener = null
   },
   mounted: function () {
-    this.init()
+    console.log('mounted')
+    this.$el.querySelector(".fmt-header").style.color = this.color
+    this.$el.querySelector(".fmt-header").style.background = this.background
+//     this.initHeight()
+//     	// console.log(this.$el)
+//   	// this.resizeListener = new ResizeObserver(this.resize).observe(this.$el)
+//     this.initPosition()
+//     this.initMap()
   },
   data() {
     return {
+     mousemoveListener: null,
+     mouseupListener: null,
+     resizeListener: null,
+     drawing: false,
      map: null,
-     metadataListListener: null,
-     metadataListener: null,
-     closeMetadataListener: null,
-     bboxLayer: null,
-     selected: null,
      bounds: null,
-     defaultRectangleOptions: {
-       interactive: false,
-       fillColor:'orange', 
-       fillOpacity:0.05, 
-       stroke: true, 
-       weight:1, 
-       color: 'orange'
-     },
-     selectedOptions: {
-       color: 'red',
-       fillColor: 'red',
-       fillOpacity: 0.4
-     },
-     drawControl: null
+     drawControl: null,
+     selected: false,
+     delta: {x: 0, y:0},
+     pos: {x:0, y:0},
     }
   },
-  
   methods: {
-   init () {
-     var container = this.$el.querySelector('#fmtDraw');
-     this.map = L.map( container).setView([51.505, -0.09], 2);
-     this.bounds = this.map.getBounds()
- 		
-     L.tileLayer('//server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
-			{
-			  attribution: 'Tiles © <a href="https://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer">ArcGIS</a>',
-		      maxZoom: 18,
-		      minZoom:2
-		      
-		    }).addTo( this.map );
+   initPosition () {
+     
+     var left = (this.$el.parentNode.offsetWidth - this.$el.offsetWidth) / 2;
+     var top = (this.$el.parentNode.offsetHeight - this.$el.offsetHeight) / 2;
+     this.$el.style.left = left + 'px';
+     this.$el.style.top = -top + 'px';
+     this.pos.x = left
+     this.pos.y = this.$el.offsetTop
+   },
+   initHeight () {
+     var height = this.$el.offsetHeight - this.$el.querySelector('.fmt-header').offsetHeight -4
+     console.log(height)
+     this.$el.querySelector('#fmtDraw').style.height = height +'px'
+   },
+   initDrawControl() {
      var drawnItems = new L.FeatureGroup()
      this.map.addLayer(drawnItems)
      this.drawControl = new L.Control.Draw({
        draw: {
          rectangle: {
            shapeOptions: {
-             color: '#ffff00'
+             color: '#ff0000'
            }
          },
          circlemarker: false,
@@ -110,101 +154,144 @@ export default {
          featureGroup: drawnItems
        }
      })
-     this.bboxLayer = L.layerGroup();
-     this.bboxLayer.addTo(this.map);
+     this.drawControl.addTo(this.map)
+     this.map.on(L.Draw.Event.CREATED, function (e) {
+       let layer = e.layer
+       let bounds = e.layer.getBounds()
+       let bbox = { north: bounds.getNorthEast().lat,
+                    south: bounds.getSouthWest().lat,
+                    east: bounds.getNorthEast().lng,
+                    west: bounds.getSouthWest().lng
+       }
+       // trigger event fmt:selectAreaChange
+       let event = new CustomEvent('fmt:selectAreaChange', {detail: bbox})
+       document.dispatchEvent(event)
+       drawnItems.clearLayers()
+       drawnItems.addLayer(layer)
+
+     })
+
+     this.map.on(L.Draw.Event.EDITED, function (e) {
+       let bounds
+       e.layers.eachLayer(function (layer) {
+         bounds = layer.getBounds()
+       })
+       let bbox = { north: bounds.getNorthEast().lat,
+                    south: bounds.getSouthWest().lat,
+                    east: bounds.getNorthEast().lng,
+                    west: bounds.getSouthWest().lng
+       }
+       // trigger event fmt:selectAreaChange
+       let event = new CustomEvent('fmt:selectAreaChange', {detail: bbox})
+       document.dispatchEvent(event)
+     })
+
+    /* this.mapObject.on(L.Draw.Event.DELETESTART, function (e) {
+       drawnItems.eachLayer(function (layer) {
+         layer.bringToFront()
+       })
+     })
+     this.mapObject.on(L.Draw.Event.EDITSTART, function (e) {
+       drawnItems.eachLayer(function (layer) {
+         layer.bringToFront()
+       })
+     })*/
+   },
+   initMap () {
+     if (this.map) {
+       return;
+     }
+     var container = this.$el.querySelector('#fmtDraw');
+     this.map = L.map( container).setView([51.505, -0.09], 2);
+     this.bounds = this.map.getBounds()
+ 		
+     L.tileLayer('//server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
+			{
+			  attribution: 'Tiles © <a href="https://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer">ArcGIS</a>',
+		      maxZoom: 18,
+		      minZoom:1
+		      
+		    }).addTo( this.map );
+     this.initDrawControl()
 	
    },
-   receiveMetadatas (event) {
-     this.bounds = null;
-     this.bboxLayer.clearLayers();
+   open (event) {
+     console.log('open')
+     this.drawing = true
      var self = this
-     if (!event.detail.metadata) {
-       // no record
-       return
+     var next = function () {
+       self.initHeight();
+       self.initPosition();
+       self.initMap();
+       self.map.invalidateSize();
      }
-     if (!event.detail.metadata.forEach) {
-       // only one record
-       var uuid = event.detail.metadata['geonet:info'].uuid
-       this.extractBbox(event.detail.metadata.geoBox, uuid)
-       
-     } else {
-       // array of records
-       event.detail.metadata.forEach( function (meta, index) {
-         var uuid = meta['geonet:info'].uuid
-         self.extractBbox(meta.geoBox, uuid)
-       })
-     }
-     if (this.bounds) {
-       this.map.fitBounds(this.bounds)
-     }
-     this.bboxLayer.addTo(this.map)
+     setTimeout(next, 5)
    },
-   extractBbox(geoBox, uuid) {
-     if (!geoBox) {
-       return
-     }
-     //trouble with rectangle ??? add polygon!
-     var tab = geoBox.split('|') 
-     tab = tab.map(x => parseFloat(x))
-     var latmin = Math.min(tab[3], tab[1])
-     var latmax = Math.max(tab[3], tab[1])
-     var lngmin = Math.min(tab[0], tab[2])
-     var lngmax = Math.max(tab[0], tab[2])
-     var path = [[latmin, lngmin], [latmax, lngmin], [latmax, lngmax], [latmin, lngmax], [latmin, lngmin]]
-     var bounds = L.latLngBounds(L.latLng(latmax, lngmin), L.latLng(latmin, lngmax));
-     var options = Object.assign({uuid:uuid}, this.defaultRectangleOptions)
-     var rectangle = L.polygon(path,options)
-     console.log(rectangle)
-//      rectangle.on('mouseover', function(layer) {
-//        console.log(layer.target.options.id)
-//      })
-     this.bboxLayer.addLayer(rectangle)
-     if (!this.bounds) {
-       this.bounds = bounds
-     } else {
-       this.bounds.extend(bounds)
+   drawEnd () {
+     var event = new CustomEvent('fmt:drawClose')
+     document.dispatchEvent(event)
+   },
+   selectAreaChange (event) {
+     console.log(event.detail)
+   },
+   close (event) {
+     console.log(event.detail)
+     this.drawing = false
+   },
+   movestart (evt) {
+     console.log('start')
+     this.selected = true
+     this.delta = {
+         x: this.pos.x - this.$el.offsetLeft,
+         y: this.pos.y - this.$el.offsetTop
      }
    },
-   selectLayer (event) {
-     this.unselectLayer()
-     if (event.detail && event.detail['geonet:info'] && event.detail['geonet:info'].uuid) {
-       this.selectLayerByUuid(event.detail['geonet:info'].uuid)
-     } 
-   },
-   unselectLayer (event) {
+   move (evt) {
+     // console.log(evt)
+     this.pos.x = evt.clientX
+     this.pos.y = evt.clientY
      if (this.selected) {
-       this.selected.setStyle(
-           {
-             color: this.defaultRectangleOptions.color, 
-             fillColor: this.defaultRectangleOptions.fillColor,
-             fillOpacity: this.defaultRectangleOptions.fillOpacity
-           })
-       this.selected = null
+     	this.$el.style.left = (this.pos.x - this.delta.x) + 'px'
+     	this.$el.style.top = (this.pos.y - this.delta.y) + 'px'
      }
    },
-   selectLayerByUuid (uuid) {
-     var self = this
-     this.bboxLayer.eachLayer(function(layer) {
-       if (layer.options.uuid === uuid) {
-         self.setSelected(layer)
-       }
-     })
+   moveEnd () {
+     this.selected = false
    },
-   setSelected (layer) {
-     this.selected = layer
-     this.selected.setStyle(this.selectedOptions)
+   resize (evt) {
+     this.initHeight()
+     this.map.invalidateSize()
    }
-   
   }
 }
 </script>
-<style scoped>
+<style  >
   @import "../node_modules/leaflet-draw/dist/leaflet.draw.css";
+  
+
+ .fmt-draw-bbox{
+  position: absolute;
+   width: 600px;
+   height: 400px;
+   z-index:2000;
+   top: 50px;
+   left: 50px;
+ /*  resize: both;
+   overflow:auto;
+  /* margin: -200px 0 0 -300px;*/
+   padding: 0px;
+   border-radius: 6px;
+   background: white;
+   border: 2px solid #ccc;
+   box-shadow: 2px 2px 2px 2px rgba(0, 0, 0, 0.1);
+ }
+ .fmt-draw-bbox div.fmt-header{
+   margin:0;
+   border-radius: 6px 6px 0px 0px;
+ }
 div[id="fmtDraw"]{
-  width:100%;
-  margin:0;
-  padding:0;
-  height:200px;
+  border-radius: 0px 0px 6px 6px;
+  height:350px;
 }
 div[id="fmtDraw"].fmt-small .leaflet-top .leaflet-control{
    margin-top: 3px;
@@ -217,9 +304,43 @@ div[id="fmtDraw"].fmt-small .leaflet-control .leaflet-control-zoom-out{
   font-size:16px;
 }
 div[id="fmtDraw"].fmt-small .leaflet-bar a{
-
- width: 15px;
- height:15px;
- line-height:15px;
+ background-image:none;
+ width: 20px;
+ height:20px;
+ line-height:20px;
  }
+ div[id="fmtDraw"] a.leaflet-draw-draw-rectangle:before{
+  content:"\f04d";
+  font-family: "FontAwesome"
+}
+div[id="fmtDraw"] a.leaflet-draw-edit-edit:before{
+  content:"\f040";
+  font-family: "FontAwesome"
+}
+div[id="fmtDraw"] a.leaflet-draw-edit-remove:before{
+  content:"\f1f8";
+  font-family: "FontAwesome"
+}
+ .fmt-draw-bbox div.fmt-header{
+   margin: 0 0 0px 0;
+   cursor: move;
+}
+.fmt-draw-bbox span.close{
+	position:absolute;
+	top:2px;
+	right:4px;
+	cursor: pointer;
+}
+ @media screen and (min-width: 1024px) {
+    .fmt-draw-bbox {
+       width: 700px;
+       height: 400px;
+    }
+  }
+   @media screen and (min-width: 1680px) {
+    .fmt-draw-bbox {
+       width: 900px;
+       height: 600px;
+    }
+  }
 </style>
