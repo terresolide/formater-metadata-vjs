@@ -19,6 +19,25 @@
 <script>
 import L from 'leaflet';
 require('leaflet-draw')
+L.modLat = function( lat ){
+	lat = lat%180;
+	if( lat > 90 ){
+		lat -= 180;
+	}else if( lat < -90 ){
+		lat += 180;
+	}
+	return lat;
+}
+L.modLng = function( lng ){
+	lng = lng%360;
+	if( lng > 180 ){
+		lng -= 360;
+	}else if( lng < -180 ){
+		lng += 360;
+	}
+	return lng;
+}
+
 // import {Map, Control, LatLng, tileLayer, TileLayer} from 'leaflet'
 // import L from 'leaflet'
 export default {
@@ -50,7 +69,7 @@ export default {
         // rerender leaflet draw
         if (this.drawControl) {
           this.drawControl.remove()
-          this.drawControl.addTo(this.mapObject)
+          this.drawControl.addTo(this.map)
         }
     },
     color (newvalue) {
@@ -99,11 +118,11 @@ export default {
     console.log('mounted')
     this.$el.querySelector(".fmt-header").style.color = this.color
     this.$el.querySelector(".fmt-header").style.background = this.background
-//     this.initHeight()
-//     	// console.log(this.$el)
-//   	// this.resizeListener = new ResizeObserver(this.resize).observe(this.$el)
-//     this.initPosition()
-//     this.initMap()
+    this.initHeight()
+    	// console.log(this.$el)
+  	// this.resizeListener = new ResizeObserver(this.resize).observe(this.$el)
+    this.initPosition()
+    this.initMap()
   },
   data() {
     return {
@@ -114,6 +133,7 @@ export default {
      map: null,
      bounds: null,
      drawControl: null,
+     drawLayers: null,
      selected: false,
      delta: {x: 0, y:0},
      pos: {x:0, y:0},
@@ -123,9 +143,9 @@ export default {
    initPosition () {
      
      var left = (this.$el.parentNode.offsetWidth - this.$el.offsetWidth) / 2;
-     var top = (this.$el.parentNode.offsetHeight - this.$el.offsetHeight) / 2;
+     var top = 30;
      this.$el.style.left = left + 'px';
-     this.$el.style.top = -top + 'px';
+     this.$el.style.top = top + 'px';
      this.pos.x = left
      this.pos.y = this.$el.offsetTop
    },
@@ -135,8 +155,11 @@ export default {
      this.$el.querySelector('#fmtDraw').style.height = height +'px'
    },
    initDrawControl() {
-     var drawnItems = new L.FeatureGroup()
-     this.map.addLayer(drawnItems)
+     if (this.drawControl) {
+       return
+     }
+     this.drawLayers = new L.FeatureGroup()
+     this.map.addLayer(this.drawLayers)
      this.drawControl = new L.Control.Draw({
        draw: {
          rectangle: {
@@ -151,51 +174,55 @@ export default {
          polyline: false
        },
        edit: {
-         featureGroup: drawnItems
+         featureGroup: this.drawLayers
        }
      })
      this.drawControl.addTo(this.map)
+     var self = this
      this.map.on(L.Draw.Event.CREATED, function (e) {
        let layer = e.layer
        let bounds = e.layer.getBounds()
-       let bbox = { north: bounds.getNorthEast().lat,
-                    south: bounds.getSouthWest().lat,
-                    east: bounds.getNorthEast().lng,
-                    west: bounds.getSouthWest().lng
-       }
+//        let bbox = { north: bounds.getNorthEast().lat,
+//                     south: bounds.getSouthWest().lat,
+//                     east: bounds.getNorthEast().lng,
+//                     west: bounds.getSouthWest().lng
+//        }
+       let bbox = self.validBbox(bounds)
        // trigger event fmt:selectAreaChange
        let event = new CustomEvent('fmt:selectAreaChange', {detail: bbox})
        document.dispatchEvent(event)
-       drawnItems.clearLayers()
-       drawnItems.addLayer(layer)
+       self.drawLayers.clearLayers()
+       self.drawLayers.addLayer(layer)
 
      })
-
+  
      this.map.on(L.Draw.Event.EDITED, function (e) {
        let bounds
        e.layers.eachLayer(function (layer) {
          bounds = layer.getBounds()
        })
-       let bbox = { north: bounds.getNorthEast().lat,
-                    south: bounds.getSouthWest().lat,
-                    east: bounds.getNorthEast().lng,
-                    west: bounds.getSouthWest().lng
-       }
+
+       
+        let bbox = self.validBbox(bounds)
+       
        // trigger event fmt:selectAreaChange
        let event = new CustomEvent('fmt:selectAreaChange', {detail: bbox})
        document.dispatchEvent(event)
      })
 
-    /* this.mapObject.on(L.Draw.Event.DELETESTART, function (e) {
-       drawnItems.eachLayer(function (layer) {
-         layer.bringToFront()
-       })
+    this.map.on(L.Draw.Event.DELETED , function (e) {
+      let bbox = { 
+          north: '',
+          south: '',
+          east: '',
+          west: ''
+       }
+      // trigger event fmt:selectAreaChange
+      let event = new CustomEvent('fmt:selectAreaChange', {detail: bbox})
+      document.dispatchEvent(event)
      })
-     this.mapObject.on(L.Draw.Event.EDITSTART, function (e) {
-       drawnItems.eachLayer(function (layer) {
-         layer.bringToFront()
-       })
-     })*/
+
+   
    },
    initMap () {
      if (this.map) {
@@ -222,8 +249,8 @@ export default {
      var next = function () {
        self.initHeight();
        self.initPosition();
-       self.initMap();
        self.map.invalidateSize();
+       self.selectAreaChange(event)
      }
      setTimeout(next, 5)
    },
@@ -232,7 +259,27 @@ export default {
      document.dispatchEvent(event)
    },
    selectAreaChange (event) {
-     console.log(event.detail)
+     this.drawLayers.clearLayers()
+
+     if (event.detail.north !== "" && event.detail.south !== "" && event.detail.east !== "" && event.detail.west !== "") {
+       var bbox = event.detail
+       for(var key in bbox){
+         bbox[key] = parseFloat(bbox[key]);
+       }
+       var bbox2 = {}
+       bbox2.south = Math.min(bbox.north, bbox.south)
+       bbox2.north = Math.max(bbox.north, bbox.south)
+       bbox2.west = Math.min(bbox.east, bbox.west)
+       bbox2.east = Math.max(bbox.east, bbox.west)
+       var bounds = [[bbox2.south, bbox2.west], [bbox2.north, bbox2.east]]
+    // trigger event fmt:selectAreaChange
+       let e = new CustomEvent('fmt:selectAreaChange', {detail: bbox2})
+       document.dispatchEvent(e)
+       var rectangle = L.rectangle(bounds, {color:'#ff0000'})
+       this.drawLayers.addLayer(rectangle)
+       this.map.fitBounds(bounds)
+     }
+     
    },
    close (event) {
      console.log(event.detail)
@@ -261,7 +308,33 @@ export default {
    resize (evt) {
      this.initHeight()
      this.map.invalidateSize()
-   }
+   },
+   validBbox (bounds) {
+       let bbox = { north: bounds.getNorthEast().lat,
+         south: bounds.getSouthWest().lat,
+         east: bounds.getNorthEast().lng,
+         west: bounds.getSouthWest().lng
+       }
+       // valid bbox
+       if (bbox.east > 180 || bbox.west < -180) {
+          var delta = bbox.east - bbox.west
+          if ( delta > 360) {
+            bbox.east = 180
+            bbox.west = -180
+          }else {
+            bbox.west = L.modLng(bbox.west);
+            bbox.west = bbox.west === 180 ? -180 : bbox.west
+            bbox.east = Math.min(bbox.west + delta, 180)
+          }
+          // redraw if bbox change
+          this.drawLayers.clearLayers()
+          var bounds = [[bbox.south, bbox.west], [bbox.north, bbox.east]]
+          var rectangle = L.rectangle(bounds, {color: '#ff0000'})
+          this.drawLayers.addLayer(rectangle)
+      }
+       return bbox;
+      
+    }
   }
 }
 </script>
@@ -321,6 +394,34 @@ div[id="fmtDraw"] a.leaflet-draw-edit-remove:before{
   content:"\f1f8";
   font-family: "FontAwesome"
 }
+ /** menu leaflet draw */
+  div[id="fmtDraw"] .leaflet-container .leaflet-draw-section a {
+    color: #fff;
+    font-weight: 700;
+  }
+    div[id="fmtDraw"] .leaflet-draw-actions li a {
+    color: #fff;
+  }
+  div[id="fmtDraw"] .leaflet-draw-actions li {
+    display: block;
+    margin: 0 0 1px 0;
+    border-radius: 0;
+  }
+  div[id="fmtDraw"] .leaflet-draw-actions {
+    background: #555;
+    margin-left:5px;
+    padding: 2px;
+    -webkit-border-radius: 0 4px 4px 4px;
+    border-radius: 0 4px 4px 4px;
+  }
+  div[id="fmtDraw"] .leaflet-draw-actions li:first-child a{
+    -webkit-border-radius: 0 4px 0 0;
+    border-radius: 0 4px 0 0;
+  }
+  div[id="fmtDraw"] .leaflet-draw-actions li:last-child a{
+    -webkit-border-radius: 0 0px 4px 4px;
+    border-radius: 0 0px 4px 4px;
+  }
  .fmt-draw-bbox div.fmt-header{
    margin: 0 0 0px 0;
    cursor: move;

@@ -106,7 +106,9 @@ export default {
         sortBy: 'title',
         sortOrder: 'reverse'
       },
-      changePageListener:null
+      changePageListener:null,
+      temporalChangedListener: null,
+      spatialChangedListener: null
     }
   },
   created () {
@@ -119,12 +121,16 @@ export default {
     document.addEventListener('fmt:pageChangedEvent', this.pageChangedListener);
     this.temporalChangedListener = this.getRecords.bind(this)
     document.addEventListener('temporalChangeEvent', this.temporalChangedListener);
+    this.spatialChangedListener = this.getRecords.bind(this)
+    document.addEventListener('fmt:spatialChangeEvent', this.spatialChangedListener)
   },
   destroyed () {
     document.removeEventListener('fmt:pageChangedEvent', this.pageChangedListener);
     this.pageChangedListener = null;
     document.removeEventListener('temporalChangeEvent', this.temporalChangedListener);
     this.temporalChangedListener = null;
+    document.removeEventListener('fmt:spatialChangeEvent', this.spatialChangedListener);
+    this.spatialChangedListener = null;
   },
   mounted () {
   
@@ -133,12 +139,13 @@ export default {
   methods: {
     getRecords () {
       // trigger search event like breadcrumb
+      delete this.parameters.geometry
       var e = new CustomEvent("aerisSearchEvent", { detail: {}});
 	  document.dispatchEvent(e);
 	  if (!e.detail.startDefault) {
 	  e.detail.renameProperty('start', 'extFrom')
 	  } else {
-	    delete e.detail.startDefault
+	    
 	    delete e.detail.start
 	  }
 	  if (e.detail.endDefault) {
@@ -147,9 +154,11 @@ export default {
 	  } else {
 	    e.detail.renameProperty('end', 'extTo')
       }
+	  delete e.detail.startDefault
+	  delete e.detail.endDefautl
+	  
 	  //delete(e.detail.extTo)
 	  //delete(e.detail.extFrom)
-	  delete(e.detail.box)
       this.parameters = Object.assign(this.parameters, e.detail)	  
       var self = this
       this.parameters.sortOrder =  this.parameters.sortBy === 'title' ? 'ordering': 'reverse';

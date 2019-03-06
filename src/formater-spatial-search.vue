@@ -6,7 +6,9 @@
      "south_symbol": "S",
      "west_symbol": "W",
      "reset":	"Reset",
-     "draw": "Draw"
+     "draw": "Draw",
+     "titleLatitude": "Latitude must be a number between -90° and 90° (ex: 65.3)",
+     "titleLongitude": "Longitude must be a number between -180° and 180° (ex: -110.3)"
      
    },
    "fr":{
@@ -15,7 +17,9 @@
      "south_symbol": "S",
      "west_symbol": "O",
      "reset": "Initialiser",
-     "draw": "Dessiner"
+     "draw": "Dessiner",
+     "titleLatitude": "La latitude doit être un nombre compris entre -90° et 90° (ex: 65.3)",
+     "titleLongitude": "La longitude doit être comprise entre -180° et 180° (ex: -110.3)"
    }
 }
 </i18n>
@@ -23,29 +27,29 @@
 <span class="formater-spatial-search">
 	<div class="box-toolbar" style="background: none;">
 	   <button class="spatial-edit-button" :title="$t('draw')" @click="handleDraw"><i class="fa fa-pencil-square-o"></i></button>
-	   <button class="spatial-reset-button" :title="$t('reset')" @click="handleReset"><i class="fa fa-remove"></i></button>
+	   <button class="spatial-reset-button" :title="$t('reset')" @click="handleResetLocal"><i class="fa fa-remove"></i></button>
 	</div>
-	<div class="formater-spatial-search-content">
+	<form name="formater-spatial-search" class="formater-spatial-search-content">
 		<div class="formater-input-group cardinal-center">
 			<span class="right">{{$t('north_symbol')}}</span>
-			<input    v-model="north" :pattern="patternLatitude" @change="handleChange"></input>
+			<input  type="text"  v-model="north" :pattern="patternLatitude"  :title="$t('titleLatitude')" @keydown="validInput" @change="handleChange" data-index="1" ></input>
 		</div>
 		<div class="formater-input-group cardinal-left">
 			<span class="right">{{$t('west_symbol')}}</span>
-			<input   v-model="west" :pattern="patternLongitude" @click="handleChange"></input>
+			<input  type="text"  v-model="west" :pattern="patternLongitude"  :title="$t('titleLongitude')" @keydown="validInput" @change="handleChange" data-index="2" ></input>
 		</div>
 		<div class="formater-input-group cardinal-right">
 			
-			<input   v-model="east" :pattern="patternLongitude" @click="handleChange"></input>
+			<input  type="text"  v-model="east" :pattern="patternLongitude"  :title="$t('titleLongitude')" @keydown="validInput" @change="handleChange" data-index="3" >	</input>
 			<span class="left">{{$t('east_symbol')}}</span>
 		</div>
 		
 		<div class="formater-input-group cardinal-center">
 			<span class="right">{{$t('south_symbol')}}</span>
-			<input  v-model="south" :pattern="patternLatitude" @click="handleChange"></input>
+			<input  type="text"  v-model="south" :pattern="patternLatitude"  :title="$t('titleLatitude')" @keydown="validInput" @change="handleChange" data-index="4" ></input>
 		</div>
 		
-	</div>
+	</form>
 
 </span>
 </template>
@@ -67,7 +71,7 @@ export default {
             searchEventListener: null,
        		resetEventListener: null,
        		aerisThemeListener:null,
-       		patternLatitude: "[-+]?[0-9]{1,2}([.][0-9]+)?",
+       		patternLatitude: "[-+]?(90|([1-8]?[0-9])([.][0-9]+)?)",
         	patternLongitude:"[-+]?(180(\.0+)?|((1[0-7][0-9])|([1-9]?[0-9]))([.][0-9]+)?)"
         }
     },
@@ -100,6 +104,10 @@ export default {
   },
 
   mounted: function(){
+      this.$el.querySelectorAll('input').forEach(function (input) {
+       // input.validationMessage = 'invalid'
+      })
+      
       var event = new CustomEvent('aerisThemeRequest', {});
       document.dispatchEvent(event);
 
@@ -107,14 +115,50 @@ export default {
     methods:{
         bbox: function(){
             return {
-	            north: this.north === "" ? null: parseFloat(this.north),
+	            north: this.north,
 	            south: this.south,
 	            east: this.east,
 	            west: this.west
 	            }
     	},
+    	validForm () {
+    	  var inputs = this.$el.querySelectorAll('input')
+    	  var valid = true
+    	  inputs.forEach(function (input) {
+    	    valid *= (input.validity.valid && input.value !== "")
+    	  })
+    	  if (this.south === "" || this.north === "" || this.east === "" || this.west === "") {
+    	    valid = false
+    	  }
+    	  return valid;
+    	},
+    	createBbox () {
+    	  if (this.validForm()) {
+    	    var box = 'POLYGON((' + this.west + '+' + this.north + ','
+    	        box += this.east + '+' + this.north + ',';
+    	        box += this.east + '+' + this.south + ',';
+    	        box += this.west + '+' + this.south + ',';
+    	        box += this.west + '+' + this.north + '))';
+    	    return box;
+    	  } else {
+    	    return false;
+    	  }
+    	},
+    	validInput (e) {
+    	   if (e.which === 13) { 	    
+	    	  // @todo rendre + sexy le passage à l'autre input
+	    	  var index = parseInt(e.target.dataset.index)+ 1
+	    	  var next = this.$el.querySelector('input[data-index="' + index + '"]')
+	    	  if (next) {
+	    	    next.focus()
+	    	  }
+    	   }
+    	},
         handleChange: function(e){
-        	this.areaSelect = false;
+            if(!e || !e.target.validity.valid) {
+              return false;
+            }
+        	// this.areaSelect = false;
              var event = new CustomEvent( 'fmt:bboxChange', { detail:this.bbox()});
        	    document.dispatchEvent( event);
             return;
@@ -133,31 +177,41 @@ export default {
     	},
   
 		handleReset: function( ) {
-		   
 			 this.north = "";
 			 this.east = "";
 			 this.west = "";
 			 this.south = "";
-			 if(this.areaSelect){
-	  	       this.areaSelect = false;
-		      
-			 }
 			 var event = new CustomEvent( 'fmt:bboxChange', { detail: this.bbox()});
-		       document.dispatchEvent( event);
-
-			  
+		     document.dispatchEvent( event);
+		},
+		handleResetLocal: function () {
+		  this.handleReset()
+		   var event = new CustomEvent('fmt:spatialChangeEvent')
+			    document.dispatchEvent(event)
 		},
 		handleBounds: function(e){
+		  console.log('change bounds')
 		    this.north = e.detail.north;
 		    this.south = e.detail.south;
 		    this.east = e.detail.east;
 		    this.west = e.detail.west;
+		    console.log(this.north)
+		    // wait dom is ok (@todo trouver plus propre)
+		    var next = function (){
+			    var event = new CustomEvent('fmt:spatialChangeEvent')
+			    document.dispatchEvent(event)
+		    }
+		    setTimeout(next, 100)
 		},
 	
 		handleSearch: function(e) {
-			
-		    e.detail.box = this.bbox();
-		    this.handleChange();
+			// add bbox if valid 
+			var box = this.createBbox()
+		   delete e.detail.geometry;
+			if (box) {
+		    	e.detail.geometry = box;
+		    	// this.handleChange();
+			} 
 	    },
         handleTheme: function(theme) {
 	  		this.theme = theme.detail;
