@@ -187,6 +187,7 @@ export default {
 //                     east: bounds.getNorthEast().lng,
 //                     west: bounds.getSouthWest().lng
 //        }
+       
        let bbox = self.validBbox(bounds)
        // trigger event fmt:selectAreaChange
        let event = new CustomEvent('fmt:selectAreaChange', {detail: bbox})
@@ -310,6 +311,9 @@ export default {
      this.map.invalidateSize()
    },
    validBbox (bounds) {
+       if (!bounds) {
+         return null
+       }
        let bbox = { north: bounds.getNorthEast().lat,
          south: bounds.getSouthWest().lat,
          east: bounds.getNorthEast().lng,

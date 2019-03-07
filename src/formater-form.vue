@@ -3,13 +3,15 @@
      "search": "Search ...",
      "reset": "Reset search",
      "time_slot": "Time slot",
-     "spatial_extend": "Spatial extend"
+     "spatial_extend": "Spatial extend",
+     "groupOwner": "Data center"
    },
    "fr":{
       "search": "Rechercher ...",
       "reset": "Initialiser",
       "time_slot": "Intervalle temporel",
-      "spatial_extend": "Zone géographique"
+      "spatial_extend": "Zone géographique",
+      "groupOwner": "Centre de données"
    }
 }
 </i18n>
@@ -26,6 +28,9 @@
 <formater-search-box header-icon-class="fa fa-calendar" open-icon-class="fa fa-caret-right" :title="$t('time_slot')" :deployed="true" type="empty">
   <formater-temporal-search :lang="lang" daymin="1900-01-01" daymax="2020-02-01"></formater-temporal-search>
 </formater-search-box>
+<formater-search-box open-icon-class="fa fa-caret-right" :title="titleDimension(index)" type="empty" v-if="dimension.category" v-for="(dimension, index) in dimensions" :key="index">
+ <formater-dimension-block :dimension="dimension.category" ></formater-dimension-block>
+ </formater-search-box>
 
  </div>
 
@@ -35,7 +40,9 @@
 import {FormaterTemporalSearch, FormaterSearchBox} from 'formater-commons-components-vjs'
 import FormaterSpatialSearch from './formater-spatial-search.vue'
 import FormaterMap from './formater-map.vue'
+import FormaterDimensionBlock from './formater-dimension-block.vue'
 // import FormaterSearchBox from './formater-search-box.vue'
+
 Object.defineProperty(
     Object.prototype, 
     'renameProperty',
@@ -65,7 +72,8 @@ export default {
     FormaterMap,
     FormaterTemporalSearch,
     FormaterSpatialSearch,
-    FormaterSearchBox
+    FormaterSearchBox,
+    FormaterDimensionBlock
   },
   props: {
     nbRecord: {
@@ -93,19 +101,8 @@ export default {
         'Accept': 'application/json, text/plain, */*',
         'Accept-Language': this.lang === 'fr' ? 'fre': 'eng'
       },
-      fields: [],
-      parameters: {
-        _content_type: 'json',
-        fast: 'index',
-        'facet.q': '',
-        bucket: '26041996',
-        isChild: false,
-        from: 1,
-        to: 18,
-        resultType: 'details',
-        sortBy: 'title',
-        sortOrder: 'reverse'
-      },
+      dimensions: [],
+      parameters: {},
       changePageListener:null,
       temporalChangedListener: null,
       spatialChangedListener: null
@@ -137,15 +134,31 @@ export default {
     // url="http://demo.formater/geonetwork/srv/fre/qi?_content_type=json&bucket=2365825987452666&fast=index&from=1&to=41"
   },
   methods: {
+    titleDimension (index) {
+      return this.$i18n.t(this.dimensions[index]['@name'])
+    },
+    initParameters () {
+      this.parameters = {
+        _content_type: 'json',
+        fast: 'index',
+        'facet.q': '',
+        bucket: '26041996',
+        isChild: false,
+        from: 1,
+        to: 18,
+        resultType: 'details',
+        sortBy: 'title',
+        sortOrder: 'reverse'
+      }
+    },
     getRecords () {
       // trigger search event like breadcrumb
-      delete this.parameters.geometry
+      this.initParameters()
       var e = new CustomEvent("aerisSearchEvent", { detail: {}});
 	  document.dispatchEvent(e);
 	  if (!e.detail.startDefault) {
-	  e.detail.renameProperty('start', 'extFrom')
+	    e.detail.renameProperty('start', 'extFrom')
 	  } else {
-	    
 	    delete e.detail.start
 	  }
 	  if (e.detail.endDefault) {
@@ -170,7 +183,7 @@ export default {
        )
     },
     fill (data) {
-      this.fields = data.summary
+      this.dimensions = data.summary.dimension
       var event = new CustomEvent('fmt:metadataListEvent', {detail:  data})
       document.dispatchEvent(event)
     },
@@ -243,4 +256,7 @@ export default {
     height:35px;
     width: calc(100% - 40px);
 }
+/*.fmt-form main.box-body > div > div.fmt-dimension{
+   margin-left: 15px;
+}*/
 </style>

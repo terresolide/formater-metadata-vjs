@@ -32,21 +32,21 @@
 	<form name="formater-spatial-search" class="formater-spatial-search-content">
 		<div class="formater-input-group cardinal-center">
 			<span class="right">{{$t('north_symbol')}}</span>
-			<input  type="text"  v-model="north" :pattern="patternLatitude"  :title="$t('titleLatitude')" @keydown="validInput" @change="handleChange" data-index="1" ></input>
+			<input  type="text" name="north" v-model="north" :pattern="patternLatitude"  :title="$t('titleLatitude')" @keydown="validInput" @change="handleChange" data-index="1" ></input>
 		</div>
 		<div class="formater-input-group cardinal-left">
 			<span class="right">{{$t('west_symbol')}}</span>
-			<input  type="text"  v-model="west" :pattern="patternLongitude"  :title="$t('titleLongitude')" @keydown="validInput" @change="handleChange" data-index="2" ></input>
+			<input  type="text" name="west" v-model="west" :pattern="patternLongitude"  :title="$t('titleLongitude')" @keydown="validInput" @change="handleChange" data-index="2" ></input>
 		</div>
 		<div class="formater-input-group cardinal-right">
 			
-			<input  type="text"  v-model="east" :pattern="patternLongitude"  :title="$t('titleLongitude')" @keydown="validInput" @change="handleChange" data-index="3" >	</input>
+			<input  type="text" name="east" v-model="east" :pattern="patternLongitude"  :title="$t('titleLongitude')" @keydown="validInput" @change="handleChange" data-index="3" >	</input>
 			<span class="left">{{$t('east_symbol')}}</span>
 		</div>
 		
 		<div class="formater-input-group cardinal-center">
 			<span class="right">{{$t('south_symbol')}}</span>
-			<input  type="text"  v-model="south" :pattern="patternLatitude"  :title="$t('titleLatitude')" @keydown="validInput" @change="handleChange" data-index="4" ></input>
+			<input  type="text" name="south" v-model="south" :pattern="patternLatitude"  :title="$t('titleLatitude')" @keydown="validInput" @change="handleChange" data-index="4" ></input>
 		</div>
 		
 	</form>
@@ -125,14 +125,16 @@ export default {
     	  var inputs = this.$el.querySelectorAll('input')
     	  var valid = true
     	  inputs.forEach(function (input) {
-    	    valid *= (input.validity.valid && input.value !== "")
+    	    valid *= (input.validity.valid)
     	  })
     	  if (this.south === "" || this.north === "" || this.east === "" || this.west === "") {
     	    valid = false
     	  }
+
     	  return valid;
     	},
     	createBbox () {
+    	  console.log('createbox')
     	  if (this.validForm()) {
     	    var box = 'POLYGON((' + this.west + '+' + this.north + ','
     	        box += this.east + '+' + this.north + ',';
@@ -185,9 +187,9 @@ export default {
 		     document.dispatchEvent( event);
 		},
 		handleResetLocal: function () {
-		  this.handleReset()
-		   var event = new CustomEvent('fmt:spatialChangeEvent')
-			    document.dispatchEvent(event)
+		    this.handleReset()
+		    var event = new CustomEvent('fmt:spatialChangeEvent')
+			document.dispatchEvent(event)
 		},
 		handleBounds: function(e){
 		  console.log('change bounds')
@@ -195,13 +197,8 @@ export default {
 		    this.south = e.detail.south;
 		    this.east = e.detail.east;
 		    this.west = e.detail.west;
-		    console.log(this.north)
-		    // wait dom is ok (@todo trouver plus propre)
-		    var next = function (){
-			    var event = new CustomEvent('fmt:spatialChangeEvent')
-			    document.dispatchEvent(event)
-		    }
-		    setTimeout(next, 100)
+		    var event = new CustomEvent('fmt:spatialChangeEvent')
+			document.dispatchEvent(event)
 		},
 	
 		handleSearch: function(e) {
