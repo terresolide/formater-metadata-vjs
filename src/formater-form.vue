@@ -29,7 +29,7 @@
   <formater-temporal-search :lang="lang" daymin="1900-01-01" daymax="2020-02-01"></formater-temporal-search>
 </formater-search-box>
 <formater-search-box open-icon-class="fa fa-caret-right" :title="titleDimension(index)" type="empty" v-if="dimension.category" v-for="(dimension, index) in dimensions" :key="index">
- <formater-dimension-block :dimension="dimension.category" ></formater-dimension-block>
+ <formater-dimension-block :dimension="dimension.category" :name="dimensions[index]['@name']" ></formater-dimension-block>
  </formater-search-box>
 
  </div>
@@ -105,7 +105,8 @@ export default {
       parameters: {},
       changePageListener:null,
       temporalChangedListener: null,
-      spatialChangedListener: null
+      spatialChangedListener: null,
+      dimensionChangedListener: null
     }
   },
   created () {
@@ -119,7 +120,9 @@ export default {
     this.temporalChangedListener = this.getRecords.bind(this)
     document.addEventListener('temporalChangeEvent', this.temporalChangedListener);
     this.spatialChangedListener = this.getRecords.bind(this)
-    document.addEventListener('fmt:spatialChangeEvent', this.spatialChangedListener)
+    document.addEventListener('fmt:spatialChangeEvent', this.spatialChangedListener);
+    this.dimensionChangedListener = this.getRecords.bind(this);
+    document.addEventListener('fmt:dimensionChangeEvent', this.dimensionChangedListener);
   },
   destroyed () {
     document.removeEventListener('fmt:pageChangedEvent', this.pageChangedListener);
@@ -128,6 +131,8 @@ export default {
     this.temporalChangedListener = null;
     document.removeEventListener('fmt:spatialChangeEvent', this.spatialChangedListener);
     this.spatialChangedListener = null;
+    document.addEventListener('fmt:dimensionChangeEvent', this.dimensionChangedListener);
+    this.dimensionChangedListener = null
   },
   mounted () {
   
@@ -141,7 +146,7 @@ export default {
       this.parameters = {
         _content_type: 'json',
         fast: 'index',
-        'facet.q': '',
+      //  'facet.q': '',
         bucket: '26041996',
         isChild: false,
         from: 1,

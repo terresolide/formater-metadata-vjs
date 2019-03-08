@@ -2,7 +2,7 @@
 <template>
  <div class="fmt-dimension-block">
 
-	      	<formater-dimension v-for="(item,index) in dimensions" :dimension="item" :key="index"></formater-dimension>
+	      	<formater-dimension v-for="(item,index) in dimensions" :dimension="item" :key="index" :name="filteredName"></formater-dimension>
  </div>
 </template>
 <script>
@@ -16,6 +16,10 @@ export default {
     dimension: {
       type: Object|Array,
       default: []
+    },
+    name: {
+      type: String,
+      default: ''
     }
   },
   data() {
@@ -32,20 +36,31 @@ export default {
    }
   
   },
-  method: {
-    handleSearch (e) {
-      
-    },
-    handleReset (e) {
-      
+  computed: {
+    filteredName () {
+      switch (this.name) {
+      case 'groupOwner':
+        return '_' + this.name;
+      default:
+        return this.name
+      }
     }
+  },
+  method: {
+ 
     
   }
 }
 </script>
 <style>
 .fmt-dimension-block {
- margin-left: 15px;
+ margin-left: 5px;
+ font-size:12px;
+ line-height:18px;
+ 
+}
+.fmt-dimension-block i{
+ font-size:14px;
 }
 
 </style>
