@@ -2,7 +2,7 @@
 <template>
  <div class="fmt-dimension">
 
-         <label :for="name" @click="handleChange(true)" style="vertical-align:top;">
+         <label :for="name" @click="handleChange()" style="vertical-align:top;">
               <i class="fa fa-check-square-o" v-if="isChecked"></i>
               <i class="fa fa-square-o" v-if="!isChecked"></i>
          </label>
@@ -15,7 +15,7 @@
 	         <i class="fa fa-minus-square-o"></i>
 	     </div>
 	     <div class="fmt-child" v-if="categories.length > 0" >
-	      	<formater-dimension v-for="(item,index) in categories" :dimension="item" :key="index" :checked="isChecked"></formater-dimension>
+	      	<formater-dimension :defaut="defaut" :name="name" :value="childValue(index)" v-for="(item,index) in categories" :dimension="item" :key="index" @input="childChanged" @init="initCheckFromChild"></formater-dimension>
 	     </div>
 	  </div>
  </div>
@@ -39,6 +39,14 @@ export default {
     name: {
       type: String,
       default: ''
+    },
+    value: {
+      type: String,
+      default: ''
+    },
+    defaut: {
+      type: String,
+      default: null
     }
   },
   data() {
@@ -46,10 +54,13 @@ export default {
       categories: [],
       deployed: false,
       isChecked: false,
-      value: null
+      isFacet: false,
+    //  value: null,
+      changed: false
     }
   },
   computed: {
+   
     strCount () {
       if (this.dimension['@count'] > 0 ){
         return '(' + this.dimension['@count'] + ')';
@@ -64,12 +75,18 @@ export default {
     }
   },
   mounted () {
+    console.log(this.value);
    this.isChecked = this.checked
-   this.value = this.dimension['@value'];
+   if (this.name.indexOf('facet') >=0) {
+     this.isFacet = true
+   }
+   if (this.isFacet && this.defaut === this.value) {
+     this.isChecked = true;
+     this.$emit('init', true)
+   }
    if (!this.dimension.category) {
      this.categories = []
    }else if (this.dimension.category.length > 0) {
-     console.log('objet')
      this.categories = this.dimension.category
      
    } else {
@@ -89,28 +106,71 @@ export default {
 	this.searchEventListener = null;
   },
   methods: {
-    handleChange (fromClick) {
+    handleChange () {
       console.log('handleChange')
+      
       this.isChecked = !this.isChecked;
-      if (fromClick) {
-        var event = new CustomEvent('fmt:dimensionChangeEvent')
-        document.dispatchEvent(event)
+      if (this.isFacet){
+        if (this.isChecked) {
+          var detail = {}
+          detail[this.name] = this.value
+          var event = new CustomEvent('fmt:dimensionChangeEvent', {detail: detail})
+          document.dispatchEvent(event)
+        } else {
+          this.$emit('input', this.isChecked)
+        }
+      }
+      if (!this.isFacet) {
+          var event = new CustomEvent('fmt:dimensionChangeEvent')
+          document.dispatchEvent(event)
       }
       
     }, 
     handleSearch (e) {
-      if (this.isChecked) {
-        this.name
-        if (e.detail[this.name]) {
-          e.detail[this.name] = e.detail[this.name] + '+or+' + this.value
-        } else {
-          e.detail[this.name] = this.value
-        }
+      if(!this.isChecked) {
+        return
       }
-      
+      console.log('passe par search ' + this.name)
+      if (!this.isFacet) {
+ 
+        this.searchCommon(e)
+      }
     },
     handleReset (e) {
       this.isChecked = false
+    },
+    searchCommon (e) {
+       if (e.detail[this.name]) {
+         e.detail[this.name] = e.detail[this.name] + '+or+' + this.value
+       } else {
+         e.detail[this.name] = this.value
+       }
+
+    },
+//     searchForFacet (e) {
+//       if (!e.detail.facet){
+//         e.detail.facet = []
+//       }
+//       console.log(this.name)
+//       if (e.detail.facet[this.name] ) {
+//         e.detail.facet[this.name] += '+or+' + this.value
+//       } else {
+//         e.detail.facet[this.name] = this.value
+//       }
+//       console.log(e.detail.facet)
+//     },
+    childChanged (value) {
+      this.handleChange()
+    },
+    childValue (index) {
+      var val = this.value ? (this.value + '/') : '';
+      val += encodeURIComponent(this.categories[index]['@value'])
+      return val;
+    },
+    initCheckFromChild(e) {
+      console.log(e)
+      this.isChecked = true
+      this.$emit('init', true)
     }
     
   }

@@ -4,14 +4,18 @@
      "reset": "Reset search",
      "time_slot": "Time slot",
      "spatial_extend": "Spatial extend",
-     "groupOwner": "Data center"
+     "groupOwner": "Data center",
+     "facetGemet": "Inspire Gemet Keywords",
+     "facetFormater": "Variables"
    },
    "fr":{
       "search": "Rechercher ...",
       "reset": "Initialiser",
       "time_slot": "Intervalle temporel",
       "spatial_extend": "Zone géographique",
-      "groupOwner": "Centre de données"
+      "groupOwner": "Centre de données",
+       "facetGemet": "Mots clés Inspire Gemet",
+     "facetFormater": "Variables"
    }
 }
 </i18n>
@@ -28,15 +32,22 @@
 <formater-search-box header-icon-class="fa fa-calendar" open-icon-class="fa fa-caret-right" :title="$t('time_slot')" :deployed="true" type="empty">
   <formater-temporal-search :lang="lang" daymin="1900-01-01" daymax="2020-02-01"></formater-temporal-search>
 </formater-search-box>
-<formater-search-box open-icon-class="fa fa-caret-right" :title="titleDimension(index)" type="empty" v-if="dimension.category" v-for="(dimension, index) in dimensions" :key="index">
- <formater-dimension-block :dimension="dimension.category" :name="dimensions[index]['@name']" ></formater-dimension-block>
+<formater-search-box :header-icon-class="facetToIcon(index)" open-icon-class="fa fa-caret-right" :title="titleDimension(index)" type="empty" v-if="dimension.category" v-for="(dimension, index) in dimensions" :key="index">
+ <formater-dimension-block :defaut="facet[dimensions[index]['@name']]" :dimension="dimension.category" :name="dimensions[index]['@name']" ></formater-dimension-block>
  </formater-search-box>
 
  </div>
 
 </template>
 <script>
-
+var iconClass = {
+    type: 'fa fa-object-group',
+    groupOwner: 'fa fa-database',
+    facetGemet: 'fa fa-navicon',
+    facetFormater: 'fa fa-thermometer-half',
+    facetPlatform: 'fa fa-rocket',
+    facetInstrument: 'fa fa-calculator'
+}
 import {FormaterTemporalSearch, FormaterSearchBox} from 'formater-commons-components-vjs'
 import FormaterSpatialSearch from './formater-spatial-search.vue'
 import FormaterMap from './formater-map.vue'
@@ -106,7 +117,8 @@ export default {
       changePageListener:null,
       temporalChangedListener: null,
       spatialChangedListener: null,
-      dimensionChangedListener: null
+      dimensionChangedListener: null,
+      facet: []
     }
   },
   created () {
@@ -121,7 +133,7 @@ export default {
     document.addEventListener('temporalChangeEvent', this.temporalChangedListener);
     this.spatialChangedListener = this.getRecords.bind(this)
     document.addEventListener('fmt:spatialChangeEvent', this.spatialChangedListener);
-    this.dimensionChangedListener = this.getRecords.bind(this);
+    this.dimensionChangedListener = this.handleFacet.bind(this);
     document.addEventListener('fmt:dimensionChangeEvent', this.dimensionChangedListener);
   },
   destroyed () {
@@ -131,14 +143,17 @@ export default {
     this.temporalChangedListener = null;
     document.removeEventListener('fmt:spatialChangeEvent', this.spatialChangedListener);
     this.spatialChangedListener = null;
-    document.addEventListener('fmt:dimensionChangeEvent', this.dimensionChangedListener);
-    this.dimensionChangedListener = null
+   document.addEventListener('fmt:dimensionChangeEvent', this.dimensionChangedListener);
+   this.dimensionChangedListener = null
   },
   mounted () {
   
     // url="http://demo.formater/geonetwork/srv/fre/qi?_content_type=json&bucket=2365825987452666&fast=index&from=1&to=41"
   },
   methods: {
+    facetToIcon (index) {
+      return iconClass[this.dimensions[index]['@name']]
+    },
     titleDimension (index) {
       return this.$i18n.t(this.dimensions[index]['@name'])
     },
@@ -156,6 +171,7 @@ export default {
         sortOrder: 'reverse'
       }
     },
+   
     getRecords () {
       // trigger search event like breadcrumb
       this.initParameters()
@@ -174,27 +190,60 @@ export default {
       }
 	  delete e.detail.startDefault
 	  delete e.detail.endDefautl
-	  
+	  this.prepareFacet(e)
 	  //delete(e.detail.extTo)
 	  //delete(e.detail.extFrom)
+	  var headers =  {
+          'Accept': 'application/json, text/plain, */*',
+          'Accept-Language': this.lang === 'fr' ? 'fre': 'eng'
+        }
       this.parameters = Object.assign(this.parameters, e.detail)	  
       var self = this
       this.parameters.sortOrder =  this.parameters.sortBy === 'title' ? 'ordering': 'reverse';
       var url = this.srv + 'q?' + Object.keys(this.parameters).map(function (prop) {
-        return prop + '=' + encodeURI(self.parameters[prop])
+        return prop + '=' + encodeURIComponent(self.parameters[prop])
       }).join('&');
-      this.$http.get(url).then(
+      console.log(encodeURI(url))
+
+      this.$http.get(url, {headers: headers, parameters: this.parameters}).then(
           response => { this.fill(response.body);}
        )
     },
+    prepareFacet (e) {
+  
+      var facet = ''
+      for(var key in this.facet) {
+        if (facet === '') {
+          facet = key +'/' + this.facet[key]
+        } else {
+          facet += '&' + key + '/' + this.facet[key]
+        }
+      }
+      if (facet !== '') {
+       e.detail['facet.q'] = facet
+      }
+      return e;
+    },
     fill (data) {
+      console.log(data)
       this.dimensions = data.summary.dimension
       var event = new CustomEvent('fmt:metadataListEvent', {detail:  data})
       document.dispatchEvent(event)
     },
+    handleFacet (e) {
+      console.log(e)
+      if (e.detail) {
+        for(var key in e.detail) {
+          this.facet[key] = e.detail[key]
+        }
+        console.log(this.facet)
+      }
+      this.getRecords()
+    },
     handleReset () {
       console.log('reset')
       this.parameters.any = ""
+      this.facet = []
       var event = new CustomEvent('aerisResetEvent')
       document.dispatchEvent(event)
       this.getRecords()
