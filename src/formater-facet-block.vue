@@ -2,15 +2,15 @@
 <template>
  <div class="fmt-dimension-block">
       	
-	      	<formater-dimension  :level="0" :defaut="defaut" :value="encodeURIComponent(item['@value'])" v-for="(item,index) in dimensions" :dimension="item" :key="index" :name="filteredName"></formater-dimension>
+	      	<formater-facet  :level="0" :defaut="defaut" :value="encodeURIComponent(item['@value'])" v-for="(item,index) in dimensions" :dimension="item" :key="index" :name="filteredName"></formater-facet>
  </div>
 </template>
 <script>
-import FormaterDimension from './formater-dimension.vue';
+import FormaterFacet from './formater-facet.vue';
 export default {
-  name: 'FormaterDimensionBlock',
+  name: 'FormaterFacetBlock',
   components: {
-    FormaterDimension
+    FormaterFacet
   },
   props: {
     dimension: {

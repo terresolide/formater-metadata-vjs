@@ -15,17 +15,17 @@
 	         <i class="fa fa-minus-square-o"></i>
 	     </div>
 	     <div class="fmt-child" v-if="categories.length > 0" >
-	      	<formater-dimension  :level="level + 1" :defaut="defaut" :checked="isChecked" :name="name" :value="childValue(index)" v-for="(item,index) in categories" :dimension="item" :key="index" @input="childChanged"></formater-dimension>
+	      	<formater-facet  :level="level + 1" :defaut="defaut" :checked="isChecked" :name="name" :value="childValue(index)" v-for="(item,index) in categories" :dimension="item" :key="index" @input="childChanged"></formater-facet>
 	     </div>
 	  </div>
  </div>
 </template>
 <script>
-import FormaterDimension from './formater-dimension.vue';
+import FormaterFacet from './formater-facet.vue';
 export default {
-  name: 'FormaterDimension',
+  name: 'FormaterFacet',
   components: {
-    FormaterDimension
+    FormaterFacet
   },
   props: {
     dimension: {
@@ -80,23 +80,17 @@ export default {
       }
     },
     defaut (newvalue) {
-      // check if checked value change
-      if (this.isFacet) {
          // if new facet value is in the item value
 	      if (newvalue && newvalue.indexOf(this.value) >= 0) {
 	        this.isChecked = true
 	      } else {
 	        this.isChecked = false
 	      }
-      }
     }
   },
   mounted () {
    this.isChecked = this.checked
-   if (this.name.indexOf('facet') >=0) {
-     this.isFacet = true
-   }
-   if (this.isFacet && this.defaut.indexOf(this.value)>=0) {
+   if (this.defaut.indexOf(this.value)>=0) {
      this.isChecked = true;
    }
    if (!this.dimension.category) {
@@ -110,68 +104,42 @@ export default {
    }
    this.resetEventListener = this.handleReset.bind(this) 
    document.addEventListener('aerisResetEvent', this.resetEventListener);
-   this.searchEventListener = this.handleSearch.bind(this) 
-   document.addEventListener('aerisSearchEvent', this.searchEventListener);
+   // do not listen to aerisSearchEvent: when change trigger event and value is register formater form variable arry 
+   // facet[name]
   
   },
   destroyed () {
 	document.removeEventListener('aerisResetEvent', this.resetEventListener);
 	this.resetEventListener = null;
-	document.removeEventListener('aerisSearchEvent', this.searchEventListener);
-	this.searchEventListener = null;
   },
   methods: {
     handleChange () {
-      console.log('handleChange')
       
       this.isChecked = !this.isChecked;
       this.spreadChange()
       
     },
     spreadChange () {
-      if (this.isFacet){
-        if (this.isChecked) {
-          // if check a node => new facet value
-          var detail = {}
-          detail[this.name] = this.value
-          var event = new CustomEvent('fmt:dimensionChangeEvent', {detail: detail})
-          document.dispatchEvent(event)
-        } else if (!this.isChecked && this.level === 0){
-          // if unckecked a root node => remove facet value
-          var detail = {}
-          detail[this.name] = null
-          var event = new CustomEvent('fmt:dimensionChangeEvent', {detail: detail})
-          document.dispatchEvent(event)
-        }
-        // trigger to parent this child change (@see method childChanged)
-        this.$emit('input', this.isChecked)
-      } else {
-          var event = new CustomEvent('fmt:dimensionChangeEvent')
-          document.dispatchEvent(event)
-      }
-    },
-    handleSearch (e) {
-      if(!this.isChecked) {
-        return
-      }
-      console.log('passe par search ' + this.name)
-      if (!this.isFacet) {
- 
-        this.searchCommon(e)
-      }
+      if (this.isChecked) {
+         // if check a node => new facet value
+         var detail = {}
+         detail[this.name] = this.value
+         var event = new CustomEvent('fmt:dimensionChangeEvent', {detail: detail})
+         document.dispatchEvent(event)
+       } else if (!this.isChecked && this.level === 0){
+         // if unckecked a root node => remove facet value
+         var detail = {}
+         detail[this.name] = null
+         var event = new CustomEvent('fmt:dimensionChangeEvent', {detail: detail})
+         document.dispatchEvent(event)
+       }
+       // trigger to parent this child change (@see method childChanged)
+       this.$emit('input', this.isChecked)
+     
     },
     handleReset (e) {
       this.isChecked = false
     },
-    searchCommon (e) {
-       if (e.detail[this.name]) {
-         e.detail[this.name] = e.detail[this.name] + '+or+' + this.value
-       } else {
-         e.detail[this.name] = this.value
-       }
-
-    },
-
     childChanged (childChecked) { 
       if(!childChecked && this.isChecked){
         this.spreadChange()

@@ -33,7 +33,9 @@
   <formater-temporal-search :lang="lang" daymin="1900-01-01" daymax="2020-02-01"></formater-temporal-search>
 </formater-search-box>
 <formater-search-box :header-icon-class="facetToIcon(index)" open-icon-class="fa fa-caret-right" :title="titleDimension(index)" type="empty" v-if="dimension.category" v-for="(dimension, index) in dimensions" :key="index">
- <formater-dimension-block :defaut="facet[dimensions[index]['@name']]" :dimension="dimension.category" :name="dimensions[index]['@name']" ></formater-dimension-block>
+ <formater-dimension-block v-if="!isFacet(index)"  :dimension="dimension.category" :name="dimensions[index]['@name']" ></formater-dimension-block>
+ <formater-facet-block v-if="isFacet(index)" :defaut="facet[dimensions[index]['@name']]" :dimension="dimension.category" :name="dimensions[index]['@name']" ></formater-facet-block>
+ 
  </formater-search-box>
 
  </div>
@@ -52,6 +54,7 @@ import {FormaterTemporalSearch, FormaterSearchBox} from 'formater-commons-compon
 import FormaterSpatialSearch from './formater-spatial-search.vue'
 import FormaterMap from './formater-map.vue'
 import FormaterDimensionBlock from './formater-dimension-block.vue'
+import FormaterFacetBlock from './formater-facet-block.vue'
 // import FormaterSearchBox from './formater-search-box.vue'
 
 Object.defineProperty(
@@ -84,7 +87,8 @@ export default {
     FormaterTemporalSearch,
     FormaterSpatialSearch,
     FormaterSearchBox,
-    FormaterDimensionBlock
+    FormaterDimensionBlock,
+    FormaterFacetBlock
   },
   props: {
     nbRecord: {
@@ -147,6 +151,8 @@ export default {
    this.dimensionChangedListener = null
   },
   mounted () {
+   // this.facet.facetFormater = 'https%3A%2F%2Fw3id.org%2Fformater%2Fvariable%2Fsolid_earth/https%3A%2F%2Fw3id.org%2Fformater%2Fvariable%2Fgeothermal/https%3A%2F%2Fw3id.org%2Fformater%2Fvariable%2Fgeothermal-geothermal_temperature'
+   // this.facet.facetFormater += 'https%3A%2F%2Fw3id.org%2Fformater%2Fvariable%2Fsolid_earth/https%3A%2F%2Fw3id.org%2Fformater%2Fvariable%2Fgeomagnetism'
   
     // url="http://demo.formater/geonetwork/srv/fre/qi?_content_type=json&bucket=2365825987452666&fast=index&from=1&to=41"
   },
@@ -156,6 +162,13 @@ export default {
     },
     titleDimension (index) {
       return this.$i18n.t(this.dimensions[index]['@name'])
+    },
+    isFacet (index) {
+      if (this.dimensions[index]['@name'].indexOf('facet') >=0) {
+        return true;
+      } else {
+        return false;
+      }
     },
     initParameters () {
       this.parameters = {
@@ -203,7 +216,6 @@ export default {
       var url = this.srv + 'q?' + Object.keys(this.parameters).map(function (prop) {
         return prop + '=' + encodeURIComponent(self.parameters[prop])
       }).join('&');
-      console.log(encodeURI(url))
 
       this.$http.get(url, {headers: headers, parameters: this.parameters}).then(
           response => { this.fill(response.body);}
@@ -225,8 +237,11 @@ export default {
       return e;
     },
     fill (data) {
-      console.log(data)
-      this.dimensions = data.summary.dimension
+      if (this.dimensions.length === 0) {
+        this.dimensions = data.summary.dimension
+      }
+      // used to see the response change
+      this.count = this.count + 1
       var event = new CustomEvent('fmt:metadataListEvent', {detail:  data})
       document.dispatchEvent(event)
     },
@@ -234,9 +249,13 @@ export default {
       console.log(e)
       if (e.detail) {
         for(var key in e.detail) {
-          this.facet[key] = e.detail[key]
+          if (e.detail[key] !== null) {
+             this.facet[key] = e.detail[key]
+          } else {
+             delete this.facet[key]
+          }
         }
-        console.log(this.facet)
+        console.log(this.facet.facetFormater)
       }
       this.getRecords()
     },
