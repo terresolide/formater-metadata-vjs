@@ -10,22 +10,13 @@
 	     <div class="fmt-dimension-title">
 	        {{dimension['@label']}}&#8239;{{ strCount }}
 	     </div>
-	     <div :class="{deployed: deployed}" style="float:right" @click="deployed = !deployed" v-if="categories.length > 0">
-	         <i   class="fa fa-plus-square-o" ></i>
-	         <i class="fa fa-minus-square-o"></i>
-	     </div>
-	     <div class="fmt-child" v-if="categories.length > 0" >
-	      	<formater-dimension  :level="level + 1" :defaut="defaut" :checked="isChecked" :name="name" :value="childValue(index)" v-for="(item,index) in categories" :dimension="item" :key="index" @input="childChanged"></formater-dimension>
-	     </div>
 	  </div>
  </div>
 </template>
 <script>
-import FormaterDimension from './formater-dimension.vue';
 export default {
   name: 'FormaterDimension',
   components: {
-    FormaterDimension
   },
   props: {
     dimension: {
@@ -44,23 +35,14 @@ export default {
       type: String,
       default: ''
     },
-    level: {
-      type: Number,
-      default: 0
-    },
-    defaut: {
+    count: {
       type: String,
-      default: null
+      default: ''
     }
   },
   data() {
     return {
-      categories: [],
-      deployed: false,
-      isChecked: false,
-      isFacet: false,
-    //  value: null,
-      changed: false
+      isChecked: false
     }
   },
   computed: {
@@ -69,7 +51,7 @@ export default {
       if (this.dimension['@count'] > 0 ){
         return '(' + this.dimension['@count'] + ')';
       } else {
-        return '';
+        return '(0)';
       }
     }
   },
@@ -78,36 +60,10 @@ export default {
       if(!newvalue) {
         this.isChecked = newvalue
       }
-    },
-    defaut (newvalue) {
-      // check if checked value change
-      if (this.isFacet) {
-         // if new facet value is in the item value
-	      if (newvalue && newvalue.indexOf(this.value) >= 0) {
-	        this.isChecked = true
-	      } else {
-	        this.isChecked = false
-	      }
-      }
     }
   },
   mounted () {
    this.isChecked = this.checked
-   if (this.name.indexOf('facet') >=0) {
-     this.isFacet = true
-   }
-   if (this.isFacet && this.defaut.indexOf(this.value)>=0) {
-     this.isChecked = true;
-   }
-   if (!this.dimension.category) {
-     this.categories = []
-   }else if (this.dimension.category.length > 0) {
-     this.categories = this.dimension.category
-     
-   } else {
-     this.categories = [this.dimension.category]
-
-   }
    this.resetEventListener = this.handleReset.bind(this) 
    document.addEventListener('aerisResetEvent', this.resetEventListener);
    this.searchEventListener = this.handleSearch.bind(this) 
@@ -125,62 +81,23 @@ export default {
       console.log('handleChange')
       
       this.isChecked = !this.isChecked;
-      this.spreadChange()
+      var event = new CustomEvent('fmt:dimensionChangeEvent')
+      document.dispatchEvent(event)
       
-    },
-    spreadChange () {
-      if (this.isFacet){
-        if (this.isChecked) {
-          // if check a node => new facet value
-          var detail = {}
-          detail[this.name] = this.value
-          var event = new CustomEvent('fmt:dimensionChangeEvent', {detail: detail})
-          document.dispatchEvent(event)
-        } else if (!this.isChecked && this.level === 0){
-          // if unckecked a root node => remove facet value
-          var detail = {}
-          detail[this.name] = null
-          var event = new CustomEvent('fmt:dimensionChangeEvent', {detail: detail})
-          document.dispatchEvent(event)
-        }
-        // trigger to parent this child change (@see method childChanged)
-        this.$emit('input', this.isChecked)
-      } else {
-          var event = new CustomEvent('fmt:dimensionChangeEvent')
-          document.dispatchEvent(event)
-      }
     },
     handleSearch (e) {
       if(!this.isChecked) {
         return
       }
-      console.log('passe par search ' + this.name)
-      if (!this.isFacet) {
  
-        this.searchCommon(e)
+      if (e.detail[this.name]) {
+        e.detail[this.name] = e.detail[this.name] + '+or+' + this.value
+      } else {
+        e.detail[this.name] = this.value
       }
     },
     handleReset (e) {
       this.isChecked = false
-    },
-    searchCommon (e) {
-       if (e.detail[this.name]) {
-         e.detail[this.name] = e.detail[this.name] + '+or+' + this.value
-       } else {
-         e.detail[this.name] = this.value
-       }
-
-    },
-
-    childChanged (childChecked) { 
-      if(!childChecked && this.isChecked){
-        this.spreadChange()
-      }
-    },
-    childValue (index) {
-      var val = this.value ? (this.value + '/') : '';
-      val += encodeURIComponent(this.categories[index]['@value'])
-      return val;
     }
     
   }
@@ -206,12 +123,6 @@ export default {
 }
 .fmt-dimension div.deployed i.fa-minus-square-o{
   display:inline;
-}
-.fmt-dimension div.deployed i.fa-plus-square-o{
-  display:none;
-}
-.fmt-dimension div.deployed + div.fmt-child{
-  display:block;
 }
 .fmt-dimension-title{
   display: inline-block;

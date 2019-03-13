@@ -15,7 +15,7 @@
 	         <i class="fa fa-minus-square-o"></i>
 	     </div>
 	     <div class="fmt-child" v-if="categories.length > 0" >
-	      	<formater-facet  :level="level + 1" :defaut="defaut" :checked="isChecked" :name="name" :value="childValue(index)" v-for="(item,index) in categories" :dimension="item" :key="index" @input="childChanged"></formater-facet>
+	      	<formater-facet  :level="level + 1" :defaut="defaut"  :name="name" :value="childValue(index)" v-for="(item,index) in categories" :dimension="item" :key="index" @input="childChanged"></formater-facet>
 	     </div>
 	  </div>
  </div>
@@ -31,10 +31,6 @@ export default {
     dimension: {
       type: Object|Array,
       default: []
-    },
-    checked: {
-      type: Boolean,
-      default: false
     },
     name: {
       type: String,
@@ -58,8 +54,6 @@ export default {
       categories: [],
       deployed: false,
       isChecked: false,
-      isFacet: false,
-    //  value: null,
       changed: false
     }
   },
@@ -69,16 +63,11 @@ export default {
       if (this.dimension['@count'] > 0 ){
         return '(' + this.dimension['@count'] + ')';
       } else {
-        return '';
+        return '(0)';
       }
     }
   },
   watch: {
-    checked (newvalue) {
-      if(!newvalue) {
-        this.isChecked = newvalue
-      }
-    },
     defaut (newvalue) {
          // if new facet value is in the item value
 	      if (newvalue && newvalue.indexOf(this.value) >= 0) {
@@ -89,9 +78,10 @@ export default {
     }
   },
   mounted () {
-   this.isChecked = this.checked
    if (this.defaut.indexOf(this.value)>=0) {
      this.isChecked = true;
+   } else {
+     this.isChecked = false;
    }
    if (!this.dimension.category) {
      this.categories = []
@@ -100,7 +90,6 @@ export default {
      
    } else {
      this.categories = [this.dimension.category]
-
    }
    this.resetEventListener = this.handleReset.bind(this) 
    document.addEventListener('aerisResetEvent', this.resetEventListener);

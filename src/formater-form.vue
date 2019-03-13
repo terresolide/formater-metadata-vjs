@@ -34,7 +34,7 @@
 </formater-search-box>
 <formater-search-box :header-icon-class="facetToIcon(index)" open-icon-class="fa fa-caret-right" :title="titleDimension(index)" type="empty" v-if="dimension.category" v-for="(dimension, index) in dimensions" :key="index">
  <formater-dimension-block v-if="!isFacet(index)"  :dimension="dimension.category" :name="dimensions[index]['@name']" ></formater-dimension-block>
- <formater-facet-block v-if="isFacet(index)" :defaut="facet[dimensions[index]['@name']]" :dimension="dimension.category" :name="dimensions[index]['@name']" ></formater-facet-block>
+ <formater-facet-block v-if="isFacet(index)"  :defaut="facet[dimensions[index]['@name']]" :dimension="dimension.category" :name="dimensions[index]['@name']" ></formater-facet-block>
  
  </formater-search-box>
 
@@ -116,6 +116,7 @@ export default {
         'Accept': 'application/json, text/plain, */*',
         'Accept-Language': this.lang === 'fr' ? 'fre': 'eng'
       },
+      first: true,
       dimensions: [],
       parameters: {},
       changePageListener:null,
@@ -237,13 +238,65 @@ export default {
       return e;
     },
     fill (data) {
-      if (this.dimensions.length === 0) {
-        this.dimensions = data.summary.dimension
+      if (this.first) {
+        this.dimensions = this.initializeDimensions(data.summary.dimension)
+        this.first = false
+      } else {
+        // all count to zero?
+         var  newdimensions = this.initializeDimensions(data.summary.dimension)
+         this.dimensions = this.updateDimensions(this.dimensions, newdimensions)
       }
       // used to see the response change
       this.count = this.count + 1
       var event = new CustomEvent('fmt:metadataListEvent', {detail:  data})
       document.dispatchEvent(event)
+    },
+    initializeDimensions(dimensions){
+      var dimension = null
+      if (dimensions.length > 0) {
+        dimension = dimensions
+      } else {
+        dimension = [dimensions]
+      }
+      var _this = this
+      dimension.forEach( function (obj, index){
+        if (obj.category){
+          dimension[index].category = _this.initializeDimensions(obj.category)
+        }
+      })
+      return dimension
+    },
+    updateDimensions (dimensions, newdimensions) {
+      if (!dimensions) {
+        return null
+      }
+     
+      var _this = this
+      dimensions.forEach(function(dimension, index){
+        console.log(index)
+        var found = newdimensions.find( function (obj) {
+          if (obj['@name']) {
+            return obj['@name'] === dimension['@name'] 
+          } else if (obj['@value']){
+            return obj['@value'] === dimension['@value'] 
+          } 
+        })
+        console.log(found)
+        if (typeof found === 'undefined') {
+          console.log('not found')
+          _this.$set(dimensions[index], '@count', 0)
+        } else {
+          _this.$set(dimensions[index], '@count', found['@count'])
+        }
+        if (dimensions[index].category) {
+	        var subDimension = []
+	        if ( typeof found !== 'undefined' && found.category) {
+	          subDimension = found.category
+	        }
+	        dimensions[index].category = _this.updateDimensions(dimensions[index].category, subDimension)
+        }
+      })
+      return dimensions
     },
     handleFacet (e) {
       console.log(e)

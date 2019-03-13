@@ -2,7 +2,7 @@
 <template>
  <div class="fmt-dimension-block">
       	
-	      	<formater-dimension  :level="0" :defaut="defaut" :value="encodeURIComponent(item['@value'])" v-for="(item,index) in dimensions" :dimension="item" :key="index" :name="filteredName"></formater-dimension>
+	      	<formater-dimension  :value="encodeURIComponent(item['@value'])" v-for="(item,index) in dimension" :dimension="item" :key="index" :name="filteredName"></formater-dimension>
  </div>
 </template>
 <script>
@@ -15,7 +15,7 @@ export default {
   props: {
     dimension: {
       type: Object|Array,
-      default: []
+      default:  () => []
     },
     name: {
       type: String,
@@ -26,20 +26,7 @@ export default {
       default: ''
     }
   },
-  data() {
-    return {
-      dimensions: []
-    }
-  },
-  mounted () {
-   if (this.dimension.length > 0) {
-     this.dimensions = this.dimension
-     
-   } else {
-     this.dimensions = [this.dimension]
-   }
-  
-  },
+
   computed: {
     filteredName () {
       switch (this.name) {
@@ -50,8 +37,8 @@ export default {
       }
     }
   },
-  method: {
-
+  methods: {
+    
   }
 }
 </script>
