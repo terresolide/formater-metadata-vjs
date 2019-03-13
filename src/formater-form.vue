@@ -4,18 +4,18 @@
      "reset": "Reset search",
      "time_slot": "Time slot",
      "spatial_extend": "Spatial extend",
-     "groupOwner": "Data center",
-     "facetGemet": "Inspire Gemet Keywords",
-     "facetFormater": "Variables"
+     "groupOwners": "Data center",
+     "gemetKeywords": "Inspire Gemet Keywords",
+     "formaterVariable": "Variables"
    },
    "fr":{
       "search": "Rechercher ...",
       "reset": "Initialiser",
       "time_slot": "Intervalle temporel",
       "spatial_extend": "Zone géographique",
-      "groupOwner": "Centre de données",
-       "facetGemet": "Mots clés Inspire Gemet",
-     "facetFormater": "Variables"
+      "groupOwners": "Centre de données",
+       "gemetKeywords": "Inspire Gemet Keywords",
+     "formaterVariable": "Variables"
    }
 }
 </i18n>
@@ -46,7 +46,9 @@ var iconClass = {
     type: 'fa fa-object-group',
     groupOwner: 'fa fa-database',
     facetGemet: 'fa fa-navicon',
+    facetGemetFre: 'fa fa-navicon',
     facetFormater: 'fa fa-thermometer-half',
+    facetFormaterFre: 'fa fa-thermometer-half',
     facetPlatform: 'fa fa-rocket',
     facetInstrument: 'fa fa-calculator'
 }
@@ -162,7 +164,7 @@ export default {
       return iconClass[this.dimensions[index]['@name']]
     },
     titleDimension (index) {
-      return this.$i18n.t(this.dimensions[index]['@name'])
+      return this.$i18n.t(this.dimensions[index]['@label'])
     },
     isFacet (index) {
       if (this.dimensions[index]['@name'].indexOf('facet') >=0) {
