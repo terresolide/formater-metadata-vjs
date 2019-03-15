@@ -15,7 +15,7 @@
 	         <i class="fa fa-minus-square-o"></i>
 	     </div>
 	     <div class="fmt-child" v-if="categories.length > 0" >
-	      	<formater-facet  :level="level + 1" :defaut="defaut"  :name="name" :value="childValue(index)" v-for="(item,index) in categories" :dimension="item" :key="index" @input="childChanged"></formater-facet>
+	      	<formater-facet  :level="level + 1" :defaut="defaut" :checked="isChecked" :name="name" :value="childValue(index)" v-for="(item,index) in categories" :dimension="item" :key="index" @input="childChanged"></formater-facet>
 	     </div>
 	  </div>
  </div>
@@ -47,6 +47,10 @@ export default {
     defaut: {
       type: String,
       default: null
+    },
+    checked: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -75,6 +79,11 @@ export default {
 	      } else {
 	        this.isChecked = false
 	      }
+    },
+    checked (newvalue) {
+      if (!newvalue) {
+        this.isChecked = newvalue
+      }
     }
   },
   mounted () {
@@ -130,6 +139,10 @@ export default {
       this.isChecked = false
     },
     childChanged (childChecked) { 
+      if(childChecked && !this.isChecked) {
+        this.isChecked = true
+        this.$emit('input', this.isChecked)
+      }
       if(!childChecked && this.isChecked){
         this.spreadChange()
       }

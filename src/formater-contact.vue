@@ -19,7 +19,6 @@
 </template>
 <script>
 
-console.log(process.env.GEONETWORK)
 export default {
   name: 'FormaterContact',
   components: {
@@ -47,11 +46,9 @@ export default {
   },
   
   mounted () {
-    console.log(this.lang)
     this.fields = this.contact.split('|')
     this.$i18n.locale = this.lang
     this.$setGnLocale(this.lang)
-    console.log(this.$gnLang)
   },
   methods: {
 

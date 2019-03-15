@@ -73,7 +73,6 @@ export default {
 	       })
        }
        this.metadatas = metadatas;
-       console.log(this.metadatas)
        this.searchRelated()
      },
      treatment (meta) {

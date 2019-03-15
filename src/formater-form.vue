@@ -23,7 +23,7 @@
  <div class="fmt-form">
   <div style="text-align:center;margin: -10px 0 30px 0;"><input type="button" @click="handleReset" :value="$t('reset')"/></div>
   <div class="formater-input-group" style="margin:10px; width:calc(100% - 20px);">
-     <input id="any" name="any" v-model="parameters.any" :placeholder="$t('search')" @change="changeSearch"  /><i class="fa fa-search"></i>
+     <input id="any" name="any" v-model="fulltextSearch" :placeholder="$t('search')" @change="changeSearch"  /><i class="fa fa-search"></i>
  </div>
  <formater-map></formater-map>
  <formater-search-box header-icon-class="fa fa-globe" open-icon-class="fa fa-caret-right" :title="$t('spatial_extend')" :deployed="false" type="empty">
@@ -32,10 +32,9 @@
 <formater-search-box header-icon-class="fa fa-calendar" open-icon-class="fa fa-caret-right" :title="$t('time_slot')" :deployed="true" type="empty">
   <formater-temporal-search :lang="lang" daymin="1900-01-01" daymax="2020-02-01"></formater-temporal-search>
 </formater-search-box>
-<formater-search-box :header-icon-class="facetToIcon(index)" open-icon-class="fa fa-caret-right" :title="titleDimension(index)" type="empty" v-if="dimension.category" v-for="(dimension, index) in dimensions" :key="index">
- <formater-dimension-block v-if="!isFacet(index)"  :dimension="dimension.category" :name="dimensions[index]['@name']" ></formater-dimension-block>
- <formater-facet-block v-if="isFacet(index)"  :defaut="facet[dimensions[index]['@name']]" :dimension="dimension.category" :name="dimensions[index]['@name']" ></formater-facet-block>
- 
+<formater-search-box v-if="dimension.category && isInCurrentLang(index)" :header-icon-class="facetToIcon(index)" open-icon-class="fa fa-caret-right" :title="titleDimension(index)" type="empty" v-for="(dimension, index) in dimensions" :key="index">
+  <formater-dimension-block v-if="!isFacet(index)"  :dimension="dimension.category" :name="dimensions[index]['@name']" ></formater-dimension-block>
+  <formater-facet-block v-if="isFacet(index)"  :defaut="facet[dimensions[index]['@name']]" :dimension="dimension.category" :name="dimensions[index]['@name']" ></formater-facet-block>
  </formater-search-box>
 
  </div>
@@ -118,6 +117,7 @@ export default {
         'Accept': 'application/json, text/plain, */*',
         'Accept-Language': this.lang === 'fr' ? 'fre': 'eng'
       },
+      fulltextSearch: '',
       first: true,
       dimensions: [],
       parameters: {},
@@ -173,6 +173,21 @@ export default {
         return false;
       }
     },
+    isInCurrentLang (index) {
+      if (!this.isFacet(index)) {
+        return true;
+      }
+      var name = this.dimensions[index]['@name'];
+      var lang = name.substring(name.length -3, name.length)
+      if (this.lang === 'fr' && lang === 'Fre') {
+        return true;
+      } else if (this.lang != 'fr' && lang != 'Fre') {
+        return true;
+      } else {
+        return false;
+      }
+
+    },
     initParameters () {
       this.parameters = {
         _content_type: 'json',
@@ -185,6 +200,9 @@ export default {
         resultType: 'details',
         sortBy: 'title',
         sortOrder: 'reverse'
+      }
+      if (this.fulltextSearch !== '') {
+        this.parameters.any = this.fulltextSearch
       }
     },
    
@@ -217,7 +235,7 @@ export default {
       var self = this
       this.parameters.sortOrder =  this.parameters.sortBy === 'title' ? 'ordering': 'reverse';
       var url = this.srv + 'q?' + Object.keys(this.parameters).map(function (prop) {
-        return prop + '=' + encodeURIComponent(self.parameters[prop])
+        return prop + '=' + self.parameters[prop]
       }).join('&');
 
       this.$http.get(url, {headers: headers, parameters: this.parameters}).then(
@@ -235,7 +253,7 @@ export default {
         }
       }
       if (facet !== '') {
-       e.detail['facet.q'] = facet
+       e.detail['facet.q'] = encodeURIComponent(facet)
       }
       return e;
     },
@@ -275,7 +293,6 @@ export default {
      
       var _this = this
       dimensions.forEach(function(dimension, index){
-        console.log(index)
         var found = newdimensions.find( function (obj) {
           if (obj['@name']) {
             return obj['@name'] === dimension['@name'] 
@@ -283,7 +300,6 @@ export default {
             return obj['@value'] === dimension['@value'] 
           } 
         })
-        console.log(found)
         if (typeof found === 'undefined') {
           console.log('not found')
           _this.$set(dimensions[index], '@count', 0)
@@ -301,7 +317,6 @@ export default {
       return dimensions
     },
     handleFacet (e) {
-      console.log(e)
       if (e.detail) {
         for(var key in e.detail) {
           if (e.detail[key] !== null) {
@@ -310,7 +325,6 @@ export default {
              delete this.facet[key]
           }
         }
-        console.log(this.facet.facetFormater)
       }
       this.getRecords()
     },

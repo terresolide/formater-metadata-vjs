@@ -133,7 +133,6 @@ export default {
      var bounds = L.latLngBounds(L.latLng(latmax, lngmin), L.latLng(latmin, lngmax));
      var options = Object.assign({uuid:uuid}, this.defaultRectangleOptions)
      var rectangle = L.polygon(path,options)
-     console.log(rectangle)
 //      rectangle.on('mouseover', function(layer) {
 //        console.log(layer.target.options.id)
 //      })
