@@ -154,9 +154,10 @@ export default {
    this.dimensionChangedListener = null
   },
   mounted () {
-   // this.facet.facetFormater = 'https%3A%2F%2Fw3id.org%2Fformater%2Fvariable%2Fsolid_earth/https%3A%2F%2Fw3id.org%2Fformater%2Fvariable%2Fgeothermal/https%3A%2F%2Fw3id.org%2Fformater%2Fvariable%2Fgeothermal-geothermal_temperature'
-   // this.facet.facetFormater += 'https%3A%2F%2Fw3id.org%2Fformater%2Fvariable%2Fsolid_earth/https%3A%2F%2Fw3id.org%2Fformater%2Fvariable%2Fgeomagnetism'
-  
+//     this.facet.facetFormaterFre = []
+//     this.facet.facetFormaterFre.push('https%3A%2F%2Fw3id.org%2Fformater%2Fvariable%2Fsolid_earth/https%3A%2F%2Fw3id.org%2Fformater%2Fvariable%2Fgeothermal/https%3A%2F%2Fw3id.org%2Fformater%2Fvariable%2Fgeothermal-geothermal_temperature')
+//     this.facet.facetFormaterFre.push( 'https%3A%2F%2Fw3id.org%2Fformater%2Fvariable%2Fsolid_earth/https%3A%2F%2Fw3id.org%2Fformater%2Fvariable%2Fnon_solid/https%3A%2F%2Fw3id.org%2Fformater%2Fvariable%2Fnon_solid-hydrogen_gas')
+   
     // url="http://demo.formater/geonetwork/srv/fre/qi?_content_type=json&bucket=2365825987452666&fast=index&from=1&to=41"
   },
   methods: {
@@ -320,7 +321,7 @@ export default {
       if (e.detail) {
         for(var key in e.detail) {
           if (e.detail[key] !== null) {
-             this.facet[key] = e.detail[key]
+             this.$set(this.facet, key ,e.detail[key])
           } else {
              delete this.facet[key]
           }

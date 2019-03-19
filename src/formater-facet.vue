@@ -10,12 +10,12 @@
 	     <div class="fmt-dimension-title">
 	        {{dimension['@label']}}&#8239;{{ strCount }}
 	     </div>
-	     <div :class="{deployed: deployed}" style="float:right" @click="deployed = !deployed" v-if="categories.length > 0">
+	     <div :class="{deployed: deployed}" style="float:right" @click="deployed = !deployed" v-if="dimension.category && dimension.category.length > 0">
 	         <i   class="fa fa-plus-square-o" ></i>
 	         <i class="fa fa-minus-square-o"></i>
 	     </div>
-	     <div class="fmt-child" v-if="categories.length > 0" >
-	      	<formater-facet  :level="level + 1" :defaut="defaut" :checked="isChecked" :name="name" :value="childValue(index)" v-for="(item,index) in categories" :dimension="item" :key="index" @input="childChanged"></formater-facet>
+	     <div class="fmt-child" v-if="dimension.category && dimension.category.length > 0" >
+	      	<formater-facet  :level="level + 1" :defaut="defaut" :checked="isChecked" :name="name" :value="childValue(index)" v-for="(item,index) in dimension.category" :dimension="item" :key="index" @input="childChanged"></formater-facet>
 	     </div>
 	  </div>
  </div>
@@ -92,14 +92,14 @@ export default {
    } else {
      this.isChecked = false;
    }
-   if (!this.dimension.category) {
-     this.categories = []
-   }else if (this.dimension.category.length > 0) {
-     this.categories = this.dimension.category
+//    if (!this.dimension.category) {
+//      this.categories = []
+//    }else if (this.dimension.category.length > 0) {
+//      this.categories = this.dimension.category
      
-   } else {
-     this.categories = [this.dimension.category]
-   }
+//    } else {
+//      this.categories = [this.dimension.category]
+//    }
    this.resetEventListener = this.handleReset.bind(this) 
    document.addEventListener('aerisResetEvent', this.resetEventListener);
    // do not listen to aerisSearchEvent: when change trigger event and value is register formater form variable arry 
@@ -149,7 +149,7 @@ export default {
     },
     childValue (index) {
       var val = this.value ? (this.value + '/') : '';
-      val += encodeURIComponent(this.categories[index]['@value'])
+      val += encodeURIComponent(this.dimension.category[index]['@value'])
       return val;
     }
     
