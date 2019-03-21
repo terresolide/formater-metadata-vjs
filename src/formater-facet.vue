@@ -8,7 +8,7 @@
          </label>
 	    <!--  <input type="checkbox" :name="name" :value="dimension['@name']" v-model="isChecked"/> -->
 	     <div class="fmt-dimension-title">
-	        {{dimension['@label']}}&#8239;{{ strCount }}
+	        {{label}}&#8239;{{ strCount }}
 	     </div>
 	     <div :class="{deployed: deployed}" style="float:right" @click="deployed = !deployed" v-if="dimension.category && dimension.category.length > 0">
 	         <i   class="fa fa-plus-square-o" ></i>
@@ -58,7 +58,8 @@ export default {
       categories: [],
       deployed: false,
       isChecked: false,
-      changed: false
+      changed: false,
+      label: ''
     }
   },
   computed: {
@@ -92,6 +93,9 @@ export default {
    } else {
      this.isChecked = false;
    }
+   // extract last term 
+   this.label = this.dimension['@label'].split('|').pop()
+
 //    if (!this.dimension.category) {
 //      this.categories = []
 //    }else if (this.dimension.category.length > 0) {
