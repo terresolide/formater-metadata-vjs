@@ -25,8 +25,8 @@ export default {
   },
   props: {
     contact: {
-      type: String,
-      default: null
+      type: Array,
+      default: []
     },
     lang: {
       type: String,
@@ -46,7 +46,7 @@ export default {
   },
   
   mounted () {
-    this.fields = this.contact.split('|')
+    this.fields = this.contact
     this.$i18n.locale = this.lang
     this.$setGnLocale(this.lang)
   },

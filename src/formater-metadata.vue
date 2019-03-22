@@ -1,9 +1,9 @@
 <i18n>{
    "en":{
-     "contact": "Contact | Contacts"
+     "resource_contact": "Contact | Contacts"
    },
    "fr":{
-     "contact": "Contact | Contacts"
+     "resource_contact": "Contact | Contacts"
    }
 }
 </i18n>
@@ -37,10 +37,25 @@
 	        <span v-html="meta.description"></span>
 	      </div>
 	      
-	      <div v-if="meta.responsibleParty" style="clear:both;">
-	        <h2><i class="fa fa-users"></i>{{$tc('contact', meta.responsibleParty.length)}}</h2>
-	        <formater-contact  v-for="(item, index) in meta.responsibleParty" :key="index" :contact="item" :lang="lang"></formater-contact>
+	      <div v-if="contacts.resource" style="clear:both;">
+	        <h2><i class="fa fa-users"></i>{{$tc('resource_contact', contacts.resource.length)}}</h2>
+	        {{contacts.resource}}
+	        <div v-for="(fonction, key) in contacts.resource" :key="key" >
+	        {{fonction}}
+		         <h3><i class="fa fa-user"></i>{{$gn(key)}} key</h3>
+		        <formater-contact  v-for="(item, index) in fonction" :key="index" :contact="item" :lang="lang"></formater-contact>
+	        </div>
 	      </div>
+	      
+	       <div v-if="contacts.metadata" style="clear:both;">
+	        <h2><i class="fa fa-users"></i>{{$tc('resource_contact', contacts.metadata.length)}}</h2>
+	        {{contacts.metadata}}
+	         <div v-for="(fonction, key) in contacts.metadata" :key="key" >
+	        {{fonction}}
+		         <h3><i class="fa fa-user"></i>{{$gn(key)}} key</h3>
+		        <formater-contact  v-for="(item, index) in fonction" :key="index" :contact="item" :lang="lang"></formater-contact>
+	        </div>  </div>
+	      
       </div>
       <div v-if="currentTab === 'tab2'">sous forme de xml</div>
    </div>
@@ -86,7 +101,11 @@ export default {
      meta: null,
      uuid: null,
      popstateListener: null,
-     keydownListener: null
+     keydownListener: null,
+     contacts: {
+       metadata: [],
+       resource: []
+     }
     }
   },
   created () {
@@ -152,18 +171,52 @@ export default {
 	  },
 	  extractContact (meta2 =[]) {
 	    console.log(meta2)
+	    this.contacts = {
+	      resource: [],
+	      metadata: []
+	    }
+	    console.log(this.meta.responsibleParty)
 	    if (this.meta.responsibleParty) {
+	        var _this = this
 		    this.meta.responsibleParty.forEach( function (contact)  {
-		      console.log(contact)
+		      var fields = contact.split('|');
+		      if (fields[1] === 'metadata' || fields[1] === 'metadonnées') {
+		       if (_this.contacts.metadata[fields[0]]){
+		         _this.contacts.metadata[fields[0]].push(fields)
+		       } else {
+		         _this.contacts.metadata[fields[0]] = [fields]
+		       }
+		      }else{
+		        if (_this.contacts.resource[fields[0]]){
+			         _this.contacts.resource[fields[0]].push(fields)
+			       } else {
+			         _this.contacts.resource[fields[0]] = [fields]
+			       }
+		      }
 		        
 		    })
-	    }
+	    } else 
 	    if (meta2.responsibleParty) {
 	        console.log('loop')
-		    meta2.responsibleParty.forEach( function (contact) {
-		      console.log(contact)
+		    var _this = this
+		    meta2.responsibleParty.forEach( function (contact)  {
+		      var fields = contact.split('|');
+		      if (fields[1] === 'metadata' || fields[1] === 'metadonnées') {
+			       if (_this.contacts.metadata[fields[0]]){
+			         _this.contacts.metadata[fields[0]].push(fields)
+			       } else {
+			         _this.contacts.metadata[fields[0]] = [fields]
+			       }
+			      }else{
+			        if (_this.contacts.resource[fields[0]]){
+				         _this.contacts.resource[fields[0]].push(fields)
+				       } else {
+				         _this.contacts.resource[fields[0]] = [fields]
+				       }
+			      }
 		    })
 	    }
+	    
 	    
 	  }
   }

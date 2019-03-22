@@ -269,6 +269,8 @@ export default {
       }
       // used to see the response change
       this.count = this.count + 1
+      var event = new CustomEvent('fmt:metadataEvent', {detail:null})
+  	  document.dispatchEvent(event)
       var event = new CustomEvent('fmt:metadataListEvent', {detail:  data})
       document.dispatchEvent(event)
     },
