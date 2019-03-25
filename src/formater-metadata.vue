@@ -1,9 +1,11 @@
 <i18n>{
    "en":{
-     "resource_contact": "Contact | Contacts"
+     "resource_contact": "Resource Contact | Resource Contacts",
+     "metadata_contact": "Metadata Contact | Metadata Contacts"
    },
    "fr":{
-     "resource_contact": "Contact | Contacts"
+     "resource_contact": "Contact pour les données| Contacts pour les données",
+     "metadata_contact": "Contact pour les métadonnées | Contacts pour les métadonnées"
    }
 }
 </i18n>
@@ -37,22 +39,19 @@
 	        <span v-html="meta.description"></span>
 	      </div>
 	      
-	      <div v-if="contacts.resource" style="clear:both;">
-	        <h2><i class="fa fa-users"></i>{{$tc('resource_contact', contacts.resource.length)}}</h2>
-	        {{contacts.resource}}
-	        <div v-for="(fonction, key) in contacts.resource" :key="key" >
-	        {{key}}
-		         <h3><i class="fa fa-user"></i>{{$gn(key)}} key</h3>
+	      <div class="fmt-contacts" v-if="contacts.resource">
+	        <h2><i class="fa fa-users"></i>{{$tc('resource_contact', Object.keys(contacts.resource).length)}}</h2>
+	        <div v-for="(fonction, key) in contacts.resource" :key="key" style="float:left;">
+		         <h3><i class="fa fa-user"></i>{{$gn(key)}}</h3>
 		        <formater-contact  v-for="(item, index) in fonction" :key="index" :contact="item" :lang="lang"></formater-contact>
 	        </div>
+	        <div style="clear:both;"></div>
 	      </div>
-	      
-	       <div v-if="contacts.metadata" style="clear:both;">
-	        <h2><i class="fa fa-users"></i>{{$tc('resource_contact', contacts.metadata.length)}}</h2>
-	        {{contacts.metadata}}
+
+	       <div class="fmt-contacts" v-if="contacts.metadata">
+	        <h2><i class="fa fa-users"></i>{{$tc('metadata_contact', Object.keys(contacts.metadata).length)}}</h2>
 	         <div v-for="(fonction, key) in contacts.metadata" :key="key" >
-	        {{fonction}}
-		         <h3><i class="fa fa-user"></i>{{$gn(key)}} key</h3>
+		         <h3><i class="fa fa-user"></i>{{$gn(key)}}</h3>
 		        <formater-contact  v-for="(item, index) in fonction" :key="index" :contact="item" :lang="lang"></formater-contact>
 	        </div>  </div>
 	      
@@ -103,8 +102,8 @@ export default {
      popstateListener: null,
      keydownListener: null,
      contacts: {
-       metadata: [],
-       resource: []
+       metadata: {},
+       resource: {}
      }
     }
   },
@@ -172,8 +171,8 @@ export default {
 	  extractContact (meta2 =[]) {
 	    console.log(meta2)
 	    this.contacts = {
-	      resource: [],
-	      metadata: []
+	      resource: {},
+	      metadata: {}
 	    }
 	    console.log(this.meta.responsibleParty)
 	    if (this.meta.responsibleParty) {
@@ -216,6 +215,7 @@ export default {
 			      }
 		    })
 	    }
+	    console.log(this.contacts)
 	    
 	    
 	  }
@@ -294,5 +294,8 @@ export default {
 .fmt-metadata .fmt-group-logo img{
 	max-width:100px; 
 	height:40px;
+}
+.fmt-metadata .fmt-contacts h3{
+    margin-bottom:0;
 }
 </style>

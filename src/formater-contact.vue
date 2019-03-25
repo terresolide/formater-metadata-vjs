@@ -8,8 +8,6 @@
 </i18n>
 <template>
  <span class="formater-contact" v-if="fields">
-   <h3><i class="fa fa-user"></i>{{$gn(fields[0])}}</h3>
-   <div>({{fields[1]}})</div>
    <div class="formater-address">
      <div class="formater-organism">{{fields[2]}}</div>
      <div class="formater-name" v-if="fields[3]">{{fields[3]}}</div>
@@ -37,6 +35,9 @@ export default {
     lang (newvalue) {
     	this.$i18n.locale = newvalue
     	this.$setGnLocale(this.lang)
+    },
+    contact (newvalue) {
+      console.log(newvalue)
     }
   },
   data() {
