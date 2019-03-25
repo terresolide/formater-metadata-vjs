@@ -147,6 +147,7 @@ export default {
      this.unselectLayer()
      if (event.detail && event.detail['geonet:info'] && event.detail['geonet:info'].uuid) {
        this.selectLayerByUuid(event.detail['geonet:info'].uuid)
+
      } 
    },
    unselectLayer (event) {
@@ -158,6 +159,9 @@ export default {
              fillOpacity: this.defaultRectangleOptions.fillOpacity
            })
        this.selected = null
+       if (this.bounds) {
+         this.map.fitBounds(this.bounds)
+       }
      }
    },
    selectLayerByUuid (uuid) {
@@ -165,14 +169,14 @@ export default {
      this.bboxLayer.eachLayer(function(layer) {
        if (layer.options.uuid === uuid) {
          self.setSelected(layer)
+         self.map.fitBounds(layer.getBounds())
        }
      })
    },
    setSelected (layer) {
      this.selected = layer
      this.selected.setStyle(this.selectedOptions)
-   }
-   
+   }  
   }
 }
 </script>

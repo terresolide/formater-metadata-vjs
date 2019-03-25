@@ -41,7 +41,7 @@
 	        <h2><i class="fa fa-users"></i>{{$tc('resource_contact', contacts.resource.length)}}</h2>
 	        {{contacts.resource}}
 	        <div v-for="(fonction, key) in contacts.resource" :key="key" >
-	        {{fonction}}
+	        {{key}}
 		         <h3><i class="fa fa-user"></i>{{$gn(key)}} key</h3>
 		        <formater-contact  v-for="(item, index) in fonction" :key="index" :contact="item" :lang="lang"></formater-contact>
 	        </div>

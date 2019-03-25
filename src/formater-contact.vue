@@ -46,6 +46,7 @@ export default {
   },
   
   mounted () {
+    console.log(this.contact)
     this.fields = this.contact
     this.$i18n.locale = this.lang
     this.$setGnLocale(this.lang)
