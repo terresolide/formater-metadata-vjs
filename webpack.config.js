@@ -128,7 +128,10 @@ if (process.env.NODE_ENV === 'preproduction') {
           sourceMap: true
         }),
       new webpack.LoaderOptionsPlugin({
-        minimize: true
+        minimize: true,
+        options: {
+          assetsSubDirectory: 'assets/'
+        }
       })
     ])
   }

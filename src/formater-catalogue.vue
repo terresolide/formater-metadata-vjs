@@ -32,9 +32,11 @@
  </div>
 </template>
 <script>
+
 import FormaterForm from './formater-form.vue';
 import FormaterListMetadata from './formater-list-metadata.vue';
-import FormaterMetadata from './formater-metadata.vue';
+// import FormaterMetadata from './formater-metadata.vue';
+const FormaterMetadata = () => import('./formater-metadata.vue')
 import FormaterPaging from './formater-paging.vue';
 // import {FormaterDraggableBlock} from 'formater-commons-components-vjs';
 //import FormaterDraggableBlock from './formater-draggable-block.vue';
