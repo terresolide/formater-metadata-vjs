@@ -9,6 +9,11 @@ var UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 // var vueLoaderConfig = require('./vue-loader.conf')
 var preUrl = PACKAGE.preproduction.url + "/webcomponents/";
 var prodUrl = PACKAGE.production.url + '/' + buildName + '@' + buildVersion +  '/dist/' ;
+//if (process.env.NODE_ENV === 'production') {
+//  var appURL = prodUrl;
+//} else {
+//  var appURL = 'dist/';
+//}
 
 var pathsToClean = [
   'dist/*.*'
@@ -87,7 +92,7 @@ module.exports = {
 }
 module.exports.plugins = (module.exports.plugins || []).concat([
   new webpack.DefinePlugin({
-    'process.env': env
+    'process.env': {GEONETWORK: env.GEONETWORK}
   })
 ])
 if (process.env.NODE_ENV === 'development') {

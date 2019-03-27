@@ -34,6 +34,12 @@ const MetadataToolsPlugin = {
               }
             }).then( response => { Vue.prototype.$gnLang = Object.assign(_this.$gnLang,response.body)})
          }
+//         var json = () => import('./assets/geonetwork-' + this.$locale + '.json')
+//         if (process.env.URL) {
+//           // other geonetwork words
+//           var json = process.env.URL +  '/assets/geonetwork-' + this.$locale + '.json'
+//           this.$http.get(json).then( response => { Vue.prototype.$gnLang = Object.assign(_this.$gnLang,response.body)})
+//         }
        }
 		   Vue.prototype.$setGnLocale = function (lang) {
 		     if (['en', 'fr'].indexOf(lang) >=0) {
