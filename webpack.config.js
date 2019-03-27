@@ -8,7 +8,7 @@ var CleanWebpackPlugin = require('clean-webpack-plugin');
 var UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 // var vueLoaderConfig = require('./vue-loader.conf')
 var preUrl = PACKAGE.preproduction.url + "/webcomponents/";
-var prodUrl = PACKAGE.production.url + '/' + buildName + "/dist" ;
+var prodUrl = PACKAGE.production.url + '/' + buildName + "/dist/" ;
 
 var pathsToClean = [
   'dist/*.*'

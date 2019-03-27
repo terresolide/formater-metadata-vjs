@@ -1,12 +1,12 @@
 {
   "name": "formater-metadata-vjs",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Component to display metadata from Object ISO19139",
   "preproduction": {
     "url": "http://localhost:8080"
   },
   "production": {
-    "url": "https://cdn.jsdelivr.net/gh/terresolide/"
+    "url": "https://cdn.jsdelivr.net/gh/terresolide"
   },
   "repository": {
     "type": "git",
