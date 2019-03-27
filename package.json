@@ -6,7 +6,7 @@
     "url": "http://localhost:8080"
   },
   "production": {
-    "url": "https://cdn.jsdelivr.net/gh/terresolide/formater-metadata-vjs"
+    "url": "https://cdn.jsdelivr.net/gh/terresolide/"
   },
   "repository": {
     "type": "git",
