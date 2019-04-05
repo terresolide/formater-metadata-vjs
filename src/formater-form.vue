@@ -32,7 +32,7 @@
 <formater-search-box header-icon-class="fa fa-calendar" open-icon-class="fa fa-caret-right" :title="$t('time_slot')" :deployed="true" type="empty">
   <formater-temporal-search :lang="lang" daymin="1900-01-01" daymax="2020-02-01"></formater-temporal-search>
 </formater-search-box>
-<formater-search-box v-if="dimension.category && isInCurrentLang(index)" :header-icon-class="facetToIcon(index)" open-icon-class="fa fa-caret-right" :title="titleDimension(index)" type="empty" v-for="(dimension, index) in dimensions" :key="index">
+<formater-search-box v-if="dimension.category" :header-icon-class="facetToIcon(index)" open-icon-class="fa fa-caret-right" :title="titleDimension(index)" type="empty" v-for="(dimension, index) in dimensions" :key="index">
   <formater-dimension-block v-if="!isFacet(index)"  :dimension="dimension.category" :name="dimensions[index]['@name']" ></formater-dimension-block>
   <formater-facet-block v-if="isFacet(index)"  :defaut="facet[dimensions[index]['@name']]" :dimension="dimension.category" :name="dimensions[index]['@name']" ></formater-facet-block>
  </formater-search-box>
@@ -192,12 +192,13 @@ export default {
     initParameters () {
       this.parameters = {
         _content_type: 'json',
-        fast: 'index',
+         fast: 'index',
       //  'facet.q': '',
         bucket: '26041996',
         isChild: false,
         from: 1,
         to: 18,
+        //  resultType: 'subtemplate',
         resultType: 'details',
         sortBy: 'title',
         sortOrder: 'reverse'
