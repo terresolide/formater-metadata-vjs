@@ -12,7 +12,7 @@
 <template>
  <div class="fmt-cartouche-metadata fmt-capsule">
 	 <div class="fmt-header" @click="displayMetadata">
-		<i class="fa fa-database" v-if="['dataset','serie'].indexOf(meta.type) >= 0" :title="$gn(meta.type)"></i>
+		<i class="fa" :class="meta.type === 'series' ? 'fa-files-o' : 'fa-file'" v-if="['dataset','series'].indexOf(meta.type) >= 0" :title="$gn(meta.type)"></i>
 		<div>{{meta.title ? meta.title: meta.defaultTitle}}</div>
 	 </div>
 	 <div class="fmt-description" style="">
@@ -92,6 +92,7 @@ export default {
 }
 </script>
 <style>
+
 .fmt-cartouche-metadata{
   position: relative;
   font-size: 12px;
@@ -118,7 +119,7 @@ export default {
 .fmt-cartouche-metadata div.fmt-header div{
 	display:inline-block;
 	float:left;
-	width:calc(100% - 23px); 
+	width:calc(100% - 28px); 
 	margin-left:7px;
 	overflow: hidden;
 	max-height:29px;

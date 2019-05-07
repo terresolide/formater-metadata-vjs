@@ -225,7 +225,7 @@ export default {
 	    e.detail.renameProperty('end', 'extTo')
       }
 	  delete e.detail.startDefault
-	  delete e.detail.endDefautl
+	  delete e.detail.endDefault
 	  this.prepareFacet(e)
 	  //delete(e.detail.extTo)
 	  //delete(e.detail.extFrom)
