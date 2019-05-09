@@ -58,7 +58,7 @@ export default {
      metadataListener: null,
      closeMetadataListener: null,
      bboxLayer: null,
-     selected: null,
+     selected: [],
      bounds: null,
      defaultRectangleOptions: {
        interactive: false,
@@ -118,30 +118,38 @@ export default {
      }
      this.bboxLayer.addTo(this.map)
    },
-   extractBbox(geoBox, uuid) {
-     if (!geoBox) {
+   extractBbox(bbox, uuid) {
+     if (!bbox) {
        return
      }
+     
+     var bboxList = this.$gnToArray(bbox)
+     console.log(bboxList);
      //trouble with rectangle ??? add polygon!
-     var tab = geoBox.split('|') 
-     tab = tab.map(x => parseFloat(x))
-     var latmin = Math.min(tab[3], tab[1])
-     var latmax = Math.max(tab[3], tab[1])
-     var lngmin = Math.min(tab[0], tab[2])
-     var lngmax = Math.max(tab[0], tab[2])
-     var path = [[latmin, lngmin], [latmax, lngmin], [latmax, lngmax], [latmin, lngmax], [latmin, lngmin]]
-     var bounds = L.latLngBounds(L.latLng(latmax, lngmin), L.latLng(latmin, lngmax));
-     var options = Object.assign({uuid:uuid}, this.defaultRectangleOptions)
-     var rectangle = L.polygon(path,options)
-//      rectangle.on('mouseover', function(layer) {
-//        console.log(layer.target.options.id)
-//      })
-     this.bboxLayer.addLayer(rectangle)
-     if (!this.bounds) {
-       this.bounds = bounds
-     } else {
-       this.bounds.extend(bounds)
-     }
+     var self = this;
+     bboxList.forEach(function (tab){
+       
+	    // var tab = geoBox.split('|') 
+	     tab = tab.map(x => parseFloat(x))
+	     var latmin = Math.min(tab[3], tab[1])
+	     var latmax = Math.max(tab[3], tab[1])
+	     var lngmin = Math.min(tab[0], tab[2])
+	     var lngmax = Math.max(tab[0], tab[2])
+	     var path = [[latmin, lngmin], [latmax, lngmin], [latmax, lngmax], [latmin, lngmax], [latmin, lngmin]]
+	     var bounds = L.latLngBounds(L.latLng(latmax, lngmin), L.latLng(latmin, lngmax));
+	     var options = Object.assign({uuid:uuid}, self.defaultRectangleOptions)
+	     var rectangle = L.polygon(path,options)
+	//      rectangle.on('mouseover', function(layer) {
+	//        console.log(layer.target.options.id)
+	//      })
+	    self.bboxLayer.addLayer(rectangle)
+	     if (!self.bounds) {
+	       self.bounds = bounds
+	     } else {
+	       self.bounds.extend(bounds)
+	     }
+     })
+      
    },
    selectLayer (event) {
      this.unselectLayer()
@@ -151,31 +159,42 @@ export default {
      } 
    },
    unselectLayer (event) {
-     if (this.selected) {
-       this.selected.setStyle(
+     var self = this
+     this.selected.forEach(function (layer) {
+       layer.setStyle(
            {
-             color: this.defaultRectangleOptions.color, 
-             fillColor: this.defaultRectangleOptions.fillColor,
-             fillOpacity: this.defaultRectangleOptions.fillOpacity
+             color: self.defaultRectangleOptions.color, 
+             fillColor: self.defaultRectangleOptions.fillColor,
+             fillOpacity: self.defaultRectangleOptions.fillOpacity
            })
-       this.selected = null
+      
+     })
+      this.selected = []
        if (this.bounds) {
          this.map.fitBounds(this.bounds)
        }
-     }
+       
    },
    selectLayerByUuid (uuid) {
      var self = this
+     var bounds = null
      this.bboxLayer.eachLayer(function(layer) {
        if (layer.options.uuid === uuid) {
          self.setSelected(layer)
-         self.map.fitBounds(layer.getBounds())
+         var bds = layer.getBounds()
+         if (!bounds) {
+           bounds = bds
+         } else  {
+           bounds.extend(bds)
+         }
+        
        }
      })
+      self.map.fitBounds(bounds)
    },
    setSelected (layer) {
-     this.selected = layer
-     this.selected.setStyle(this.selectedOptions)
+     this.selected.push(layer)
+     layer.setStyle(this.selectedOptions)
    }  
   }
 }

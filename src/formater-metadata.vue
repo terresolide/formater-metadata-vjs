@@ -38,7 +38,6 @@
 	        <formater-quicklooks :quicklooks="meta.images"></formater-quicklooks>
 	        <span v-html="meta.description"></span>
 	      </div>
-	      
 	      <div class="fmt-contacts" v-if="contacts.resource">
 	        <h2><i class="fa fa-users"></i>{{$tc('resource_contact', Object.keys(contacts.resource).length)}}</h2>
 	        <div v-for="(fonction, key) in contacts.resource" :key="key" style="float:left;">

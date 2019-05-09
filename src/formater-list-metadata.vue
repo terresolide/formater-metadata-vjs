@@ -103,7 +103,7 @@ export default {
           'Accept': 'application/json, text/plain, */*',
           'Accept-Language': this.lang === 'fr' ? 'fre': 'eng'
         }
-        var url = process.env.GEONETWORK + 'srv/api/related?type=parent&type=children&type=services&type=datasets'
+        var url = process.env.GEONETWORK + 'srv/api/related?type=children&type=services&type=datasets'
         url += '&uuid=' + Object.keys(this.metadatas).join('&uuid=')
         var self = this
         this.$http.get(url, {

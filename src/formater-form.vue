@@ -209,6 +209,7 @@ export default {
     },
    
     getRecords () {
+      console.log('getRecords')
       // trigger search event like breadcrumb
       this.initParameters()
       var e = new CustomEvent("aerisSearchEvent", { detail: {}});
