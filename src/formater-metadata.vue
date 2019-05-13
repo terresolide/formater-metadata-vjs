@@ -1,11 +1,13 @@
 <i18n>{
    "en":{
      "resource_contact": "Resource Contact | Resource Contacts",
-     "metadata_contact": "Metadata Contact | Metadata Contacts"
+     "metadata_contact": "Metadata Contact | Metadata Contacts",
+     "temporal_extent": "Temporal extent"
    },
    "fr":{
      "resource_contact": "Contact pour les données| Contacts pour les données",
-     "metadata_contact": "Contact pour les métadonnées | Contacts pour les métadonnées"
+     "metadata_contact": "Contact pour les métadonnées | Contacts pour les métadonnées",
+      "temporal_extent": "Etendue temporelle"
    }
 }
 </i18n>
@@ -21,7 +23,7 @@
           <a v-else href="#" :alt="$gn('group-'+ meta.groupOwner)" :title="$gn('group-'+ meta.groupOwner)" class="fmt-group-logo">
               <img :src="meta.logo"  />
           </a>
-          <i class="fa fa-database" v-if="['dataset','serie'].indexOf(meta.type) >= 0"></i>
+          <i  class="fa" :class="meta.type === 'series' ? 'fa-files-o' : 'fa-file'"  v-if="['dataset','series'].indexOf(meta.type) >= 0"></i>
           <div>
           
           {{meta.title ? meta.title: meta.defaultTitle}}
@@ -38,7 +40,19 @@
 	        <formater-quicklooks :quicklooks="meta.images"></formater-quicklooks>
 	        <span v-html="meta.description"></span>
 	      </div>
-	      <div class="fmt-contacts" v-if="contacts.resource">
+		  <div class="fmt-temporalExtent" style="clear:both;" v-if="meta.tempExtentBegin">
+			<h2><i class="fa fa-clock-o"></i>{{$t('temporal_extent')}}</h2>
+			 <div>
+			    {{date2str(meta.tempExtentBegin)}}
+			    <i class="fa fa-long-arrow-right" ></i>
+			    {{date2str(meta.tempExtentEnd)}}
+			</div>
+		  </div>
+	     
+	     
+      </div>
+      <div v-if="currentTab === 'tab2'">
+      <div class="fmt-contacts" v-if="contacts.resource">
 	        <h2><i class="fa fa-users"></i>{{$tc('resource_contact', Object.keys(contacts.resource).length)}}</h2>
 	        <div v-for="(fonction, key) in contacts.resource" :key="key" style="float:left;">
 		         <h3><i class="fa fa-user"></i>{{$gn(key)}}</h3>
@@ -52,10 +66,9 @@
 	         <div v-for="(fonction, key) in contacts.metadata" :key="key" >
 		         <h3><i class="fa fa-user"></i>{{$gn(key)}}</h3>
 		        <formater-contact  v-for="(item, index) in fonction" :key="index" :contact="item" :lang="lang"></formater-contact>
-	        </div>  </div>
-	      
-      </div>
-      <div v-if="currentTab === 'tab2'">sous forme de xml</div>
+	        </div>  
+	       </div>
+	       </div>
    </div>
  </div>
 </template>
@@ -63,6 +76,10 @@
 import FormaterContact from './formater-contact.vue'
 import FormaterQuicklooks from './formater-quicklooks.vue'
 import FormaterExportLinks from './formater-export-links.vue'
+import moment from 'moment';
+import { extendMoment } from 'moment-range';
+// window.momentCst = extendMoment(moment);
+
 export default {
   name: 'FormaterMetadata',
   components: {
@@ -109,6 +126,7 @@ export default {
   created () {
     this.$i18n.locale = this.lang
     this.$setGnLocale(this.lang)
+    moment.locale(this.lang)
     this.popstateListener = this.close.bind(this)
     document.addEventListener('popstate', this.popstateListener)
     this.keydownListener = this.checkEscape.bind(this)
@@ -127,6 +145,10 @@ export default {
     this.keydownListener = this.checkEscape.bind(this)
   },
   methods: {
+      date2str (date) {
+        //return 'hello';
+        return moment(date, 'YYYY-MM-DD').format('ll')
+      },
       checkEscape (event) {
         var event = event || window.event
         var isEscape = false;
@@ -225,7 +247,7 @@ export default {
 .fmt-metadata{
   position:relative;
   padding: 10px;
-  max-width: 900px;
+  max-width: 100%;
   margin: auto;
   height: auto;
   overflow: hidden;
@@ -296,5 +318,11 @@ export default {
 }
 .fmt-metadata .fmt-contacts h3{
     margin-bottom:0;
+}
+.fmt-metadata .fmt-temporalExtent div{
+  margin: 5px 30px;
+}
+.fmt-metadata .fmt-temporalExtent i.fa.fa-long-arrow-right {
+  margin-left:12px;
 }
 </style>
