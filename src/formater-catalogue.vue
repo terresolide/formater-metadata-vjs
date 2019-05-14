@@ -8,6 +8,7 @@
 <template>
  <div class="fmt-catalogue">
   <aeris-theme :primary="primary" :active="true" :emphasis="emphasis"></aeris-theme>
+  <formater-requester :lang="lang" :nb-record="nbRecord"></formater-requester>
  <!-- <formater-draggable-block :show="true">  -->
   <formater-draw-bbox color="#fff" :lang="lang" :background="primary"></formater-draw-bbox>
  <!--  </formater-draggable-block>  -->
@@ -42,6 +43,8 @@ import FormaterPaging from './formater-paging.vue';
 //import FormaterDraggableBlock from './formater-draggable-block.vue';
 import FormaterDrawBbox from './formater-draw-bbox.vue';
 import AerisTheme from 'aeris-commons-components-vjs/src/aeris-theme/aeris-theme.vue'
+import FormaterRequester from './formater-requester.vue';
+
 export default {
   name: 'FormaterCatalogue',
   components: {
@@ -50,6 +53,7 @@ export default {
     FormaterListMetadata,
     FormaterMetadata,
     FormaterPaging,
+    FormaterRequester,
     // FormaterDraggableBlock,
     AerisTheme
   },

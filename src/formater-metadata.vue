@@ -1,13 +1,14 @@
 <i18n>{
    "en":{
-     "resource_contact": "Resource Contact | Resource Contacts",
-     "metadata_contact": "Metadata Contact | Metadata Contacts",
+     "main": "Decription",
+     "complement": "Others informations",
      "temporal_extent": "Temporal extent"
    },
    "fr":{
-     "resource_contact": "Contact pour les données| Contacts pour les données",
-     "metadata_contact": "Contact pour les métadonnées | Contacts pour les métadonnées",
+      "main": "Decription",
+       "complement": "Informations complémentaires",
       "temporal_extent": "Etendue temporelle"
+      
    }
 }
 </i18n>
@@ -32,10 +33,10 @@
       </h1> 
       <hr style="border:1px solid grey;margin-bottom:0px;clear:both;"/>
       <div class="fmt-tabs">
-         <div v-for="(tab,index) in tabs" class="fmt-tab" :class="{'selected': currentTab === tab.value}" @click="currentTab = tab.value">{{tab.title}}</div>
+         <div v-for="(tab,index) in tabs" v-if="tab === true" class="fmt-tab" :class="{'selected': currentTab === index}" @click="currentTab = index">{{$t(index)}}</div>
          <formater-export-links :uuid="uuid" v-if="uuid"></formater-export-links>
       </div>
-      <div v-if="currentTab === 'tab1'" style="margin-top:20px;">
+      <div v-if="currentTab === 'main'" style="margin-top:20px;">
 	      <div class="fmt-description">
 	        <formater-quicklooks :quicklooks="meta.images"></formater-quicklooks>
 	        <span v-html="meta.description"></span>
@@ -48,42 +49,32 @@
 			    {{date2str(meta.tempExtentEnd)}}
 			</div>
 		  </div>
-	     
-	     
+		  <div v-if="!tabs.complement">
+	          <formater-list-contact  :lang="lang" :responsible-party="meta.responsibleParty" :responsible-party2="metaLang2.responsibleParty"></formater-list-contact>
+	     </div>
+	     <div v-else>ELSE</div>
       </div>
-      <div v-if="currentTab === 'tab2'">
-      <div class="fmt-contacts" v-if="contacts.resource">
-	        <h2><i class="fa fa-users"></i>{{$tc('resource_contact', Object.keys(contacts.resource).length)}}</h2>
-	        <div v-for="(fonction, key) in contacts.resource" :key="key" style="float:left;">
-		         <h3><i class="fa fa-user"></i>{{$gn(key)}}</h3>
-		        <formater-contact  v-for="(item, index) in fonction" :key="index" :contact="item" :lang="lang"></formater-contact>
-	        </div>
-	        <div style="clear:both;"></div>
-	      </div>
-
-	       <div class="fmt-contacts" v-if="contacts.metadata">
-	        <h2><i class="fa fa-users"></i>{{$tc('metadata_contact', Object.keys(contacts.metadata).length)}}</h2>
-	         <div v-for="(fonction, key) in contacts.metadata" :key="key" >
-		         <h3><i class="fa fa-user"></i>{{$gn(key)}}</h3>
-		        <formater-contact  v-for="(item, index) in fonction" :key="index" :contact="item" :lang="lang"></formater-contact>
-	        </div>  
-	       </div>
-	       </div>
+      <div v-if="currentTab === 'complement'" >
+             <formater-list-contact  :lang="lang" :responsible-party="meta.responsibleParty" :responsible-party2="metaLang2.responsibleParty"></formater-list-contact>
+      </div>
+       <div v-if="currentTab === 'quality'" >
+             <formater-list-contact  :lang="lang" :responsible-party="meta.responsibleParty" :responsible-party2="metaLang2.responsibleParty"></formater-list-contact>
+      </div>
    </div>
  </div>
 </template>
 <script>
-import FormaterContact from './formater-contact.vue'
+import FormaterListContact from './formater-list-contact.vue'
 import FormaterQuicklooks from './formater-quicklooks.vue'
 import FormaterExportLinks from './formater-export-links.vue'
 import moment from 'moment';
-import { extendMoment } from 'moment-range';
+// import { extendMoment } from 'moment-range';
 // window.momentCst = extendMoment(moment);
 
 export default {
   name: 'FormaterMetadata',
   components: {
-    FormaterContact,
+    FormaterListContact,
     FormaterQuicklooks,
     FormaterExportLinks
   },
@@ -104,34 +95,68 @@ export default {
   watch: {
     lang (newvalue) {
     	this.$i18n.locale = newvalue
+    	this.srv = process.env.GEONETWORK + 'srv/' + (newvalue === 'fr' ? 'fre' : 'eng') + '/'
+    	this.headers['Accept-Language'] =  newvalue === 'fr' ? 'fre': 'eng'
     }
   },
   data() {
     return {
-     tabs: [
-       {title: 'Aperçu', value: 'tab1'},
-       {title: 'Complet', value: 'tab2'}
-     ],
-     currentTab: 'tab1',
+     tabs: {
+       main: true,
+       complement: false,
+       quality: false
+     },
+     uuid: null,
+     currentTab: 'main',
      meta: null,
+     metaLang2: {},
      uuid: null,
      popstateListener: null,
      keydownListener: null,
-     contacts: {
-       metadata: {},
-       resource: {}
-     }
+     srv: process.env.GEONETWORK + 'srv/' + (this.lang === 'fr'? 'fre' : 'eng') + '/',
+     api: process.env.GEONETWORK + '/srv/api/',
+     headers: {
+       'Accept': 'application/json, text/plain, */*',
+       'Accept-Language': this.lang === 'fr' ? 'fre': 'eng'
+     },
+     parameters: {}
     }
   },
   created () {
     this.$i18n.locale = this.lang
     this.$setGnLocale(this.lang)
     moment.locale(this.lang)
+    this.uuid = this.metadata['geonet:info'].uuid
     this.popstateListener = this.close.bind(this)
     document.addEventListener('popstate', this.popstateListener)
     this.keydownListener = this.checkEscape.bind(this)
     document.addEventListener('keydown', this.keydownListener)
   },
+  watch: {
+    meta: {
+      handler(val) {
+        if (val.related && val.related.children) {
+          this.getRecords()
+          this.$set(this.tabs, 'complement', true)
+        } else {
+          this.$set(this.tabs, 'complement', false)
+        }
+      }
+    }
+  },
+ /* computed: {
+    hasChild () {
+      if (this.meta && this.meta.related && this.meta.related.children) {
+        console.log(this.meta.related)
+        this.tabs.complement = true
+        console.log(this.tabs)
+        return true;
+      } else {
+        this.$delete(this.tabs, 1 )
+        return false;
+      }
+    }
+  },*/
   mounted () {
    if (this.metadata) {
      this.meta = this.metadata
@@ -169,9 +194,9 @@ export default {
 	  fillMetadata () {
 	     //get meta from other language if meta._locale != meta.docLocale
 	     this.uuid = this.meta['geonet:info'].uuid;
-	     console.log(this.uuid)
+	     
 	     if (this.meta._locale ===  this.meta.docLocale) {
-	       this.extract()
+	       
 	       return
 	     }
 	     
@@ -180,66 +205,72 @@ export default {
 	     this.$http.get(url).then(
                response => {
                  console.log(response.body)
-                 _this.extract(response.body.metadata)
+                // _this.extract(response.body.metadata)
+                 _this.metaLang2 = response.body.metadata
                } 
        	 )
 	  },
-      extract (meta2) {
-        // search info in the other language
-
-        this.extractContact(meta2)
-	  },
-	  extractContact (meta2 =[]) {
-	    console.log(meta2)
-	    this.contacts = {
-	      resource: {},
-	      metadata: {}
-	    }
-	    console.log(this.meta.responsibleParty)
-	    if (this.meta.responsibleParty) {
-	        var _this = this
-		    this.meta.responsibleParty.forEach( function (contact)  {
-		      var fields = contact.split('|');
-		      if (fields[1] === 'metadata' || fields[1] === 'metadonnées') {
-		       if (_this.contacts.metadata[fields[0]]){
-		         _this.contacts.metadata[fields[0]].push(fields)
-		       } else {
-		         _this.contacts.metadata[fields[0]] = [fields]
-		       }
-		      }else{
-		        if (_this.contacts.resource[fields[0]]){
-			         _this.contacts.resource[fields[0]].push(fields)
-			       } else {
-			         _this.contacts.resource[fields[0]] = [fields]
-			       }
-		      }
-		        
-		    })
-	    } else 
-	    if (meta2.responsibleParty) {
-	        console.log('loop')
-		    var _this = this
-		    meta2.responsibleParty.forEach( function (contact)  {
-		      var fields = contact.split('|');
-		      if (fields[1] === 'metadata' || fields[1] === 'metadonnées') {
-			       if (_this.contacts.metadata[fields[0]]){
-			         _this.contacts.metadata[fields[0]].push(fields)
-			       } else {
-			         _this.contacts.metadata[fields[0]] = [fields]
-			       }
-			      }else{
-			        if (_this.contacts.resource[fields[0]]){
-				         _this.contacts.resource[fields[0]].push(fields)
-				       } else {
-				         _this.contacts.resource[fields[0]] = [fields]
-				       }
-			      }
-		    })
-	    }
-	    console.log(this.contacts)
-	    
-	    
-	  }
+	  initParameters () {
+	      this.parameters = {
+	        _content_type: 'json',
+	         fast: 'index',
+	      //  'facet.q': '',
+	        bucket: '26041996',
+	        from: 1,
+	        to: 18,
+	        //  resultType: 'subtemplate',
+	        resultType: 'subtemplate',
+	        sortBy: 'title',
+	        sortOrder: 'reverse',
+	        parentUuid: this.uuid
+	      }
+    },
+	  getRecords () {
+	      console.log('getRecords')
+	      // trigger search event like breadcrumb
+	      this.initParameters()
+	      var e = new CustomEvent("aerisSearchEvent", { detail: {}});
+		  document.dispatchEvent(e);
+		  if (!e.detail.startDefault) {
+		    e.detail.renameProperty('start', 'extFrom')
+		  } else {
+		    delete e.detail.start
+		  }
+		  if (e.detail.endDefault) {
+		    delete e.detail.endDefault
+		    delete e.detail.end
+		  } else {
+		    e.detail.renameProperty('end', 'extTo')
+	      }
+		  for(var key in e.detail) {
+		    if (['geometry', 'extTo', 'extFrom'].indexOf(key) >=0){
+		      this.parameters[key] = e.detail[key]
+		    }
+		  }
+		  delete e.detail.startDefault
+		  delete e.detail.endDefault
+		 
+		  //delete(e.detail.extTo)
+		  //delete(e.detail.extFrom)
+		  var headers =  {
+	          'Accept': 'application/json, text/plain, */*',
+	          'Accept-Language': this.lang === 'fr' ? 'fre': 'eng'
+	        }
+	      // this.parameters = Object.assign(this.parameters, e.detail)	
+	      console.log(this.parameters)
+	      var self = this
+	      this.parameters.sortOrder =  this.parameters.sortBy === 'title' ? 'ordering': 'reverse';
+	      var url = this.srv + 'q?' + Object.keys(this.parameters).map(function (prop) {
+	        return prop + '=' + self.parameters[prop]
+	      }).join('&');
+	
+	      this.$http.get(url, {headers: headers, parameters: this.parameters}).then(
+	          response => { this.fill(response.body);}
+	       )
+    	},
+    	fill (response) {
+    	  console.log(response)
+    	}
   }
 }
 </script>
@@ -265,7 +296,7 @@ export default {
 }
 .fmt-metadata h1.fmt-metadata-header div{
   float:left;
-  width:calc(100% - 130px);
+  max-width:calc(100% - 150px);
   display:inline-block;
 }
 .fmt-metadata h1.fmt-metadata-header i.fa{

@@ -103,7 +103,7 @@ export default {
           'Accept': 'application/json, text/plain, */*',
           'Accept-Language': this.lang === 'fr' ? 'fre': 'eng'
         }
-        var url = process.env.GEONETWORK + 'srv/api/related?type=children&type=services&type=datasets'
+        var url = process.env.GEONETWORK + 'srv/api/related?type=children'
         url += '&uuid=' + Object.keys(this.metadatas).join('&uuid=')
         var self = this
         this.$http.get(url, {
@@ -114,7 +114,9 @@ export default {
      addRelated (related) {
        var self = this
        for(var key in this.metadatas){
+         if (related[key]) {
            this.$set(this.metadatas[key],'related', related[key])
+         }
        }
      }
   }
