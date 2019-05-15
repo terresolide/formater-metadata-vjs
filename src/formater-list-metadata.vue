@@ -28,6 +28,10 @@ export default {
     lang: {
       type: String,
       default: 'en'
+    },
+    name: {
+      type: String,
+      default: 'step1'
     }
   },
   watch: {
@@ -58,7 +62,10 @@ export default {
   },
   methods: {
      receiveMetadatas (event) {
-       
+
+       if (event.detail.mode != this.name) {
+         return;
+       }
        var self = this
        var metadatas = {}
        if (!event.detail.metadata){

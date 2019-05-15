@@ -74,6 +74,10 @@ export default {
     lang: {
       type: String,
       default: 'en'
+    },
+    uuid: {
+      type: String,
+      default: null
     }
   },
   watch: {

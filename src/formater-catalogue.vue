@@ -8,19 +8,19 @@
 <template>
  <div class="fmt-catalogue">
   <aeris-theme :primary="primary" :active="true" :emphasis="emphasis"></aeris-theme>
-  <formater-requester :lang="lang" :nb-record="nbRecord"></formater-requester>
+  <formater-requester :lang="lang" :nb-record="nbRecord" :uuid="currentUuid"></formater-requester>
  <!-- <formater-draggable-block :show="true">  -->
   <formater-draw-bbox color="#fff" :lang="lang" :background="primary"></formater-draw-bbox>
  <!--  </formater-draggable-block>  -->
   <div >
    <div class="fmt-column-left" >
-    <formater-form :lang="lang" :nb-record="nbRecord"></formater-form>
+    <formater-form :lang="lang" :nb-record="nbRecord" :uuid="currentUuid"></formater-form>
     </div>
    
     <div class="fmt-column-right" >
      <div v-show="metadata === null">
        <formater-paging :lang="lang" :nb-record="nbRecord"></formater-paging>
-       <formater-list-metadata :lang="lang" ></formater-list-metadata>
+       <formater-list-metadata :lang="lang" name="step1" ></formater-list-metadata>
      </div>
       <div v-if="metadata">
     	<formater-metadata :metadata="metadata" :lang="lang" @close="resetMetadata"></formater-metadata>
@@ -89,6 +89,8 @@ export default {
   data() {
     return {
       metadata: null,
+      currentUuid: null,
+      metadatas: [],
       metadataListener: null,
       drawing: false
     }
@@ -106,12 +108,25 @@ export default {
   },
   methods: {
 	receiveMetadata (event) {
+	  if (this.metadata) {
+	    this.metadatas.push(this.metadata)
+	  }
 	  this.metadata = event.detail
+	  this.currentUuid = this.metadata['geonet:info'].uuid
 	},
 	resetMetadata (event) {
-	  var event = new CustomEvent('fmt:closeMetadataEvent')
-	  document.dispatchEvent(event)
-	  this.metadata = null
+	  var previous = this.metadatas.pop()
+	  if (previous) {
+		this.metadata = previous
+		this.currentUuid = this.metadata['geonet:info'].uuid
+		
+	  } else {
+	    this.metadata = null
+		  this.currentUuid = null
+	    var event = new CustomEvent('fmt:closeMetadataEvent')
+		  document.dispatchEvent(event)
+		
+	  }
 	}
   }
 }

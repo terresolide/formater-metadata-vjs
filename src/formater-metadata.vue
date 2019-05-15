@@ -52,7 +52,10 @@
 		  <div v-if="!tabs.complement">
 	          <formater-list-contact  :lang="lang" :responsible-party="meta.responsibleParty" :responsible-party2="metaLang2.responsibleParty"></formater-list-contact>
 	     </div>
-	     <div v-else>ELSE</div>
+	     <div v-else>
+	      <formater-paging :lang="lang" :nb-record="9"></formater-paging>
+       <formater-list-metadata :lang="lang" name="step2"></formater-list-metadata>
+	     </div>
       </div>
       <div v-if="currentTab === 'complement'" >
              <formater-list-contact  :lang="lang" :responsible-party="meta.responsibleParty" :responsible-party2="metaLang2.responsibleParty"></formater-list-contact>
@@ -67,6 +70,8 @@
 import FormaterListContact from './formater-list-contact.vue'
 import FormaterQuicklooks from './formater-quicklooks.vue'
 import FormaterExportLinks from './formater-export-links.vue'
+const FormaterPaging = () => import('./formater-paging.vue')
+const FormaterListMetadata = () => import('./formater-list-metadata.vue')
 import moment from 'moment';
 // import { extendMoment } from 'moment-range';
 // window.momentCst = extendMoment(moment);
@@ -76,7 +81,9 @@ export default {
   components: {
     FormaterListContact,
     FormaterQuicklooks,
-    FormaterExportLinks
+    FormaterExportLinks,
+    FormaterPaging,
+    FormaterListMetadata
   },
   props: {
     lang: {
@@ -210,67 +217,13 @@ export default {
                } 
        	 )
 	  },
-	  initParameters () {
-	      this.parameters = {
-	        _content_type: 'json',
-	         fast: 'index',
-	      //  'facet.q': '',
-	        bucket: '26041996',
-	        from: 1,
-	        to: 18,
-	        //  resultType: 'subtemplate',
-	        resultType: 'subtemplate',
-	        sortBy: 'title',
-	        sortOrder: 'reverse',
-	        parentUuid: this.uuid
-	      }
-    },
 	  getRecords () {
-	      console.log('getRecords')
-	      // trigger search event like breadcrumb
-	      this.initParameters()
-	      var e = new CustomEvent("aerisSearchEvent", { detail: {}});
-		  document.dispatchEvent(e);
-		  if (!e.detail.startDefault) {
-		    e.detail.renameProperty('start', 'extFrom')
-		  } else {
-		    delete e.detail.start
-		  }
-		  if (e.detail.endDefault) {
-		    delete e.detail.endDefault
-		    delete e.detail.end
-		  } else {
-		    e.detail.renameProperty('end', 'extTo')
-	      }
-		  for(var key in e.detail) {
-		    if (['geometry', 'extTo', 'extFrom'].indexOf(key) >=0){
-		      this.parameters[key] = e.detail[key]
-		    }
-		  }
-		  delete e.detail.startDefault
-		  delete e.detail.endDefault
-		 
-		  //delete(e.detail.extTo)
-		  //delete(e.detail.extFrom)
-		  var headers =  {
-	          'Accept': 'application/json, text/plain, */*',
-	          'Accept-Language': this.lang === 'fr' ? 'fre': 'eng'
-	        }
-	      // this.parameters = Object.assign(this.parameters, e.detail)	
-	      console.log(this.parameters)
-	      var self = this
-	      this.parameters.sortOrder =  this.parameters.sortBy === 'title' ? 'ordering': 'reverse';
-	      var url = this.srv + 'q?' + Object.keys(this.parameters).map(function (prop) {
-	        return prop + '=' + self.parameters[prop]
-	      }).join('&');
-	
-	      this.$http.get(url, {headers: headers, parameters: this.parameters}).then(
-	          response => { this.fill(response.body);}
-	       )
-    	},
-    	fill (response) {
-    	  console.log(response)
-    	}
+      
+      	  // lance le requeteur
+      	  var event = new CustomEvent('fmt:metadataWithChildEvent', {detail: {uuid: this.uuid}})
+      	  document.dispatchEvent(event)
+    }
+	    
   }
 }
 </script>

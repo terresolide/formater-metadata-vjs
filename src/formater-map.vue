@@ -124,7 +124,6 @@ export default {
      }
      
      var bboxList = this.$gnToArray(bbox)
-     console.log(bboxList);
      //trouble with rectangle ??? add polygon!
      var self = this;
      bboxList.forEach(function (tab){
@@ -190,7 +189,9 @@ export default {
         
        }
      })
+     if (bounds) {
       self.map.fitBounds(bounds)
+     }
    },
    setSelected (layer) {
      this.selected.push(layer)

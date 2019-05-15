@@ -46,6 +46,7 @@ export default {
       temporalChangedListener: null,
       spatialChangedListener: null,
       dimensionChangedListener: null,
+      metadataWithChildListener: null,
       textChangedListener: null,
       // listen a global reset event
       resetListener: null,
@@ -69,6 +70,8 @@ export default {
     document.addEventListener('fmt:dimensionChangeEvent', this.dimensionChangedListener);
     this.textChangedListener = this.getRecords.bind(this);
     document.addEventListener('fmt:textChangeEvent', this.textChangedListener);
+    this.metadataWithChildListener = this.getChilds.bind(this)
+    document.addEventListener('fmt:metadataWithChildEvent', this.metadataWithChildListener)
     this.resetListener = this.handleReset.bind(this);
      document.addEventListener('fmt:resetEvent', this.resetListener);
   },
@@ -81,7 +84,10 @@ export default {
     this.spatialChangedListener = null;
     document.addEventListener('fmt:dimensionChangeEvent', this.dimensionChangedListener);
     this.dimensionChangedListener = null
-
+    document.removeEventListener('fmt:textChangeEvent', this.textChangedListener)
+    this.textChangedListener = null
+    document.removeEventListener('fmt:metadataWithChildEvent', this.metadataWithChildListener)
+    this.metadataWithChildListener = null
     document.addEventListener('fmt:resetEvent', this.resetListener);
     this.resetListener = null
   },
@@ -116,7 +122,54 @@ export default {
 //         this.parameters.any = this.fulltextSearch
 //       }
     },
-   
+    getChilds(event) {
+      var parameters = {
+    	        _content_type: 'json',
+    	         fast: 'index',
+    	      //  'facet.q': '',
+    	        bucket: '26041996',
+    	        from: 1,
+    	        to: 18,
+    	        //  resultType: 'subtemplate',
+    	        resultType: 'subtemplate',
+    	        sortBy: 'title',
+    	        sortOrder: 'reverse',
+    	        parentUuid: event.detail.uuid
+      }
+          var e = new CustomEvent("aerisSearchEvent", { detail: {}});
+      	  document.dispatchEvent(e);
+      	  if (!e.detail.startDefault) {
+      	    e.detail.renameProperty('start', 'extFrom')
+      	  } else {
+      	    delete e.detail.start
+      	  }
+      	  if (e.detail.endDefault) {
+      	    delete e.detail.endDefault
+      	    delete e.detail.end
+      	  } else {
+      	    e.detail.renameProperty('end', 'extTo')
+            }
+      	  for(var key in e.detail) {
+    		    if (['geometry', 'extTo', 'extFrom'].indexOf(key) >=0){
+    		      parameters[key] = e.detail[key]
+    		    }
+    	  }
+      	  parameters.sortOrder =  parameters.sortBy === 'title' ? 'ordering': 'reverse';
+      	  var headers =  {
+  	          'Accept': 'application/json, text/plain, */*',
+  	          'Accept-Language': this.lang === 'fr' ? 'fre': 'eng'
+  	        }
+
+  	      var self = this
+  	      parameters.sortOrder =  this.parameters.sortBy === 'title' ? 'ordering': 'reverse';
+  	      var url = this.srv + 'q?' + Object.keys(parameters).map(function (prop) {
+  	        return prop + '=' + parameters[prop]
+  	      }).join('&');
+  	
+  	      this.$http.get(url, {headers: headers, parameters: parameters}).then(
+  	          response => { this.receiveChilds(response.body);}
+  	       )
+    },
     getRecords () {
       // trigger search event like breadcrumb
       this.initParameters()
@@ -174,10 +227,15 @@ export default {
       return e;
     },
     fill (data) {
+      data.mode = 'step1'
       var event = new CustomEvent('fmt:metadataListEvent', {detail:  data})
       document.dispatchEvent(event)
     },
-
+    receiveChilds (data) {
+      data.mode = 'step2'
+        var event = new CustomEvent('fmt:metadataListEvent', {detail:  data})
+        document.dispatchEvent(event)
+    },
     handleReset () {
       console.log('reset')
       var event = new CustomEvent('aerisResetEvent')
