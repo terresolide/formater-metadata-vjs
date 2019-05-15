@@ -21,9 +21,9 @@
 </i18n>
 <template>
  <div class="fmt-form">
-  <div style="text-align:center;margin: -10px 0 30px 0;"><input type="button" @click="handleReset" :value="$t('reset')"/></div>
+  <div style="text-align:center;margin: -10px 0 30px 0;"><input type="button" @click="reset" :value="$t('reset')"/></div>
   <div class="formater-input-group" style="margin:10px; width:calc(100% - 20px);">
-     <input id="any" name="any" v-model="fulltextSearch" :placeholder="$t('search')" @change="changeSearch"  /><i class="fa fa-search"></i>
+     <input id="any" name="any" v-model="fulltextSearch" :placeholder="$t('search')" @change="changeText" @keypress="changeTextOnEnter" /><i class="fa fa-search"></i>
  </div>
  <formater-map></formater-map>
  <formater-search-box header-icon-class="fa fa-globe" open-icon-class="fa fa-caret-right" :title="$t('spatial_extend')" :deployed="false" type="empty">
@@ -34,7 +34,7 @@
 </formater-search-box>
 <formater-search-box v-if="dimension.category" :header-icon-class="facetToIcon(index)" open-icon-class="fa fa-caret-right" :title="titleDimension(index)" type="empty" v-for="(dimension, index) in dimensions" :key="index">
   <formater-dimension-block v-if="!isFacet(index)"  :dimension="dimension.category" :name="dimensions[index]['@name']" ></formater-dimension-block>
-  <formater-facet-block v-if="isFacet(index)"  :defaut="facet[dimensions[index]['@name']]" :dimension="dimension.category" :name="dimensions[index]['@name']" ></formater-facet-block>
+  <formater-facet-block v-if="isFacet(index)"   :dimension="dimension.category" :name="dimensions[index]['@name']" ></formater-facet-block>
  </formater-search-box>
 
  </div>
@@ -58,28 +58,6 @@ import FormaterDimensionBlock from './formater-dimension-block.vue'
 import FormaterFacetBlock from './formater-facet-block.vue'
 // import FormaterSearchBox from './formater-search-box.vue'
 
-Object.defineProperty(
-    Object.prototype, 
-    'renameProperty',
-    {
-        writable : false, // Cannot alter this property
-        enumerable : false, // Will not show up in a for-in loop.
-        configurable : false, // Cannot be deleted via the delete operator
-        value : function (oldName, newName) {
-            // Do nothing if the names are the same
-            if (oldName == newName) {
-                return this;
-            }
-            // Check for the old property name to 
-            // avoid a ReferenceError in strict mode.
-            if (this.hasOwnProperty(oldName)) {
-                this[newName] = this[oldName];
-                delete this[oldName];
-            }
-            return this;
-        }
-    }
-);
 
 export default {
   name: 'FormaterForm',
@@ -111,20 +89,28 @@ export default {
       fulltextSearch: '',
       first: true,
       dimensions: [],
-       facet: [],
-       aerisSearchListener: null
+       aerisSearchListener: null,
+       aerisResetListener: null,
+       metadataListListener: null
     }
   },
   created () {
     this.$i18n.locale = this.lang
     this.$setGnLocale(this.lang)
+    this.aerisSearchListener = this.handleSearch.bind(this)
+    document.addEventListener('aerisSearchEvent', this.aerisSearchListener)
+    this.aerisResetListener = this.handleReset.bind(this)
+    document.addEventListener('aerisResetEvent', this.aerisResetListener)
     this.metadataListListener = this.fill.bind(this)
-    document.addEventListener('fmt:metadataListEvent', this.metadataListListener);
+    document.addEventListener('fmt:metadataListEvent', this.metadataListListener)
 
   },
   destroyed () {
-
-    document.removeEventListener('fmt:metadataListEvent', this.metadataListListener);
+    document.removeEventListener('aerisSearchEvent', this.aerisSearchListener)
+    this.aerisSearchListener = null
+    document.removeEventListener('aerisResetEvent', this.aerisResetListener)
+    this.aerisResetListener = null
+    document.removeEventListener('fmt:metadataListEvent', this.metadataListListener)
     this.metadataListListener = null;
   },
  
@@ -183,6 +169,7 @@ export default {
       })
       return dimension
     },
+
     updateDimensions (dimensions, newdimensions) {
       if (!dimensions) {
         return null
@@ -198,7 +185,6 @@ export default {
           } 
         })
         if (typeof found === 'undefined') {
-          console.log('not found')
           _this.$set(dimensions[index], '@count', 0)
         } else {
           _this.$set(dimensions[index], '@count', found['@count'])
@@ -213,17 +199,30 @@ export default {
       })
       return dimensions
     },
-    handleReset () {
-      console.log('reset')
-      this.fulltextSearch = ''
-      this.facet = []
+    reset () {
       var event = new CustomEvent('fmt:resetEvent')
       document.dispatchEvent(event)
+    },
+    handleReset () {
+      this.fulltextSearch = ''  
 
     },
-    changeSearch (event) {
+    handleSearch (e) {
+      if (this.fulltextSearch.length > 0) {
+      	e.detail.any = this.fulltextSearch
+      } 
+    },
+    changeTextOnEnter (event) {
+      if (event.which == 13 || event.keyCode == 13) {
+        this.changeText()
+        return false;
+      }
+    },
+    changeText(event) {
        // trigger event change text
-     }
+       var e = new CustomEvent('fmt:textChangeEvent')
+       document.dispatchEvent(e)
+    }
   }
 }
 </script>

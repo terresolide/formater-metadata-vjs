@@ -104,15 +104,20 @@ export default {
 //    } else {
 //      this.categories = [this.dimension.category]
 //    }
-   this.resetEventListener = this.handleReset.bind(this) 
-   document.addEventListener('aerisResetEvent', this.resetEventListener);
+//    this.resetEventListener = this.handleReset.bind(this) 
+//    document.addEventListener('aerisResetEvent', this.resetEventListener);
+//    this.searchEventListener = this.handleSearch.bind(this) 
+//    document.addEventListener('aerisSearchEvent', this.searchEventListener);
    // do not listen to aerisSearchEvent: when change trigger event and value is register formater form variable arry 
    // facet[name]
   
   },
   destroyed () {
-	document.removeEventListener('aerisResetEvent', this.resetEventListener);
-	this.resetEventListener = null;
+// 	document.removeEventListener('aerisResetEvent', this.resetEventListener);
+// 	this.resetEventListener = null;
+	
+//    document.addEventListener('aerisSearchEvent', this.searchEventListener);
+//    this.searchEventListener = null
   },
   methods: {
     handleChange () {
@@ -126,13 +131,13 @@ export default {
          // if check a node => new facet value
          var detail = {}
          detail[this.name] = this.value
-         var event = new CustomEvent('fmt:dimensionChangeEvent', {detail: detail})
+         var event = new CustomEvent('fmt:facetChangeEvent', {detail: detail})
          document.dispatchEvent(event)
        } else if (!this.isChecked && this.level === 0){
          // if unckecked a root node => remove facet value
          var detail = {}
-         detail[this.name] = null
-         var event = new CustomEvent('fmt:dimensionChangeEvent', {detail: detail})
+         detail[this.name] = ''
+         var event = new CustomEvent('fmt:facetChangeEvent', {detail: detail})
          document.dispatchEvent(event)
        }
        // trigger to parent this child change (@see method childChanged)
@@ -141,6 +146,15 @@ export default {
     },
     handleReset (e) {
       this.isChecked = false
+    },
+    handleSearch (e) {
+      console.log(e)
+      if (this.isChecked) {
+        if (!e.detail.facet) {
+          e.detail.facet = []
+        }
+        e.detail.facet[this.name] = this.value
+      }
     },
     childChanged (childChecked) { 
       if(childChecked && !this.isChecked) {

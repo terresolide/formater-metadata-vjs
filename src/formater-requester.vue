@@ -39,7 +39,6 @@ export default {
         'Accept': 'application/json, text/plain, */*',
         'Accept-Language': this.lang === 'fr' ? 'fre': 'eng'
       },
-      fulltextSearch: '',
       first: true,
       dimensions: [],
       parameters: {},
@@ -47,6 +46,7 @@ export default {
       temporalChangedListener: null,
       spatialChangedListener: null,
       dimensionChangedListener: null,
+      textChangedListener: null,
       // listen a global reset event
       resetListener: null,
       facet: [],
@@ -65,8 +65,10 @@ export default {
     document.addEventListener('temporalChangeEvent', this.temporalChangedListener);
     this.spatialChangedListener = this.getRecords.bind(this)
     document.addEventListener('fmt:spatialChangeEvent', this.spatialChangedListener);
-    this.dimensionChangedListener = this.handleFacet.bind(this);
+    this.dimensionChangedListener = this.getRecords.bind(this);
     document.addEventListener('fmt:dimensionChangeEvent', this.dimensionChangedListener);
+    this.textChangedListener = this.getRecords.bind(this);
+    document.addEventListener('fmt:textChangeEvent', this.textChangedListener);
     this.resetListener = this.handleReset.bind(this);
      document.addEventListener('fmt:resetEvent', this.resetListener);
   },
@@ -91,41 +93,13 @@ export default {
     // url="http://demo.formater/geonetwork/srv/fre/qi?_content_type=json&bucket=2365825987452666&fast=index&from=1&to=41"
   },
   methods: {
-    facetToIcon (index) {
-      return iconClass[this.dimensions[index]['@name']]
-    },
-    titleDimension (index) {
-      return this.$i18n.t(this.dimensions[index]['@label'])
-    },
-    isFacet (index) {
-      if (this.dimensions[index]['@name'].indexOf('facet') >=0) {
-        return true;
-      } else {
-        return false;
-      }
-    },
-    isInCurrentLang (index) {
-      if (!this.isFacet(index)) {
-        return true;
-      }
-      var name = this.dimensions[index]['@name'];
-      var lang = name.substring(name.length -3, name.length)
-      if (this.lang === 'fr' && lang === 'Fre') {
-        return true;
-      } else if (this.lang != 'fr' && lang != 'Fre') {
-        return true;
-      } else {
-        return false;
-      }
-
-    },
     initParameters () {
       this.parameters = {
         _content_type: 'json',
          fast: 'index',
       //  'facet.q': '',
         bucket: '26041996',
-       // isChild: false,
+        isChild: false,
         from: 1,
         to: 18,
         //  resultType: 'subtemplate',
@@ -133,18 +107,17 @@ export default {
         sortBy: 'title',
         sortOrder: 'reverse'
       }
-      if (this.uuid) {
-        this.parameters.parentUuid = uuid
-      } else {
-        this.parameters.isChild = false
-      }
-      if (this.fulltextSearch !== '' && !this.uuid) {
-        this.parameters.any = this.fulltextSearch
-      }
+//       if (this.uuid) {
+//         this.parameters.parentUuid = uuid
+//       } else {
+//         this.parameters.isChild = false
+//       }
+//       if (this.fulltextSearch !== '' && !this.uuid) {
+//         this.parameters.any = this.fulltextSearch
+//       }
     },
    
     getRecords () {
-  
       // trigger search event like breadcrumb
       this.initParameters()
       var e = new CustomEvent("aerisSearchEvent", { detail: {}});
@@ -163,12 +136,14 @@ export default {
 	  delete e.detail.startDefault
 	  delete e.detail.endDefault
 	  this.prepareFacet(e)
+	 
 	  //delete(e.detail.extTo)
 	  //delete(e.detail.extFrom)
 	  var headers =  {
           'Accept': 'application/json, text/plain, */*',
           'Accept-Language': this.lang === 'fr' ? 'fre': 'eng'
         }
+	 
       this.parameters = Object.assign(this.parameters, e.detail)	  
       var self = this
       this.parameters.sortOrder =  this.parameters.sortBy === 'title' ? 'ordering': 'reverse';
@@ -181,93 +156,28 @@ export default {
        )
     },
     prepareFacet (e) {
-  
       var facet = ''
-      for(var key in this.facet) {
-        if (facet === '') {
-          facet = key +'/' + this.facet[key]
-        } else {
-          facet += '&' + key + '/' + this.facet[key]
-        }
+     
+      for(var key in e.detail.facet) {
+        if (e.detail.facet[key].length > 0) {
+	        if (facet === '') {
+	          facet = key +'/' + e.detail.facet[key]
+	        } else {
+	          facet += '&' + key + '/' + e.detail.facet[key]
+	        }
+      	}
       }
       if (facet !== '') {
        e.detail['facet.q'] = encodeURIComponent(facet)
+       delete e.detail.facet
       }
       return e;
     },
     fill (data) {
-     /* if (this.first) {
-        this.dimensions = this.initializeDimensions(data.summary.dimension)
-        this.first = false
-      } else {
-        // all count to zero?
-         var  newdimensions = this.initializeDimensions(data.summary.dimension)
-         this.dimensions = this.updateDimensions(this.dimensions, newdimensions)
-      }*/
-      // used to see the response change
-     // this.count = this.count + 1
-//       var event = new CustomEvent('fmt:metadataEvent', {detail:null})
-//   	  document.dispatchEvent(event)
       var event = new CustomEvent('fmt:metadataListEvent', {detail:  data})
       document.dispatchEvent(event)
     },
-   /* initializeDimensions(dimensions){
-      var dimension = null
-      if (dimensions.length > 0) {
-        dimension = dimensions
-      } else {
-        dimension = [dimensions]
-      }
-      var _this = this
-      dimension.forEach( function (obj, index){
-        if (obj.category){
-          dimension[index].category = _this.initializeDimensions(obj.category)
-        }
-      })
-      return dimension
-    },
-    updateDimensions (dimensions, newdimensions) {
-      if (!dimensions) {
-        return null
-      }
-     
-      var _this = this
-      dimensions.forEach(function(dimension, index){
-        var found = newdimensions.find( function (obj) {
-          if (obj['@name']) {
-            return obj['@name'] === dimension['@name'] 
-          } else if (obj['@value']){
-            return obj['@value'] === dimension['@value'] 
-          } 
-        })
-        if (typeof found === 'undefined') {
-          console.log('not found')
-          _this.$set(dimensions[index], '@count', 0)
-        } else {
-          _this.$set(dimensions[index], '@count', found['@count'])
-        }
-        if (dimensions[index].category) {
-	        var subDimension = []
-	        if ( typeof found !== 'undefined' && found.category) {
-	          subDimension = found.category
-	        }
-	        dimensions[index].category = _this.updateDimensions(dimensions[index].category, subDimension)
-        }
-      })
-      return dimensions
-    },*/
-    handleFacet (e) {
-      if (e.detail) {
-        for(var key in e.detail) {
-          if (e.detail[key] !== null) {
-             this.$set(this.facet, key ,e.detail[key])
-          } else {
-             delete this.facet[key]
-          }
-        }
-      }
-      this.getRecords()
-    },
+
     handleReset () {
       console.log('reset')
       var event = new CustomEvent('aerisResetEvent')
