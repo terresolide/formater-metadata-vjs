@@ -128,12 +128,14 @@ export default {
 	float:left;
 	vertical-align:middle;
 	font-size: 18px;
+	margin-right: 0;
 
 }
 .fmt-cartouche-metadata div.fmt-description{
 	max-height:165px;
 	overflow:hidden;
 	padding: 5px;
+	min-width: 360px;
 	font-size:0.9em;
 }
 .fmt-cartouche-metadata div.fmt-description img {

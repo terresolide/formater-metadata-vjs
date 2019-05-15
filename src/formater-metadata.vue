@@ -53,7 +53,7 @@
 	          <formater-list-contact  :lang="lang" :responsible-party="meta.responsibleParty" :responsible-party2="metaLang2.responsibleParty"></formater-list-contact>
 	     </div>
 	     <div v-else>
-	      <formater-paging :lang="lang" :nb-record="9"></formater-paging>
+	      <formater-paging :lang="lang" :nb-record="9" name="step2"></formater-paging>
        <formater-list-metadata :lang="lang" name="step2"></formater-list-metadata>
 	     </div>
       </div>

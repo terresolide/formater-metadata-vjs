@@ -48,6 +48,10 @@ export default {
     lang: {
       type: String,
       default: 'en'
+    },
+    name: {
+      type: String,
+      default: 'step1'
     }
   },
   watch: {
@@ -58,6 +62,7 @@ export default {
     }
   },
   created: function() {
+    console.log( this.name)
     this.recordPerPage = this.nbRecord
     this.$i18n.locale = this.lang
     this.metadataListListener = this.receiveTotalRecord.bind(this)
@@ -95,6 +100,9 @@ export default {
   
   methods: {
    receiveTotalRecord (event) {
+     if (event.detail.mode !=  this.name) {
+       return;
+     }
      this.count = parseInt(event.detail.summary['@count'])
      this.from = parseInt(event.detail['@from'])
      this.to = parseInt(event.detail['@to'])
