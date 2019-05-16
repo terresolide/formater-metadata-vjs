@@ -178,6 +178,7 @@ export default {
       // trigger search event like breadcrumb
       this.initParameters()
       var e = new CustomEvent("aerisSearchEvent", { detail: {mode: (this.uuid ? 'step2' : 'step1')}});
+      console.log(e)
 	  document.dispatchEvent(e);
 	  if (!e.detail.startDefault) {
 	    e.detail.renameProperty('start', 'extFrom')
@@ -187,22 +188,24 @@ export default {
 	  if (e.detail.endDefault) {
 	    delete e.detail.endDefault
 	    delete e.detail.end
-	    delete e.detail.mode
+	    
 	  } else {
 	    e.detail.renameProperty('end', 'extTo')
       }
 	  delete e.detail.startDefault
 	  delete e.detail.endDefault
+	  delete e.detail.mode
 	  if (this.uuid) {
 	    var mode = 'step2'
 	    for(var key in e.detail) {
-		    if (['geometry', 'extTo', 'extFrom'].indexOf(key) >=0){
-		      parameters[key] = e.detail[key]
+		    if (['geometry', 'extTo', 'extFrom', 'from', 'to'].indexOf(key) >=0){
+		      this.parameters[key] = e.detail[key]
 		    }
 	    }
 	  } else {
 	    var mode = 'step1'
 	    this.prepareFacet(e)
+	     this.parameters = Object.assign(this.parameters, e.detail)
 	  }
 	 
 	  //delete(e.detail.extTo)
@@ -212,7 +215,7 @@ export default {
           'Accept-Language': this.lang === 'fr' ? 'fre': 'eng'
         }
 	 
-      this.parameters = Object.assign(this.parameters, e.detail)	  
+     	  
       var self = this
       this.parameters.sortOrder =  this.parameters.sortBy === 'title' ? 'ordering': 'reverse';
       var url = this.srv + 'q?' + Object.keys(this.parameters).map(function (prop) {
