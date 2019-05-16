@@ -21,6 +21,10 @@ export default {
     lang: {
       type: String,
       default: 'en'
+    },
+    uuid: {
+      type: String,
+      default: null
     }
   },
   watch: {
@@ -50,8 +54,7 @@ export default {
       textChangedListener: null,
       // listen a global reset event
       resetListener: null,
-      facet: [],
-      uuid: null
+      facet: []
     }
   },
   created () {
@@ -70,7 +73,7 @@ export default {
     document.addEventListener('fmt:dimensionChangeEvent', this.dimensionChangedListener);
     this.textChangedListener = this.getRecords.bind(this);
     document.addEventListener('fmt:textChangeEvent', this.textChangedListener);
-    this.metadataWithChildListener = this.getChilds.bind(this)
+    this.metadataWithChildListener = this.getRecords.bind(this)
     document.addEventListener('fmt:metadataWithChildEvent', this.metadataWithChildListener)
     this.resetListener = this.handleReset.bind(this);
      document.addEventListener('fmt:resetEvent', this.resetListener);
@@ -105,38 +108,38 @@ export default {
          fast: 'index',
       //  'facet.q': '',
         bucket: '26041996',
-        isChild: false,
         from: 1,
-        to: 18,
+        to: this.nbRecord,
         //  resultType: 'subtemplate',
-        resultType: 'details',
+        // resultType: 'details',
         sortBy: 'title',
         sortOrder: 'reverse'
       }
-//       if (this.uuid) {
-//         this.parameters.parentUuid = uuid
-//       } else {
-//         this.parameters.isChild = false
-//       }
-//       if (this.fulltextSearch !== '' && !this.uuid) {
-//         this.parameters.any = this.fulltextSearch
-//       }
+      if (this.uuid) {
+        this.parameters.parentUuid = this.uuid
+        this.parameters.resultType = 'subtemplate'
+      } else {
+        this.parameters.isChild = false
+        this.parameters.resultType = 'details'
+      }
+     
     },
-    getChilds(event) {
+    
+   /* getChilds(event) {
       var parameters = {
     	        _content_type: 'json',
     	         fast: 'index',
     	      //  'facet.q': '',
     	        bucket: '26041996',
     	        from: 1,
-    	        to: 18,
+    	        to: this.nbRecords,
     	        //  resultType: 'subtemplate',
     	        resultType: 'subtemplate',
     	        sortBy: 'title',
     	        sortOrder: 'reverse',
-    	        parentUuid: event.detail.uuid
+    	        parentUuid: this.uuid
       }
-          var e = new CustomEvent("aerisSearchEvent", { detail: {}});
+          var e = new CustomEvent("aerisSearchEvent", { detail: {mode: 'step1'}});
       	  document.dispatchEvent(e);
       	  if (!e.detail.startDefault) {
       	    e.detail.renameProperty('start', 'extFrom')
@@ -150,13 +153,13 @@ export default {
       	    e.detail.renameProperty('end', 'extTo')
             }
       	  for(var key in e.detail) {
-    		    if (['geometry', 'extTo', 'extFrom'].indexOf(key) >=0){
+    		    if (['geometry', 'extTo', 'extFrom', 'from', 'to'].indexOf(key) >=0){
     		      parameters[key] = e.detail[key]
     		    }
     	  }
       	  parameters.sortOrder =  parameters.sortBy === 'title' ? 'ordering': 'reverse';
       	  var headers =  {
-  	          'Accept': 'application/json, text/plain, */*',
+  	          'Accept': 'application/json, text/plain, ',
   	          'Accept-Language': this.lang === 'fr' ? 'fre': 'eng'
   	        }
 
@@ -169,11 +172,12 @@ export default {
   	      this.$http.get(url, {headers: headers, parameters: parameters}).then(
   	          response => { this.receiveChilds(response.body);}
   	       )
-    },
+    },*/
+   
     getRecords () {
       // trigger search event like breadcrumb
       this.initParameters()
-      var e = new CustomEvent("aerisSearchEvent", { detail: {}});
+      var e = new CustomEvent("aerisSearchEvent", { detail: {mode: (this.uuid ? 'step2' : 'step1')}});
 	  document.dispatchEvent(e);
 	  if (!e.detail.startDefault) {
 	    e.detail.renameProperty('start', 'extFrom')
@@ -183,12 +187,23 @@ export default {
 	  if (e.detail.endDefault) {
 	    delete e.detail.endDefault
 	    delete e.detail.end
+	    delete e.detail.mode
 	  } else {
 	    e.detail.renameProperty('end', 'extTo')
       }
 	  delete e.detail.startDefault
 	  delete e.detail.endDefault
-	  this.prepareFacet(e)
+	  if (this.uuid) {
+	    var mode = 'step2'
+	    for(var key in e.detail) {
+		    if (['geometry', 'extTo', 'extFrom'].indexOf(key) >=0){
+		      parameters[key] = e.detail[key]
+		    }
+	    }
+	  } else {
+	    var mode = 'step1'
+	    this.prepareFacet(e)
+	  }
 	 
 	  //delete(e.detail.extTo)
 	  //delete(e.detail.extFrom)
@@ -205,7 +220,7 @@ export default {
       }).join('&');
 
       this.$http.get(url, {headers: headers, parameters: this.parameters}).then(
-          response => { this.fill(response.body);}
+          response => { this.fill(response.body, mode);}
        )
     },
     prepareFacet (e) {
@@ -226,8 +241,8 @@ export default {
       }
       return e;
     },
-    fill (data) {
-      data.mode = 'step1'
+    fill (data, mode) {
+      data.mode = mode
       var event = new CustomEvent('fmt:metadataListEvent', {detail:  data})
       document.dispatchEvent(event)
     },

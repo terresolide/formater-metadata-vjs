@@ -53,7 +53,7 @@
 	          <formater-list-contact  :lang="lang" :responsible-party="meta.responsibleParty" :responsible-party2="metaLang2.responsibleParty"></formater-list-contact>
 	     </div>
 	     <div v-else>
-	      <formater-paging :lang="lang" :nb-record="9" name="step2"></formater-paging>
+	      <formater-paging :lang="lang" :nb-record="4" name="step2"></formater-paging>
        <formater-list-metadata :lang="lang" name="step2"></formater-list-metadata>
 	     </div>
       </div>
@@ -93,10 +93,6 @@ export default {
     metadata: {
       type: Object,
       default: null
-    },
-    url: {
-      type: String,
-      default: null
     }
   },
   watch: {
@@ -104,6 +100,13 @@ export default {
     	this.$i18n.locale = newvalue
     	this.srv = process.env.GEONETWORK + 'srv/' + (newvalue === 'fr' ? 'fre' : 'eng') + '/'
     	this.headers['Accept-Language'] =  newvalue === 'fr' ? 'fre': 'eng'
+    },
+    metadata: {
+      immediate: true,
+      handler (newvalue) {
+        console.log('dans metadata')
+        console.log(newvalue)
+      }
     }
   },
   data() {

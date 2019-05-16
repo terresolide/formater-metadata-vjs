@@ -11,7 +11,7 @@
 </i18n>
 <template>
  <div class="fmt-cartouche-metadata fmt-capsule">
-	 <div class="fmt-header" @click="displayMetadata">
+	 <div class="fmt-header" @click="displayMetadata" @dblclick="displayMetadata" >
 		<i class="fa" :class="meta.type === 'series' ? 'fa-files-o' : 'fa-file'" v-if="['dataset','series'].indexOf(meta.type) >= 0" :title="$gn(meta.type)"></i>
 		<div>{{meta.title ? meta.title: meta.defaultTitle}}</div>
 	 </div>
@@ -66,6 +66,10 @@ export default {
       type: Object,
       default: null
     },
+    name: {
+      type: String,
+      default: 'step1'
+    }
   },
   watch: {
     lang (newvalue) {
@@ -85,7 +89,7 @@ export default {
   },
   methods: {
     displayMetadata () {
-      var event = new CustomEvent('fmt:metadataEvent', {detail: this.meta})
+      var event = new CustomEvent('fmt:metadataEvent', {detail: {meta:this.meta, name: this.name}})
       document.dispatchEvent(event)
     }
   }

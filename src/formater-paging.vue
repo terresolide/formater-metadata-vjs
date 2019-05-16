@@ -126,6 +126,9 @@ export default {
      this.emitChange()
    },
    handleSearch (event) {
+     if (this.name === event.detail.mode) {
+       return
+     }
      event.detail.from = this.from
      event.detail.to = this.from + this.recordPerPage - 1
      event.detail.sortBy = this.sortBy

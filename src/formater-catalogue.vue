@@ -18,14 +18,20 @@
     </div>
    
     <div class="fmt-column-right" >
-     <div v-show="metadata === null">
+     <div v-show="metadata === null && metadata2 === null">
        <formater-paging :lang="lang" :nb-record="nbRecord"></formater-paging>
        <formater-list-metadata :lang="lang" name="step1" ></formater-list-metadata>
      </div>
-      <div v-if="metadata">
-    	<formater-metadata :metadata="metadata" :lang="lang" @close="resetMetadata"></formater-metadata>
-  	 </div>
-
+     <div v-if="metadata!=null || metadata2!=null" >
+	      <div v-show="metadata2 === null">
+	    	<formater-metadata name="step1" :metadata="metadata" :lang="lang" @close="resetMetadata"></formater-metadata>
+	    	
+	  	 </div>
+	  	 <div v-if="metadata2!=null">
+	    	<formater-metadata name="step2" :metadata="metadata2" :lang="lang" @close="resetMetadata"></formater-metadata>
+	    	
+	  	 </div>
+     </div>
     </div>
    
   </div>
@@ -89,6 +95,7 @@ export default {
   data() {
     return {
       metadata: null,
+      metadata2: null,
       currentUuid: null,
       metadatas: [],
       metadataListener: null,
@@ -108,11 +115,16 @@ export default {
   },
   methods: {
 	receiveMetadata (event) {
+	  console.log(event)
 	  if (this.metadata) {
 	    this.metadatas.push(this.metadata)
-	  }
-	  this.metadata = event.detail
+	    this.metadata2 =  event.detail.meta
+	  } else {
+	
+	  this.metadata =  event.detail.meta
 	  this.currentUuid = this.metadata['geonet:info'].uuid
+	  }
+	  console.log(this.currentUuid)
 	},
 	resetMetadata (event) {
 	  var previous = this.metadatas.pop()
