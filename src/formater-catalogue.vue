@@ -8,7 +8,7 @@
 <template>
  <div class="fmt-catalogue">
   <aeris-theme :primary="primary" :active="true" :emphasis="emphasis"></aeris-theme>
-  <formater-requester :lang="lang" :nb-record="nbRecord" :uuid="currentUuid"></formater-requester>
+  <formater-requester :lang="lang" :nb-record="nbRecord" :uuid="currentUuid" :depth="metadatas.length"></formater-requester>
  <!-- <formater-draggable-block :show="true">  -->
   <formater-draw-bbox color="#fff" :lang="lang" :background="primary"></formater-draw-bbox>
  <!--  </formater-draggable-block>  -->
@@ -18,19 +18,15 @@
     </div>
    
     <div class="fmt-column-right" >
-     <div v-show="metadata === null && metadata2 === null">
+     <div v-show="metadatas.length === 0">
        <formater-paging :lang="lang" :nb-record="nbRecord" :depth="0"></formater-paging>
        <formater-list-metadata :lang="lang" :depth="0"></formater-list-metadata>
      </div>
-     <div v-if="metadata!=null || metadata2!=null" >
-	      <div v-show="metadata2 === null">
-	    	<formater-metadata :depth="1" :metadata="metadata" :lang="lang" @close="resetMetadata"></formater-metadata>
+     <div  v-if="metadatas.length > 0" >
+	    	<formater-metadata v-for="(meta, index) in metadatas" :key="index" v-show="index === metadatas.length-1" :depth="index" :metadata="meta" :lang="lang" @close="resetMetadata"></formater-metadata>
 	    	
-	  	 </div>
-	  	 <div v-if="metadata2!=null">
-	    	<formater-metadata :depth:="depth" :metadata="metadata2" :lang="lang" @close="resetMetadata"></formater-metadata>
-	    	
-	  	 </div>
+	 </div>
+	  	 
      </div>
     </div>
    
@@ -95,7 +91,6 @@ export default {
   data() {
     return {
       metadata: null,
-      metadata2: null,
       currentUuid: null,
       depth: null,
       metadatas: [],
@@ -116,19 +111,20 @@ export default {
   },
   methods: {
 	receiveMetadata (event) {
-	  console.log(event)
-	  if (this.metadata) {
-	    this.metadatas.push(this.metadata)
-	    this.metadata2 =  event.detail.meta
-	  } else {
+	  console.log(event.detail)
+	    this.metadatas.push(event.detail.meta)
+	    
+
 	
 	  this.metadata =  event.detail.meta
 	  this.currentUuid = this.metadata['geonet:info'].uuid
-	  }
+	  
 	  console.log(this.currentUuid)
 	},
 	resetMetadata (event) {
-	  var previous = this.metadatas.pop()
+	  
+	    this.metadatas.pop()
+	    var previous = this.metadatas.length-1 ? this.metadatas[this.metadatas.length-1]:null
 	  if (previous) {
 		this.metadata = previous
 		this.currentUuid = this.metadata['geonet:info'].uuid

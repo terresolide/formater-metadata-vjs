@@ -227,7 +227,7 @@ export default {
 	  getRecords () {
       
       	  // lance le requeteur
-      	  var event = new CustomEvent('fmt:metadataWithChildEvent', {detail: {uuid: this.uuid, depth: this.depth+1}})
+      	  var event = new CustomEvent('fmt:metadataWithChildEvent', {detail: {uuid: this.uuid, depth: this.depth}})
       	  document.dispatchEvent(event)
     }
 	    

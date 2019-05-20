@@ -62,7 +62,7 @@ export default {
   },
   methods: {
      receiveMetadatas (event) {
-
+       
        if (event.detail.depth != this.depth) {
          return;
        }
