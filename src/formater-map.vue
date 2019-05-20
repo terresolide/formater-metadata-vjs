@@ -79,16 +79,25 @@ export default {
   methods: {
    init () {
      var container = this.$el.querySelector('#fmtMap');
-     this.map = L.map( container).setView([51.505, -0.09], 2);
+     this.map = L.map( container).setView([51.505, -0.09], 1);
      this.bounds = this.map.getBounds()
  		
-     L.tileLayer('//server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
+   L.tileLayer('//server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
 			{
 			  attribution: 'Tiles © <a href="https://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer">ArcGIS</a>',
 		      maxZoom: 18,
 		      minZoom:2
 		      
 		    }).addTo( this.map );
+   /*  L.tileLayer('//www.thegraceplotter.com/data/maps/CNES.RL03.monthly.NONE/trend/{z}/{x}/{y}.png',
+   			{
+   			  attribution: 'Tiles © <a href="https://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer">ArcGIS</a>',
+   		      maxZoom: 18,
+   		      minZoom:1,
+   		      opacity: 0.3,
+   		      tms: false
+   		      
+   		    }).addTo( this.map );*/
      this.bboxLayer = L.layerGroup();
      this.bboxLayer.addTo(this.map);
 	

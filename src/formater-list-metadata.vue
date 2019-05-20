@@ -10,7 +10,7 @@
 <template>
  <div class="fmt-list">
     <div v-if="!metadatas" style="width:calc(100% - 150px);">{{$t('no_result')}}</div>
-    <formater-cartouche-metadata :name="name" v-for="(meta, index) in metadatas" :key="index" :metadata="meta" v-if="meta" :lang="lang"></formater-cartouche-metadata>
+    <formater-cartouche-metadata :depth="depth" v-for="(meta, index) in metadatas" :key="index" :metadata="meta" v-if="meta" :lang="lang"></formater-cartouche-metadata>
   </div>
 </template>
 <script>
@@ -29,9 +29,9 @@ export default {
       type: String,
       default: 'en'
     },
-    name: {
-      type: String,
-      default: 'step1'
+    depth: {
+      type: Number,
+      default: 0
     }
   },
   watch: {
@@ -63,7 +63,7 @@ export default {
   methods: {
      receiveMetadatas (event) {
 
-       if (event.detail.mode != this.name) {
+       if (event.detail.depth != this.depth) {
          return;
        }
        var self = this

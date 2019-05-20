@@ -25,6 +25,10 @@ export default {
     uuid: {
       type: String,
       default: null
+    },
+    depth: {
+      type: Number,
+      default: 0
     }
   },
   watch: {
@@ -177,7 +181,7 @@ export default {
     getRecords () {
       // trigger search event like breadcrumb
       this.initParameters()
-      var e = new CustomEvent("aerisSearchEvent", { detail: {mode: (this.uuid ? 'step2' : 'step1')}});
+      var e = new CustomEvent("aerisSearchEvent", { detail: {depth: this.depth}});
       console.log(e)
 	  document.dispatchEvent(e);
 	  if (!e.detail.startDefault) {
@@ -194,16 +198,14 @@ export default {
       }
 	  delete e.detail.startDefault
 	  delete e.detail.endDefault
-	  delete e.detail.mode
+	  delete e.detail.depth
 	  if (this.uuid) {
-	    var mode = 'step2'
 	    for(var key in e.detail) {
 		    if (['geometry', 'extTo', 'extFrom', 'from', 'to'].indexOf(key) >=0){
 		      this.parameters[key] = e.detail[key]
 		    }
 	    }
 	  } else {
-	    var mode = 'step1'
 	    this.prepareFacet(e)
 	     this.parameters = Object.assign(this.parameters, e.detail)
 	  }
@@ -223,7 +225,7 @@ export default {
       }).join('&');
 
       this.$http.get(url, {headers: headers, parameters: this.parameters}).then(
-          response => { this.fill(response.body, mode);}
+          response => { this.fill(response.body, this.depth);}
        )
     },
     prepareFacet (e) {
@@ -244,16 +246,16 @@ export default {
       }
       return e;
     },
-    fill (data, mode) {
-      data.mode = mode
+    fill (data, depth) {
+      data.depth = depth
       var event = new CustomEvent('fmt:metadataListEvent', {detail:  data})
       document.dispatchEvent(event)
     },
-    receiveChilds (data) {
-      data.mode = 'step2'
+  /*  receiveChilds (data) {
+      data.depth =  this.depth + 1
         var event = new CustomEvent('fmt:metadataListEvent', {detail:  data})
         document.dispatchEvent(event)
-    },
+    },*/
     handleReset () {
       console.log('reset')
       var event = new CustomEvent('aerisResetEvent')

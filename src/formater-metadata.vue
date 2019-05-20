@@ -53,8 +53,8 @@
 	          <formater-list-contact  :lang="lang" :responsible-party="meta.responsibleParty" :responsible-party2="metaLang2.responsibleParty"></formater-list-contact>
 	     </div>
 	     <div v-else>
-	      <formater-paging :lang="lang" :nb-record="4" name="step2"></formater-paging>
-       <formater-list-metadata :lang="lang" name="step2"></formater-list-metadata>
+	      <formater-paging :lang="lang" :nb-record="4" :depth="depth + 1"></formater-paging>
+       <formater-list-metadata :lang="lang" :depth="depth + 1"></formater-list-metadata>
 	     </div>
       </div>
       <div v-if="currentTab === 'complement'" >
@@ -93,6 +93,10 @@ export default {
     metadata: {
       type: Object,
       default: null
+    },
+    depth: {
+      type: Number,
+      default:0
     }
   },
   watch: {
@@ -223,7 +227,7 @@ export default {
 	  getRecords () {
       
       	  // lance le requeteur
-      	  var event = new CustomEvent('fmt:metadataWithChildEvent', {detail: {uuid: this.uuid}})
+      	  var event = new CustomEvent('fmt:metadataWithChildEvent', {detail: {uuid: this.uuid, depth: this.depth+1}})
       	  document.dispatchEvent(event)
     }
 	    

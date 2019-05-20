@@ -49,9 +49,9 @@ export default {
       type: String,
       default: 'en'
     },
-    name: {
-      type: String,
-      default: 'step1'
+    depth: {
+      type: Number,
+      default: 0
     }
   },
   watch: {
@@ -100,7 +100,7 @@ export default {
   
   methods: {
    receiveTotalRecord (event) {
-     if (event.detail.mode !=  this.name) {
+     if (event.detail.depth !=  this.depth ){
        return;
      }
      this.count = parseInt(event.detail.summary['@count'])
@@ -128,9 +128,9 @@ export default {
    handleSearch (event) {
      
     
-     console.log('dans paging de ' + this.name)
+     console.log('dans paging de ' + this.depth)
      console.log(event.detail.mode)
-     if (this.name != event.detail.mode) {
+     if (this.depth != event.detail.depth) {
        return
      }
      event.detail.from = this.from

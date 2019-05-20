@@ -19,16 +19,16 @@
    
     <div class="fmt-column-right" >
      <div v-show="metadata === null && metadata2 === null">
-       <formater-paging :lang="lang" :nb-record="nbRecord"></formater-paging>
-       <formater-list-metadata :lang="lang" name="step1" ></formater-list-metadata>
+       <formater-paging :lang="lang" :nb-record="nbRecord" :depth="0"></formater-paging>
+       <formater-list-metadata :lang="lang" :depth="0"></formater-list-metadata>
      </div>
      <div v-if="metadata!=null || metadata2!=null" >
 	      <div v-show="metadata2 === null">
-	    	<formater-metadata name="step1" :metadata="metadata" :lang="lang" @close="resetMetadata"></formater-metadata>
+	    	<formater-metadata :depth="1" :metadata="metadata" :lang="lang" @close="resetMetadata"></formater-metadata>
 	    	
 	  	 </div>
 	  	 <div v-if="metadata2!=null">
-	    	<formater-metadata name="step2" :metadata="metadata2" :lang="lang" @close="resetMetadata"></formater-metadata>
+	    	<formater-metadata :depth:="depth" :metadata="metadata2" :lang="lang" @close="resetMetadata"></formater-metadata>
 	    	
 	  	 </div>
      </div>
@@ -97,6 +97,7 @@ export default {
       metadata: null,
       metadata2: null,
       currentUuid: null,
+      depth: null,
       metadatas: [],
       metadataListener: null,
       drawing: false

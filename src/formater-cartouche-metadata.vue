@@ -66,9 +66,9 @@ export default {
       type: Object,
       default: null
     },
-    name: {
-      type: String,
-      default: 'step1'
+    depth: {
+      type: Number,
+      default: 0
     }
   },
   watch: {
@@ -89,7 +89,7 @@ export default {
   },
   methods: {
     displayMetadata () {
-      var event = new CustomEvent('fmt:metadataEvent', {detail: {meta:this.meta, name: this.name}})
+      var event = new CustomEvent('fmt:metadataEvent', {detail: {meta:this.meta, depth: this.depth}})
       document.dispatchEvent(event)
     }
   }
