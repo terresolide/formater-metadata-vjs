@@ -124,18 +124,18 @@ export default {
 	resetMetadata (event) {
 	  
 	    this.metadatas.pop()
-	    var previous = this.metadatas.length-1 ? this.metadatas[this.metadatas.length-1]:null
-	  if (previous) {
-		this.metadata = previous
-		this.currentUuid = this.metadata['geonet:info'].uuid
+// 	    var previous = this.metadatas.length-1 ? this.metadatas[this.metadatas.length-1]:null
+// 	  if (previous) {
+// 		this.metadata = previous
+// 		this.currentUuid = this.metadata['geonet:info'].uuid
 		
-	  } else {
-	    this.metadata = null
-		  this.currentUuid = null
-	    var event = new CustomEvent('fmt:closeMetadataEvent')
-		  document.dispatchEvent(event)
+// 	  } else {
+// 	    this.metadata = null
+// 		  this.currentUuid = null
+// 	    var event = new CustomEvent('fmt:closeMetadataEvent')
+// 		  document.dispatchEvent(event)
 		
-	  }
+// 	  }
 	}
   }
 }

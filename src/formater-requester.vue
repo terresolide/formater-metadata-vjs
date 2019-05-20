@@ -199,7 +199,7 @@ export default {
 	  delete e.detail.startDefault
 	  delete e.detail.endDefault
 	  delete e.detail.depth
-	  if (this.uuid) {
+	  if (this.depth > 0) {
 	    for(var key in e.detail) {
 		    if (['geometry', 'extTo', 'extFrom', 'from', 'to'].indexOf(key) >=0){
 		      this.parameters[key] = e.detail[key]
