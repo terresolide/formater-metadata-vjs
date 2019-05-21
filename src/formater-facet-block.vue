@@ -1,8 +1,8 @@
 
 <template>
- <div class="fmt-dimension-block">
+ <div class="fmt-dimension-block" >
       	
-	      	<formater-facet  :level="0" :defaut="defaut" :value="encodeURIComponent(item['@value'])" v-for="(item,index) in dimensions" :dimension="item" :key="index" :name="filteredName"></formater-facet>
+	      	<formater-facet  :disable="disable" :level="0" :defaut="defaut" :value="encodeURIComponent(item['@value'])" v-for="(item,index) in dimensions" :dimension="item" :key="index" :name="filteredName"></formater-facet>
  </div>
 </template>
 <script>
@@ -44,6 +44,10 @@ export default {
     name: {
       type: String,
       default: ''
+    },
+    disable: {
+      type: Boolean,
+      default: false
     }
   },
   data() {

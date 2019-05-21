@@ -1,13 +1,13 @@
 
 <template>
- <div class="fmt-dimension">
+ <div class="fmt-facet" :class="{disable: disable && level===0}" >
 
          <label :for="name" @click="handleChange()" style="vertical-align:top;">
               <i class="fa fa-check-square-o" v-if="isChecked"></i>
               <i class="fa fa-square-o" v-if="!isChecked"></i>
          </label>
 	    <!--  <input type="checkbox" :name="name" :value="dimension['@name']" v-model="isChecked"/> -->
-	     <div class="fmt-dimension-title">
+	     <div class="fmt-facet-title">
 	        {{label}}&#8239;{{ strCount }}
 	     </div>
 	     <div :class="{deployed: deployed}" style="float:right" @click="deployed = !deployed" v-if="dimension.category && dimension.category.length > 0">
@@ -49,6 +49,10 @@ export default {
       default: null
     },
     checked: {
+      type: Boolean,
+      default: false
+    },
+    disable: {
       type: Boolean,
       default: false
     }
@@ -121,7 +125,9 @@ export default {
   },
   methods: {
     handleChange () {
-      
+      if (this.disable) {
+        return
+      }
       this.isChecked = !this.isChecked;
       this.spreadChange()
       
@@ -175,33 +181,37 @@ export default {
 }
 </script>
 <style>
-.fmt-dimension div{
+.fmt-facet div{
   margin-left:5px;
   padding:0px
 
 }
-.fmt-dimension input[type="checkbox"] {
+.fmt-facet.disable{
+ opacity: 0.8;
+}
+
+.fmt-facet input[type="checkbox"] {
   display: none;
 }
-.fmt-dimension div.fmt-child{
+.fmt-facet div.fmt-child{
   display:none;
 }
-.fmt-dimension i.fa-minus-square-o{
+.fmt-facet i.fa-minus-square-o{
  display:none;
 }
-.fmt-dimension i.fa-plus-quare-o{
+.fmt-facet i.fa-plus-quare-o{
  display:inline;
 }
-.fmt-dimension div.deployed i.fa-minus-square-o{
+.fmt-facet div.deployed i.fa-minus-square-o{
   display:inline;
 }
-.fmt-dimension div.deployed i.fa-plus-square-o{
+.fmt-facet div.deployed i.fa-plus-square-o{
   display:none;
 }
-.fmt-dimension div.deployed + div.fmt-child{
+.fmt-facet div.deployed + div.fmt-child{
   display:block;
 }
-.fmt-dimension-title{
+.fmt-facet-title{
   display: inline-block;
   max-width:calc(100% - 80px);
   line-height:12px;

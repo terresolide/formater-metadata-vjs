@@ -124,7 +124,6 @@ export default {
      currentTab: 'main',
      meta: null,
      metaLang2: {},
-     uuid: null,
      popstateListener: null,
      keydownListener: null,
      srv: process.env.GEONETWORK + 'srv/' + (this.lang === 'fr'? 'fre' : 'eng') + '/',
@@ -223,7 +222,26 @@ export default {
                  _this.metaLang2 = response.body.metadata
                } 
        	 )
+       	 this.searchOnlines()
 	  },
+	  searchOnlines () {
+      if (!this.metadatas) {
+        return
+      }
+       var headers =  {
+         'Accept': 'application/json, text/plain, */*',
+         'Accept-Language': this.lang === 'fr' ? 'fre': 'eng'
+       }
+       var url = process.env.GEONETWORK + 'srv/api/records/'+this.uuid+'related?type=onlines'
+       var self = this
+       this.$http.get(url, {
+             headers: headers
+           }).then( response => { self.addOnlines(response.body)})
+        
+      },
+      addOnlines (data) {
+        console.log(data)
+      },
 	  getRecords () {
       
       	  // lance le requeteur

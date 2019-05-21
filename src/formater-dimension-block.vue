@@ -2,7 +2,7 @@
 <template>
  <div class="fmt-dimension-block">
       	
-	      	<formater-dimension  :value="encodeURIComponent(item['@value'])" v-for="(item,index) in dimension" :dimension="item" :key="index" :name="filteredName"></formater-dimension>
+	      	<formater-dimension :disable="disable" :value="encodeURIComponent(item['@value'])" v-for="(item,index) in dimension" :dimension="item" :key="index" :name="filteredName"></formater-dimension>
  </div>
 </template>
 <script>
@@ -20,6 +20,10 @@ export default {
     name: {
       type: String,
       default: ''
+    },
+    disable: {
+      type: Boolean,
+      default: false
     },
     defaut: {
       type: String,

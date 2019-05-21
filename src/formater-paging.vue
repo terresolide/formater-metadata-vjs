@@ -62,7 +62,6 @@ export default {
     }
   },
   created: function() {
-    console.log( this.name)
     this.recordPerPage = this.nbRecord
     this.$i18n.locale = this.lang
     this.metadataListListener = this.receiveTotalRecord.bind(this)
@@ -73,7 +72,6 @@ export default {
     this.orders.forEach( function (order) {
       self.options[order] = self.$i18n.t(order)
     })
-    console.log(this.options)
   },
   destroyed () {
     document.removeEventListener('fmt:metadataListEvent', this.metadataListListener);
@@ -129,7 +127,7 @@ export default {
      
     
      console.log('dans paging de ' + this.depth)
-     console.log(event.detail.mode)
+     console.log(event.detail.depth)
      if (this.depth != event.detail.depth) {
        return
      }
@@ -156,7 +154,7 @@ export default {
    },
    emitChange() {
      var to = this.from + this.recordPerPage - 1
-     var event = new CustomEvent('fmt:pageChangedEvent')
+     var event = new CustomEvent('fmt:pageChangedEvent', {detail:{ depth: this.depth}})
      document.dispatchEvent(event)
    }
   }

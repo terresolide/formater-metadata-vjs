@@ -25,16 +25,16 @@
   <div class="formater-input-group" style="margin:10px; width:calc(100% - 20px);">
      <input id="any" name="any" v-model="fulltextSearch" :placeholder="$t('search')" @change="changeText" @keypress="changeTextOnEnter" /><i class="fa fa-search"></i>
  </div>
- <formater-map :uuid="uuid"></formater-map>
+ <formater-map ></formater-map>
  <formater-search-box header-icon-class="fa fa-globe" open-icon-class="fa fa-caret-right" :title="$t('spatial_extend')" :deployed="false" type="empty">
  <formater-spatial-search></formater-spatial-search>
  </formater-search-box>
 <formater-search-box header-icon-class="fa fa-calendar" open-icon-class="fa fa-caret-right" :title="$t('time_slot')" :deployed="true" type="empty">
   <formater-temporal-search :lang="lang" daymin="1900-01-01" daymax="2020-02-01"></formater-temporal-search>
 </formater-search-box>
-<formater-search-box v-if="dimension.category" :header-icon-class="facetToIcon(index)" open-icon-class="fa fa-caret-right" :disable="uuid != null" :title="titleDimension(index)" type="empty" v-for="(dimension, index) in dimensions" :key="index">
-  <formater-dimension-block v-if="!isFacet(index)"  :dimension="dimension.category" :name="dimensions[index]['@name']" ></formater-dimension-block>
-  <formater-facet-block v-if="isFacet(index)"   :dimension="dimension.category" :name="dimensions[index]['@name']" ></formater-facet-block>
+<formater-search-box v-if="dimension.category" :header-icon-class="facetToIcon(index)" open-icon-class="fa fa-caret-right" :disableLevel="disableLevel" :title="titleDimension(index)" type="empty" v-for="(dimension, index) in dimensions" :key="index">
+  <formater-dimension-block v-if="!isFacet(index)"   :dimension="dimension.category" :name="dimensions[index]['@name']" :disable="disableLevel > 0"></formater-dimension-block>
+  <formater-facet-block v-if="isFacet(index)"   :dimension="dimension.category" :name="dimensions[index]['@name']" :disable="disableLevel > 0"></formater-facet-block>
  </formater-search-box>
 
  </div>
@@ -75,9 +75,9 @@ export default {
       type: String,
       default: 'en'
     },
-    uuid: {
-      type: String,
-      default: null
+    disableLevel: {
+      type: Number,
+      default: 0
     }
   },
   watch: {
@@ -152,7 +152,7 @@ export default {
       if (this.first) {
         this.dimensions = this.initializeDimensions(e.detail.summary.dimension)
         this.first = false
-      } else {
+      } else if( this.depth === 0){
          var  newdimensions = this.initializeDimensions(e.detail.summary.dimension)
          this.dimensions = this.updateDimensions(this.dimensions, newdimensions)
       }

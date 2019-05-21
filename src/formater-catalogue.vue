@@ -8,13 +8,13 @@
 <template>
  <div class="fmt-catalogue">
   <aeris-theme :primary="primary" :active="true" :emphasis="emphasis"></aeris-theme>
-  <formater-requester :lang="lang" :nb-record="nbRecord" :uuid="currentUuid" :depth="metadatas.length"></formater-requester>
+  <formater-requester :lang="lang" :nb-record="nbRecord" :depth="metadatas.length"></formater-requester>
  <!-- <formater-draggable-block :show="true">  -->
   <formater-draw-bbox color="#fff" :lang="lang" :background="primary"></formater-draw-bbox>
  <!--  </formater-draggable-block>  -->
   <div >
    <div class="fmt-column-left" >
-    <formater-form :lang="lang" :nb-record="nbRecord" :uuid="currentUuid"></formater-form>
+    <formater-form :lang="lang" :nb-record="nbRecord" :disableLevel="metadatas.length > 0 ? 1 : 0"></formater-form>
     </div>
    
     <div class="fmt-column-right" >
@@ -95,7 +95,8 @@ export default {
       depth: null,
       metadatas: [],
       metadataListener: null,
-      drawing: false
+      drawing: false,
+      aerisSearchListener: null
     }
   },
   
@@ -104,10 +105,14 @@ export default {
     this.$setGnLocale(this.lang)
     this.metadataListener = this.receiveMetadata.bind(this)
     document.addEventListener('fmt:metadataEvent', this.metadataListener);
+    this.aerisSearchListener = this.handleSearch.bind(this)
+    document.addEventListener('aerisSearchEvent', this.aerisSearchListener)
   },
   destroyed () {
     document.removeEventListener('fmt:metadataEvent', this.metadataListener);
     this.metadataListener = null;
+    document.removeEventListener('aerisSearchEvent', this.aerisSearchListener)
+    this.aerisSearchListener = null
   },
   methods: {
 	receiveMetadata (event) {
@@ -116,14 +121,19 @@ export default {
 	    
 
 	
-	  this.metadata =  event.detail.meta
-	  this.currentUuid = this.metadata['geonet:info'].uuid
+	  //this.metadata =  event.detail.meta
+	  this.currentUuid = event.detail.meta['geonet:info'].uuid
 	  
 	  console.log(this.currentUuid)
 	},
 	resetMetadata (event) {
 	  
 	    this.metadatas.pop()
+	    if (this.metadatas.length > 0) {
+	      this.currentUuid = this.metadatas[this.metadatas.length - 1]['geonet:info'].uuid
+	    } else {
+	      this.currentUuid = null
+	    }
 // 	    var previous = this.metadatas.length-1 ? this.metadatas[this.metadatas.length-1]:null
 // 	  if (previous) {
 // 		this.metadata = previous
@@ -132,10 +142,19 @@ export default {
 // 	  } else {
 // 	    this.metadata = null
 // 		  this.currentUuid = null
-// 	    var event = new CustomEvent('fmt:closeMetadataEvent')
-// 		  document.dispatchEvent(event)
+ 	    var event = new CustomEvent('fmt:closeMetadataEvent', {detail:  {depth: this.metadatas.length}})
+ 		  document.dispatchEvent(event)
 		
 // 	  }
+	},
+	handleReset (event) {
+	  this.metadatas = []
+	  this.currentUuid = null
+	},
+	handleSearch (event) {
+	  if (this.metadatas.length > 0) {
+	    event.detail.parentUuid = this.currentUuid
+	  }
 	}
   }
 }

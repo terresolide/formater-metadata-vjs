@@ -1,6 +1,6 @@
 
 <template>
- <div class="fmt-dimension">
+ <div class="fmt-dimension" :class="{disable: disable}">
 
          <label :for="name" @click="handleChange()" style="vertical-align:top;">
               <i class="fa fa-check-square-o" v-if="isChecked"></i>
@@ -26,6 +26,10 @@ export default {
     checked: {
       type: Boolean,
       default: false
+    },
+    disable: {
+      type: Boolean,
+      default: false,
     },
     name: {
       type: String,
@@ -78,6 +82,9 @@ export default {
   },
   methods: {
     handleChange () {
+      if (this.disable) {
+        return
+      }
       console.log('handleChange')
       
       this.isChecked = !this.isChecked;
@@ -106,9 +113,14 @@ export default {
 <style>
 .fmt-dimension div{
   margin-left:5px;
-  padding:0px
-
+  padding:0px;
+  opacity: 1;
 }
+.fmt-dimension.disable div{
+  pointer-events:none;
+  opacity: 0.8
+}
+
 .fmt-dimension input[type="checkbox"] {
   display: none;
 }

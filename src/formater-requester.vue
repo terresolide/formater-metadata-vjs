@@ -22,13 +22,9 @@ export default {
       type: String,
       default: 'en'
     },
-    uuid: {
-      type: String,
-      default: null
-    },
     depth: {
       type: Number,
-      default: 0
+      default:0
     }
   },
   watch: {
@@ -37,6 +33,9 @@ export default {
     	this.$setGnLocale(newvalue)
     	this.srv = process.env.GEONETWORK + 'srv/' + (newvalue === 'fr' ? 'fre' : 'eng') + '/'
     	this.headers['Accept-Language'] =  newvalue === 'fr' ? 'fre': 'eng'
+    },
+    depth (newvalue) {
+      console.log('nouvelle valeur depth = ' + this.depth)
     }
   },
   data() {
@@ -119,14 +118,6 @@ export default {
         sortBy: 'title',
         sortOrder: 'reverse'
       }
-      if (this.uuid) {
-        this.parameters.parentUuid = this.uuid
-        this.parameters.resultType = 'subtemplate'
-      } else {
-        this.parameters.isChild = false
-        this.parameters.resultType = 'details'
-      }
-     
     },
     
    /* getChilds(event) {
@@ -178,10 +169,17 @@ export default {
   	       )
     },*/
    
-    getRecords () {
+    getRecords (event) {
       // trigger search event like breadcrumb
+      console.log(event)
+      if (event.detail && event.detail.depth) {
+        var depth = event.detail.depth
+      } else {
+        var depth = this.depth
+      }
+      console.log('dans getREcords ' + this.depth)
       this.initParameters()
-      var e = new CustomEvent("aerisSearchEvent", { detail: {depth: this.depth}});
+      var e = new CustomEvent("aerisSearchEvent", { detail: {depth: depth}});
       console.log(e)
 	  document.dispatchEvent(e);
 	  if (!e.detail.startDefault) {
@@ -199,9 +197,15 @@ export default {
 	  delete e.detail.startDefault
 	  delete e.detail.endDefault
 	  delete e.detail.depth
+	  if (e.detail.parentUuid) {
+        this.parameters.resultType = 'subtemplate'
+      } else {
+        this.parameters.isChild = false
+        this.parameters.resultType = 'details'
+      }
 	  if (this.depth > 0) {
 	    for(var key in e.detail) {
-		    if (['geometry', 'extTo', 'extFrom', 'from', 'to'].indexOf(key) >=0){
+		    if (['geometry', 'extTo', 'extFrom', 'from', 'to', 'parentUuid'].indexOf(key) >=0){
 		      this.parameters[key] = e.detail[key]
 		    }
 	    }
@@ -225,7 +229,7 @@ export default {
       }).join('&');
 
       this.$http.get(url, {headers: headers, parameters: this.parameters}).then(
-          response => { this.fill(response.body, this.depth);}
+          response => { this.fill(response.body, depth);}
        )
     },
     prepareFacet (e) {
@@ -247,6 +251,7 @@ export default {
       return e;
     },
     fill (data, depth) {
+      console.log(this.depth)
       data.depth = depth
       var event = new CustomEvent('fmt:metadataListEvent', {detail:  data})
       document.dispatchEvent(event)
@@ -260,11 +265,11 @@ export default {
       console.log('reset')
       var event = new CustomEvent('aerisResetEvent')
       document.dispatchEvent(event)
-      
-      this.getRecords()
+
+      this.getRecords({})
     },
     changePage (event) {
-      this.getRecords()
+      this.getRecords(event)
     },
     changeSearch (event) {
       this.parameters.any = event.target.value

@@ -57,9 +57,10 @@ export default {
      metadataListListener: null,
      metadataListener: null,
      closeMetadataListener: null,
-     bboxLayer: null,
+     bboxLayer: [],
      selected: [],
-     bounds: null,
+     depth: 0,
+     bounds: [],
      defaultRectangleOptions: {
        interactive: false,
        fillColor:'orange', 
@@ -80,7 +81,7 @@ export default {
    init () {
      var container = this.$el.querySelector('#fmtMap');
      this.map = L.map( container).setView([51.505, -0.09], 1);
-     this.bounds = this.map.getBounds()
+     this.bounds[0] = this.map.getBounds()
  		
    L.tileLayer('//server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
 			{
@@ -98,13 +99,26 @@ export default {
    		      tms: false
    		      
    		    }).addTo( this.map );*/
-     this.bboxLayer = L.layerGroup();
-     this.bboxLayer.addTo(this.map);
+    
 	
    },
+   hideBboxLayers () {
+     for (var i in this.bboxLayer){
+       this.bboxLayer[i].remove()
+     }
+   },
    receiveMetadatas (event) {
-     this.bounds = null;
-     this.bboxLayer.clearLayers();
+     console.log(event.detail)
+     if (this.depth === event.detail.depth && this.bboxLayer[this.depth]) {
+          this.bboxLayer[this.depth].clearLayers();
+          
+     } else {
+       this.hideBboxLayers()
+       this.depth = event.detail.depth;
+       
+       this.bboxLayer[this.depth] = L.layerGroup();
+       this.bboxLayer[this.depth].addTo(this.map);
+     }
      var self = this
      if (!event.detail.metadata) {
        // no record
@@ -122,10 +136,10 @@ export default {
          self.extractBbox(meta.geoBox, uuid)
        })
      }
-     if (this.bounds) {
-       this.map.fitBounds(this.bounds)
+     if (this.bounds[this.depth]) {
+       this.map.fitBounds(this.bounds[this.depth])
      }
-     this.bboxLayer.addTo(this.map)
+     // this.bboxLayer[this.depth].addTo(this.map)
    },
    extractBbox(bbox, uuid) {
      if (!bbox) {
@@ -150,43 +164,55 @@ export default {
 	//      rectangle.on('mouseover', function(layer) {
 	//        console.log(layer.target.options.id)
 	//      })
-	    self.bboxLayer.addLayer(rectangle)
-	     if (!self.bounds) {
-	       self.bounds = bounds
+	    self.bboxLayer[self.depth].addLayer(rectangle)
+	     if (!self.bounds[self.depth]) {
+	       self.bounds[self.depth] = bounds
 	     } else {
-	       self.bounds.extend(bounds)
+	       self.bounds[self.depth].extend(bounds)
 	     }
      })
       
    },
    selectLayer (event) {
-     this.unselectLayer()
-     if (event.detail && event.detail['geonet:info'] && event.detail['geonet:info'].uuid) {
-       this.selectLayerByUuid(event.detail['geonet:info'].uuid)
-
-     } 
+     this.unselectLayer(event)
+     console.log(event)
+    // if (event.detail.depth === this.depth) {
+	     if (event.detail && event.detail.meta && event.detail.meta['geonet:info'] && event.detail.meta['geonet:info'].uuid) {
+	       this.selectLayerByUuid(event.detail.meta['geonet:info'].uuid)
+	
+	     } 
+    // }
    },
    unselectLayer (event) {
+     
      var self = this
-     this.selected.forEach(function (layer) {
-       layer.setStyle(
+     for(var i in this.selected) {
+       this.selected[i].setStyle(
            {
              color: self.defaultRectangleOptions.color, 
              fillColor: self.defaultRectangleOptions.fillColor,
              fillOpacity: self.defaultRectangleOptions.fillOpacity
            })
       
-     })
+     }
       this.selected = []
-       if (this.bounds) {
-         this.map.fitBounds(this.bounds)
+      if (this.depth > event.detail.depth) {
+        this.bboxLayer[this.depth].remove()
+        this.bounds.pop()
+        this.depth = event.detail.depth
+        this.bboxLayer[this.depth].addTo(this.map)
+      }
+       if (this.bounds[this.depth]) {
+         this.map.fitBounds(this.bounds[this.depth])
        }
        
    },
    selectLayerByUuid (uuid) {
      var self = this
      var bounds = null
-     this.bboxLayer.eachLayer(function(layer) {
+     console.log(this.depth)
+     console.log(this.bboxLayer.length)
+     this.bboxLayer[this.depth].eachLayer(function(layer) {
        if (layer.options.uuid === uuid) {
          self.setSelected(layer)
          var bds = layer.getBounds()
@@ -198,6 +224,7 @@ export default {
         
        }
      })
+     console.log(bounds)
      if (bounds) {
       self.map.fitBounds(bounds)
      }
