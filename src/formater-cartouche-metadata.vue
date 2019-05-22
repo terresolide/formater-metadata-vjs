@@ -10,16 +10,16 @@
 }
 </i18n>
 <template>
- <div class="fmt-cartouche-metadata fmt-capsule">
+ <div class="fmt-cartouche-metadata fmt-capsule" :class="{'fmt-child': depth > 0}">
 	 <div class="fmt-header" @click="displayMetadata" @dblclick="displayMetadata" >
 		<i class="fa" :class="meta.type === 'series' ? 'fa-files-o' : 'fa-file'" v-if="['dataset','series'].indexOf(meta.type) >= 0" :title="$gn(meta.type)"></i>
 		<div>{{meta.title ? meta.title: meta.defaultTitle}}</div>
 	 </div>
-	 <div class="fmt-description" style="">
-	    <img :src="meta.thumbnail" v-if="meta.thumbnail"/>
+	 <div class="fmt-description">
+	    <img :src="meta.thumbnail" v-if="depth === 0 && meta.thumbnail"/>
 	 	<span v-html="meta.description"></span>
 	 </div>
-	 <div class="fmt-footer">
+	 <div class="fmt-footer"  v-if="depth === 0">
 	   <div class="fmt-group">
 	     <a v-if="meta.groupWebsite" :href="meta.groupWebsite" :title="$gn('group-'+ meta.groupOwner)" target="_blank" class="fmt-group-logo">
              <img :src="meta.logo"/>
@@ -53,9 +53,11 @@
  </div>
 </template>
 <script>
+import FormaterOnline from './formater-online.vue'
 export default {
   name: 'FormaterCartoucheMetadata',
   components: {
+    FormaterOnline
   },
   props: {
     lang: {
@@ -89,7 +91,7 @@ export default {
   },
   methods: {
     displayMetadata () {
-      var event = new CustomEvent('fmt:metadataEvent', {detail: {meta:this.meta, depth: this.depth}})
+      var event = new CustomEvent('fmt:metadataEvent', {detail: {meta:this.meta, depth: this.depth } })
       document.dispatchEvent(event)
     }
   }
@@ -110,6 +112,7 @@ export default {
   display: inline-block;
   float:left;
 }
+
 .fmt-cartouche-metadata div.fmt-header{
   color: white;
   background-color: #dd9946;
@@ -120,6 +123,10 @@ export default {
   padding: 5px;
   cursor: pointer;
 }
+/*.fmt-cartouche-metadata.fmt-child div.fmt-header{
+  color: #9e631d;
+  background-color: white;
+}*/
 .fmt-cartouche-metadata div.fmt-header div{
 	display:inline-block;
 	float:left;
@@ -136,11 +143,14 @@ export default {
 
 }
 .fmt-cartouche-metadata div.fmt-description{
-	max-height:165px;
+	max-height:160px;
 	overflow:hidden;
 	padding: 5px;
 	min-width: 360px;
 	font-size:0.9em;
+}
+.fmt-cartouche-metadata.fmt-child div.fmt-description{
+   max-height: 80px;
 }
 .fmt-cartouche-metadata div.fmt-description img {
   position: relative;

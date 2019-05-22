@@ -10,7 +10,7 @@
 <template>
  <div class="fmt-list">
     <div v-if="!metadatas" style="width:calc(100% - 150px);">{{$t('no_result')}}</div>
-    <formater-cartouche-metadata :depth="depth" v-for="(meta, index) in metadatas" :key="index" :metadata="meta" v-if="meta" :lang="lang"></formater-cartouche-metadata>
+    <formater-cartouche-metadata  :depth="depth" v-for="(meta, index) in metadatas" :key="index" :metadata="meta" v-if="meta" :lang="lang"></formater-cartouche-metadata>
   </div>
 </template>
 <script>
@@ -109,7 +109,7 @@ export default {
           'Accept': 'application/json, text/plain, */*',
           'Accept-Language': this.lang === 'fr' ? 'fre': 'eng'
         }
-        var url = process.env.GEONETWORK + 'srv/api/related?type=children'
+        var url = process.env.GEONETWORK + 'srv/api/related?type=children&type=onlines'
         url += '&uuid=' + Object.keys(this.metadatas).join('&uuid=')
         var self = this
         this.$http.get(url, {

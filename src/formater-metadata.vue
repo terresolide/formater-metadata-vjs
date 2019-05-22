@@ -53,7 +53,7 @@
 	          <formater-list-contact  :lang="lang" :responsible-party="meta.responsibleParty" :responsible-party2="metaLang2.responsibleParty"></formater-list-contact>
 	     </div>
 	     <div v-else>
-	      <formater-paging :lang="lang" :nb-record="4" :depth="depth + 1"></formater-paging>
+	      <formater-paging :lang="lang" :nb-record="nbRecords" :depth="depth + 1"></formater-paging>
        <formater-list-metadata :lang="lang" :depth="depth + 1"></formater-list-metadata>
 	     </div>
       </div>
@@ -97,6 +97,10 @@ export default {
     depth: {
       type: Number,
       default:0
+    },
+    nbRecords: {
+      type: Number,
+      default: 4
     }
   },
   watch: {
@@ -232,20 +236,20 @@ export default {
          'Accept': 'application/json, text/plain, */*',
          'Accept-Language': this.lang === 'fr' ? 'fre': 'eng'
        }
-       var url = process.env.GEONETWORK + 'srv/api/records/'+this.uuid+'related?type=onlines'
-       var self = this
-       this.$http.get(url, {
-             headers: headers
-           }).then( response => { self.addOnlines(response.body)})
+//        var url = process.env.GEONETWORK + 'srv/api/records/'+this.uuid+'related?type=onlines'
+//        var self = this
+//        this.$http.get(url, {
+//              headers: headers
+//            }).then( response => { self.addOnlines(response.body)})
         
       },
-      addOnlines (data) {
-        console.log(data)
-      },
+//       addOnlines (data) {
+//         console.log(data)
+//       },
 	  getRecords () {
       
       	  // lance le requeteur
-      	  var event = new CustomEvent('fmt:metadataWithChildEvent', {detail: {uuid: this.uuid, depth: this.depth}})
+      	  var event = new CustomEvent('fmt:metadataWithChildEvent', {detail: {uuid: this.uuid, nbRecords: this.nbRecords, depth: this.depth}})
       	  document.dispatchEvent(event)
     }
 	    

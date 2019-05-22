@@ -37,7 +37,7 @@ export default {
     document.addEventListener('fmt:metadataListEvent', this.metadataListListener);
     this.metadataListener = this.selectLayer.bind(this)
     document.addEventListener('fmt:metadataEvent', this.metadataListener);
-    this.closeMetadataListener = this.unselectLayer.bind(this)
+    this.closeMetadataListener = this.back.bind(this)
     document.addEventListener('fmt:closeMetadataEvent', this.closeMetadataListener);
   },
   destroyed () {
@@ -63,17 +63,18 @@ export default {
      bounds: [],
      defaultRectangleOptions: {
        interactive: false,
-       fillColor:'orange', 
+     //  fillColor:'orange', 
        fillOpacity:0.05, 
        stroke: true, 
        weight:1, 
-       color: 'orange'
+     //  color: 'orange'
      },
      selectedOptions: {
        color: 'red',
        fillColor: 'red',
        fillOpacity: 0.4
-     }
+     },
+     colors: ['orange', 'purple', 'green']
     }
   },
   
@@ -107,9 +108,13 @@ export default {
        this.bboxLayer[i].remove()
      }
    },
+   getOptionsLayer () {
+     var options = Object.assign(this.defaultRectangleOptions, {fillColor: this.colors[this.depth], color: this.colors[this.depth]})
+     return options
+   },
    receiveMetadatas (event) {
-     console.log(event.detail)
-     if (this.depth === event.detail.depth && this.bboxLayer[this.depth]) {
+     console.log('depth dans la liste de metadatas = ' + event.detail.depth)
+     if (this.depth === event.detail.depth   && this.bboxLayer[this.depth]) {
           this.bboxLayer[this.depth].clearLayers();
           
      } else {
@@ -149,6 +154,7 @@ export default {
      var bboxList = this.$gnToArray(bbox)
      //trouble with rectangle ??? add polygon!
      var self = this;
+     var options = this.getOptionsLayer()
      bboxList.forEach(function (tab){
        
 	    // var tab = geoBox.split('|') 
@@ -159,7 +165,7 @@ export default {
 	     var lngmax = Math.max(tab[0], tab[2])
 	     var path = [[latmin, lngmin], [latmax, lngmin], [latmax, lngmax], [latmin, lngmax], [latmin, lngmin]]
 	     var bounds = L.latLngBounds(L.latLng(latmax, lngmin), L.latLng(latmin, lngmax));
-	     var options = Object.assign({uuid:uuid}, self.defaultRectangleOptions)
+	     options = Object.assign(options, {uuid:uuid})
 	     var rectangle = L.polygon(path,options)
 	//      rectangle.on('mouseover', function(layer) {
 	//        console.log(layer.target.options.id)
@@ -174,38 +180,48 @@ export default {
       
    },
    selectLayer (event) {
-     this.unselectLayer(event)
+     this.unselectLayer()
      console.log(event)
+//      if (event.detail.depth) {
+//        this.depth = event.detail.depth
+//      }
     // if (event.detail.depth === this.depth) {
-	     if (event.detail && event.detail.meta && event.detail.meta['geonet:info'] && event.detail.meta['geonet:info'].uuid) {
+	     if (!(event.detail.meta.related && event.detail.meta.related.children) && event.detail.meta['geonet:info'] && event.detail.meta['geonet:info'].uuid) {
 	       this.selectLayerByUuid(event.detail.meta['geonet:info'].uuid)
 	
 	     } 
     // }
    },
-   unselectLayer (event) {
-     
+   unselectLayer () {
+    // console.log('depth dans metadata tout seul = ' + event.detail.depth)
+     console.log(this.depth)
      var self = this
+     var options = this.getOptionsLayer()
      for(var i in this.selected) {
        this.selected[i].setStyle(
            {
-             color: self.defaultRectangleOptions.color, 
-             fillColor: self.defaultRectangleOptions.fillColor,
-             fillOpacity: self.defaultRectangleOptions.fillOpacity
+             color: options.color, 
+             fillColor: options.fillColor,
+             fillOpacity: options.fillOpacity
            })
       
      }
       this.selected = []
-      if (this.depth > event.detail.depth) {
+      
+       
+   },
+   back (event) {
+     this.unselectLayer()
+     if (this.depth > event.detail.depth) {
         this.bboxLayer[this.depth].remove()
+        this.bboxLayer.pop()
         this.bounds.pop()
         this.depth = event.detail.depth
         this.bboxLayer[this.depth].addTo(this.map)
-      }
+      } 
        if (this.bounds[this.depth]) {
          this.map.fitBounds(this.bounds[this.depth])
        }
-       
    },
    selectLayerByUuid (uuid) {
      var self = this

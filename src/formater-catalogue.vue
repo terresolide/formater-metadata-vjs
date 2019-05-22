@@ -90,7 +90,6 @@ export default {
   },
   data() {
     return {
-      metadata: null,
       currentUuid: null,
       depth: null,
       metadatas: [],
