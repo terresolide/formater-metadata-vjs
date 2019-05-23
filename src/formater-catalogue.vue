@@ -95,7 +95,8 @@ export default {
       metadatas: [],
       metadataListener: null,
       drawing: false,
-      aerisSearchListener: null
+      aerisSearchListener: null,
+      aerisResetListener: null
     }
   },
   
@@ -106,12 +107,16 @@ export default {
     document.addEventListener('fmt:metadataEvent', this.metadataListener);
     this.aerisSearchListener = this.handleSearch.bind(this)
     document.addEventListener('aerisSearchEvent', this.aerisSearchListener)
+    this.aerisResetListener = this.handleReset.bind(this)
+    document.addEventListener('aerisResetEvent', this.aerisResetListener)
   },
   destroyed () {
     document.removeEventListener('fmt:metadataEvent', this.metadataListener);
     this.metadataListener = null;
     document.removeEventListener('aerisSearchEvent', this.aerisSearchListener)
     this.aerisSearchListener = null
+    document.removeEventListener('aerisResetEvent', this.aerisResetListener)
+    this.aerisResetListener = null
   },
   methods: {
 	receiveMetadata (event) {
@@ -133,6 +138,8 @@ export default {
 	    } else {
 	      this.currentUuid = null
 	    }
+	    console.log(this.currentUuid)
+	    console.log(this.metadatas.length)
 // 	    var previous = this.metadatas.length-1 ? this.metadatas[this.metadatas.length-1]:null
 // 	  if (previous) {
 // 		this.metadata = previous
@@ -147,7 +154,9 @@ export default {
 // 	  }
 	},
 	handleReset (event) {
+	  console.log('reset')
 	  this.metadatas = []
+	  this.metadatas.length = 0
 	  this.currentUuid = null
 	},
 	handleSearch (event) {

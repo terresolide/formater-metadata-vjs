@@ -43,7 +43,7 @@ export default {
   props: {
     nbRecord: {
       type: Number,
-      default: 12
+      default: 4
     },
     lang: {
       type: String,
@@ -65,7 +65,7 @@ export default {
     this.recordPerPage = this.nbRecord
     this.$i18n.locale = this.lang
     this.metadataListListener = this.receiveTotalRecord.bind(this)
-    document.addEventListener('fmt:metadataListEvent', this.metadataListListener);
+    document.addEventListener('fmt:metadataListEvent', this.metadataListListener)
     this.searchEventListener = this.handleSearch.bind(this) 
 	document.addEventListener('aerisSearchEvent', this.searchEventListener);
     var self = this
@@ -124,17 +124,12 @@ export default {
      this.emitChange()
    },
    handleSearch (event) {
-     
-    
-     console.log('dans paging de ' + this.depth)
-     console.log(event.detail.depth)
      if (this.depth != event.detail.depth) {
        return
      }
      event.detail.from = this.from
      event.detail.to = this.from + this.recordPerPage - 1
      event.detail.sortBy = this.sortBy
-     console.log(event)
    },
    changePage(sens) {
      if (sens < 0 && this.currentPage === 1 ){

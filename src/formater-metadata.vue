@@ -127,6 +127,7 @@ export default {
      uuid: null,
      currentTab: 'main',
      meta: null,
+     hasChild: false,
      metaLang2: {},
      popstateListener: null,
      keydownListener: null,
@@ -153,8 +154,11 @@ export default {
     meta: {
       handler(val) {
         if (val.related && val.related.children) {
-          this.getRecords()
           this.$set(this.tabs, 'complement', true)
+          if (!this.hasChild) {
+            this.getRecords()
+            this.hasChild = true
+          }
         } else {
           this.$set(this.tabs, 'complement', false)
         }
@@ -227,6 +231,10 @@ export default {
                } 
        	 )
        	 this.searchOnlines()
+       	 if (this.meta.related && this.meta.related.children) {
+       	   this.hasChild = true
+       	   this.getRecords()
+       	 } 
 	  },
 	  searchOnlines () {
       if (!this.metadatas) {
@@ -247,10 +255,10 @@ export default {
 //         console.log(data)
 //       },
 	  getRecords () {
-      
+          // useless, it's trigger when load formater-page-changed
       	  // lance le requeteur
-      	  var event = new CustomEvent('fmt:metadataWithChildEvent', {detail: {uuid: this.uuid, nbRecords: this.nbRecords, depth: this.depth}})
-      	  document.dispatchEvent(event)
+      	 // var event = new CustomEvent('fmt:metadataWithChildEvent', {detail: {uuid: this.uuid, nbRecords: this.nbRecords, depth: this.depth}})
+      	 // document.dispatchEvent(event)
     }
 	    
   }

@@ -65,6 +65,13 @@ const MetadataToolsPlugin = {
 		       return str;
 		     }
 		   }
+		   Vue.prototype.$gnExtractText = function (obj, lang) {
+		     if (obj[lang]) {
+		       return obj[lang]
+		     } else {
+		       return obj[Object.keys(obj)[0]]
+		     }
+		   }
 	 }
 }
 

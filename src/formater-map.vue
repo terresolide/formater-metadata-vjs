@@ -39,6 +39,8 @@ export default {
     document.addEventListener('fmt:metadataEvent', this.metadataListener);
     this.closeMetadataListener = this.back.bind(this)
     document.addEventListener('fmt:closeMetadataEvent', this.closeMetadataListener);
+    this.aerisResetListener = this.handleReset.bind(this)
+    document.addEventListener('aerisResetEvent', this.aerisResetListener)
   },
   destroyed () {
     document.removeEventListener('fmt:metadataListEvent', this.metadataListListener);
@@ -47,6 +49,8 @@ export default {
     this.metadataListener = null;
     document.removeEventListener('fmt:closeMetadataEvent', this.closeMetadataListener);
     this.closeMetadataListener = null
+    document.removeEventListener('aerisResetEvent', this.aerisResetListener)
+    this.aerisResetListener = null
   },
   mounted: function () {
     this.init()
@@ -57,6 +61,7 @@ export default {
      metadataListListener: null,
      metadataListener: null,
      closeMetadataListener: null,
+     aerisResetListener: null,
      bboxLayer: [],
      selected: [],
      depth: 0,
@@ -74,7 +79,7 @@ export default {
        fillColor: 'red',
        fillOpacity: 0.4
      },
-     colors: ['orange', 'purple', 'green']
+     colors: ['orange', 'purple', 'green'],
     }
   },
   
@@ -116,6 +121,7 @@ export default {
      console.log('depth dans la liste de metadatas = ' + event.detail.depth)
      if (this.depth === event.detail.depth   && this.bboxLayer[this.depth]) {
           this.bboxLayer[this.depth].clearLayers();
+          this.bounds[this.depth] = null
           
      } else {
        this.hideBboxLayers()
@@ -226,8 +232,6 @@ export default {
    selectLayerByUuid (uuid) {
      var self = this
      var bounds = null
-     console.log(this.depth)
-     console.log(this.bboxLayer.length)
      this.bboxLayer[this.depth].eachLayer(function(layer) {
        if (layer.options.uuid === uuid) {
          self.setSelected(layer)
@@ -248,7 +252,17 @@ export default {
    setSelected (layer) {
      this.selected.push(layer)
      layer.setStyle(this.selectedOptions)
-   }  
+   },
+   handleReset (event) {
+     console.log('RESET MAP')
+     this.unselectLayer()
+     for (var i in this.bboxLayer){
+       this.bboxLayer[i].remove()
+     }
+     this.bboxLayer = []
+     this.bounds = []
+     this.depth = 0
+   }
   }
 }
 </script>

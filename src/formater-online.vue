@@ -14,7 +14,9 @@
 </i18n>
 <template>
  <div class="fmt-online">
-	
+ <a :href="$gnExtractText(online.url, lang)">
+	<i class="fa" :class="toClass(online.function)"></i>{{$gnExtractText(online.title, lang)}}
+ </a>
  </div>
 </template>
 <script>
@@ -39,6 +41,14 @@ export default {
   },
   data() {
     return {
+      icons: {
+        download: 'fa-download',
+        information: 'fa-info',
+        'offlineAccess': 'fa-times-rectangle-o',
+        order: 'fa-sign-in',
+        search: 'fa-search'
+        
+      }
     }
   },
   created () {
@@ -47,15 +57,26 @@ export default {
    this.online = this.online
   },
   methods: {
-   
+    toClass () {
+      if (this.icons[this.online.function]) {
+       return this.icons[this.online.function]
+      } else {
+        return 'fa-link'
+      }
+    }
   }
 }
 </script>
 <style>
 
 .fmt-online{
-  
+  margin-left:5px;
 }
-
+.fmt-catalogue a{
+  color:#754a15;
+}
+.fmt-catalogue a:hover{
+  color:#8c0209;
+}
 
 </style>

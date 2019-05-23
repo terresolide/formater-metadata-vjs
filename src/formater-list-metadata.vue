@@ -62,7 +62,10 @@ export default {
   },
   methods: {
      receiveMetadatas (event) {
+       console.log(this.depth)
+       console.log(event.detail.depth)
        if (event.detail.depth != this.depth) {
+         console.log('RETOURNE')
          return;
        }
        var self = this

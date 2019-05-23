@@ -19,6 +19,9 @@
 	    <img :src="meta.thumbnail" v-if="depth === 0 && meta.thumbnail"/>
 	 	<span v-html="meta.description"></span>
 	 </div>
+	 <div class="fmt-resource" v-if="depth > 0 && meta.related && meta.related.onlines">
+	    <formater-online v-for="(item, index) in meta.related.onlines" :key="index" :online="item"></formater-online>
+	 </div>
 	 <div class="fmt-footer"  v-if="depth === 0">
 	   <div class="fmt-group">
 	     <a v-if="meta.groupWebsite" :href="meta.groupWebsite" :title="$gn('group-'+ meta.groupOwner)" target="_blank" class="fmt-group-logo">
@@ -233,5 +236,16 @@ export default {
 .fmt-cartouche-metadata .fmt-expand ul li {
   padding: 0px;
   margin:  0;
+}
+.fmt-cartouche-metadata .fmt-resource{
+   background:white;
+   position:absolute;
+   padding: 3px 5px;
+   max-height: 100px;
+   overflow: hidden;
+   z-index:8000;
+}
+.fmt-cartouche-metadata .fmt-resource:hover {
+  max-height:none;
 }
 </style>
