@@ -27,7 +27,7 @@
 	   <span class="fa fa-angle-right " @click="changePage(1)" ></span>
 	   <span class="fa fa-angle-double-right" @click="goToLast()"></span>
   </span>
-  <div style="float:right;display:inline-block;">
+  <div style="float:right;display:inline-block;" v-if="orders.length > 0">
     {{$t('sortBy')}} <formater-select :options="options" name="sortBy" type="associative" defaut="title" @input="sortChange" color="#ffffff"></formater-select>
   </div>
    </div>
@@ -52,6 +52,14 @@ export default {
     depth: {
       type: Number,
       default: 0
+    },
+    orders: {
+      type: Array,
+      default: () => []
+    },
+    orderBy: {
+      type: String,
+      default: null
     }
   },
   watch: {
@@ -72,6 +80,9 @@ export default {
     this.orders.forEach( function (order) {
       self.options[order] = self.$i18n.t(order)
     })
+    if (this.orders.length == 0) {
+      this.emitChange()
+    }
   },
   destroyed () {
     document.removeEventListener('fmt:metadataListEvent', this.metadataListListener);
@@ -88,8 +99,8 @@ export default {
       nbPage: 0,
       from: 1,
       to: 12,
-      sortBy: 'title',
-      orders: ['title', 'changeDate'],
+     // sortBy: 'title',
+     // orders: ['title', 'changeDate'],
       options: {},
       metadataListListener: null,
       searchEventListener: null
@@ -129,7 +140,9 @@ export default {
      }
      event.detail.from = this.from
      event.detail.to = this.from + this.recordPerPage - 1
-     event.detail.sortBy = this.sortBy
+     if (this.sortBy) {
+     	event.detail.sortBy = this.sortBy
+     }
    },
    changePage(sens) {
      if (sens < 0 && this.currentPage === 1 ){

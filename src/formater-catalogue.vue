@@ -19,7 +19,7 @@
    
     <div class="fmt-column-right" >
      <div v-show="metadatas.length === 0">
-       <formater-paging :lang="lang" :nb-record="nbRecord" :depth="0"></formater-paging>
+       <formater-paging :lang="lang" :nb-record="nbRecord" :depth="0" :orders="['title','changeDate']" order-by="title"></formater-paging>
        <formater-list-metadata :lang="lang" :depth="0"></formater-list-metadata>
      </div>
      <div  v-if="metadatas.length > 0" >
