@@ -6,6 +6,7 @@ var buildVersion = PACKAGE.version;
 var buildName = PACKAGE.name;
 var CleanWebpackPlugin = require('clean-webpack-plugin');
 var UglifyJsPlugin = require('uglifyjs-webpack-plugin')
+const VueLoaderPlugin = require('vue-loader/lib/plugin')
 // var vueLoaderConfig = require('./vue-loader.conf')
 var preUrl = PACKAGE.preproduction.url + "/webcomponents/";
 var prodUrl = PACKAGE.production.url + '/' + buildName + '@' + buildVersion +  '/dist/' ;
@@ -30,14 +31,19 @@ module.exports = {
     rules: [
       {
         test: /\.vue$/,
-        loader: 'vue-loader',
-        options: {
-          loaders:  {
-        	  i18n: '@kazupon/vue-i18n-loader',
-        	  scss: 'style!css!sass'
-          }
+        loader: 'vue-loader'
+//        options: {
+//          loaders:  {
+//            i18n: '@kazupon/vue-i18n-loader',
+//            scss: 'style!css!sass'
+//          }
           // other vue-loader options go here
-        }
+//        }
+      },
+      {
+        resourceQuery: /blockType=i18n/,
+        type: 'javascript/auto',
+        loader: '@kazupon/vue-i18n-loader',
       },
       {
         test: /\.js$/,
@@ -45,9 +51,16 @@ module.exports = {
         exclude: /node_modules/
       },
       {
-        test: /\.s[a|c]ss$/,
-        loader: 'style!css!sass'
+        test: /\.css$/,
+        use: [
+          'vue-style-loader',
+          'css-loader'
+        ]
       },
+//      {
+//        test: /\.s[a|c]ss$/,
+//        loader: 'style!css!sass'
+//      },
       {
         test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
         use: [{
@@ -93,13 +106,16 @@ module.exports = {
 module.exports.plugins = (module.exports.plugins || []).concat([
   new webpack.DefinePlugin({
     'process.env': {GEONETWORK: env.GEONETWORK}
-  })
+  }),
+  new VueLoaderPlugin()
 ])
 if (process.env.NODE_ENV === 'development') {
+  module.exports.mode = 'development'
 	module.exports.output.filename='build.js'
 
 }
 if (process.env.NODE_ENV === 'production') {
+  module.exports.mode = 'production'
   module.exports.devtool = '#source-map';
   module.exports.output.publicPath = prodUrl;
 
@@ -120,6 +136,7 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 if (process.env.NODE_ENV === 'preproduction') {
+    module.exports.mode = 'production'
     module.exports.devtool = '#source-map';
     module.exports.output.path =  path.resolve(__dirname, './webcomponents'),
     module.exports.output.publicPath = preUrl;
