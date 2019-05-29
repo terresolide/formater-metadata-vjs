@@ -11,10 +11,10 @@
 }
 </i18n>
 <template>
- <div class="fmt-list-contact" v-if="responsibleParty || responsibleParty2">
+ <div class="mtdt-list-contact" v-if="responsibleParty || responsibleParty2">
     
 
-      <div class="fmt-contacts" v-if="contacts.resource">
+      <div class="mtdt-contacts" v-if="contacts.resource">
 	        <h2><i class="fa fa-users"></i>{{$tc('resource_contact', Object.keys(contacts.resource).length)}}</h2>
 	        <div v-for="(fonction, key) in contacts.resource" :key="key" style="float:left;">
 		         <h3><i class="fa fa-user"></i>{{$gn(key)}}</h3>
@@ -23,7 +23,7 @@
 	        <div style="clear:both;"></div>
 	      </div>
 
-	       <div class="fmt-contacts" v-if="contacts.metadata">
+	       <div class="mtdt-contacts" v-if="contacts.metadata">
 	        <h2><i class="fa fa-users"></i>{{$tc('metadata_contact', Object.keys(contacts.metadata).length)}}</h2>
 	         <div v-for="(fonction, key) in contacts.metadata" :key="key" >
 		         <h3><i class="fa fa-user"></i>{{$gn(key)}}</h3>
@@ -106,7 +106,7 @@ export default {
 </script>
 <style>
 
-.fmt-metadata .fmt-contacts h3{
+.mtdt-metadata .fmt-contacts h3{
     margin-bottom:0;
 }
 

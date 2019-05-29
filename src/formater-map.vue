@@ -8,8 +8,8 @@
 }
 </i18n>
 <template>
- <span class="fmt-map">
-  <div id="fmtMap" class="fmt-small"></div>
+ <span class="mtdt-map">
+  <div id="fmtMap" class="mtdt-small"></div>
  </span>
 </template>
 <script>
@@ -274,17 +274,17 @@ div[id="fmtMap"]{
   padding:0;
   height:200px;
 }
-div[id="fmtMap"].fmt-small .leaflet-top .leaflet-control{
+div[id="fmtMap"].mtdt-small .leaflet-top .leaflet-control{
    margin-top: 3px;
 }
-div[id="fmtMap"].fmt-small .leaflet-left .leaflet-control{
+div[id="fmtMap"].mtdt-small .leaflet-left .leaflet-control{
    margin-left: 3px;
 }
-div[id="fmtMap"].fmt-small .leaflet-control .leaflet-control-zoom-in, 
-div[id="fmtMap"].fmt-small .leaflet-control .leaflet-control-zoom-out{
+div[id="fmtMap"].mtdt-small .leaflet-control .leaflet-control-zoom-in, 
+div[id="fmtMap"].mtdt-small .leaflet-control .leaflet-control-zoom-out{
   font-size:16px;
 }
-div[id="fmtMap"].fmt-small .leaflet-bar a{
+div[id="fmtMap"].mtdt-small .leaflet-bar a{
 
  width: 15px;
  height:15px;

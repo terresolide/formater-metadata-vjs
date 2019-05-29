@@ -13,7 +13,7 @@
 }
 </i18n>
 <template>
- <div class="fmt-online">
+ <div class="mtdt-online">
  <a :href="$gnExtractText(online.url, lang)">
 	<i class="fa" :class="toClass(online.function)"></i>{{$gnExtractText(online.title, lang)}}
  </a>
@@ -69,13 +69,13 @@ export default {
 </script>
 <style>
 
-.fmt-online{
+.mtdt-online{
   margin-left:5px;
 }
-.fmt-catalogue a{
+.mtdt-catalogue a{
   color:#754a15;
 }
-.fmt-catalogue a:hover{
+.mtdt-catalogue a:hover{
   color:#8c0209;
 }
 

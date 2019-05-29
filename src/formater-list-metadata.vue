@@ -8,7 +8,7 @@
 }
 </i18n>
 <template>
- <div class="fmt-list">
+ <div class="mtdt-list">
     <div v-if="!metadatas" style="width:calc(100% - 150px);">{{$t('no_result')}}</div>
     <formater-cartouche-metadata  :depth="depth" v-for="(meta, index) in metadatas" :key="index" :metadata="meta" v-if="meta" :lang="lang"></formater-cartouche-metadata>
   </div>
@@ -132,7 +132,7 @@ export default {
 }
 </script>
 <style scoped>
-.fmt-list{
+.mtdt-list{
   width: 100%;
   text-align:center;
   margin: 20px auto;

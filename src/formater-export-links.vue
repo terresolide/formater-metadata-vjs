@@ -1,11 +1,11 @@
 
 <template>
- <span class="fmt-export-links">
-  <div  class="fmt-tab-export">
+ <span class="mtdt-export-links">
+  <div  class="mtdt-tab-export">
     <i class="fa fa-chevron-down"></i>
   	<span style="">{{$gn('export')}}</span>
   </div>
-  <div class="fmt-expand">
+  <div class="mtdt-expand">
      <div><a :href="xml">{{$gn('exportXML')}}</a></div>
      <div><a :href="pdf" target="_blank">{{$gn('exportPDF')}}</a></div>
   </div>
@@ -43,36 +43,36 @@ export default {
 }
 </script>
 <style>
-.fmt-export-links{
+.mtdt-export-links{
   float:right;
   margin-right:5px;
 }
-.fmt-tab-export{
+.mtdt-tab-export{
   min-width: 80px;
   text-align:center;
 }
-.fmt-export-links div.fmt-expand{
+.mtdt-export-links div.mtdt-expand{
   display: none;
   text-align: center;
   position:absolute;
   min-width:102px;
 }
-.fmt-export-links div.fmt-expand div{
+.mtdt-export-links div.mtdt-expand div{
    line-height:2;
    padding: 3px 0;
    background: #eee;
    border:1px dotted grey;
    border-top:0px;
 }
-.fmt-export-links a{
+.mtdt-export-links a{
    color: black;
    text-decoration:none;
 }
-.fmt-export-links div.fmt-expand div:hover{
+.mtdt-export-links div.mtdt-expand div:hover{
    background: #ccc;
 }
-.fmt-tab-export:hover + div.fmt-expand,
-div.fmt-expand:hover{
+.mtdt-tab-export:hover + div.mtdt-expand,
+div.mtdt-expand:hover{
   display: block;
 }
 </style>

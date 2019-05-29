@@ -1,13 +1,13 @@
 
 <template>
- <div class="fmt-dimension" :class="{disable: disable}">
+ <div class="mtdt-dimension" :class="{disable: disable}">
 
          <label :for="name" @click="handleChange()" style="vertical-align:top;">
               <i class="fa fa-check-square-o" v-if="isChecked"></i>
               <i class="fa fa-square-o" v-if="!isChecked"></i>
          </label>
 	    <!--  <input type="checkbox" :name="name" :value="dimension['@name']" v-model="isChecked"/> -->
-	     <div class="fmt-dimension-title">
+	     <div class="mtdt-dimension-title">
 	        {{dimension['@label']}}&#8239;{{ strCount }}
 	     </div>
 	  </div>
@@ -111,32 +111,32 @@ export default {
 }
 </script>
 <style>
-.fmt-dimension div{
+.mtdt-dimension div{
   margin-left:5px;
   padding:0px;
   opacity: 1;
 }
-.fmt-dimension.disable div{
+.mtdt-dimension.disable div{
   pointer-events:none;
   opacity: 0.8
 }
 
-.fmt-dimension input[type="checkbox"] {
+.mtdt-dimension input[type="checkbox"] {
   display: none;
 }
-.fmt-dimension div.fmt-child{
+.mtdt-dimension div.mtdt-child{
   display:none;
 }
-.fmt-dimension i.fa-minus-square-o{
+.mtdt-dimension i.fa-minus-square-o{
  display:none;
 }
-.fmt-dimension i.fa-plus-quare-o{
+.mtdt-dimension i.fa-plus-quare-o{
  display:inline;
 }
-.fmt-dimension div.deployed i.fa-minus-square-o{
+.mtdt-dimension div.deployed i.fa-minus-square-o{
   display:inline;
 }
-.fmt-dimension-title{
+.mtdt-dimension-title{
   display: inline-block;
   max-width:calc(100% - 80px);
   line-height:12px;

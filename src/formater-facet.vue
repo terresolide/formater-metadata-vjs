@@ -1,20 +1,20 @@
 
 <template>
- <div class="fmt-facet" :class="{disable: disable && level===0}" >
+ <div class="mtdt-facet" :class="{disable: disable && level===0}" >
 
          <label :for="name" @click="handleChange()" style="vertical-align:top;">
               <i class="fa fa-check-square-o" v-if="isChecked"></i>
               <i class="fa fa-square-o" v-if="!isChecked"></i>
          </label>
 	    <!--  <input type="checkbox" :name="name" :value="dimension['@name']" v-model="isChecked"/> -->
-	     <div class="fmt-facet-title">
+	     <div class="mtdt-facet-title">
 	        {{label}}&#8239;{{ strCount }}
 	     </div>
 	     <div :class="{deployed: deployed}" style="float:right" @click="deployed = !deployed" v-if="dimension.category && dimension.category.length > 0">
 	         <i   class="fa fa-plus-square-o" ></i>
 	         <i class="fa fa-minus-square-o"></i>
 	     </div>
-	     <div class="fmt-child" v-if="dimension.category && dimension.category.length > 0" >
+	     <div class="mtdt-child" v-if="dimension.category && dimension.category.length > 0" >
 	      	<formater-facet  :level="level + 1" :defaut="defaut" :checked="isChecked" :name="name" :value="childValue(index)" v-for="(item,index) in dimension.category" :dimension="item" :key="index" @input="childChanged"></formater-facet>
 	     </div>
 	  </div>
@@ -181,37 +181,37 @@ export default {
 }
 </script>
 <style>
-.fmt-facet div{
+.mtdt-facet div{
   margin-left:5px;
   padding:0px
 
 }
-.fmt-facet.disable{
+.mtdt-facet.disable{
  opacity: 0.8;
 }
 
-.fmt-facet input[type="checkbox"] {
+.mtdt-facet input[type="checkbox"] {
   display: none;
 }
-.fmt-facet div.fmt-child{
+.mtdt-facet div.mtdt-child{
   display:none;
 }
-.fmt-facet i.fa-minus-square-o{
+.mtdt-facet i.fa-minus-square-o{
  display:none;
 }
-.fmt-facet i.fa-plus-quare-o{
+.mtdt-facet i.fa-plus-quare-o{
  display:inline;
 }
-.fmt-facet div.deployed i.fa-minus-square-o{
+.mtdt-facet div.deployed i.fa-minus-square-o{
   display:inline;
 }
-.fmt-facet div.deployed i.fa-plus-square-o{
+.mtdt-facet div.deployed i.fa-plus-square-o{
   display:none;
 }
-.fmt-facet div.deployed + div.fmt-child{
+.mtdt-facet div.deployed + div.mtdt-child{
   display:block;
 }
-.fmt-facet-title{
+.mtdt-facet-title{
   display: inline-block;
   max-width:calc(100% - 80px);
   line-height:12px;

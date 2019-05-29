@@ -236,7 +236,7 @@ export default {
 }
 </script>
 <style>
-.fmt-form{
+/*.fmt-form{
   padding: 0px 0px 30px 0px;
  border: 1px solid #ccc;
   box-shadow: 1px 1px 1px 2px rgba(0, 0, 0, 0.1);
@@ -249,7 +249,6 @@ export default {
     width: 100%;
     overflow: hidden;
    background: #f8ebda;
-    /* background: #e3dbd0;*/
     margin: 0 0 10px 0;
 }
 .fmt-form .formater-search-box{
@@ -286,7 +285,7 @@ export default {
     line-height:35px;
     height:35px;
     width: calc(100% - 40px);
-}
+}*/
 /*.fmt-form main.box-body > div > div.fmt-dimension{
    margin-left: 15px;
 }*/

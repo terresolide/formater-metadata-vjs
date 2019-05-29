@@ -8,12 +8,12 @@
 }
 </i18n>
 <template>
- <div class="fmt-draw-bbox"  v-show="drawing">
- <div class="fmt-header" >
+ <div class="mtdt-draw-bbox"  v-show="drawing">
+ <div class="mtdt-header" >
   	<span class="close fa fa-close" @click="drawEnd" ></span>
 	<h3  @mousedown="movestart" style="padding:10px;margin:0;">{{$t('draw_bbox')}}</h3>
 </div>
-  <div id="fmtDraw" class="fmt-small"></div>
+  <div id="fmtDraw" class="mtdt-small"></div>
  </div>
 </template>
 <script>
@@ -73,10 +73,10 @@ export default {
         }
     },
     color (newvalue) {
-      this.$el.querySelector(".fmt-header").style.color = newvalue
+      this.$el.querySelector(".mtdt-header").style.color = newvalue
     },
     background (newvalue) {
-      this.$el.querySelector(".fmt-header").style.background = newvalue
+      this.$el.querySelector(".mtdt-header").style.background = newvalue
     }
   },
   created: function() {
@@ -116,8 +116,8 @@ export default {
   },
   mounted: function () {
     console.log('mounted')
-    this.$el.querySelector(".fmt-header").style.color = this.color
-    this.$el.querySelector(".fmt-header").style.background = this.background
+    this.$el.querySelector(".mtdt-header").style.color = this.color
+    this.$el.querySelector(".mtdt-header").style.background = this.background
     this.initHeight()
     	// console.log(this.$el)
   	// this.resizeListener = new ResizeObserver(this.resize).observe(this.$el)
@@ -150,7 +150,7 @@ export default {
      this.pos.y = this.$el.offsetTop
    },
    initHeight () {
-     var height = this.$el.offsetHeight - this.$el.querySelector('.fmt-header').offsetHeight -4
+     var height = this.$el.offsetHeight - this.$el.querySelector('.mtdt-header').offsetHeight -4
      console.log(height)
      this.$el.querySelector('#fmtDraw').style.height = height +'px'
    },
@@ -346,7 +346,7 @@ export default {
   @import "../node_modules/leaflet-draw/dist/leaflet.draw.css";
   
 
- .fmt-draw-bbox{
+ .mtdt-draw-bbox{
   position: absolute;
    width: 600px;
    height: 400px;
@@ -362,7 +362,7 @@ export default {
    border: 2px solid #ccc;
    box-shadow: 2px 2px 2px 2px rgba(0, 0, 0, 0.1);
  }
- .fmt-draw-bbox div.fmt-header{
+ .mtdt-draw-bbox div.mtdt-header{
    margin:0;
    border-radius: 6px 6px 0px 0px;
  }
@@ -370,17 +370,17 @@ div[id="fmtDraw"]{
   border-radius: 0px 0px 6px 6px;
   height:350px;
 }
-div[id="fmtDraw"].fmt-small .leaflet-top .leaflet-control{
+div[id="fmtDraw"].mtdt-small .leaflet-top .leaflet-control{
    margin-top: 3px;
 }
-div[id="fmtDraw"].fmt-small .leaflet-left .leaflet-control{
+div[id="fmtDraw"].mtdt-small .leaflet-left .leaflet-control{
    margin-left: 3px;
 }
-div[id="fmtDraw"].fmt-small .leaflet-control .leaflet-control-zoom-in, 
-div[id="fmtDraw"].fmt-small .leaflet-control .leaflet-control-zoom-out{
+div[id="fmtDraw"].mtdt-small .leaflet-control .leaflet-control-zoom-in, 
+div[id="fmtDraw"].mtdt-small .leaflet-control .leaflet-control-zoom-out{
   font-size:16px;
 }
-div[id="fmtDraw"].fmt-small .leaflet-bar a{
+div[id="fmtDraw"].mtdt-small .leaflet-bar a{
  background-image:none;
  width: 20px;
  height:20px;
@@ -426,24 +426,24 @@ div[id="fmtDraw"] a.leaflet-draw-edit-remove:before{
     -webkit-border-radius: 0 0px 4px 4px;
     border-radius: 0 0px 4px 4px;
   }
- .fmt-draw-bbox div.fmt-header{
+ .mtdt-draw-bbox div.mtdt-header{
    margin: 0 0 0px 0;
    cursor: move;
 }
-.fmt-draw-bbox span.close{
+.mtdt-draw-bbox span.close{
 	position:absolute;
 	top:2px;
 	right:4px;
 	cursor: pointer;
 }
  @media screen and (min-width: 1024px) {
-    .fmt-draw-bbox {
+    .mtdt-draw-bbox {
        width: 700px;
        height: 400px;
     }
   }
    @media screen and (min-width: 1680px) {
-    .fmt-draw-bbox {
+    .mtdt-draw-bbox {
        width: 900px;
        height: 600px;
     }

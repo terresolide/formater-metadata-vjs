@@ -1,6 +1,6 @@
 
 <template>
- <div class="fmt-dimension-block">
+ <div class="mtdt-dimension-block">
       	
 	      	<formater-dimension :disable="disable" :value="encodeURIComponent(item['@value'])" v-for="(item,index) in dimension" :dimension="item" :key="index" :name="filteredName"></formater-dimension>
  </div>
@@ -47,13 +47,13 @@ export default {
 }
 </script>
 <style>
-.fmt-dimension-block {
+.mtdt-dimension-block {
  margin-left: 5px;
  font-size:12px;
  line-height:18px;
  
 }
-.fmt-dimension-block i{
+.mtdt-dimension-block i{
  font-size:14px;
 }
 

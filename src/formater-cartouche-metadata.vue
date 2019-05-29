@@ -10,33 +10,33 @@
 }
 </i18n>
 <template>
- <div class="fmt-cartouche-metadata fmt-capsule" :class="{'fmt-child': depth > 0}">
-	 <div class="fmt-header" @click="displayMetadata" @dblclick="displayMetadata" >
+ <div class="mtdt-cartouche-metadata mtdt-capsule" :class="{'mtdt-child': depth > 0}">
+	 <div class="mtdt-header" @click="displayMetadata" @dblclick="displayMetadata" >
 		<i class="fa" :class="meta.type === 'series' ? 'fa-files-o' : 'fa-file'" v-if="['dataset','series'].indexOf(meta.type) >= 0" :title="$gn(meta.type)"></i>
 		<div>{{meta.title ? meta.title: meta.defaultTitle}}</div>
 	 </div>
-	 <div class="fmt-description">
+	 <div class="mtdt-description">
 	    <img :src="meta.thumbnail" v-if="depth === 0 && meta.thumbnail"/>
 	 	<span v-html="meta.description"></span>
 	 </div>
-	 <div class="fmt-resource" v-if="depth > 0 && meta.related && meta.related.onlines">
+	 <div class="mtdt-resource" v-if="depth > 0 && meta.related && meta.related.onlines">
 	    <formater-online v-for="(item, index) in meta.related.onlines" :key="index" :online="item"></formater-online>
 	 </div>
-	 <div class="fmt-footer"  v-if="depth === 0">
-	   <div class="fmt-group">
-	     <a v-if="meta.groupWebsite" :href="meta.groupWebsite" :title="$gn('group-'+ meta.groupOwner)" target="_blank" class="fmt-group-logo">
+	 <div class="mtdt-footer"  v-if="depth === 0">
+	   <div class="mtdt-group">
+	     <a v-if="meta.groupWebsite" :href="meta.groupWebsite" :title="$gn('group-'+ meta.groupOwner)" target="_blank" class="mtdt-group-logo">
              <img :src="meta.logo"/>
           </a>
-          <a v-else href="#" :alt="$gn('group-'+ meta.groupOwner)" :title="$gn('group-'+ meta.groupOwner)" class="fmt-group-logo">
+          <a v-else href="#" :alt="$gn('group-'+ meta.groupOwner)" :title="$gn('group-'+ meta.groupOwner)" class="mtdt-group-logo">
               <img :src="meta.logo"  />
           </a>
 	   </div>
-	   <div class="fmt-related" v-if="meta.related">
+	   <div class="mtdt-related" v-if="meta.related">
 	     <div v-if="(meta.related.children || meta.related.parent)" style="position:relative;">
-		     <div class="fmt-related-type fa fa-code-fork">
+		     <div class="mtdt-related-type fa fa-code-fork">
 		        <span class="fa fa-caret-down"></span>
 		     </div>
-		     <div class="fmt-expand">
+		     <div class="mtdt-expand">
 		         <label v-if="meta.related.parent">{{$t('parent')}}</label>
 		         <ul v-if="meta.related.parent">
 		          <li v-for="(item,index) in meta.related.children">
@@ -102,7 +102,7 @@ export default {
 </script>
 <style>
 
-.fmt-cartouche-metadata{
+.mtdt-cartouche-metadata{
   position: relative;
   font-size: 12px;
 /*  width: calc(30% - 15px);*/
@@ -116,7 +116,7 @@ export default {
   float:left;
 }
 
-.fmt-cartouche-metadata div.fmt-header{
+.mtdt-cartouche-metadata div.mtdt-header{
   color: white;
   background-color: #dd9946;
   margin: 0;
@@ -126,11 +126,11 @@ export default {
   padding: 5px;
   cursor: pointer;
 }
-/*.fmt-cartouche-metadata.fmt-child div.fmt-header{
+/*.mtdt-cartouche-metadata.mtdt-child div.mtdt-header{
   color: #9e631d;
   background-color: white;
 }*/
-.fmt-cartouche-metadata div.fmt-header div{
+.mtdt-cartouche-metadata div.mtdt-header div{
 	display:inline-block;
 	float:left;
 	width:calc(100% - 28px); 
@@ -138,24 +138,24 @@ export default {
 	overflow: hidden;
 	max-height:29px;
 }
-.fmt-cartouche-metadata div.fmt-header i.fa{
+.mtdt-cartouche-metadata div.mtdt-header i.fa{
 	float:left;
 	vertical-align:middle;
 	font-size: 18px;
 	margin-right: 0;
 
 }
-.fmt-cartouche-metadata div.fmt-description{
+.mtdt-cartouche-metadata div.mtdt-description{
 	max-height:160px;
 	overflow:hidden;
 	padding: 5px;
 	min-width: 360px;
 	font-size:0.9em;
 }
-.fmt-cartouche-metadata.fmt-child div.fmt-description{
+.mtdt-cartouche-metadata.mtdt-child div.mtdt-description{
    max-height: 80px;
 }
-.fmt-cartouche-metadata div.fmt-description img {
+.mtdt-cartouche-metadata div.mtdt-description img {
   position: relative;
    float:left;
    max-width: 150px;
@@ -163,26 +163,26 @@ export default {
    background: #ddd;
    margin: 0px 15px 10px 0;
 }
-.fmt-cartouche-metadata .fmt-footer{
+.mtdt-cartouche-metadata .mtdt-footer{
   position: absolute;
   margin: 0 2px;
   bottom:0;
   width:100%;
 }
-.fmt-cartouche-metadata .fmt-footer > div{
+.mtdt-cartouche-metadata .mtdt-footer > div{
   display: inline-block;
 }
-.fmt-cartouche-metadata .fmt-footer .fmt-group-logo img{
+.mtdt-cartouche-metadata .mtdt-footer .mtdt-group-logo img{
   max-width:80px;
   max-height:25px;
 }
-.fmt-cartouche-metadata .fmt-footer .fmt-related{
+.mtdt-cartouche-metadata .mtdt-footer .mtdt-related{
  float: right;
  margin-right:3px;
  max-height: 25px;
  max-width: 50%;
 }
-.fmt-cartouche-metadata .fmt-footer .fmt-related-type{
+.mtdt-cartouche-metadata .mtdt-footer .mtdt-related-type{
  text-align:center;
  min-width:20px;
  vertical-align:bottom;
@@ -195,10 +195,10 @@ export default {
  font-size:1.3em;
  margin-right:3px;
 }
-.fmt-cartouche-metadata .fmt-footer .fmt-related-type:hover{
+.mtdt-cartouche-metadata .mtdt-footer .mtdt-related-type:hover{
   background:#8c0209;
 }
-.fmt-related-type + .fmt-expand{
+.mtdt-related-type + .mtdt-expand{
 	display:none;
 	position:absolute;
 	top: 21px;
@@ -214,30 +214,30 @@ export default {
 	width:auto;
 	text-align:left;
 }
-.fmt-expand:hover {
+.mtdt-expand:hover {
   display: block;
 }
-.fmt-cartouche-metadata .fmt-footer .fmt-related-type:hover + .fmt-expand{
+.mtdt-cartouche-metadata .mtdt-footer .mtdt-related-type:hover + .mtdt-expand{
   display:block;
 }
-.fmt-cartouche-metadata .fmt-footer .fmt-related-type span{
+.mtdt-cartouche-metadata .mtdt-footer .mtdt-related-type span{
  font-size:0.8em;
  margin-left:3px;
 }
-.fmt-cartouche-metadata .fmt-expand label{
+.mtdt-cartouche-metadata .mtdt-expand label{
   font-weight: 800;
 }
  
-.fmt-cartouche-metadata .fmt-expand ul {
+.mtdt-cartouche-metadata .mtdt-expand ul {
   padding:0;
   list-style-position: outside;
   margin:  5px 3px 5px 9px;
 }
-.fmt-cartouche-metadata .fmt-expand ul li {
+.mtdt-cartouche-metadata .mtdt-expand ul li {
   padding: 0px;
   margin:  0;
 }
-.fmt-cartouche-metadata .fmt-resource{
+.mtdt-cartouche-metadata .mtdt-resource{
    background:white;
    position:absolute;
    padding: 3px 5px;
@@ -245,7 +245,7 @@ export default {
    overflow: hidden;
    z-index:8000;
 }
-.fmt-cartouche-metadata .fmt-resource:hover {
+.mtdt-cartouche-metadata .mtdt-resource:hover {
   max-height:none;
 }
 </style>

@@ -16,14 +16,14 @@
 }
 </i18n>
 <template>
- <span class="fmt-paging">
+ <span class="mtdt-paging">
   <div style="width:100%;border-bottom: 1px solid #ddd;height:30px;line-height:30px;text-align:center;">
-  <span :class="{disabled: (currentPage===1 ? 'disabled': ''), 'fmt-navigation':true}">
+  <span :class="{disabled: (currentPage===1 ? 'disabled': ''), 'mtdt-navigation':true}">
   	<span class="fa fa-angle-double-left" @click="goToFirst()"></span>
   	<span class="fa fa-angle-left" @click="changePage(-1)" ></span>
   </span>
   <span style="margin: 0 10px;" v-html="$tc('results', count, {from: (count === 0) ? 0 : from, to: to, count: count})"></span>
-   <span :class="{disabled: (currentPage===nbPage || count=== 0 ? 'disabled': ''), 'fmt-navigation':true}">
+   <span :class="{disabled: (currentPage===nbPage || count=== 0 ? 'disabled': ''), 'mtdt-navigation':true}">
 	   <span class="fa fa-angle-right " @click="changePage(1)" ></span>
 	   <span class="fa fa-angle-double-right" @click="goToLast()"></span>
   </span>
@@ -169,7 +169,7 @@ export default {
 }
 </script>
 <style>
-.fmt-paging span.fmt-navigation span{
+.mtdt-paging span.mtdt-navigation span{
   font-size: 14px;
   cursor: pointer;
   margin: 0 1px;
@@ -183,11 +183,11 @@ export default {
  font-size:1.3em;;
   vertical-align:middle;
 }
-.fmt-paging span.fmt-navigation.disabled span{
+.mtdt-paging span.mtdt-navigation.disabled span{
   opacity:0.3;
   cursor:not-allowed;
 }
-.fmt-paging span.fmt-navigation:not(.disabled) span:hover{
+.mtdt-paging span.mtdt-navigation:not(.disabled) span:hover{
   opacity:1;
 }
 

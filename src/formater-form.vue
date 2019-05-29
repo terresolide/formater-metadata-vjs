@@ -20,7 +20,7 @@
 }
 </i18n>
 <template>
- <div class="fmt-form">
+ <div class="mtdt-form">
   <div style="text-align:center;margin: -10px 0 30px 0;"><input type="button" @click="reset" :value="$t('reset')"/></div>
   <div class="formater-input-group" style="margin:10px; width:calc(100% - 20px);">
      <input id="any" name="any" v-model="fulltextSearch" :placeholder="$t('search')" @change="changeText" @keypress="changeTextOnEnter" /><i class="fa fa-search"></i>
@@ -231,12 +231,12 @@ export default {
 }
 </script>
 <style>
-.fmt-form{
+.mtdt-form{
   padding: 0px 0px 30px 0px;
  border: 1px solid #ccc;
   box-shadow: 1px 1px 1px 2px rgba(0, 0, 0, 0.1);
 }
-.fmt-form .formater-input-group {
+.mtdt-form .formater-input-group {
     display: flex;
     flex-flow: row nowrap;
     align-items: center;
@@ -247,18 +247,18 @@ export default {
     /* background: #e3dbd0;*/
     margin: 0 0 10px 0;
 }
-.fmt-form .formater-search-box{
+.mtdt-form .formater-search-box{
   margin: 5px 0;
   width:100%;
   box-shadow: 0 2px 5px -5px rgba(0, 0, 0, 0.2);
 }
-.fmt-form  .formater-input-group input {
+.mtdt-form  .formater-input-group input {
     border: none;
     background-color: transparent;
     padding: 0 10px;
     outline: none;
 }
-.fmt-form input[type="button"] {
+.mtdt-form input[type="button"] {
     margin: 0 0 3px 7px;
     padding: 3px 12px;
     text-align: center;
@@ -277,12 +277,12 @@ export default {
     box-sizing: border-box;
     box-shadow: 0 1px 5px rgba(0,0,0,.65);
 }
-.fmt-form  .formater-input-group input[name="any"] {
+.mtdt-form  .formater-input-group input[name="any"] {
     line-height:35px;
     height:35px;
     width: calc(100% - 40px);
 }
-/*.fmt-form main.box-body > div > div.fmt-dimension{
+/*.mtdt-form main.box-body > div > div.mtdt-dimension{
    margin-left: 15px;
 }*/
 </style>

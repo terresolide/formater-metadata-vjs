@@ -6,18 +6,18 @@
 }
 </i18n>
 <template>
- <div class="fmt-catalogue">
+ <div class="mtdt-catalogue">
   <aeris-theme :primary="primary" :active="true" :emphasis="emphasis"></aeris-theme>
   <formater-requester :lang="lang" :nb-record="nbRecord" :depth="metadatas.length"></formater-requester>
  <!-- <formater-draggable-block :show="true">  -->
   <formater-draw-bbox color="#fff" :lang="lang" :background="primary"></formater-draw-bbox>
  <!--  </formater-draggable-block>  -->
   <div >
-   <div class="fmt-column-left" >
+   <div class="mtdt-column-left" >
     <formater-form :lang="lang" :nb-record="nbRecord" :disableLevel="metadatas.length > 0 ? 1 : 0"></formater-form>
     </div>
    
-    <div class="fmt-column-right" >
+    <div class="mtdt-column-right" >
      <div v-show="metadatas.length === 0">
        <formater-paging :lang="lang" :nb-record="nbRecord" :depth="0" :orders="['title','changeDate']" order-by="title"></formater-paging>
        <formater-list-metadata :lang="lang" :depth="0"></formater-list-metadata>
@@ -168,21 +168,21 @@ export default {
 }
 </script>
 <style>
-.fmt-catalogue{
+.mtdt-catalogue{
   font-size: 12px;
   height:auto;
   width:100%;
   }
-.fmt-capsule{
+.mtdt-capsule{
   border: 1px solid #ccc;
   border-radius: 0 0 5px 5px;
   box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.2);
 }
-.fmt-catalogue .fmt-column-left{
+.mtdt-catalogue .mtdt-column-left{
   width:300px;
   float:left;
 }
-.fmt-catalogue .fmt-column-right{
+.mtdt-catalogue .mtdt-column-right{
   width:calc(100% - 330px);
   float:right;
   margin-bottom:120px;

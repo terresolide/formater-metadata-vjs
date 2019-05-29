@@ -1,6 +1,6 @@
 
 <template>
- <div class="fmt-dimension-block" >
+ <div class="mtdt-dimension-block" >
       	
 	      	<formater-facet  :disable="disable" :level="0" :defaut="defaut" :value="encodeURIComponent(item['@value'])" v-for="(item,index) in dimensions" :dimension="item" :key="index" :name="filteredName"></formater-facet>
  </div>
@@ -116,13 +116,13 @@ export default {
 }
 </script>
 <style>
-.fmt-dimension-block {
+.mtdt-dimension-block {
  margin-left: 5px;
  font-size:12px;
  line-height:18px;
  
 }
-.fmt-dimension-block i{
+.mtdt-dimension-block i{
  font-size:14px;
 }
 

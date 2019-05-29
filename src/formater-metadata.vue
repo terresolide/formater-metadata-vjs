@@ -13,15 +13,15 @@
 }
 </i18n>
 <template>
- <div class="fmt-metadata fmt-capsule">
+ <div class="mtdt-metadata mtdt-capsule">
     
-   <span class="fmt-metadata-close fa fa-close" @click="close"></span>
+   <span class="mtdt-metadata-close fa fa-close" @click="close"></span>
    <div v-if="meta">
-      <h1 class="fmt-metadata-header">
-           <a v-if="meta.groupWebsite" :href="meta.groupWebsite" :title="$gn('group-'+ meta.groupOwner)" starget="_blank" class="fmt-group-logo">
+      <h1 class="mtdt-metadata-header">
+           <a v-if="meta.groupWebsite" :href="meta.groupWebsite" :title="$gn('group-'+ meta.groupOwner)" starget="_blank" class="mtdt-group-logo">
              <img :src="meta.logo"/>
           </a>
-          <a v-else href="#" :alt="$gn('group-'+ meta.groupOwner)" :title="$gn('group-'+ meta.groupOwner)" class="fmt-group-logo">
+          <a v-else href="#" :alt="$gn('group-'+ meta.groupOwner)" :title="$gn('group-'+ meta.groupOwner)" class="mtdt-group-logo">
               <img :src="meta.logo"  />
           </a>
           <i  class="fa" :class="meta.type === 'series' ? 'fa-files-o' : 'fa-file'"  v-if="['dataset','series'].indexOf(meta.type) >= 0"></i>
@@ -32,16 +32,16 @@
         
       </h1> 
       <hr style="border:1px solid grey;margin-bottom:0px;clear:both;"/>
-      <div class="fmt-tabs">
-         <div v-for="(tab,index) in tabs" v-if="tab === true" class="fmt-tab" :class="{'selected': currentTab === index}" @click="currentTab = index">{{$t(index)}}</div>
+      <div class="mtdt-tabs">
+         <div v-for="(tab,index) in tabs" v-if="tab === true" class="mtdt-tab" :class="{'selected': currentTab === index}" @click="currentTab = index">{{$t(index)}}</div>
          <formater-export-links :uuid="uuid" v-if="uuid"></formater-export-links>
       </div>
       <div v-if="currentTab === 'main'" style="margin-top:20px;">
-	      <div class="fmt-description">
+	      <div class="mtdt-description">
 	        <formater-quicklooks :quicklooks="meta.images"></formater-quicklooks>
 	        <span v-html="meta.description"></span>
 	      </div>
-		  <div class="fmt-temporalExtent" style="clear:both;" v-if="meta.tempExtentBegin">
+		  <div class="mtdt-temporalExtent" style="clear:both;" v-if="meta.tempExtentBegin">
 			<h2><i class="fa fa-clock-o"></i>{{$t('temporal_extent')}}</h2>
 			 <div>
 			    {{date2str(meta.tempExtentBegin)}}
@@ -265,7 +265,7 @@ export default {
 }
 </script>
 <style>
-.fmt-metadata{
+.mtdt-metadata{
   position:relative;
   padding: 10px;
   max-width: 100%;
@@ -274,44 +274,44 @@ export default {
   overflow: hidden;
  
 }
-.fmt-metadata span.fmt-metadata-close{
+.mtdt-metadata span.mtdt-metadata-close{
   position: absolute;
   top:3px;
   right:5px;
   cursor: pointer;
   opacity:0.5;
 }
-.fmt-metadata span.fmt-metadata-close:hover{
+.mtdt-metadata span.mtdt-metadata-close:hover{
   opacity:1;
 }
-.fmt-metadata h1.fmt-metadata-header div{
+.mtdt-metadata h1.mtdt-metadata-header div{
   float:left;
   max-width:calc(100% - 150px);
   display:inline-block;
 }
-.fmt-metadata h1.fmt-metadata-header i.fa{
+.mtdt-metadata h1.mtdt-metadata-header i.fa{
   float:left;
 }
-.fmt-metadata i.fa {
+.mtdt-metadata i.fa {
   margin-right: 12px;
 }
-.fmt-metadata h1,
-.fmt-metadata h2,
-.fmt-metadata h3,
-.fmt-metadata h4{
+.mtdt-metadata h1,
+.mtdt-metadata h2,
+.mtdt-metadata h3,
+.mtdt-metadata h4{
     max-width: 100%;
     color:#754a15;
 }
-.fmt-metadata h2 {
+.mtdt-metadata h2 {
 
   font-size: 1.2rem;
   margin-bottom:0;
 }
-.fmt-metadata h1{
+.mtdt-metadata h1{
   font-size:1.5rem;
 }
-.fmt-metadata div.fmt-tab,
-.fmt-metadata .fmt-tab-export{
+.mtdt-metadata div.mtdt-tab,
+.mtdt-metadata .mtdt-tab-export{
   display:inline-block;
   padding: 5px 10px;
   border:1px dotted grey;
@@ -319,31 +319,31 @@ export default {
   background: #eee;
   cursor: pointer;
 }
-.fmt-metadata div.fmt-tab:hover,
-.fmt-metadata .fmt-tab-export:hover{
+.mtdt-metadata div.mtdt-tab:hover,
+.mtdt-metadata .mtdt-tab-export:hover{
    background: #ccc;
 }
-.fmt-metadata div.fmt-tab.selected{
+.mtdt-metadata div.mtdt-tab.selected{
   background: #ddd;
 }
-.fmt-metadata div.fmt-description{
+.mtdt-metadata div.mtdt-description{
   line-height:1.5;
 }
-.fmt-metadata .fmt-group-logo{
+.mtdt-metadata .mtdt-group-logo{
     float:right;
     margin-top:-5px;
 }
-.fmt-metadata .fmt-group-logo img{
+.mtdt-metadata .mtdt-group-logo img{
 	max-width:100px; 
 	height:40px;
 }
-.fmt-metadata .fmt-contacts h3{
+.mtdt-metadata .mtdt-contacts h3{
     margin-bottom:0;
 }
-.fmt-metadata .fmt-temporalExtent div{
+.mtdt-metadata .mtdt-temporalExtent div{
   margin: 5px 30px;
 }
-.fmt-metadata .fmt-temporalExtent i.fa.fa-long-arrow-right {
+.mtdt-metadata .mtdt-temporalExtent i.fa.fa-long-arrow-right {
   margin-left:12px;
 }
 </style>
