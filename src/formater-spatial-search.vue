@@ -256,7 +256,12 @@ export default {
     line-height: 25px;
     overflow: hidden;
 }
-.formater-spatial-search .formater-input-group input{
+ .fmt-form .formater-spatial-search .formater-input-group {
+    width:48%;
+    height:25px;
+    margin: 5px auto;
+}
+ .fmt-form .formater-spatial-search .formater-input-group input{
   min-width: 80px;
   max-width: 90px;
   text-align:center;

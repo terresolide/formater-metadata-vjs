@@ -267,7 +267,7 @@ export default {
 }
 </script>
 <style>
- @import "../node_modules/leaflet/dist/leaflet.css";
+/* @import "../node_modules/leaflet/dist/leaflet.css";*/
 div[id="fmtMap"]{
   width:100%;
   margin:0;
