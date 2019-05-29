@@ -1,6 +1,6 @@
 {
   "name": "formater-metadata-vjs",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Component to display metadata from Object ISO19139",
   "preproduction": {
     "url": "http://localhost:8080"
@@ -24,7 +24,7 @@
     "build": "cross-env NODE_ENV=production webpack --progress --hide-modules"
   },
   "dependencies": {
-    "formater-commons-components-vjs": "github:terresolide/formater-commons-components-vjs#0.16.0",
+    "formater-commons-components-vjs": "github:terresolide/formater-commons-components-vjs#0.16.1",
     "formater-geotiff-visualizer-vjs": "github:terresolide/formater-geotiff-visualizer-vjs",
     "leaflet": "^1.5.1",
     "leaflet-draw": "^1.0.4",
