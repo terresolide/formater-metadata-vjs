@@ -279,6 +279,7 @@ export default {
  }
 .formater-spatial-search .formater-input-group.cardinal-right input{
    text-align:right;
+   max-width: 70%;
    
  }
 .formater-spatial-search .formater-input-group.cardinal-center{
