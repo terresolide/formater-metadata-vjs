@@ -342,8 +342,9 @@ export default {
   }
 }
 </script>
+<style src="leaflet-draw/dist/leaflet.draw.css"></style>
 <style  >
-  @import "../node_modules/leaflet-draw/dist/leaflet.draw.css";
+ /* @import "leaflet-draw/dist/leaflet.draw.css";*/
   
 
  .mtdt-draw-bbox{
