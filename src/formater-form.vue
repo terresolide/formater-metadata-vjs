@@ -14,8 +14,8 @@
       "time_slot": "Intervalle temporel",
       "spatial_extend": "Zone géographique",
       "groupOwners": "Centre de données",
-       "gemetKeywords": "Inspire Gemet Keywords",
-     "formaterVariable": "Variables"
+      "gemetKeywords": "Inspire Gemet Keywords",
+      "formaterVariable": "Variables"
    }
 }
 </i18n>
