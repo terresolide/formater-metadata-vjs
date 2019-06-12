@@ -61,6 +61,13 @@ export default {
   mounted () {
   },
   methods: {
+     getType (obj) {
+       if (obj.type === 'FeatureCollection' || obj.type === 'Feature') {
+         this.type = 'geojson'
+       } else {
+         this.type = 'geonetwork'
+       }
+     },
      receiveMetadatas (event) {
        console.log(this.depth)
        console.log(event.detail.depth)
@@ -68,15 +75,36 @@ export default {
          console.log('RETOURNE')
          return;
        }
-       var self = this
+       var type = this.getType(event.detail)
+       switch (this.type) {
+       case 'geojson':
+         this.treatmentGeojson(event.detail)
+         break;
+       case 'geonetwork':
+         this.treatmentGeonetwork(event.detail)
+         break;
+       }
+      
+     },
+     treatmentGeojson (data) {
        var metadatas = {}
-       if (!event.detail.metadata){
-         metadatas = null
-       } else if (event.detail.metadata && !event.detail.metadata.forEach) {
-         var uuid = event.detail.metadata['geonet:info'].uuid
+       var self = this
+       data.features.forEach( function (feature) {
+         metadatas[feature.id] = feature.properties
+       })
+       this.metadatas = metadatas
+       console.log(this.metadatas)
+     },
+     treatmentGeonetwork (data) {
+       var metadatas = {}
+       var self = this
+       if (!data.metadata){
+         var metadatas = null
+       } else if (data.metadata && !data.metadata.forEach) {
+         var uuid = data.metadata['geonet:info'].uuid
          metadatas[uuid] = self.treatment(event.detail.metadata ,uuid)
        } else {
-	       event.detail.metadata.forEach( function (meta, index) {
+	       data.metadata.forEach( function (meta, index) {
 	         var uuid = meta['geonet:info'].uuid
 	         metadatas[uuid] = self.treatment(meta ,uuid)
 	       })
