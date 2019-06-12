@@ -53,6 +53,10 @@ export default {
       type: Number,
       default: 0
     },
+    type: {
+      type: String,
+      default: null
+    },
     orders: {
       type: Array,
       default: () => []
@@ -112,10 +116,18 @@ export default {
      if (event.detail.depth !=  this.depth ){
        return;
      }
-     this.count = parseInt(event.detail.summary['@count'])
-     this.from = parseInt(event.detail['@from'])
-     this.to = parseInt(event.detail['@to'])
-     this.nbPage = Math.ceil(event.detail.summary['@count'] / this.recordPerPage) 
+     switch (this.type) {
+       case 'flatsim':
+         this.count = event.detail.properties.totalResults
+         this.to = this.from + event.detail.features.length -1
+         this.nbPage = Math.ceil(this.count/ this.recordPerPage)
+         break
+       default:
+         this.count = parseInt(event.detail.summary['@count'])
+         this.from = parseInt(event.detail['@from'])
+         this.to = parseInt(event.detail['@to'])
+         this.nbPage = Math.ceil(event.detail.summary['@count'] / this.recordPerPage) 
+     }
      if (this.count === 0) {
        this.from = 1
        this.currentPage = 1
@@ -138,8 +150,13 @@ export default {
      if (this.depth != event.detail.depth) {
        return
      }
-     event.detail.from = this.from
-     event.detail.to = this.from + this.recordPerPage - 1
+     if (this.type === 'flatsim') {
+       event.detail.index = this.from
+       event.detail.maxRecords = this.recordPerPage
+     } else {
+      event.detail.from = this.from
+      event.detail.to = this.from + this.recordPerPage - 1
+     }
      if (this.sortBy) {
      	event.detail.sortBy = this.sortBy
      }

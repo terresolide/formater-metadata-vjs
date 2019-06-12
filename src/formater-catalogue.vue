@@ -109,6 +109,7 @@ export default {
     document.addEventListener('aerisSearchEvent', this.aerisSearchListener)
     this.aerisResetListener = this.handleReset.bind(this)
     document.addEventListener('aerisResetEvent', this.aerisResetListener)
+    this.getRecords()
   },
   destroyed () {
     document.removeEventListener('fmt:metadataEvent', this.metadataListener);
@@ -119,12 +120,14 @@ export default {
     this.aerisResetListener = null
   },
   methods: {
+    getRecords () {
+      // Create any change event to trigger search 
+      var evt = new CustomEvent('fmt:pageChangedEvent')
+      document.dispatchEvent(evt)
+    },
 	receiveMetadata (event) {
 	  console.log(event.detail)
 	    this.metadatas.push(event.detail.meta)
-	    
-
-	
 	  //this.metadata =  event.detail.meta
 	  this.currentUuid = event.detail.meta['geonet:info'].uuid
 	  
