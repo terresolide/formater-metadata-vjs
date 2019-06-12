@@ -109,6 +109,8 @@ export default {
     document.addEventListener('aerisSearchEvent', this.aerisSearchListener)
     this.aerisResetListener = this.handleReset.bind(this)
     document.addEventListener('aerisResetEvent', this.aerisResetListener)
+  },
+  mounted () {
     this.getRecords()
   },
   destroyed () {
