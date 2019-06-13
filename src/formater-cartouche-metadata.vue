@@ -11,14 +11,20 @@
 </i18n>
 <template>
  <div class="mtdt-cartouche-metadata mtdt-capsule" :class="{'mtdt-child': depth > 0}">
-	 <div class="mtdt-header" @click="displayMetadata" @dblclick="displayMetadata" >
+	 <div class="mtdt-header" @click="displayMetadata" @dblclick="displayMetadata" :style="{backgroundColor: color}">
 		<i class="fa" :class="meta.type === 'series' ? 'fa-files-o' : 'fa-file'" v-if="['dataset','series'].indexOf(meta.type) >= 0" :title="$gn(meta.type)"></i>
 		<div>{{meta.title ? meta.title: meta.defaultTitle}}</div>
 	 </div>
 	 <div class="mtdt-description">
-	    <img :src="meta.thumbnail" v-if="depth === 0 && meta.thumbnail"/>
+	    <img :src="meta.thumbnail" v-if="meta.thumbnail" style="max-height:80px;"/>
+	    <div v-if="meta.tempExtentBegin || meta.tempExtentEnd">
+			    <span v-if="meta.tempExtentBegin">{{date2str(meta.tempExtentBegin)}}</span>
+			    <i class="fa fa-long-arrow-right" ></i>
+			    <span v-if="meta.tempExtentEnd">{{date2str(meta.tempExtentEnd)}}</span>
+	    </div>
 	 	<span v-html="meta.description"></span>
 	 </div>
+	  
 	 <div class="mtdt-resource" v-if="depth > 0 && meta.related && meta.related.onlines">
 	    <formater-online v-for="(item, index) in meta.related.onlines" :key="index" :online="item"></formater-online>
 	 </div>
@@ -74,6 +80,10 @@ export default {
     depth: {
       type: Number,
       default: 0
+    },
+    color: {
+      type: String,
+      default: '#dd9946'
     }
   },
   watch: {
@@ -90,12 +100,17 @@ export default {
   created () {
    this.$i18n.locale = this.lang
    this.$setGnLocale(this.lang)
+   console.log(this.metadata)
    this.meta = this.metadata
   },
   methods: {
     displayMetadata () {
       var event = new CustomEvent('fmt:metadataEvent', {detail: {meta:this.meta, depth: this.depth } })
       document.dispatchEvent(event)
+    },
+    date2str (date) {
+      //return 'hello';
+      return moment(date, 'YYYY-MM-DD').format('ll')
     }
   }
 }

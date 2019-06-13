@@ -57,6 +57,10 @@ export default {
       type: String,
       default: null
     },
+    color: {
+      type: String,
+      default: '#754a15'
+    },
     orders: {
       type: Array,
       default: () => []
@@ -71,6 +75,9 @@ export default {
     	this.$i18n.locale = newvalue
     	this.to = this.nbRecord
     	
+    },
+    color (newvalue) {
+      console.log('color changed')
     }
   },
   created: function() {
@@ -87,6 +94,9 @@ export default {
     if (this.orders.length == 0) {
       this.emitChange()
     }
+  },
+  mounted () {
+    this.updateColor()
   },
   destroyed () {
     document.removeEventListener('fmt:metadataListEvent', this.metadataListListener);
@@ -135,6 +145,13 @@ export default {
      if (this.count!=0 && this.currentPage > this.nbPage) {
        this.goToLast()
      }
+   },
+   updateColor () {
+     var nodes = this.$el.querySelectorAll('.mtdt-paging span.mtdt-navigation span')
+     var _this = this
+     nodes.forEach( function (node) {
+       node.style.backgroundColor = _this.color
+     })
    },
    goToFirst () {
      this.from = 1

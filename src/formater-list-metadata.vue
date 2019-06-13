@@ -10,7 +10,7 @@
 <template>
  <div class="mtdt-list">
     <div v-if="!metadatas" style="width:calc(100% - 150px);">{{$t('no_result')}}</div>
-    <formater-cartouche-metadata  :depth="depth" v-for="(meta, index) in metadatas" :key="index" :metadata="meta" v-if="meta" :lang="lang"></formater-cartouche-metadata>
+    <formater-cartouche-metadata  :color="color" :depth="depth" v-for="(meta, index) in metadatas" :key="index" :metadata="meta" v-if="meta" :lang="lang"></formater-cartouche-metadata>
   </div>
 </template>
 <script>
@@ -32,6 +32,10 @@ export default {
     depth: {
       type: Number,
       default: 0
+    },
+    color: {
+      type: String,
+      default: '#dd9946'
     }
   },
   watch: {
@@ -86,13 +90,21 @@ export default {
        }
       
      },
+     mapToGeonetwork (properties) {
+       if (properties.startDate) {
+         properties.renameProperty('startDate', 'tempExtentBegin')
+       }
+       return properties
+     },
      treatmentGeojson (data) {
        var metadatas = {}
        var self = this
        data.features.forEach( function (feature) {
-         metadatas[feature.id] = feature.properties
+         metadatas[feature.id] =  self.mapToGeonetwork(feature.properties)
+        
        })
        this.metadatas = metadatas
+       
        console.log(this.metadatas)
      },
      treatmentGeonetwork (data) {
