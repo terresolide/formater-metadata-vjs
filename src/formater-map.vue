@@ -58,6 +58,7 @@ export default {
   data() {
     return {
      map: null,
+     type: null,
      metadataListListener: null,
      metadataListener: null,
      closeMetadataListener: null,
@@ -117,6 +118,14 @@ export default {
      var options = Object.assign(this.defaultRectangleOptions, {fillColor: this.colors[this.depth], color: this.colors[this.depth]})
      return options
    },
+   getType (data) {
+      if (data.type === 'FeatureCollection' || data.type === 'Feature') {
+        this.type = 'geojson'
+      } else {
+        this.type = 'geonetwork'
+      }
+      return this.type
+   },
    receiveMetadatas (event) {
      console.log('depth dans la liste de metadatas = ' + event.detail.depth)
      if (this.depth === event.detail.depth   && this.bboxLayer[this.depth]) {
@@ -127,30 +136,70 @@ export default {
        this.hideBboxLayers()
        this.depth = event.detail.depth;
        
-       this.bboxLayer[this.depth] = L.layerGroup();
-       this.bboxLayer[this.depth].addTo(this.map);
+    
      }
-     var self = this
-     if (!event.detail.metadata) {
-       // no record
-       return
+     
+     this.type = this.getType(event.detail)
+     console.log(event.detail.type)
+     console.log(this.type)
+     switch (this.type) {
+	     case 'geojson':
+	       this.addLayerGeojson(event.detail)
+	       break;
+	     case 'geonetwork':
+	       this.addLayerGeonetwork(event.detail)
+	       break;
      }
-     if (!event.detail.metadata.forEach) {
-       // only one record
-       var uuid = event.detail.metadata['geonet:info'].uuid
-       this.extractBbox(event.detail.metadata.geoBox, uuid)
+//      if (!event.detail.metadata) {
+//        // no record
+//        return
+//      }
+//      if (!event.detail.metadata.forEach) {
+//        // only one record
+//        var uuid = event.detail.metadata['geonet:info'].uuid
+//        this.extractBbox(event.detail.metadata.geoBox, uuid)
        
-     } else {
-       // array of records
-       event.detail.metadata.forEach( function (meta, index) {
-         var uuid = meta['geonet:info'].uuid
-         self.extractBbox(meta.geoBox, uuid)
-       })
-     }
+//      } else {
+//        // array of records
+//        event.detail.metadata.forEach( function (meta, index) {
+//          var uuid = meta['geonet:info'].uuid
+//          self.extractBbox(meta.geoBox, uuid)
+//        })
+//      }
+console.log(this.bounds[this.depth])
      if (this.bounds[this.depth]) {
        this.map.fitBounds(this.bounds[this.depth])
      }
      // this.bboxLayer[this.depth].addTo(this.map)
+   },
+   addLayerGeojson (data) {
+     console.log('in add Layer GEOJSON')
+     this.bboxLayer[this.depth] = L.geoJSON(data, {style:this.getOptionsLayer()})
+     
+     this.bounds[this.depth] = this.bboxLayer[this.depth].getBounds()
+    
+     this.bboxLayer[this.depth].addTo(this.map);
+     
+   },
+   addLayerGeonetwork (data) {
+     this.bboxLayer[this.depth] = L.layerGroup();
+     this.bboxLayer[this.depth].addTo(this.map);
+     if (!data.metadata) {
+       // no record
+       return
+     }
+     if (!data.metadata.forEach) {
+       // only one record
+       var uuid = data.metadata['geonet:info'].uuid
+       this.extractBbox(data.metadata.geoBox, uuid)
+       
+     } else {
+       // array of records
+       data.metadata.forEach( function (meta, index) {
+         var uuid = meta['geonet:info'].uuid
+         self.extractBbox(meta.geoBox, uuid)
+       })
+     }
    },
    extractBbox(bbox, uuid) {
      if (!bbox) {
@@ -187,7 +236,9 @@ export default {
    },
    selectLayer (event) {
      this.unselectLayer()
-     console.log(event)
+     if (!event.detail.meta) {
+       return;
+     }
 //      if (event.detail.depth) {
 //        this.depth = event.detail.depth
 //      }
@@ -195,12 +246,15 @@ export default {
 	     if (!(event.detail.meta.related && event.detail.meta.related.children) && event.detail.meta['geonet:info'] && event.detail.meta['geonet:info'].uuid) {
 	       this.selectLayerByUuid(event.detail.meta['geonet:info'].uuid)
 	
-	     } 
+	     } else if (event.detail.meta.id) {
+	        this.selectLayerByUuid(event.detail.meta.id)
+	     }
     // }
    },
    unselectLayer () {
     // console.log('depth dans metadata tout seul = ' + event.detail.depth)
      console.log(this.depth)
+     console.log('UNSELECT LAYER')
      var self = this
      var options = this.getOptionsLayer()
      for(var i in this.selected) {
@@ -218,6 +272,8 @@ export default {
    },
    back (event) {
      this.unselectLayer()
+     console.log(this.depth)
+     console.log(event.detail.depth)
      if (this.depth > event.detail.depth) {
         this.bboxLayer[this.depth].remove()
         this.bboxLayer.pop()
@@ -230,10 +286,13 @@ export default {
        }
    },
    selectLayerByUuid (uuid) {
+
      var self = this
      var bounds = null
      this.bboxLayer[this.depth].eachLayer(function(layer) {
-       if (layer.options.uuid === uuid) {
+       console.log(layer)
+       console.log(layer.feature.id)
+       if (layer.options.uuid === uuid || layer.feature.id === uuid) {
          self.setSelected(layer)
          var bds = layer.getBounds()
          if (!bounds) {

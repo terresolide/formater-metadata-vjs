@@ -10,7 +10,7 @@
 <template>
  <div class="mtdt-list">
     <div v-if="!metadatas" style="width:calc(100% - 150px);">{{$t('no_result')}}</div>
-    <formater-cartouche-metadata  :color="color" :depth="depth" v-for="(meta, index) in metadatas" :key="index" :metadata="meta" v-if="meta" :lang="lang"></formater-cartouche-metadata>
+    <formater-cartouche-metadata  :color="color" :depth="depth" :type="type" v-for="(meta, index) in metadatas" :key="index" :metadata="meta" v-if="meta" :lang="lang"></formater-cartouche-metadata>
   </div>
 </template>
 <script>
@@ -49,7 +49,8 @@ export default {
       metadatas: {},
       // list of children
       related: [],
-      metadataListListener: null
+      metadataListListener: null,
+      type: null
     }
   },
   created: function() {
@@ -94,12 +95,16 @@ export default {
        if (properties.startDate) {
          properties.renameProperty('startDate', 'tempExtentBegin')
        }
+       if (properties.completionDate) {
+         properties.renameProperty('completionDate', 'tempExtentEnd')
+       }
        return properties
      },
      treatmentGeojson (data) {
        var metadatas = {}
        var self = this
        data.features.forEach( function (feature) {
+         feature.properties.id = feature.id
          metadatas[feature.id] =  self.mapToGeonetwork(feature.properties)
         
        })

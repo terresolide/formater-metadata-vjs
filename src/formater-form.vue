@@ -84,7 +84,6 @@ export default {
     lang (newvalue) {
     	this.$i18n.locale = newvalue
     	this.$setGnLocale(newvalue)
-
     }
   },
   data() {

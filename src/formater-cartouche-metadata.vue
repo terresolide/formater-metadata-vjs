@@ -16,20 +16,23 @@
 		<div>{{meta.title ? meta.title: meta.defaultTitle}}</div>
 	 </div>
 	 <div class="mtdt-description">
-	    <img :src="meta.thumbnail" v-if="meta.thumbnail" style="max-height:80px;"/>
-	    <div v-if="meta.tempExtentBegin || meta.tempExtentEnd">
+	    <img :src="meta.thumbnail" v-if="meta.thumbnail"/>
+	    <div v-if="meta.tempExtentBegin || meta.tempExtentEnd" class="mtdt-cartouche-elt">
 			    <span v-if="meta.tempExtentBegin">{{date2str(meta.tempExtentBegin)}}</span>
 			    <i class="fa fa-long-arrow-right" ></i>
 			    <span v-if="meta.tempExtentEnd">{{date2str(meta.tempExtentEnd)}}</span>
 	    </div>
 	 	<span v-html="meta.description"></span>
+	 	<span v-for="key in flatsimSingleFields" :key="key" v-if="type === 'flatsim' && meta[key]">
+	 	  <label>{{key}}: </label> {{meta[key]}}
+	 	</span>
 	 </div>
 	  
 	 <div class="mtdt-resource" v-if="depth > 0 && meta.related && meta.related.onlines">
 	    <formater-online v-for="(item, index) in meta.related.onlines" :key="index" :online="item"></formater-online>
 	 </div>
-	 <div class="mtdt-footer"  v-if="depth === 0">
-	   <div class="mtdt-group">
+	 <div class="mtdt-footer"  v-if="">
+	   <div class="mtdt-group" v-if="depth === 0">
 	     <a v-if="meta.groupWebsite" :href="meta.groupWebsite" :title="$gn('group-'+ meta.groupOwner)" target="_blank" class="mtdt-group-logo">
              <img :src="meta.logo"/>
           </a>
@@ -37,8 +40,20 @@
               <img :src="meta.logo"  />
           </a>
 	   </div>
-	   <div class="mtdt-related" v-if="meta.related">
-	     <div v-if="(meta.related.children || meta.related.parent)" style="position:relative;">
+	   <div class="mtdt-related" v-if="meta.related || (meta.services && meta.services.browse)">
+	     <div v-if="meta.services && meta.services.browse">
+	        <div class="mtdt-related-type fa fa-globe">
+		        <span class="fa fa-caret-down" ></span>
+		     </div>
+		     <div class="mtdt-expand">
+		          <ul>
+		          <li>
+		            @TODO
+			     </li>
+		         </ul>	
+		     </div>  
+	     </div>
+	     <div v-if="meta.related && (meta.related.children || meta.related.parent)" style="position:relative;">
 		     <div class="mtdt-related-type fa fa-code-fork">
 		        <span class="fa fa-caret-down"></span>
 		     </div>
@@ -81,6 +96,10 @@ export default {
       type: Number,
       default: 0
     },
+    type: {
+      type: String,
+      default: null
+    },
     color: {
       type: String,
       default: '#dd9946'
@@ -94,7 +113,8 @@ export default {
   data() {
     return {
      meta: {},
-     uuid: null
+     uuid: null,
+     flatsimSingleFields: ['productType', 'processingLevel', 'processingMode', 'sensorMode', 'polarisation', 'subswath']
     }
   },
   created () {
@@ -174,9 +194,12 @@ export default {
   position: relative;
    float:left;
    max-width: 150px;
-   max-height:120px;
+   max-height:80px;
    background: #ddd;
    margin: 0px 15px 10px 0;
+}
+.mtdt-cartouche-metadata .mtdt-cartouche-elt{
+   margin-bottom: 5px;
 }
 .mtdt-cartouche-metadata .mtdt-footer{
   position: absolute;

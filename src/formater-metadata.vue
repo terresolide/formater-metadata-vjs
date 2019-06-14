@@ -144,7 +144,11 @@ export default {
     this.$i18n.locale = this.lang
     this.$setGnLocale(this.lang)
     moment.locale(this.lang)
-    this.uuid = this.metadata['geonet:info'].uuid
+    if (this.metadata['geonet:info']) {
+       this.uuid = this.metadata['geonet:info'].uuid
+    } else {
+       this.uuid = this.metadata.id
+    }
     this.popstateListener = this.close.bind(this)
     document.addEventListener('popstate', this.popstateListener)
     this.keydownListener = this.checkEscape.bind(this)
@@ -214,7 +218,12 @@ export default {
 
 	  fillMetadata () {
 	     //get meta from other language if meta._locale != meta.docLocale
-	     this.uuid = this.meta['geonet:info'].uuid;
+	     if (this.meta['geonet:info']) {
+	       this.uuid = this.meta['geonet:info'].uuid;
+	     } else {
+	       this.uuid = this.meta.id
+	     }
+	     
 	     
 	     if (this.meta._locale ===  this.meta.docLocale) {
 	       
