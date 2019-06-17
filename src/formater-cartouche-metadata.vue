@@ -11,7 +11,7 @@
 </i18n>
 <template>
  <div class="mtdt-cartouche-metadata mtdt-capsule" :class="{'mtdt-child': depth > 0}">
-	 <div class="mtdt-header" @click="displayMetadata" @dblclick="displayMetadata" :style="{backgroundColor: color}">
+	 <div class="mtdt-header" @click="displayMetadata" @dblclick="displayMetadata" :style="{backgroundColor: emphasis}">
 		<i class="fa" :class="meta.type === 'series' ? 'fa-files-o' : 'fa-file'" v-if="['dataset','series'].indexOf(meta.type) >= 0" :title="$gn(meta.type)"></i>
 		<div>{{meta.title ? meta.title: meta.defaultTitle}}</div>
 	 </div>
@@ -19,13 +19,13 @@
 	    <img :src="meta.thumbnail" v-if="meta.thumbnail"/>
 	    <div v-if="meta.tempExtentBegin || meta.tempExtentEnd" class="mtdt-cartouche-elt">
 			    <span v-if="meta.tempExtentBegin">{{date2str(meta.tempExtentBegin)}}</span>
-			    <i class="fa fa-long-arrow-right" ></i>
+			    <i class="fa fa-long-arrow-right" :style="{color:primary}" ></i>
 			    <span v-if="meta.tempExtentEnd">{{date2str(meta.tempExtentEnd)}}</span>
 	    </div>
 	 	<span v-html="meta.description"></span>
-	 	<span v-for="key in flatsimSingleFields" :key="key" v-if="type === 'flatsim' && meta[key]">
-	 	  <label>{{key}}: </label> {{meta[key]}}
-	 	</span>
+	 	<div v-for="(item, key) in meta" :key="key" v-if="type === 'geojson' && flatsimSingleFields.indexOf(key) >=0">
+	 	  <label style="text-transform:capitalize;" :style="{color:primary}">{{key}}: </label> {{item}}
+	 	</div>
 	 </div>
 	  
 	 <div class="mtdt-resource" v-if="depth > 0 && meta.related && meta.related.onlines">
@@ -41,20 +41,25 @@
           </a>
 	   </div>
 	   <div class="mtdt-related" v-if="meta.related || (meta.services && meta.services.browse)">
+	       <div v-if="hasBboxLayer" style="display:inline-block;"  @mouseover="selectLayer" @mouseout="unselectLayer">
+	        <div class="mtdt-related-type fa fa-eye" :style="{backgroundColor:primary}">
+		     </div>
+		   
+	     </div>
 	     <div v-if="meta.services && meta.services.browse">
-	        <div class="mtdt-related-type fa fa-globe">
-		        <span class="fa fa-caret-down" ></span>
+	        <div class="mtdt-related-type fa fa-globe" :style="{backgroundColor:primary}">
+		        <span class="fa fa-caret-down"></span>
 		     </div>
 		     <div class="mtdt-expand">
 		          <ul>
-		          <li>
+		          <li v-for="key in layerList">
 		            @TODO
 			     </li>
 		         </ul>	
 		     </div>  
 	     </div>
 	     <div v-if="meta.related && (meta.related.children || meta.related.parent)" style="position:relative;">
-		     <div class="mtdt-related-type fa fa-code-fork">
+		     <div class="mtdt-related-type fa fa-code-fork" :style="{backgroundColor:primary}">
 		        <span class="fa fa-caret-down"></span>
 		     </div>
 		     <div class="mtdt-expand">
@@ -100,7 +105,11 @@ export default {
       type: String,
       default: null
     },
-    color: {
+    primary: {
+      type: String,
+      default: '#754a15'
+    },
+    emphasis: {
       type: String,
       default: '#dd9946'
     }
@@ -114,14 +123,18 @@ export default {
     return {
      meta: {},
      uuid: null,
-     flatsimSingleFields: ['productType', 'processingLevel', 'processingMode', 'sensorMode', 'polarisation', 'subswath']
+     hasBboxLayer: false,
+     flatsimSingleFields: ['productType', 'processingLevel', 'processingMode', 'sensorMode', 'polarisation', 'subswath'],
+     layerList: ['CLASSIFICATION', 'CONFIDENCE', 'PIXELS_VALIDITY']
     }
   },
   created () {
    this.$i18n.locale = this.lang
    this.$setGnLocale(this.lang)
-   console.log(this.metadata)
    this.meta = this.metadata
+   if (this.meta.bbox !== null || this.meta.id) {
+     this.hasBboxLayer = true
+   }
   },
   methods: {
     displayMetadata () {
@@ -131,6 +144,15 @@ export default {
     date2str (date) {
       //return 'hello';
       return moment(date, 'YYYY-MM-DD').format('ll')
+    },
+    selectLayer () {
+      console.log("meta_id=" + this.meta.id)
+      var event = new CustomEvent('fmt:selectLayerEvent', {detail: {meta: this.meta}})
+      document.dispatchEvent(event)
+    },
+    unselectLayer () {
+      var event = new CustomEvent('fmt:unselectLayerEvent', {detail: {meta: this.meta}})
+      document.dispatchEvent(event)
     }
   }
 }
@@ -168,10 +190,13 @@ export default {
 .mtdt-cartouche-metadata div.mtdt-header div{
 	display:inline-block;
 	float:left;
-	width:calc(100% - 28px); 
+    width:100%;
 	margin-left:7px;
 	overflow: hidden;
 	max-height:29px;
+}
+.mtdt-cartouche-metadata div.mtdt-header i + div {
+	width:calc(100% - 28px); 
 }
 .mtdt-cartouche-metadata div.mtdt-header i.fa{
 	float:left;
@@ -206,6 +231,7 @@ export default {
   margin: 0 2px;
   bottom:0;
   width:100%;
+  min-height: 28px;
 }
 .mtdt-cartouche-metadata .mtdt-footer > div{
   display: inline-block;
@@ -219,6 +245,9 @@ export default {
  margin-right:3px;
  max-height: 25px;
  max-width: 50%;
+}
+.mtdt-cartouche-metadata .mtdt-footer .mtdt-related > div {
+ display:inline-block;
 }
 .mtdt-cartouche-metadata .mtdt-footer .mtdt-related-type{
  text-align:center;

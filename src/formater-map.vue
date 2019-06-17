@@ -14,6 +14,7 @@
 </template>
 <script>
 var L = require("leaflet");
+L.Control.Fmtlayer = require('./leaflet.control.fmtlayer.js')
 // import {Map, Control, LatLng, tileLayer, TileLayer} from 'leaflet'
 // import L from 'leaflet'
 export default {
@@ -37,20 +38,34 @@ export default {
     document.addEventListener('fmt:metadataListEvent', this.metadataListListener);
     this.metadataListener = this.selectLayer.bind(this)
     document.addEventListener('fmt:metadataEvent', this.metadataListener);
+    this.selectLayerListener = this.selectLayer.bind(this)
+    document.addEventListener('fmt:selectLayerEvent', this.selectLayerListener)
+    this.unselectLayerListener = this.unselectLayer.bind(this)
+    document.addEventListener('fmt:unselectLayerEvent', this.unselectLayerListener)
     this.closeMetadataListener = this.back.bind(this)
     document.addEventListener('fmt:closeMetadataEvent', this.closeMetadataListener);
     this.aerisResetListener = this.handleReset.bind(this)
     document.addEventListener('aerisResetEvent', this.aerisResetListener)
+    this.addLayerListener = this.addLayer.bind(this)
+    document.addEventListener('fmt:addLayerEvent', this.addLayerListener)
+    this.removeLayerListener = this.removeLayer.bind(this)
+    document.addEventListener('fmt:removeLayerEvent', this.removeLayerListener)
   },
   destroyed () {
     document.removeEventListener('fmt:metadataListEvent', this.metadataListListener);
     this.metadataListListener = null;
     document.removeEventListener('fmt:metadataEvent', this.metadataListener);
     this.metadataListener = null;
+    document.removeEventListener('fmt:selectLayerEvent', this.selectLayerListener)
+    this.selectLayerListener = null
     document.removeEventListener('fmt:closeMetadataEvent', this.closeMetadataListener);
     this.closeMetadataListener = null
     document.removeEventListener('aerisResetEvent', this.aerisResetListener)
     this.aerisResetListener = null
+    document.removeEventListener('fmt:addLayerEvent', this.addLayerListener)
+    this.addLayerListener = null
+    document.removeEventListener('fmt:removeLayerEvent', this.removeLayerListener)
+    this.removeLayerListener = null
   },
   mounted: function () {
     this.init()
@@ -63,7 +78,10 @@ export default {
      metadataListener: null,
      closeMetadataListener: null,
      aerisResetListener: null,
+     addLayerListener: null,
+     removeLayerListener: null,
      bboxLayer: [],
+     layers: null,
      selected: [],
      depth: 0,
      bounds: [],
@@ -81,6 +99,7 @@ export default {
        fillOpacity: 0.4
      },
      colors: ['orange', 'purple', 'green'],
+     controlLayer: null
     }
   },
   
@@ -90,13 +109,13 @@ export default {
      this.map = L.map( container).setView([51.505, -0.09], 1);
      this.bounds[0] = this.map.getBounds()
  		
-   L.tileLayer('//server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
-			{
-			  attribution: 'Tiles © <a href="https://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer">ArcGIS</a>',
-		      maxZoom: 18,
-		      minZoom:2
+//    L.tileLayer('//server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
+// 			{
+// 			  attribution: 'Tiles © <a href="https://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer">ArcGIS</a>',
+// 		      maxZoom: 18,
+// 		      minZoom:2
 		      
-		    }).addTo( this.map );
+// 		    }).addTo( this.map );
    /*  L.tileLayer('//www.thegraceplotter.com/data/maps/CNES.RL03.monthly.NONE/trend/{z}/{x}/{y}.png',
    			{
    			  attribution: 'Tiles © <a href="https://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer">ArcGIS</a>',
@@ -106,8 +125,24 @@ export default {
    		      tms: false
    		      
    		    }).addTo( this.map );*/
-    
-	
+   		    
+   		//   https://muscatemaj-pp.theia-land.fr/atdistrib/resto2/collections/GRENADE/e3514f6a-ce72-5d15-b5f5-94c5c6d72137/wms?map=/nfs/muscate_data/maja//muscate.map&idProduit=SENTINEL1_20180628-180704-000_L2D_GRND-VV-IW2-2018_D&versionProduit=0-0&idProjet=GRENADE&anneeProduit=ANNEEPRODUIT&moisProduit=MOISPRODUIT&jourProduit=JOURPRODUIT&LAYERS=oso&typeOSO=TYPEOSO&FORMAT=image%2Fpng&TRANSITIONEFFECT=resize&TRANSPARENT=true&VERSION=1.1.1&SERVICE=WMS&REQUEST=GetMap&STYLES=&SRS=EPSG%3A3857&BBOX={:bbox3857:}&WIDTH=256&HEIGHT=256
+   	 
+    this.layers = L.layerGroup()
+    this.controlLayer = new L.Control.Fmtlayer()
+    this.controlLayer.tiles.arcgisTopo.layer.addTo(this.map)
+   this.controlLayer.addTo(this.map)
+
+     var wmsLayer = L.tileLayer.wms('https://muscatemaj-pp.theia-land.fr/atdistrib/resto2/collections/GRENADE/e3514f6a-ce72-5d15-b5f5-94c5c6d72137/wms/CLASSIFICATION?', {
+        opacity: 0.8
+   	 }).addTo(this.map);
+	wmsLayer.bringToFront()
+   },
+   addLayer (event) {
+     
+   },
+   removeLayer (event) {
+     
    },
    hideBboxLayers () {
      for (var i in this.bboxLayer){

@@ -110,9 +110,6 @@ export default {
     this.aerisResetListener = this.handleReset.bind(this)
     document.addEventListener('aerisResetEvent', this.aerisResetListener)
   },
-  mounted () {
-    this.getRecords()
-  },
   destroyed () {
     document.removeEventListener('fmt:metadataEvent', this.metadataListener);
     this.metadataListener = null;
@@ -122,14 +119,12 @@ export default {
     this.aerisResetListener = null
   },
   methods: {
-    getRecords () {
-      // Create any change event to trigger search 
-      var evt = new CustomEvent('fmt:pageChangedEvent')
-      document.dispatchEvent(evt)
-    },
 	receiveMetadata (event) {
 	  console.log(event.detail)
 	    this.metadatas.push(event.detail.meta)
+	    
+
+	
 	  //this.metadata =  event.detail.meta
 	  this.currentUuid = event.detail.meta['geonet:info'].uuid
 	  
@@ -178,6 +173,9 @@ export default {
   height:auto;
   width:100%;
   }
+ .mtdt-catalogue .fa{
+  font-size: 12px;
+ }
 .mtdt-capsule{
   border: 1px solid #ccc;
   border-radius: 0 0 5px 5px;
