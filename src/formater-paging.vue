@@ -216,6 +216,7 @@ export default {
  color:white;
  font-size:1.3em;;
   vertical-align:middle;
+  opacity:0.9;
 }
 .mtdt-paging span.mtdt-navigation.disabled span{
   opacity:0.3;
@@ -223,6 +224,7 @@ export default {
 }
 .mtdt-paging span.mtdt-navigation:not(.disabled) span:hover{
   opacity:1;
+  font-size:1.31em;
 }
 
 </style>

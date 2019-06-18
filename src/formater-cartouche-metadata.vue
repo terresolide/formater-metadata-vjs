@@ -1,11 +1,13 @@
 <i18n>{
    "en":{
      "contact": "Contact | Contacts",
-     "children": "Children"
+     "children": "Children",
+     "localize": "Localize on the map, click to keep the position"
    },
    "fr":{
      "contact": "Contact | Contacts",
-     "children": "Fiches Enfants"
+     "children": "Fiches Enfants",
+     "localize": "Localiser sur la carte, cliquer pour garder la position"
    }
 }
 </i18n>
@@ -41,8 +43,9 @@
           </a>
 	   </div>
 	   <div class="mtdt-related" v-if="">
-	       <div v-if="hasBboxLayer" style="display:inline-block;"  @mouseover="selectLayer" @mouseout="unselectLayer">
-	        <div class="mtdt-related-type fa fa-dot-circle-o" :style="{backgroundColor:primary}" :title="$t('center_map_on')">
+	       <div v-if="hasBboxLayer" style="display:inline-block;" >
+	        <div class="mtdt-related-type fa fa-dot-circle-o" :style="{backgroundColor:primary}" 
+	        :title="$t('localize')"  @mouseover="selectLayer" @mouseout="unselectLayer" @click="fixLayer">
 		     </div>
 		   
 	     </div>
@@ -145,12 +148,23 @@ export default {
       //return 'hello';
       return moment(date, 'YYYY-MM-DD').format('ll')
     },
-    selectLayer () {
-      console.log("meta_id=" + this.meta.id)
+    fixLayer (e) {
+      e.target.fixed = !e.target.fixed
+      e.target.style.backgroundColor = e.target.fixed ? '#8c0209' : this.primary
+      setTimeout(() => {
+        e.target.style.backgroundColor = this.primary;
+        }, 2000);
+      this.selectLayer(e)
+    },
+    selectLayer (e) {
       var event = new CustomEvent('fmt:selectLayerEvent', {detail: {meta: this.meta}})
       document.dispatchEvent(event)
     },
-    unselectLayer () {
+    unselectLayer (e) {
+      if (e.target.fixed) {
+        e.target.fixed = !e.target.fixed
+        return
+      }
       var event = new CustomEvent('fmt:unselectLayerEvent', {detail: {meta: this.meta}})
       document.dispatchEvent(event)
     }
@@ -261,9 +275,10 @@ export default {
  color:white;
  font-size:1.3em;
  margin-right:3px;
+ opacity:0.9;
 }
 .mtdt-cartouche-metadata .mtdt-footer .mtdt-related-type:hover{
-  background:#8c0209;
+  opacity:1;
 }
 .mtdt-related-type + .mtdt-expand{
 	display:none;
