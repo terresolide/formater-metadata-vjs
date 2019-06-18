@@ -15,6 +15,7 @@
 <script>
 var L = require("leaflet");
 L.Control.Fmtlayer = require('./leaflet.control.fmtlayer.js')
+L.Control.Reset = require('./leaflet.control.reset.js')
 // import {Map, Control, LatLng, tileLayer, TileLayer} from 'leaflet'
 // import L from 'leaflet'
 export default {
@@ -29,7 +30,8 @@ export default {
   },
   watch: {
     lang (newvalue) {
-    	this.$i18n.locale = newvalue    	
+    	this.$i18n.locale = newvalue 
+    	this.resetControl.setLang(newvalue)
     }
   },
   created: function() {
@@ -99,7 +101,8 @@ export default {
        fillOpacity: 0.4
      },
      colors: ['orange', 'purple', 'green'],
-     controlLayer: null
+     controlLayer: null,
+     resetControl: null
     }
   },
   
@@ -132,6 +135,8 @@ export default {
     this.controlLayer = new L.Control.Fmtlayer()
     this.controlLayer.tiles.arcgisTopo.layer.addTo(this.map)
    this.controlLayer.addTo(this.map)
+    this.resetControl = new L.Control.Reset(this.bounds[0], this.lang)
+    this.resetControl.addTo(this.map)
 
      var wmsLayer = L.tileLayer.wms('https://muscatemaj-pp.theia-land.fr/atdistrib/resto2/collections/GRENADE/e3514f6a-ce72-5d15-b5f5-94c5c6d72137/wms/CLASSIFICATION?', {
         opacity: 0.8
@@ -205,6 +210,7 @@ export default {
      if (this.bounds[this.depth]) {
        console.log('FIT BOUNDS')
        this.map.fitBounds(this.bounds[this.depth])
+       this.resetControl.setBounds(this.bounds[this.depth])
      }
      // this.bboxLayer[this.depth].addTo(this.map)
    },
@@ -319,6 +325,7 @@ export default {
         this.bboxLayer.pop()
         this.bounds.pop()
         this.depth = event.detail.depth
+        this.resetControl.setBounds(this.bounds[this.depth])
         this.bboxLayer[this.depth].addTo(this.map)
       } 
       console.log(this.bounds)
