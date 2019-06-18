@@ -110,6 +110,10 @@ export default {
     this.aerisResetListener = this.handleReset.bind(this)
     document.addEventListener('aerisResetEvent', this.aerisResetListener)
   },
+  mounted () {
+    var evt = new CustomEvent('fmt:pageChangedEvent')
+    document.dispatchEvent(evt)
+  },
   destroyed () {
     document.removeEventListener('fmt:metadataEvent', this.metadataListener);
     this.metadataListener = null;
@@ -174,8 +178,9 @@ export default {
   width:100%;
   }
  .mtdt-catalogue .fa{
-  font-size: 12px;
+  font-size: inherit;
  }
+
 .mtdt-capsule{
   border: 1px solid #ccc;
   border-radius: 0 0 5px 5px;

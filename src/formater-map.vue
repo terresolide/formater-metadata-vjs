@@ -201,8 +201,9 @@ export default {
 //          self.extractBbox(meta.geoBox, uuid)
 //        })
 //      }
-console.log(this.bounds[this.depth])
+
      if (this.bounds[this.depth]) {
+       console.log('FIT BOUNDS')
        this.map.fitBounds(this.bounds[this.depth])
      }
      // this.bboxLayer[this.depth].addTo(this.map)
@@ -223,6 +224,7 @@ console.log(this.bounds[this.depth])
        // no record
        return
      }
+     var self = this
      if (!data.metadata.forEach) {
        // only one record
        var uuid = data.metadata['geonet:info'].uuid
@@ -302,7 +304,10 @@ console.log(this.bounds[this.depth])
       
      }
       this.selected = []
-      
+      if (this.bounds[this.depth]) {
+        console.log('FIT BOUNDS')
+        this.map.fitBounds(this.bounds[this.depth])
+      }
        
    },
    back (event) {
@@ -316,6 +321,7 @@ console.log(this.bounds[this.depth])
         this.depth = event.detail.depth
         this.bboxLayer[this.depth].addTo(this.map)
       } 
+      console.log(this.bounds)
        if (this.bounds[this.depth]) {
          this.map.fitBounds(this.bounds[this.depth])
        }
@@ -324,10 +330,9 @@ console.log(this.bounds[this.depth])
 
      var self = this
      var bounds = null
+     console.log(this.depth)
      this.bboxLayer[this.depth].eachLayer(function(layer) {
-       console.log(layer)
-       console.log(layer.feature.id)
-       if (layer.options.uuid === uuid || layer.feature.id === uuid) {
+       if (layer.options.uuid === uuid || (layer.feature && layer.feature.id === uuid)) {
          self.setSelected(layer)
          var bds = layer.getBounds()
          if (!bounds) {
@@ -340,7 +345,7 @@ console.log(this.bounds[this.depth])
      })
      console.log(bounds)
      if (bounds) {
-      self.map.fitBounds(bounds)
+      self.map.fitBounds(bounds, {animate: true, duration:100, padding: [50,50]})
      }
    },
    setSelected (layer) {

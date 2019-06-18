@@ -40,9 +40,9 @@
               <img :src="meta.logo"  />
           </a>
 	   </div>
-	   <div class="mtdt-related" v-if="meta.related || (meta.services && meta.services.browse)">
+	   <div class="mtdt-related" v-if="">
 	       <div v-if="hasBboxLayer" style="display:inline-block;"  @mouseover="selectLayer" @mouseout="unselectLayer">
-	        <div class="mtdt-related-type fa fa-eye" :style="{backgroundColor:primary}">
+	        <div class="mtdt-related-type fa fa-dot-circle-o" :style="{backgroundColor:primary}" :title="$t('center_map_on')">
 		     </div>
 		   
 	     </div>
