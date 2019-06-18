@@ -129,8 +129,9 @@ export default {
        this.metadatas = metadatas;
        this.searchRelated()
      },
-     treatment (meta) {
+     treatment (meta, uuid) {
        meta.logo = process.env.GEONETWORK + meta.logo
+       meta.uuid = uuid
        if (meta.abstract) {
          meta.abstract = meta.abstract.replace(/(?:\\[rn]|[\r\n])/g, '<br />');
        }

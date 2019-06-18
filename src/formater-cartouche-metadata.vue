@@ -31,7 +31,7 @@
 	 </div>
 	  
 	 <div class="mtdt-resource" v-if="depth > 0 && meta.related && meta.related.onlines">
-	    <formater-online v-for="(item, index) in meta.related.onlines" :key="index" :online="item"></formater-online>
+	   <!--   <formater-online v-for="(item, index) in meta.related.onlines" :key="index" :online="item"></formater-online> -->
 	 </div>
 	 <div class="mtdt-footer"  v-if="">
 	   <div class="mtdt-group" v-if="depth === 0">
@@ -137,7 +137,7 @@ export default {
    this.$setGnLocale(this.lang)
    moment.locale(this.lang)
    this.meta = this.metadata
-   if (this.meta.bbox !== null || this.meta.id) {
+   if (this.meta.geoBox  || this.meta.id) {
      this.hasBboxLayer = true
    }
   },
@@ -151,12 +151,12 @@ export default {
       return moment(date, 'YYYY-MM-DD').format('ll')
     },
     fixLayer (e) {
-      e.target.fixed = !e.target.fixed
-      e.target.style.backgroundColor = e.target.fixed ? '#8c0209' : this.primary
+      e.target.fixed = true
+      e.target.style.backgroundColor = '#8c0209'
       setTimeout(() => {
         e.target.style.backgroundColor = this.primary;
+        e.target.fixed = false
         }, 2000);
-      this.selectLayer(e)
     },
     selectLayer (e) {
       var event = new CustomEvent('fmt:selectLayerEvent', {detail: {meta: this.meta}})

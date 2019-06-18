@@ -60,6 +60,8 @@ export default {
     this.metadataListener = null;
     document.removeEventListener('fmt:selectLayerEvent', this.selectLayerListener)
     this.selectLayerListener = null
+    document.removeEventListener('fmt:unselectLayerEvent', this.unselectLayerListener)
+    this.unselectLayerListener = null
     document.removeEventListener('fmt:closeMetadataEvent', this.closeMetadataListener);
     this.closeMetadataListener = null
     document.removeEventListener('aerisResetEvent', this.aerisResetListener)
@@ -167,7 +169,6 @@ export default {
       return this.type
    },
    receiveMetadatas (event) {
-     console.log('depth dans la liste de metadatas = ' + event.detail.depth)
      if (this.depth === event.detail.depth   && this.bboxLayer[this.depth]) {
           this.bboxLayer[this.depth].clearLayers();
           this.bounds[this.depth] = null
@@ -175,13 +176,9 @@ export default {
      } else {
        this.hideBboxLayers()
        this.depth = event.detail.depth;
-       
-    
      }
      
      this.type = this.getType(event.detail)
-     console.log(event.detail.type)
-     console.log(this.type)
      switch (this.type) {
 	     case 'geojson':
 	       this.addLayerGeojson(event.detail)
@@ -190,32 +187,15 @@ export default {
 	       this.addLayerGeonetwork(event.detail)
 	       break;
      }
-//      if (!event.detail.metadata) {
-//        // no record
-//        return
-//      }
-//      if (!event.detail.metadata.forEach) {
-//        // only one record
-//        var uuid = event.detail.metadata['geonet:info'].uuid
-//        this.extractBbox(event.detail.metadata.geoBox, uuid)
-       
-//      } else {
-//        // array of records
-//        event.detail.metadata.forEach( function (meta, index) {
-//          var uuid = meta['geonet:info'].uuid
-//          self.extractBbox(meta.geoBox, uuid)
-//        })
-//      }
+
 
      if (this.bounds[this.depth]) {
-       console.log('FIT BOUNDS')
        this.map.fitBounds(this.bounds[this.depth])
        this.resetControl.setBounds(this.bounds[this.depth])
      }
      // this.bboxLayer[this.depth].addTo(this.map)
    },
    addLayerGeojson (data) {
-     console.log('in add Layer GEOJSON')
      this.bboxLayer[this.depth] = L.geoJSON(data, {style:this.getOptionsLayer()})
      
      this.bounds[this.depth] = this.bboxLayer[this.depth].getBounds()
@@ -282,22 +262,19 @@ export default {
      if (!event.detail.meta) {
        return;
      }
-//      if (event.detail.depth) {
-//        this.depth = event.detail.depth
-//      }
-    // if (event.detail.depth === this.depth) {
-	     if (!(event.detail.meta.related && event.detail.meta.related.children) && event.detail.meta['geonet:info'] && event.detail.meta['geonet:info'].uuid) {
-	       this.selectLayerByUuid(event.detail.meta['geonet:info'].uuid)
-	
-	     } else if (event.detail.meta.id) {
-	        this.selectLayerByUuid(event.detail.meta.id)
-	     }
-    // }
+
+     console.log(event.detail.meta.uuid)
+     if (event.detail.meta.uuid) {
+       console.log(event.detail.meta.uuid)
+       this.selectLayerByUuid(event.detail.meta.uuid)
+
+     } else if (event.detail.meta.id) {
+        this.selectLayerByUuid(event.detail.meta.id)
+     }
+
    },
    unselectLayer () {
     // console.log('depth dans metadata tout seul = ' + event.detail.depth)
-     console.log(this.depth)
-     console.log('UNSELECT LAYER')
      var self = this
      var options = this.getOptionsLayer()
      for(var i in this.selected) {
@@ -311,24 +288,25 @@ export default {
      }
       this.selected = []
       if (this.bounds[this.depth]) {
-        console.log('FIT BOUNDS')
         this.map.fitBounds(this.bounds[this.depth])
       }
        
    },
    back (event) {
      this.unselectLayer()
-     console.log(this.depth)
-     console.log(event.detail.depth)
      if (this.depth > event.detail.depth) {
         this.bboxLayer[this.depth].remove()
         this.bboxLayer.pop()
         this.bounds.pop()
         this.depth = event.detail.depth
         this.resetControl.setBounds(this.bounds[this.depth])
+        var self = this
+        this.bboxLayer[this.depth].eachLayer(function (layer) {
+          layer.setStyle({fillColor: self.colors[self.depth], color: self.colors[self.depth]})
+        })
         this.bboxLayer[this.depth].addTo(this.map)
+        console.log(this.depth)
       } 
-      console.log(this.bounds)
        if (this.bounds[this.depth]) {
          this.map.fitBounds(this.bounds[this.depth])
        }
@@ -337,7 +315,6 @@ export default {
 
      var self = this
      var bounds = null
-     console.log(this.depth)
      this.bboxLayer[this.depth].eachLayer(function(layer) {
        if (layer.options.uuid === uuid || (layer.feature && layer.feature.id === uuid)) {
          self.setSelected(layer)
@@ -350,7 +327,6 @@ export default {
         
        }
      })
-     console.log(bounds)
      if (bounds) {
       self.map.fitBounds(bounds, {animate: true, duration:100, padding: [50,50]})
      }
@@ -360,7 +336,6 @@ export default {
      layer.setStyle(this.selectedOptions)
    },
    handleReset (event) {
-     console.log('RESET MAP')
      this.unselectLayer()
      for (var i in this.bboxLayer){
        this.bboxLayer[i].remove()
