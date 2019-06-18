@@ -106,6 +106,7 @@ export default {
   watch: {
     lang (newvalue) {
     	this.$i18n.locale = newvalue
+    	moment.locale(newvalue);
     	this.srv = process.env.GEONETWORK + 'srv/' + (newvalue === 'fr' ? 'fre' : 'eng') + '/'
     	this.headers['Accept-Language'] =  newvalue === 'fr' ? 'fre': 'eng'
     },

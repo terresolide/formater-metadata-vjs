@@ -120,6 +120,7 @@ export default {
   watch: {
     lang (newvalue) {
     	this.$i18n.locale = newvalue
+    	moment.locale(newvalue)
     }
   },
   data() {
@@ -134,6 +135,7 @@ export default {
   created () {
    this.$i18n.locale = this.lang
    this.$setGnLocale(this.lang)
+   moment.locale(this.lang)
    this.meta = this.metadata
    if (this.meta.bbox !== null || this.meta.id) {
      this.hasBboxLayer = true
