@@ -143,6 +143,14 @@ export default {
      this.controlLayer.addTo(this.map)
 
      var wmsLayer = L.tileLayer.wms('https://muscatemaj-pp.theia-land.fr/atdistrib/resto2/collections/GRENADE/e3514f6a-ce72-5d15-b5f5-94c5c6d72137/wms/CLASSIFICATION?', {
+        opacity: 0.8,
+        format: 'image/png'
+   	 }).addTo(this.map);
+	wmsLayer.bringToFront()
+	 var wmsLayer = L.tileLayer.wms('https://services.data.shom.fr/INSPIRE/wms/r?', {
+        service: 'WMS',
+        layers: 'MNT_ATL100m_HOMONIM_PBMA_3857_WMSR',
+        format: 'image/png',
         opacity: 0.8
    	 }).addTo(this.map);
 	wmsLayer.bringToFront()
@@ -380,9 +388,39 @@ div[id="fmtMap"].mtdt-small .leaflet-control a{
   color: black;
   text-decoration: none;
   text-align:center;
+  /* a effacer utilisé pour le dev */
+  display:none;
  }
   div[id="fmtMap"] a.leaflet-control-layers-toggle::before{
    font-family:Formater;
    content: "\e806";
   }
+  
+  div[id="fmtMap"] section.leaflet-control-layers-list{
+     /* a effacer utilisé pour le dev */
+    display: block;
+    padding: 3px 5px;
+  }
+    div[id="fmtMap"] .leaflet-control-layers-expanded {
+          padding: 3px 5px;
+   }
+    input[type=radio] {
+     display:none;
+ }
+  input[type=radio]:checked + span:before {
+     font-family: FontAwesome;
+     content: "\f111";
+     opacity:1;
+     
+  }
+   input[type=radio] + span:before {
+     font-family: FontAwesome;
+     content: "\f10c";
+     opacity:0.8;
+     cursor: pointer;
+     
+  }
+ div[id="fmtMap"] .leaflet-control-layers-base label span{
+   vertical-align: middle;
+ }
 </style>
