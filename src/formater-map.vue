@@ -134,11 +134,13 @@ export default {
    		//   https://muscatemaj-pp.theia-land.fr/atdistrib/resto2/collections/GRENADE/e3514f6a-ce72-5d15-b5f5-94c5c6d72137/wms?map=/nfs/muscate_data/maja//muscate.map&idProduit=SENTINEL1_20180628-180704-000_L2D_GRND-VV-IW2-2018_D&versionProduit=0-0&idProjet=GRENADE&anneeProduit=ANNEEPRODUIT&moisProduit=MOISPRODUIT&jourProduit=JOURPRODUIT&LAYERS=oso&typeOSO=TYPEOSO&FORMAT=image%2Fpng&TRANSITIONEFFECT=resize&TRANSPARENT=true&VERSION=1.1.1&SERVICE=WMS&REQUEST=GetMap&STYLES=&SRS=EPSG%3A3857&BBOX={:bbox3857:}&WIDTH=256&HEIGHT=256
    	 
     this.layers = L.layerGroup()
-    this.controlLayer = new L.Control.Fmtlayer()
-    this.controlLayer.tiles.arcgisTopo.layer.addTo(this.map)
-   this.controlLayer.addTo(this.map)
+   
+  
     this.resetControl = new L.Control.Reset(this.bounds[0], this.lang)
     this.resetControl.addTo(this.map)
+     this.controlLayer = new L.Control.Fmtlayer()
+    this.controlLayer.tiles.arcgisTopo.layer.addTo(this.map)
+     this.controlLayer.addTo(this.map)
 
      var wmsLayer = L.tileLayer.wms('https://muscatemaj-pp.theia-land.fr/atdistrib/resto2/collections/GRENADE/e3514f6a-ce72-5d15-b5f5-94c5c6d72137/wms/CLASSIFICATION?', {
         opacity: 0.8
@@ -365,10 +367,22 @@ div[id="fmtMap"].mtdt-small .leaflet-control .leaflet-control-zoom-in,
 div[id="fmtMap"].mtdt-small .leaflet-control .leaflet-control-zoom-out{
   font-size:16px;
 }
-div[id="fmtMap"].mtdt-small .leaflet-bar a{
+div[id="fmtMap"].mtdt-small .leaflet-bar a,
+div[id="fmtMap"].mtdt-small .leaflet-control a{
 
  width: 15px;
  height:15px;
  line-height:15px;
  }
+ 
+ div[id="fmtMap"] a.leaflet-control-layers-toggle{
+  background-image: none;
+  color: black;
+  text-decoration: none;
+  text-align:center;
+ }
+  div[id="fmtMap"] a.leaflet-control-layers-toggle::before{
+   font-family:Formater;
+   content: "\e806";
+  }
 </style>

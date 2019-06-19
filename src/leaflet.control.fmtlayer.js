@@ -3,9 +3,12 @@
  */
 /* eslint no-undef: 0 */
  L.Control.Fmtlayer = L.Control.Layers.extend({
+   options: {
+     position: 'topleft',
+   },
    tiles: {
      osm: {
-       name: 'OpenStreetMap',
+       name: 'OSM',
        url: 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
        attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
      },
@@ -20,7 +23,7 @@
 //       attribution: 'Kartendaten: © <a href="https://openstreetmap.org/copyright">OpenStreetMap</a>-Mitwirkende, <a href="http://viewfinderpanoramas.org">SRTM</a> | Kartendarstellung: © <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
 //     },
      arcgisTopo: {
-       name: 'ArcGIS World Topo Map',
+       name: 'ArcGIS',
        url: '//server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
        attribution: 'Tiles © <a href="https://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer">ArcGIS</a>'
      }
