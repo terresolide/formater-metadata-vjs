@@ -2,12 +2,14 @@
    "en":{
      "contact": "Contact | Contacts",
      "children": "Children",
-     "localize": "Localize on the map, click to keep the position"
+     "localize": "Localize on the map, click to keep the position",
+     "display_layer": "Display the layer on the map"
    },
    "fr":{
      "contact": "Contact | Contacts",
      "children": "Fiches Enfants",
-     "localize": "Localiser sur la carte, cliquer pour garder la position"
+     "localize": "Localiser sur la carte, cliquer pour garder la position",
+     "display_layer": "Afficher sur la carte"
    }
 }
 </i18n>
@@ -61,11 +63,16 @@
 		         </ul>	
 		     </div>  
 	     </div>
-	      <div v-if="meta.layers">
-	        <div class="mtdt-related-type fa fa-globe" :style="{backgroundColor: layerAdded ? '#8c0209' : primary}">
-		        <span class="fa fa-caret-down" v-if="meta.layers.length > 0"></span>
+	      <div v-if="meta.layers && meta.layers.length === 1">
+	        <div class="mtdt-related-type fa fa-globe" @click="changeLayer(0)" :style="{backgroundColor: layerAdded ? '#8c0209' : primary}" :title="$t('display_layer')">
+		        
+		     </div> 
+	     </div>
+	      <div v-if="meta.layers && meta.layers.length > 1">
+	        <div class="mtdt-related-type fa fa-globe" :style="{backgroundColor: layerAdded ? '#8c0209' : primary}" >
+		        <span class="fa fa-caret-down" ></span>
 		     </div>
-		     <div class="mtdt-expand" v-if="meta.layers.length > 0">
+		     <div class="mtdt-expand">
 		          <ul class="mtdt-layers">
 		          <li v-for="(layer, index) in meta.layers" :key="index" @click="changeLayer(index)" >
 		           <i class="fa" :class="{'fa-square-o': !layer.checked, 'fa-check-square-o': layer.checked }" ></i>
@@ -169,11 +176,11 @@ export default {
       console.log(index)
       this.meta.layers[index].checked = !this.meta.layers[index].checked
       if (this.meta.layers[index].checked) {
-        var event = new CustomEvent('fmt:addLayerEvent', {detail: {layer: this.meta.layers[index]}})
+        var event = new CustomEvent('fmt:addLayerEvent', {detail: {layer: this.meta.layers[index], uuid: this.meta.uuid}})
         document.dispatchEvent(event)
         this.layerAdded = true
       } else {
-        var event = new CustomEvent('fmt:removeLayerEvent', {detail: {layer: this.meta.layers[index].name}})
+        var event = new CustomEvent('fmt:removeLayerEvent', {detail: {name: this.meta.layers[index].name}})
         document.dispatchEvent(event)
         var self = this
         self.layerAdded = false

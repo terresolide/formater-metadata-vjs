@@ -154,7 +154,6 @@ export default {
        var links = this.$gnToArray(meta.link)
        var self = this
        links.forEach(function (link) {
-         console.log(link)
          switch (link[3]) {
          case 'OGC:WMS': 
            if (!meta.layers) {
@@ -177,7 +176,6 @@ export default {
            break;
          }
        }) 
-       console.log(meta.layers)
        return meta;
      },
      searchRelated () {

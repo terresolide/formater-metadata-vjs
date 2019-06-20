@@ -85,7 +85,7 @@ export default {
      addLayerListener: null,
      removeLayerListener: null,
      bboxLayer: [],
-     layers: null,
+     layers: [],
      selected: [],
      depth: 0,
      bounds: [],
@@ -133,34 +133,68 @@ export default {
    		    
    		//   https://muscatemaj-pp.theia-land.fr/atdistrib/resto2/collections/GRENADE/e3514f6a-ce72-5d15-b5f5-94c5c6d72137/wms?map=/nfs/muscate_data/maja//muscate.map&idProduit=SENTINEL1_20180628-180704-000_L2D_GRND-VV-IW2-2018_D&versionProduit=0-0&idProjet=GRENADE&anneeProduit=ANNEEPRODUIT&moisProduit=MOISPRODUIT&jourProduit=JOURPRODUIT&LAYERS=oso&typeOSO=TYPEOSO&FORMAT=image%2Fpng&TRANSITIONEFFECT=resize&TRANSPARENT=true&VERSION=1.1.1&SERVICE=WMS&REQUEST=GetMap&STYLES=&SRS=EPSG%3A3857&BBOX={:bbox3857:}&WIDTH=256&HEIGHT=256
    	 
-    this.layers = L.layerGroup()
-   
-  
+//     this.layers = L.layerGroup()
+//     this.layers.addTo(this.map)
     this.resetControl = new L.Control.Reset(this.bounds[0], this.lang)
     this.resetControl.addTo(this.map)
      this.controlLayer = new L.Control.Fmtlayer()
     this.controlLayer.tiles.arcgisTopo.layer.addTo(this.map)
      this.controlLayer.addTo(this.map)
 
-     var wmsLayer = L.tileLayer.wms('https://muscatemaj-pp.theia-land.fr/atdistrib/resto2/collections/GRENADE/e3514f6a-ce72-5d15-b5f5-94c5c6d72137/wms/CLASSIFICATION?', {
-        opacity: 0.8,
-        format: 'image/png'
-   	 }).addTo(this.map);
-	wmsLayer.bringToFront()
-	 var wmsLayer = L.tileLayer.wms('https://services.data.shom.fr/INSPIRE/wms/r?', {
-        service: 'WMS',
-        layers: 'MNT_ATL100m_HOMONIM_PBMA_3857_WMSR',
-        format: 'image/png',
-        ESPG: 4326,
-        opacity: 0.5
-   	 }).addTo(this.map);
-	wmsLayer.bringToFront()
+//      var wmsLayer = L.tileLayer.wms('https://muscatemaj-pp.theia-land.fr/atdistrib/resto2/collections/GRENADE/e3514f6a-ce72-5d15-b5f5-94c5c6d72137/wms/CLASSIFICATION?', {
+//         opacity: 0.8,
+//         format: 'image/png'
+//    	 }).addTo(this.map);
+// 	wmsLayer.bringToFront()
+// 	 var wmsLayer = L.tileLayer.wms('https://services.data.shom.fr/INSPIRE/wms/r?', {
+//         service: 'WMS',
+//         layers: 'MNT_ATL100m_HOMONIM_PBMA_3857_WMSR',
+//         format: 'image/png',
+//         ESPG: 4326,
+//         opacity: 0.5
+//    	 }).addTo(this.map);
+// 	wmsLayer.bringToFront()
    },
    addLayer (event) {
-     
+     console.log(event.detail.layer)
+     var layer = event.detail.layer
+     switch (layer.type) {
+     case 'OGC:WMS':
+       var extract = layer.href.match(/^(.*\?).*$/)
+       console.log(layer.href)
+       console.log(extract)
+       var url = extract[1]
+       var wmsLayer = L.tileLayer.wms(url, {
+         service: 'WMS',
+         layers: layer.name,
+         format: 'image/png',
+         opacity: 0.5
+    	 }).addTo(this.map);
+       wmsLayer.bringToFront()
+       if (!this.layers[this.depth]) {
+         this.layers[this.depth] = new Map()
+       }
+       this.layers[this.depth].set(layer.name, wmsLayer)
+       var bounds = this.searchBboxByUuid(event.detail.uuid)
+       if (bounds) {
+         this.map.fitBounds(bounds, {animate: true, duration:100, padding: [50,50]})
+       }
+       break;
+     }
    },
    removeLayer (event) {
-     
+     var layer = this.layers[this.depth].get(event.detail.name)
+     if (layer) {
+       layer.remove()
+     }
+     this.layers[this.depth].delete(event.detail.name)
+   },
+   hideLayers () {
+     for (var depth in this.layers) {
+       this.layers[depth].forEach(function (layer) {
+         layer.remove()
+       })
+     }
    },
    hideBboxLayers () {
      for (var i in this.bboxLayer){
@@ -183,13 +217,19 @@ export default {
      if (this.bboxLayer[this.depth]) {
        this.controlLayer.removeLayer(this.bboxLayer[this.depth])
      }
+     if (this.layers[this.depth]) {
+       this.layers[this.depth].forEach(function (layer) {
+         layer.remove()
+       })
+     }
      if (this.depth === event.detail.depth   && this.bboxLayer[this.depth]) {
-          // remove from layer from control
           this.bboxLayer[this.depth].clearLayers();
+          this.layers[this.depth] = new Map()
           this.bounds[this.depth] = null
           
      } else {
        this.hideBboxLayers()
+       this.hideLayers()
        this.depth = event.detail.depth;
      }
      
@@ -290,6 +330,7 @@ export default {
      }
 
    },
+ 
    unselectBbox () {
     // console.log('depth dans metadata tout seul = ' + event.detail.depth)
      var self = this
@@ -309,12 +350,20 @@ export default {
       }
        
    },
+   clearLayers (depth) {
+     this.layers[depth].forEach(function (layer) {
+       layer.remove()
+     })
+     this.layers[depth].clear()
+   },
    back (event) {
      this.unselectBbox()
      if (this.depth > event.detail.depth) {
         this.bboxLayer[this.depth].remove()
         this.bboxLayer.pop()
         this.bounds.pop()
+        this.clearLayers(this.depth)
+        
         this.depth = event.detail.depth
         this.resetControl.setBounds(this.bounds[this.depth])
         var self = this
@@ -322,11 +371,31 @@ export default {
           layer.setStyle({fillColor: self.colors[self.depth], color: self.colors[self.depth]})
         })
         this.bboxLayer[this.depth].addTo(this.map)
+        this.layers[this.depth].forEach(function (layer) {
+          layer.addTo(self.map)
+        })
         console.log(this.depth)
       } 
        if (this.bounds[this.depth]) {
          this.map.fitBounds(this.bounds[this.depth])
        }
+   },
+   searchBboxByUuid (uuid) {
+     var self = this
+     var bounds = null
+     this.bboxLayer[this.depth].eachLayer(function(layer) {
+       if (layer.options.uuid === uuid || (layer.feature && layer.feature.id === uuid)) {
+         var bds = layer.getBounds()
+         if (!bounds) {
+           bounds = bds
+         } else  {
+           bounds.extend(bds)
+         }
+        
+       }
+     })
+     return bounds
+     
    },
    selectBboxByUuid (uuid) {
 
