@@ -191,7 +191,7 @@ export default {
         }, 2000);
     },
     selectLayer (e) {
-      var event = new CustomEvent('fmt:selectLayerEvent', {detail: {meta: this.meta}})
+      var event = new CustomEvent('fmt:selectBboxEvent', {detail: {meta: this.meta}})
       document.dispatchEvent(event)
     },
     unselectLayer (e) {
@@ -199,7 +199,7 @@ export default {
         e.target.fixed = !e.target.fixed
         return
       }
-      var event = new CustomEvent('fmt:unselectLayerEvent', {detail: {meta: this.meta}})
+      var event = new CustomEvent('fmt:unselectBboxEvent', {detail: {meta: this.meta}})
       document.dispatchEvent(event)
     }
   }

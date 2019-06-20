@@ -38,12 +38,12 @@ export default {
     this.$i18n.locale = this.lang
     this.metadataListListener = this.receiveMetadatas.bind(this)
     document.addEventListener('fmt:metadataListEvent', this.metadataListListener);
-    this.metadataListener = this.selectLayer.bind(this)
+    this.metadataListener = this.selectBbox.bind(this)
     document.addEventListener('fmt:metadataEvent', this.metadataListener);
-    this.selectLayerListener = this.selectLayer.bind(this)
-    document.addEventListener('fmt:selectLayerEvent', this.selectLayerListener)
-    this.unselectLayerListener = this.unselectLayer.bind(this)
-    document.addEventListener('fmt:unselectLayerEvent', this.unselectLayerListener)
+    this.selectBboxListener = this.selectBbox.bind(this)
+    document.addEventListener('fmt:selectBboxEvent', this.selectBboxListener)
+    this.unselectBboxListener = this.unselectBbox.bind(this)
+    document.addEventListener('fmt:unselectBboxEvent', this.unselectBboxListener)
     this.closeMetadataListener = this.back.bind(this)
     document.addEventListener('fmt:closeMetadataEvent', this.closeMetadataListener);
     this.aerisResetListener = this.handleReset.bind(this)
@@ -58,10 +58,10 @@ export default {
     this.metadataListListener = null;
     document.removeEventListener('fmt:metadataEvent', this.metadataListener);
     this.metadataListener = null;
-    document.removeEventListener('fmt:selectLayerEvent', this.selectLayerListener)
-    this.selectLayerListener = null
-    document.removeEventListener('fmt:unselectLayerEvent', this.unselectLayerListener)
-    this.unselectLayerListener = null
+    document.removeEventListener('fmt:selectBboxEvent', this.selectBboxListener)
+    this.selectBboxListener = null
+    document.removeEventListener('fmt:unselectBboxEvent', this.unselectBboxListener)
+    this.unselectBboxListener = null
     document.removeEventListener('fmt:closeMetadataEvent', this.closeMetadataListener);
     this.closeMetadataListener = null
     document.removeEventListener('aerisResetEvent', this.aerisResetListener)
@@ -274,8 +274,8 @@ export default {
      })
       
    },
-   selectLayer (event) {
-     this.unselectLayer()
+   selectBbox (event) {
+     this.unselectBbox()
      if (!event.detail.meta) {
        return;
      }
@@ -283,14 +283,14 @@ export default {
      console.log(event.detail.meta.uuid)
      if (event.detail.meta.uuid) {
        console.log(event.detail.meta.uuid)
-       this.selectLayerByUuid(event.detail.meta.uuid)
+       this.selectBboxByUuid(event.detail.meta.uuid)
 
      } else if (event.detail.meta.id) {
-        this.selectLayerByUuid(event.detail.meta.id)
+        this.selectBboxByUuid(event.detail.meta.id)
      }
 
    },
-   unselectLayer () {
+   unselectBbox () {
     // console.log('depth dans metadata tout seul = ' + event.detail.depth)
      var self = this
      var options = this.getOptionsLayer()
@@ -310,7 +310,7 @@ export default {
        
    },
    back (event) {
-     this.unselectLayer()
+     this.unselectBbox()
      if (this.depth > event.detail.depth) {
         this.bboxLayer[this.depth].remove()
         this.bboxLayer.pop()
@@ -328,7 +328,7 @@ export default {
          this.map.fitBounds(this.bounds[this.depth])
        }
    },
-   selectLayerByUuid (uuid) {
+   selectBboxByUuid (uuid) {
 
      var self = this
      var bounds = null
@@ -353,7 +353,7 @@ export default {
      layer.setStyle(this.selectedOptions)
    },
    handleReset (event) {
-     this.unselectLayer()
+     this.unselectBbox()
      for (var i in this.bboxLayer){
        this.bboxLayer[i].remove()
      }
