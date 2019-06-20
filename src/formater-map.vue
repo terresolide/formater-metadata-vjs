@@ -8,14 +8,15 @@
 }
 </i18n>
 <template>
- <span class="mtdt-map">
-  <div id="fmtMap" class="mtdt-small"></div>
+ <span id="fmtLitleMap" class="mtdt-map">
+  <div id="fmtMap" :class="{'mtdt-small': !fullscreen, 'mtdt-large': fullscreen}"></div>
  </span>
 </template>
 <script>
 var L = require("leaflet");
 L.Control.Fmtlayer = require('./leaflet.control.fmtlayer.js')
 L.Control.Reset = require('./leaflet.control.reset.js')
+L.Control.Fullscreen = require('./leaflet.control.fullscreen.js')
 // import {Map, Control, LatLng, tileLayer, TileLayer} from 'leaflet'
 // import L from 'leaflet'
 export default {
@@ -76,6 +77,7 @@ export default {
   },
   data() {
     return {
+     fullscreen: false,
      map: null,
      type: null,
      metadataListListener: null,
@@ -140,7 +142,8 @@ export default {
      this.controlLayer = new L.Control.Fmtlayer()
     this.controlLayer.tiles.arcgisTopo.layer.addTo(this.map)
      this.controlLayer.addTo(this.map)
-
+    var fullscreen = new L.Control.Fullscreen('fmtLargeMap', this.lang)
+    fullscreen.addTo(this.map)
 //      var wmsLayer = L.tileLayer.wms('https://muscatemaj-pp.theia-land.fr/atdistrib/resto2/collections/GRENADE/e3514f6a-ce72-5d15-b5f5-94c5c6d72137/wms/CLASSIFICATION?', {
 //         opacity: 0.8,
 //         format: 'image/png'
