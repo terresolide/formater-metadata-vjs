@@ -2,7 +2,7 @@
    "en":{
      "contact": "Contact | Contacts",
      "children": "Children",
-     "localize": "Localize on the map, click to keep the position",
+     "localize": "Localize on the map",
      "display_layer": "Display the layer on the map"
    },
    "fr":{
@@ -47,7 +47,7 @@
 	   <div class="mtdt-related" >
 	       <div v-if="hasBboxLayer" style="display:inline-block;" >
 	        <div class="mtdt-related-type fa fa-dot-circle-o" :style="{backgroundColor:primary}" 
-	        :title="$t('localize')"  @mouseover="selectBbox" @mouseout="unselectBbox" @click="fixBbox">
+	        :title="$t('localize')"   @click="fixBbox">
 		     </div>
 		   
 	     </div>
@@ -192,6 +192,7 @@ export default {
     fixBbox (e) {
       e.target.fixed = true
       e.target.style.backgroundColor = '#8c0209'
+      this.selectBbox(e)
       setTimeout(() => {
         e.target.style.backgroundColor = this.primary;
         e.target.fixed = false

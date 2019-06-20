@@ -318,6 +318,7 @@ export default {
       
    },
    selectBbox (event) {
+     console.log('select Bbox')
      this.unselectBbox()
      if (!event.detail.meta) {
        return;
@@ -348,9 +349,9 @@ export default {
       
      }
       this.selected = []
-      if (this.bounds[this.depth]) {
-        this.map.fitBounds(this.bounds[this.depth])
-      }
+//       if (this.bounds[this.depth]) {
+//         this.map.fitBounds(this.bounds[this.depth])
+//       }
        
    },
    clearLayers (depth) {
@@ -361,6 +362,7 @@ export default {
    },
    back (event) {
      this.unselectBbox()
+     
      if (this.depth > event.detail.depth) {
         this.bboxLayer[this.depth].remove()
         this.bboxLayer.pop()
@@ -419,6 +421,9 @@ export default {
      if (bounds) {
       self.map.fitBounds(bounds, {animate: true, duration:100, padding: [50,50]})
      }
+     setTimeout(() => {
+        self.unselectBbox()
+     }, 2000);
    },
    setSelected (layer) {
      this.selected.push(layer)
