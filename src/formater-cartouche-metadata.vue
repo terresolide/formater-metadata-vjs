@@ -45,7 +45,7 @@
 	   <div class="mtdt-related" >
 	       <div v-if="hasBboxLayer" style="display:inline-block;" >
 	        <div class="mtdt-related-type fa fa-dot-circle-o" :style="{backgroundColor:primary}" 
-	        :title="$t('localize')"  @mouseover="selectLayer" @mouseout="unselectLayer" @click="fixLayer">
+	        :title="$t('localize')"  @mouseover="selectBbox" @mouseout="unselectBbox" @click="fixLayer">
 		     </div>
 		   
 	     </div>
@@ -190,11 +190,11 @@ export default {
         e.target.fixed = false
         }, 2000);
     },
-    selectLayer (e) {
+    selectBbox (e) {
       var event = new CustomEvent('fmt:selectBboxEvent', {detail: {meta: this.meta}})
       document.dispatchEvent(event)
     },
-    unselectLayer (e) {
+    unselectBbox (e) {
       if (e.target.fixed) {
         e.target.fixed = !e.target.fixed
         return
