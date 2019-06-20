@@ -58,6 +58,16 @@ const MetadataToolsPlugin = {
          }
          return myArray;
        }
+       Vue.prototype.$gnLinkToLayer = function (arr) {
+         var layer = {
+             name: arr[0],
+             description: arr[1],
+             href: arr[2],
+             type: arr[3],
+             checked: false
+         }
+         return layer
+       }
 		   Vue.prototype.$gn = function (str) {
 		     if (this.$gnLang && this.$gnLang[str]) {
 		       return this.$gnLang[str];

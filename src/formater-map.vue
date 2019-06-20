@@ -1,9 +1,9 @@
 <i18n>{
    "en":{
-
+      "all_box": "All bbox"
    },
    "fr":{
-
+	  "all_box": "Les bbox"
    }
 }
 </i18n>
@@ -151,7 +151,8 @@ export default {
         service: 'WMS',
         layers: 'MNT_ATL100m_HOMONIM_PBMA_3857_WMSR',
         format: 'image/png',
-        opacity: 0.8
+        ESPG: 4326,
+        opacity: 0.5
    	 }).addTo(this.map);
 	wmsLayer.bringToFront()
    },
@@ -179,7 +180,11 @@ export default {
       return this.type
    },
    receiveMetadatas (event) {
+     if (this.bboxLayer[this.depth]) {
+       this.controlLayer.removeLayer(this.bboxLayer[this.depth])
+     }
      if (this.depth === event.detail.depth   && this.bboxLayer[this.depth]) {
+          // remove from layer from control
           this.bboxLayer[this.depth].clearLayers();
           this.bounds[this.depth] = null
           
@@ -191,13 +196,15 @@ export default {
      this.type = this.getType(event.detail)
      switch (this.type) {
 	     case 'geojson':
-	       this.addLayerGeojson(event.detail)
+	       this.addBboxGeojson(event.detail)
 	       break;
 	     case 'geonetwork':
-	       this.addLayerGeonetwork(event.detail)
+	       this.addBboxGeonetwork(event.detail)
 	       break;
      }
-
+     if (this.bboxLayer[this.depth]) {
+       this.controlLayer.addOverlay(this.bboxLayer[this.depth], this.$t('all_box'))
+     }
 
      if (this.bounds[this.depth]) {
        this.map.fitBounds(this.bounds[this.depth])
@@ -205,7 +212,7 @@ export default {
      }
      // this.bboxLayer[this.depth].addTo(this.map)
    },
-   addLayerGeojson (data) {
+   addBboxGeojson (data) {
      this.bboxLayer[this.depth] = L.geoJSON(data, {style:this.getOptionsLayer()})
      
      this.bounds[this.depth] = this.bboxLayer[this.depth].getBounds()
@@ -213,7 +220,7 @@ export default {
      this.bboxLayer[this.depth].addTo(this.map);
      
    },
-   addLayerGeonetwork (data) {
+   addBboxGeonetwork (data) {
      this.bboxLayer[this.depth] = L.layerGroup();
      this.bboxLayer[this.depth].addTo(this.map);
      if (!data.metadata) {
@@ -388,38 +395,45 @@ div[id="fmtMap"].mtdt-small .leaflet-control a{
   color: black;
   text-decoration: none;
   text-align:center;
-  /* a effacer utilisé pour le dev */
-  display:none;
  }
   div[id="fmtMap"] a.leaflet-control-layers-toggle::before{
    font-family:Formater;
    content: "\e806";
   }
   
-  div[id="fmtMap"] section.leaflet-control-layers-list{
-     /* a effacer utilisé pour le dev */
-    display: block;
-    padding: 3px 5px;
-  }
+
     div[id="fmtMap"] .leaflet-control-layers-expanded {
           padding: 3px 5px;
    }
-    input[type=radio] {
+    div[id="fmtMap"] section.leaflet-control-layers-list input[type=radio],
+     div[id="fmtMap"] section.leaflet-control-layers-list input[type=checkbox]{
      display:none;
  }
-  input[type=radio]:checked + span:before {
-     font-family: FontAwesome;
-     content: "\f111";
-     opacity:1;
-     
-  }
-   input[type=radio] + span:before {
+    div[id="fmtMap"] section.leaflet-control-layers-list  input[type=radio] + span:before {
      font-family: FontAwesome;
      content: "\f10c";
      opacity:0.8;
      cursor: pointer;
      
   }
+  div[id="fmtMap"] section.leaflet-control-layers-list input[type=radio]:checked + span:before {
+     content: "\f111";
+     opacity:1;
+     
+  }
+  div[id="fmtMap"] section.leaflet-control-layers-list  input[type=checkbox] + span:before {
+     font-family: FontAwesome;
+     content: "\f096";
+     opacity:0.8;
+     cursor: pointer;
+  }
+    
+  div[id="fmtMap"] section.leaflet-control-layers-list input[type=checkbox]:checked + span:before {
+     content: "\f046";
+     opacity:1;
+     
+  }
+
  div[id="fmtMap"] .leaflet-control-layers-base label span{
    vertical-align: middle;
  }

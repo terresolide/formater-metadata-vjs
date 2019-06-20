@@ -280,6 +280,7 @@ export default {
   padding: 10px;
   max-width: 100%;
   margin: auto;
+  padding-bottom: 600px;
   height: auto;
   overflow: hidden;
  

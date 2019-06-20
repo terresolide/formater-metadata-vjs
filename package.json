@@ -24,7 +24,7 @@
     "build": "cross-env NODE_ENV=production webpack --progress --hide-modules"
   },
   "dependencies": {
-    "formater-commons-components-vjs": "github:terresolide/formater-commons-components-vjs#0.18.1",
+    "formater-commons-components-vjs": "github:terresolide/formater-commons-components-vjs#0.18.2",
     "formater-geotiff-visualizer-vjs": "github:terresolide/formater-geotiff-visualizer-vjs",
     "leaflet": "^1.5.1",
     "leaflet-draw": "^1.0.4",
@@ -52,7 +52,7 @@
     "url-loader": "^1.1.2",
     "vue-loader": "^15.7.0",
     "vue-template-compiler": "^2.6.8",
-    "webpack": "^4.34.0",
+    "webpack": "^4.35.0",
     "webpack-cli": "^3.3.4",
     "webpack-dev-server": "^3.7.2"
   }

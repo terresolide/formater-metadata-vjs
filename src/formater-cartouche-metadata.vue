@@ -42,7 +42,7 @@
               <img :src="meta.logo"  />
           </a>
 	   </div>
-	   <div class="mtdt-related" v-if="">
+	   <div class="mtdt-related" >
 	       <div v-if="hasBboxLayer" style="display:inline-block;" >
 	        <div class="mtdt-related-type fa fa-dot-circle-o" :style="{backgroundColor:primary}" 
 	        :title="$t('localize')"  @mouseover="selectLayer" @mouseout="unselectLayer" @click="fixLayer">
@@ -61,6 +61,20 @@
 		         </ul>	
 		     </div>  
 	     </div>
+	      <div v-if="meta.layers">
+	        <div class="mtdt-related-type fa fa-globe" :style="{backgroundColor: layerAdded ? '#8c0209' : primary}">
+		        <span class="fa fa-caret-down" v-if="meta.layers.length > 0"></span>
+		     </div>
+		     <div class="mtdt-expand" v-if="meta.layers.length > 0">
+		          <ul class="mtdt-layers">
+		          <li v-for="(layer, index) in meta.layers" :key="index" @click="changeLayer(index)" >
+		           <i class="fa" :class="{'fa-square-o': !layer.checked, 'fa-check-square-o': layer.checked }" ></i>
+		           <div  :title="layer.description">{{layer.name}}</div>
+			     </li>
+		         </ul>	
+		     </div>  
+	     </div>
+	
 	     <div v-if="meta.related && (meta.related.children || meta.related.parent)" style="position:relative;">
 		     <div class="mtdt-related-type fa fa-code-fork" :style="{backgroundColor:primary}">
 		        <span class="fa fa-caret-down"></span>
@@ -129,7 +143,8 @@ export default {
      uuid: null,
      hasBboxLayer: false,
      flatsimSingleFields: ['productType', 'processingLevel', 'processingMode', 'sensorMode', 'polarisation', 'subswath'],
-     layerList: ['CLASSIFICATION', 'CONFIDENCE', 'PIXELS_VALIDITY']
+     layerList: ['CLASSIFICATION', 'CONFIDENCE', 'PIXELS_VALIDITY'],
+     layerAdded: false
     }
   },
   created () {
@@ -149,6 +164,23 @@ export default {
     date2str (date) {
       //return 'hello';
       return moment(date, 'YYYY-MM-DD').format('ll')
+    },
+    changeLayer (index) {
+      console.log(index)
+      this.meta.layers[index].checked = !this.meta.layers[index].checked
+      if (this.meta.layers[index].checked) {
+        var event = new CustomEvent('fmt:addLayerEvent', {detail: {layer: this.meta.layers[index]}})
+        document.dispatchEvent(event)
+        this.layerAdded = true
+      } else {
+        var event = new CustomEvent('fmt:removeLayerEvent', {detail: {layer: this.meta.layers[index].name}})
+        document.dispatchEvent(event)
+        var self = this
+        self.layerAdded = false
+        this.meta.layers.forEach(function (layer) {
+          self.layerAdded = self.layerAdded || layer.checked
+        })
+      }
     },
     fixLayer (e) {
       e.target.fixed = true
@@ -309,7 +341,7 @@ export default {
  margin-left:3px;
 }
 .mtdt-cartouche-metadata .mtdt-expand label{
-  font-weight: 800;
+  font-weight: 500;
 }
  
 .mtdt-cartouche-metadata .mtdt-expand ul {
@@ -332,4 +364,26 @@ export default {
 .mtdt-cartouche-metadata .mtdt-resource:hover {
   max-height:none;
 }
+.mtdt-cartouche-metadata ul.mtdt-layers{
+  list-style-type: none;
+  margin-left:0px;
+}
+.mtdt-cartouche-metadata ul.mtdt-layers li{
+  cursor: pointer;
+}
+.mtdt-cartouche-metadata ul.mtdt-layers li {
+  vertical-align:text-top;
+}
+.mtdt-cartouche-metadata ul.mtdt-layers li div{
+  	display: inline-block;
+	text-overflow: clip;
+	margin:0;
+	padding:0;
+	width: calc(100% - 28px);
+	overflow: hidden;
+	word-break: break-all;
+	vertical-align: top;
+	max-height:26px;
+}
+
 </style>

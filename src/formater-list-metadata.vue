@@ -148,6 +148,36 @@ export default {
              }
            })
        }
+       if (!meta.link) {
+         return meta;
+       }
+       var links = this.$gnToArray(meta.link)
+       var self = this
+       links.forEach(function (link) {
+         console.log(link)
+         switch (link[3]) {
+         case 'OGC:WMS': 
+           if (!meta.layers) {
+             meta.layers = []
+           }
+           meta.layers.push(self.$gnLinkToLayer(link))
+           break;
+         case 'WWW:DOWNLOAD-1.0-link--download':
+           if (!meta.download) {
+             meta.download = []
+           }
+           meta.download.push(link)
+           break;
+         case 'WWW:LINK-1.0-http--link':
+         default:
+           if (!meta.links) {
+             meta.links = []
+           }
+           meta.links.push(link)
+           break;
+         }
+       }) 
+       console.log(meta.layers)
        return meta;
      },
      searchRelated () {
@@ -158,7 +188,7 @@ export default {
           'Accept': 'application/json, text/plain, */*',
           'Accept-Language': this.lang === 'fr' ? 'fre': 'eng'
         }
-        var url = process.env.GEONETWORK + 'srv/api/related?type=children&type=onlines'
+        var url = process.env.GEONETWORK + 'srv/api/related?type=children'
         url += '&uuid=' + Object.keys(this.metadatas).join('&uuid=')
         var self = this
         this.$http.get(url, {
