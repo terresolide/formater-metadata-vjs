@@ -45,7 +45,7 @@
 	   <div class="mtdt-related" >
 	       <div v-if="hasBboxLayer" style="display:inline-block;" >
 	        <div class="mtdt-related-type fa fa-dot-circle-o" :style="{backgroundColor:primary}" 
-	        :title="$t('localize')"  @mouseover="selectBbox" @mouseout="unselectBbox" @click="fixLayer">
+	        :title="$t('localize')"  @mouseover="selectBbox" @mouseout="unselectBbox" @click="fixBbox">
 		     </div>
 		   
 	     </div>
@@ -182,7 +182,7 @@ export default {
         })
       }
     },
-    fixLayer (e) {
+    fixBbox (e) {
       e.target.fixed = true
       e.target.style.backgroundColor = '#8c0209'
       setTimeout(() => {
