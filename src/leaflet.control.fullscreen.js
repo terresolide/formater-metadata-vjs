@@ -57,10 +57,12 @@
     _enlarge : function () {
       console.log('enlarge')
       this._nodeLarge.appendChild(this._map._container)
+      this._map._container.className = this._map._container.className.replace('mtdt-small', 'mtdt-fullscreen')
       this._map.invalidateSize()
     },
     _reduce : function () {
       this._nodeSmall.appendChild(this._map._container)
+      this._map._container.className = this._map._container.className.replace('mtdt-fullscreen', 'mtdt-small')
       this._map.invalidateSize()
     }
 })

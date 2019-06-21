@@ -14,7 +14,7 @@
 }
 </i18n>
 <template>
- <div class="mtdt-cartouche-metadata mtdt-capsule" :class="{'mtdt-child': depth > 0}">
+ <div class="mtdt-cartouche-metadata mtdt-capsule" :class="{'mtdt-child': depth > 0}" :style="{width: width + 'px'}">
 	 <div class="mtdt-header" @click="displayMetadata" @dblclick="displayMetadata" :style="{backgroundColor: emphasis}">
 		<i class="fa" :class="meta.type === 'series' ? 'fa-files-o' : 'fa-file'" v-if="['dataset','series'].indexOf(meta.type) >= 0" :title="$gn(meta.type)"></i>
 		<div>{{meta.title ? meta.title: meta.defaultTitle}}</div>
@@ -129,6 +129,10 @@ export default {
       type: String,
       default: null
     },
+    width: {
+      type: Number,
+      default: 300
+    },
     primary: {
       type: String,
       default: '#754a15'
@@ -219,8 +223,8 @@ export default {
   position: relative;
   font-size: 12px;
 /*  width: calc(30% - 15px);*/
-  max-width: 370px;
-  min-width: 370px;
+  max-width: 450px;
+  min-width: 320px;
   margin: 5px;
   height: 250px;
   max-height:250px;
@@ -265,7 +269,6 @@ export default {
 	max-height:160px;
 	overflow:hidden;
 	padding: 5px;
-	min-width: 360px;
 	font-size:0.9em;
 }
 .mtdt-cartouche-metadata.mtdt-child div.mtdt-description{

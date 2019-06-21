@@ -2,12 +2,14 @@
    "en":{
      "main": "Decription",
      "complement": "Others informations",
-     "temporal_extent": "Temporal extent"
+     "temporal_extent": "Temporal extent",
+     "search": "Search"
    },
    "fr":{
       "main": "Decription",
        "complement": "Informations complémentaires",
-      "temporal_extent": "Etendue temporelle"
+      "temporal_extent": "Etendue temporelle",
+      "search": "Rechercher"
       
    }
 }
@@ -36,6 +38,10 @@
          <div v-for="(tab,index) in tabs" v-if="tab === true" class="mtdt-tab" :class="{'selected': currentTab === index}" @click="currentTab = index">{{$t(index)}}</div>
          <formater-export-links :uuid="uuid" v-if="uuid"></formater-export-links>
       </div>
+      <div v-if="tabs.search" v-show="currentTab === 'search'">
+            <formater-paging :lang="lang" :nb-record="nbRecords" :depth="depth + 1"></formater-paging>
+       <formater-list-metadata :lang="lang" :depth="depth + 1"></formater-list-metadata>
+      </div>
       <div v-if="currentTab === 'main'" style="margin-top:20px;">
 	      <div class="mtdt-description">
 	        <formater-quicklooks :quicklooks="meta.images"></formater-quicklooks>
@@ -49,13 +55,10 @@
 			    {{date2str(meta.tempExtentEnd)}}
 			</div>
 		  </div>
-		  <div v-if="!tabs.complement">
+		  <div >
 	          <formater-list-contact  :lang="lang" :responsible-party="meta.responsibleParty" :responsible-party2="metaLang2.responsibleParty"></formater-list-contact>
 	     </div>
-	     <div v-else>
-	      <formater-paging :lang="lang" :nb-record="nbRecords" :depth="depth + 1"></formater-paging>
-       <formater-list-metadata :lang="lang" :depth="depth + 1"></formater-list-metadata>
-	     </div>
+	 
       </div>
       <div v-if="currentTab === 'complement'" >
              <formater-list-contact  :lang="lang" :responsible-party="meta.responsibleParty" :responsible-party2="metaLang2.responsibleParty"></formater-list-contact>
@@ -121,6 +124,7 @@ export default {
   data() {
     return {
      tabs: {
+       search: true,
        main: true,
        complement: false,
        quality: false
@@ -157,12 +161,14 @@ export default {
   },
   watch: {
     meta: {
-      handler(val) {
+      handler(val, old) {
         if (val.related && val.related.children) {
           this.$set(this.tabs, 'complement', true)
           if (!this.hasChild) {
             this.getRecords()
             this.hasChild = true
+            this.$set(this.tabs, 'search', true)
+            this.currentTab = 'search'
           }
         } else {
           this.$set(this.tabs, 'complement', false)
@@ -277,7 +283,7 @@ export default {
 <style>
 .mtdt-metadata{
   position:relative;
-  padding: 10px;
+  padding: 0px 5px 300px 5px;
   max-width: 100%;
   margin: auto;
   padding-bottom: 600px;

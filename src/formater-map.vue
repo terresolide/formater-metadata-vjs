@@ -8,8 +8,8 @@
 }
 </i18n>
 <template>
- <span id="fmtLitleMap" class="mtdt-map">
-  <div id="fmtMap" :class="{'mtdt-small': !fullscreen, 'mtdt-large': fullscreen}"></div>
+ <span id="fmtLitleMap">
+  <div id="fmtMap" class="mtdt-small"></div>
  </span>
 </template>
 <script>
@@ -161,18 +161,18 @@ export default {
    addLayer (event) {
      console.log(event.detail.layer)
      var layer = event.detail.layer
+     var bounds = this.searchBboxByUuid(event.detail.uuid)
      switch (layer.type) {
      case 'OGC:WMS':
        var extract = layer.href.match(/^(.*\?).*$/)
-       console.log(layer.href)
-       console.log(extract)
-       var url = extract[1]
-       var wmsLayer = L.tileLayer.wms(url, {
+       var options = {
          service: 'WMS',
          layers: layer.name,
          format: 'image/png',
          opacity: 0.5
-    	 }).addTo(this.map);
+        }
+       var url = extract[1]
+       var wmsLayer = L.tileLayer.wms(url, options).addTo(this.map);
        wmsLayer.bringToFront()
        if (!this.layers[this.depth]) {
          this.layers[this.depth] = new Map()
@@ -180,7 +180,7 @@ export default {
        this.layers[this.depth].set(layer.name, wmsLayer)
        var bounds = this.searchBboxByUuid(event.detail.uuid)
        if (bounds) {
-         this.map.fitBounds(bounds, {animate: true, duration:100, padding: [50,50]})
+         this.map.fitBounds(bounds, {animate: true,  padding: [50,50]})
        }
        break;
      }
@@ -513,5 +513,19 @@ div[id="fmtMap"].mtdt-small .leaflet-control a{
 
  div[id="fmtMap"] .leaflet-control-layers-base label span{
    vertical-align: middle;
+ }
+ 
+ div[id="fmtMap"].mtdt-fullscreen{
+   min-height:300px;
+   font-size: 16px;
+ }
+ div[id="fmtMap"].mtdt-fullscreen a.leaflet-control-layers-toggle{
+   width: 30px;
+   height: 30px;
+   border-radius: 2px;
+   line-height: 30px;
+ }
+ div[id="fmtMap"].mtdt-fullscreen a..leaflet-control-layers{
+   border-radius: 2px;
  }
 </style>

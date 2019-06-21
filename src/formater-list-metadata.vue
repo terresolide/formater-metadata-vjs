@@ -8,9 +8,9 @@
 }
 </i18n>
 <template>
- <div class="mtdt-list">
+ <div class="mtdt-list" >
     <div v-if="!metadatas" style="width:calc(100% - 150px);">{{$t('no_result')}}</div>
-    <formater-cartouche-metadata  :color="color" :depth="depth" :type="type" v-for="(meta, index) in metadatas" :key="index" :metadata="meta" v-if="meta" :lang="lang"></formater-cartouche-metadata>
+    <formater-cartouche-metadata :width="capsuleWidth" :color="color" :depth="depth" :type="type" v-for="(meta, index) in metadatas" :key="index" :metadata="meta" v-if="meta" :lang="lang"></formater-cartouche-metadata>
   </div>
 </template>
 <script>
@@ -50,7 +50,9 @@ export default {
       // list of children
       related: [],
       metadataListListener: null,
-      type: null
+      resizeListener: null,
+      type: null,
+      capsuleWidth: 300
     }
   },
   created: function() {
@@ -58,14 +60,30 @@ export default {
     this.$setGnLocale(this.lang)
     this.metadataListListener = this.receiveMetadatas.bind(this)
     document.addEventListener('fmt:metadataListEvent', this.metadataListListener);
+    this.resizeListener = this.resize.bind(this)
+    window.addEventListener('resize', this.resizeListener);
+  },
+  mounted: function () {
+    
   },
   destroyed () {
     document.removeEventListener('fmt:metadataListEvent', this.metadataListListener);
     this.metadataListListener = null;
   },
   mounted () {
+    this.resize()
   },
   methods: {
+     resize () {
+       if (this.$el) {
+         var width = this.$el.offsetWidth
+         var count = parseInt(width/334)
+         console.log(count)
+         this.capsuleWidth = parseInt(width / count - 16)
+         console.log(this.capsuleWidth)
+
+       }
+     },
      getType (obj) {
        if (obj.type === 'FeatureCollection' || obj.type === 'Feature') {
          this.type = 'geojson'
