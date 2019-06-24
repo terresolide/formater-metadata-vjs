@@ -4,14 +4,16 @@
      "title": "Title",
      "relevance": "Relevance",
      "changeDate": "Change date",
-     "sortBy": "Order by"
+     "sortBy": "Order by",
+     "per_page": "per page"
    },
    "fr":{
      "results":  "Résultats: <strong>{from}</strong> à <strong>{to}</strong> sur {count}",
      "title": "Titre",
      "relevance": "Pertinence",
      "changeDate": "Mise à jour",
-     "sortBy": "Trier par"
+     "sortBy": "Trier par",
+     "per_page": "par page"
    }
 }
 </i18n>
@@ -23,6 +25,7 @@
   	<span class="fa fa-angle-left" @click="changePage(-1)" ></span>
   </span>
   <span style="margin: 0 10px;" v-html="$tc('results', count, {from: (count === 0) ? 0 : from, to: to, count: count})"></span>
+   (<formater-select name="recordPerPage" :options="recordsPerPage" :defaut="recordPerPage + ''" type="associative" @input="nbRecordChange" color="#ffffff"></formater-select>)
    <span :class="{disabled: (currentPage===nbPage || count=== 0 ? 'disabled': ''), 'mtdt-navigation':true}">
 	   <span class="fa fa-angle-right " @click="changePage(1)" ></span>
 	   <span class="fa fa-angle-double-right" @click="goToLast()"></span>
@@ -65,6 +68,10 @@ export default {
       type: Array,
       default: () => []
     },
+    recordByLine: {
+      type: Number,
+      value: 3
+    },
     orderBy: {
       type: String,
       default: null
@@ -73,8 +80,11 @@ export default {
   watch: {
     lang (newvalue) {
     	this.$i18n.locale = newvalue
-    	this.to = this.nbRecord
     	
+    },
+    recordByLine (newvalue) {
+      console.log('recordByLine change')
+      this.updateRecordsPerPage(newvalue)
     },
     color (newvalue) {
       console.log('color changed')
@@ -91,12 +101,14 @@ export default {
     this.orders.forEach( function (order) {
       self.options[order] = self.$i18n.t(order)
     })
-    if (this.orders.length == 0) {
-      this.emitChange()
-    }
+    console.log('charge formater-paging avec depth = ' + this.depth)
+//     if (this.orders.length == 0) {
+//       this.emitChange()
+//     }
   },
   mounted () {
     this.updateColor()
+     this.updateRecordsPerPage(this.recordByLine)
   },
   destroyed () {
     document.removeEventListener('fmt:metadataListEvent', this.metadataListListener);
@@ -107,7 +119,11 @@ export default {
 
   data() {
     return {
-      recordPerPage: null,
+      initialize: true,
+      recordPerPage: 25,
+      recordsPerPage: { 
+         "25": "25 per page"
+      },
       count: 0,
       currentPage : 1,
       nbPage: 0,
@@ -153,6 +169,31 @@ export default {
        node.style.backgroundColor = _this.color
      })
    },
+   updateRecordsPerPage (recordsByLine) {
+     var options = {}
+     var i = 1
+     var nbRecords = recordsByLine * i
+     while(i < 7) {
+       if (!this.initialize && this.recordPerPage < nbRecords && this.recordPerPage > (i-1) * recordsByLine ) {
+         options[this.recordPerPage] = this.recordPerPage + ' ' + this.$t('per_page')
+       }
+		options[nbRecords] = nbRecords + ' ' + this.$t('per_page')
+		i++
+		nbRecords = recordsByLine * i
+     }
+     console.log('records per page change ')
+     
+     if (this.initialize) {
+       this.recordPerPage = 4 * recordsByLine
+       this.initialize = false
+       this.recordsPerPage = options
+       this.emitChange()
+     } else {
+       this.recordsPerPage = options
+     }
+     console.log('valeur de recordPerPage = ' +  this.recordPerPage)
+     // this.emitChange()
+   },
    goToFirst () {
      this.from = 1
      this.currentPage = 1
@@ -188,6 +229,10 @@ export default {
      
      this.currentPage += sens
      this.from = (this.currentPage - 1) * this.recordPerPage +1
+     this.emitChange()
+   },
+   nbRecordChange (value) {
+     this.recordPerPage = parseInt(value)
      this.emitChange()
    },
    sortChange (event) {

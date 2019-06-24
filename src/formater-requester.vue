@@ -14,10 +14,6 @@
 export default {
   name: 'FormaterRequester',
   props: {
-    nbRecord: {
-      type: Number,
-      default: 12
-    },
     lang: {
       type: String,
       default: 'en'
@@ -147,6 +143,7 @@ export default {
 	  delete e.detail.startDefault
 	  delete e.detail.endDefault
 	  delete e.detail.depth
+	  delete e.detail.recordPerPage
 	  if (e.detail.parentUuid) {
         this.parameters.resultType = 'subtemplate'
       } else {

@@ -38,10 +38,12 @@
          <div v-for="(tab,index) in tabs" v-if="tab === true" class="mtdt-tab" :class="{'selected': currentTab === index}" @click="currentTab = index">{{$t(index)}}</div>
          <formater-export-links :uuid="uuid" v-if="uuid"></formater-export-links>
       </div>
+      <!--  tab search if have child -->
       <div v-if="tabs.search" v-show="currentTab === 'search'">
-            <formater-paging :lang="lang" :nb-record="nbRecords" :depth="depth + 1"></formater-paging>
-       <formater-list-metadata :lang="lang" :depth="depth + 1"></formater-list-metadata>
+           <formater-paging :lang="lang" :nb-record="nbRecord" :record-by-line="recordByLine" :depth="depth + 1"></formater-paging>
+      		<formater-list-metadata :lang="lang" :depth="depth + 1"  @records="recordsPerLineChange"></formater-list-metadata>
       </div>
+      <!--  others tab -->
       <div v-if="currentTab === 'main'" style="margin-top:20px;">
 	      <div class="mtdt-description">
 	        <formater-quicklooks :quicklooks="meta.images"></formater-quicklooks>
@@ -100,11 +102,11 @@ export default {
     depth: {
       type: Number,
       default:0
-    },
-    nbRecords: {
-      type: Number,
-      default: 4
     }
+//     nbRecords: {
+//       type: Number,
+//       default: 4
+//     }
   },
   watch: {
     lang (newvalue) {
@@ -116,10 +118,36 @@ export default {
     metadata: {
       immediate: true,
       handler (newvalue) {
-        console.log('dans metadata')
-        console.log(newvalue)
+        if (val.related && val.related.children) {
+          // this.$set(this.tabs, 'complement', true)
+           if (!this.hasChild) {
+             this.getRecords()
+             this.hasChild = true
+             this.$set(this.tabs, 'search', true)
+             this.currentTab = 'search'
+           }
+         } else {
+           this.hasChild = false
+           this.$set(this.tabs, 'search', false)
+         }
       }
-    }
+    } //,
+//     meta: {
+//       handler(val, old) {
+//         if (val.related && val.related.children) {
+//          // this.$set(this.tabs, 'complement', true)
+//           if (!this.hasChild) {
+//             this.getRecords()
+//             this.hasChild = true
+//             this.$set(this.tabs, 'search', true)
+//             this.currentTab = 'search'
+//           }
+//         } else {
+//           this.hasChild = false
+//           this.$set(this.tabs, 'search', false)
+//         }
+//       }
+//     }
   },
   data() {
     return {
@@ -142,7 +170,9 @@ export default {
        'Accept': 'application/json, text/plain, */*',
        'Accept-Language': this.lang === 'fr' ? 'fre': 'eng'
      },
-     parameters: {}
+     parameters: {},
+     recordByLine: 4,
+     nbRecord: 12
     }
   },
   created () {
@@ -160,21 +190,7 @@ export default {
     document.addEventListener('keydown', this.keydownListener)
   },
   watch: {
-    meta: {
-      handler(val, old) {
-        if (val.related && val.related.children) {
-          this.$set(this.tabs, 'complement', true)
-          if (!this.hasChild) {
-            this.getRecords()
-            this.hasChild = true
-            this.$set(this.tabs, 'search', true)
-            this.currentTab = 'search'
-          }
-        } else {
-          this.$set(this.tabs, 'complement', false)
-        }
-      }
-    }
+    
   },
  /* computed: {
     hasChild () {
@@ -222,7 +238,12 @@ export default {
         event.preventDefault();
         this.$emit('close');
       },
-
+      recordsPerLineChange (count) {
+    	  this.recordByLine = count
+    	  this.nbRecord = count * 4
+//     	  var evt = new CustomEvent('fmt:pageChangedEvent')
+//     	  document.dispatchEvent(evt)
+      },
 	  fillMetadata () {
 	     //get meta from other language if meta._locale != meta.docLocale
 	     if (this.meta['geonet:info']) {

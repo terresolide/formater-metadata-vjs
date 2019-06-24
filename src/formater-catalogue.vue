@@ -8,20 +8,20 @@
 <template>
  <div class="mtdt-catalogue">
   <aeris-theme :primary="primary" :active="true" :emphasis="emphasis"></aeris-theme>
-  <formater-requester :lang="lang" :nb-record="nbRecord" :depth="metadatas.length"></formater-requester>
+  <formater-requester :lang="lang"  :depth="metadatas.length"></formater-requester>
  <!-- <formater-draggable-block :show="true">  -->
   <formater-draw-bbox color="#fff" :lang="lang" :background="primary"></formater-draw-bbox>
  <!--  </formater-draggable-block>  -->
   <div >
    <div class="mtdt-column-left" >
-    <formater-form :lang="lang" :nb-record="nbRecord" :disableLevel="metadatas.length > 0 ? 1 : 0"></formater-form>
+    <formater-form :lang="lang" :disableLevel="metadatas.length > 0 ? 1 : 0"></formater-form>
     </div>
    
     <div class="mtdt-column-right" >
     <div id="fmtLargeMap"></div>
      <div v-show="metadatas.length === 0">
-       <formater-paging :lang="lang" :nb-record="nbRecord" :depth="0" :orders="['title','changeDate']" order-by="title"></formater-paging>
-       <formater-list-metadata :lang="lang" :depth="0"></formater-list-metadata>
+       <formater-paging :lang="lang" :nb-record="nbRecord" :record-by-line="recordByLine" :depth="0" :orders="['title','changeDate']" order-by="title"></formater-paging>
+       <formater-list-metadata :lang="lang" :depth="0" @records="recordsPerLineChange"></formater-list-metadata>
      </div>
      <div  v-if="metadatas.length > 0" >
 	    	<formater-metadata v-for="(meta, index) in metadatas" :key="index" v-show="index === metadatas.length-1" :depth="index" :metadata="meta" :lang="lang" @close="resetMetadata"></formater-metadata>
@@ -69,11 +69,11 @@ export default {
       type: String,
       default: 'en'
     },
-    nbRecord: {
-      type: Number,
-      coerce: str => parseInt(str),
-      default:12
-    },
+//     nbRecord: {
+//       type: Number,
+//       coerce: str => parseInt(str),
+//       default:12
+//     },
     primary: {
       type: String,
       default: '#754a15'
@@ -97,7 +97,9 @@ export default {
       metadataListener: null,
       drawing: false,
       aerisSearchListener: null,
-      aerisResetListener: null
+      aerisResetListener: null,
+      recordByLine: 4,
+      nbRecord: 18
     }
   },
   
@@ -112,8 +114,8 @@ export default {
     document.addEventListener('aerisResetEvent', this.aerisResetListener)
   },
   mounted () {
-    var evt = new CustomEvent('fmt:pageChangedEvent')
-    document.dispatchEvent(evt)
+//     var evt = new CustomEvent('fmt:pageChangedEvent')
+//     document.dispatchEvent(evt)
   },
   destroyed () {
     document.removeEventListener('fmt:metadataEvent', this.metadataListener);
@@ -157,6 +159,12 @@ export default {
  		  document.dispatchEvent(event)
 		
 // 	  }
+	},
+	recordsPerLineChange (count) {
+	  this.recordByLine = count
+	  this.nbRecord = count * 4
+// 	  var evt = new CustomEvent('fmt:pageChangedEvent')
+// 	  document.dispatchEvent(evt)
 	},
 	handleReset (event) {
 	  console.log('reset')

@@ -62,9 +62,7 @@ export default {
     document.addEventListener('fmt:metadataListEvent', this.metadataListListener);
     this.resizeListener = this.resize.bind(this)
     window.addEventListener('resize', this.resizeListener);
-  },
-  mounted: function () {
-    
+    console.log('charge formater-list-metadata pour depth = ' +this.depth)
   },
   destroyed () {
     document.removeEventListener('fmt:metadataListEvent', this.metadataListListener);
@@ -76,12 +74,14 @@ export default {
   methods: {
      resize () {
        if (this.$el) {
-         var width = this.$el.offsetWidth
+         var node = this.$el
+         while (node.offsetWidth === 0) {
+           node = node.parentNode
+         }
+         var width = node.offsetWidth
          var count = parseInt(width/334)
-         console.log(count)
          this.capsuleWidth = parseInt(width / count - 16)
-         console.log(this.capsuleWidth)
-
+		 this.$emit('records', count)
        }
      },
      getType (obj) {
@@ -227,6 +227,6 @@ export default {
 .mtdt-list{
   width: 100%;
   text-align:center;
-  margin: 20px auto;
+  margin: 10px auto;
 }
 </style>

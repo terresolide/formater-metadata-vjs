@@ -56,6 +56,7 @@ export default {
   text-align: center;
   position:absolute;
   min-width:102px;
+  z-index: 10;
 }
 .mtdt-export-links div.mtdt-expand div{
    line-height:2;

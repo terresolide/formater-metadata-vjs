@@ -355,6 +355,9 @@ export default {
        
    },
    clearLayers (depth) {
+     if (!this.layers[depth]) {
+       return
+     }
      this.layers[depth].forEach(function (layer) {
        layer.remove()
      })
@@ -362,8 +365,12 @@ export default {
    },
    back (event) {
      this.unselectBbox()
-     
+     console.log('depth = ' + this.depth)
+     console.log('event depth = ' + event.detail.depth)
      if (this.depth > event.detail.depth) {
+        if (this.bboxLayer[this.depth]) {
+          this.controlLayer.removeLayer(this.bboxLayer[this.depth])
+        }
         this.bboxLayer[this.depth].remove()
         this.bboxLayer.pop()
         this.bounds.pop()
@@ -376,10 +383,12 @@ export default {
           layer.setStyle({fillColor: self.colors[self.depth], color: self.colors[self.depth]})
         })
         this.bboxLayer[this.depth].addTo(this.map)
-        this.layers[this.depth].forEach(function (layer) {
-          layer.addTo(self.map)
-        })
-        console.log(this.depth)
+        this.controlLayer.addOverlay(this.bboxLayer[this.depth], this.$t('all_box'))
+//         if (this.layers[this.depth])
+//         this.layers[this.depth].forEach(function (layer) {
+//           layer.addTo(self.map)
+//         })
+//         console.log(this.depth)
       } 
        if (this.bounds[this.depth]) {
          this.map.fitBounds(this.bounds[this.depth])
