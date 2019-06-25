@@ -39,7 +39,6 @@
         }
         var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control lfh-control-fullscreen');
         var a = L.DomUtil.create('a', 'fa fa-expand')
-        console.log(this._lang)
         a.setAttribute('title', this._translate[this._lang]['fullscreen'])
         container.appendChild(a)
         var self = this
@@ -55,13 +54,17 @@
         return container;
     },
     _enlarge : function () {
-      console.log('enlarge')
       this._nodeLarge.appendChild(this._map._container)
+      var height = window.innerHeight - 400 
+      this._map._container.style.height = height + 'px'
       this._map._container.className = this._map._container.className.replace('mtdt-small', 'mtdt-fullscreen')
+            this._map.setMinZoom(2)
       this._map.invalidateSize()
+
     },
     _reduce : function () {
       this._nodeSmall.appendChild(this._map._container)
+      this._map.setMinZoom(1)
       this._map._container.className = this._map._container.className.replace('mtdt-fullscreen', 'mtdt-small')
       this._map.invalidateSize()
     }

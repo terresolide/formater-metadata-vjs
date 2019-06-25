@@ -159,7 +159,6 @@ export default {
 // 	wmsLayer.bringToFront()
    },
    addLayer (event) {
-     console.log(event.detail.layer)
      var layer = event.detail.layer
      var bounds = this.searchBboxByUuid(event.detail.uuid)
      switch (layer.type) {
@@ -458,6 +457,10 @@ div[id="fmtMap"]{
   padding:0;
   height:200px;
 }
+div[id="fmtMap"].mtdt-small{
+  max-height: 200px;
+}
+
 div[id="fmtMap"].mtdt-small .leaflet-top .leaflet-control{
    margin-top: 3px;
 }
