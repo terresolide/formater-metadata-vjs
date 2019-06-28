@@ -196,14 +196,14 @@ export default {
     fixBbox (e) {
       e.target.fixed = true
       e.target.style.backgroundColor = '#8c0209'
-      this.selectBbox(e)
+      this.selectBbox(e, true)
       setTimeout(() => {
         e.target.style.backgroundColor = this.primary;
         e.target.fixed = false
         }, 2000);
     },
-    selectBbox (e) {
-      var event = new CustomEvent('fmt:selectBboxEvent', {detail: {meta: this.meta}})
+    selectBbox (e, temporaly) {
+      var event = new CustomEvent('fmt:selectBboxEvent', {detail: {meta: this.meta, temporaly: temporaly ? true: false}})
       document.dispatchEvent(event)
     },
     unselectBbox (e) {

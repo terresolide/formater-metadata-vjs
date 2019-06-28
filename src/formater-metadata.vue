@@ -118,18 +118,7 @@ export default {
     metadata: {
       immediate: true,
       handler (newvalue) {
-        if (val.related && val.related.children) {
-          // this.$set(this.tabs, 'complement', true)
-           if (!this.hasChild) {
-             this.getRecords()
-             this.hasChild = true
-             this.$set(this.tabs, 'search', true)
-             this.currentTab = 'search'
-           }
-         } else {
-           this.hasChild = false
-           this.$set(this.tabs, 'search', false)
-         }
+        this.computeHasChild(newvalue)
       }
     } //,
 //     meta: {
@@ -152,7 +141,7 @@ export default {
   data() {
     return {
      tabs: {
-       search: true,
+       search: false,
        main: true,
        complement: false,
        quality: false
@@ -208,6 +197,7 @@ export default {
   mounted () {
    if (this.metadata) {
      this.meta = this.metadata
+     this.computeHasChild(this.metadata)
      this.fillMetadata()
    }
   },
@@ -237,6 +227,21 @@ export default {
       close (event) {
         event.preventDefault();
         this.$emit('close');
+      },
+      computeHasChild (val) {
+        console.log(val)
+        if (val.related && val.related.children) {
+          // this.$set(this.tabs, 'complement', true)
+           if (!this.hasChild) {
+             this.getRecords()
+             this.hasChild = true
+             this.$set(this.tabs, 'search', true)
+             this.currentTab = 'search'
+           }
+         } else {
+           this.hasChild = false
+           this.$set(this.tabs, 'search', false)
+         }
       },
       recordsPerLineChange (count) {
     	  this.recordByLine = count

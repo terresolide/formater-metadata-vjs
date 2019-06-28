@@ -99,7 +99,7 @@ export default {
       aerisSearchListener: null,
       aerisResetListener: null,
       recordByLine: 4,
-      nbRecord: 18
+      nbRecord: 24
     }
   },
   

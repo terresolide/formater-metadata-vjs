@@ -70,7 +70,7 @@ export default {
     },
     recordByLine: {
       type: Number,
-      value: 3
+      value: 4
     },
     orderBy: {
       type: String,
@@ -120,9 +120,9 @@ export default {
   data() {
     return {
       initialize: true,
-      recordPerPage: 25,
+      recordPerPage: 24,
       recordsPerPage: { 
-         "25": "25 per page"
+         "24": "24 per page"
       },
       count: 0,
       currentPage : 1,
@@ -173,7 +173,7 @@ export default {
      var options = {}
      var i = 1
      var nbRecords = recordsByLine * i
-     while(i < 7) {
+     while(i < 9) {
        if (!this.initialize && this.recordPerPage < nbRecords && this.recordPerPage > (i-1) * recordsByLine ) {
          options[this.recordPerPage] = this.recordPerPage + ' ' + this.$t('per_page')
        }
@@ -181,10 +181,10 @@ export default {
 		i++
 		nbRecords = recordsByLine * i
      }
-     console.log('records per page change ')
+     
      
      if (this.initialize) {
-       this.recordPerPage = 4 * recordsByLine
+       this.recordPerPage = 6 * recordsByLine
        this.initialize = false
        this.recordsPerPage = options
        this.emitChange()

@@ -326,10 +326,10 @@ export default {
      console.log(event.detail.meta.uuid)
      if (event.detail.meta.uuid) {
        console.log(event.detail.meta.uuid)
-       this.selectBboxByUuid(event.detail.meta.uuid)
+       this.selectBboxByUuid(event.detail.meta.uuid, event.detail.temporaly)
 
      } else if (event.detail.meta.id) {
-        this.selectBboxByUuid(event.detail.meta.id)
+        this.selectBboxByUuid(event.detail.meta.id, event.detail.temporaly)
      }
 
    },
@@ -410,7 +410,7 @@ export default {
      return bounds
      
    },
-   selectBboxByUuid (uuid) {
+   selectBboxByUuid (uuid, temporaly) {
 
      var self = this
      var bounds = null
@@ -429,9 +429,11 @@ export default {
      if (bounds) {
       self.map.fitBounds(bounds, {animate: true, duration:100, padding: [50,50]})
      }
-     setTimeout(() => {
-        self.unselectBbox()
-     }, 2000);
+     if (temporaly) {
+         setTimeout(() => {
+	        self.unselectBbox()
+	     }, 2000);
+     }
    },
    setSelected (layer) {
      this.selected.push(layer)
