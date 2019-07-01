@@ -55,14 +55,14 @@ export default {
       // listen a global reset event
       resetListener: null,
       facet: [],
-      // use for opensearch api
-      geographic: ['geometry', 'box', 'lat', 'lon', 'radius'],
-      paging: ['maxRecords', 'index', 'page'],
-      removedFields: ['lang', 'name', 'q'],
-      osParameters: [],
-      geoParameters: [],
-      pagingParameters: [],
-      type: 'geonetwork'
+//       // use for opensearch api
+//       geographic: ['geometry', 'box', 'lat', 'lon', 'radius'],
+//       paging: ['maxRecords', 'index', 'page'],
+//       removedFields: ['lang', 'name', 'q'],
+//       osParameters: [],
+//       geoParameters: [],
+//       pagingParameters: [],
+       type: 'geonetwork'
      }
   },
   created () {
@@ -149,14 +149,16 @@ export default {
       console.log(e)
 	  document.dispatchEvent(e);
       
-      if (e.detail.describe && !this.api) {
-        console.log('before searchDescribe ', e.detail)
+      if (e.detail.api) {
+        this.api = e.detail.api
+        delete e.detail.api
         this.type = 'opensearch'
-        this.searchDescribe(e.detail)
-        return;
+        
       } else {
-        delete e.detail.describe
+        this.type = 'geonetwork'
+        this.api = null
       }
+      console.log('api dans getRecord ', this.api)
       this.prepareRequest(e)
 //       this.initParameters()
 // 	  if (!e.detail.startDefault) {
@@ -223,6 +225,7 @@ export default {
         break;
       case 'opensearch':
         this.prepareRequestOpensearch(e)
+        break
       }
     },
     prepareRequestGeonetwork(e) {
@@ -385,7 +388,7 @@ export default {
         var event = new CustomEvent('fmt:metadataListEvent', {detail:  data})
         document.dispatchEvent(event)
     },*/
-    searchDescribe(detail) {
+   /* searchDescribe(detail) {
       console.log(detail.describe)
       this.$http.get(detail.describe.http)
       .then(
@@ -463,7 +466,7 @@ export default {
       }
      
       this.requestApi(searchParameters)
-    },
+    },*/
     handleReset () {
       console.log('reset')
       var event = new CustomEvent('aerisResetEvent')

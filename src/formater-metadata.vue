@@ -162,7 +162,16 @@ export default {
      },
      parameters: {},
      recordByLine: 4,
-     nbRecord: 12
+     nbRecord: 12,
+     // use for opensearch api
+     api: null,
+     geographic: ['geometry', 'box', 'lat', 'lon', 'radius'],
+     paging: ['maxRecords', 'index', 'page'],
+     removedFields: ['lang', 'name', 'q'],
+     osParameters: [],
+     geoParameters: [],
+     pagingParameters: [],
+     type: 'geonetwork'
     }
   },
   created () {
@@ -236,8 +245,7 @@ export default {
         if (val.related && val.related.children) {
           // this.$set(this.tabs, 'complement', true)
            if (!this.hasChild) {
-             this.type = 'geonetwork'
-             this.api = null
+            
              this.getRecords()
              this.hasChild = true
              this.$set(this.tabs, 'search', true)
@@ -246,10 +254,7 @@ export default {
          } else if (val.api) {
            if (!this.hasChild) {
              this.getApiParameters(val.api)
-             this.type = 'opensearch'
-             this.hasChild = true
-             this.$set(this.tabs, 'search', true)
-             this.currentTab = 'search'
+             
            }
            
          } else {
@@ -318,13 +323,90 @@ export default {
 //       	  document.dispatchEvent(event)
       },
       getApiParameters (describe) {
-        console.log(describe)
-        this.describe = describe
+        this.$http.get(describe.http)
+        .then(
+            response => { this.extractDescribeParameters(response.body);}
+         )
+      },
+      extractDescribeParameters (parameters) {
+        var parser = new DOMParser()
+        var xml = parser.parseFromString(parameters, 'text/xml')
+        console.log(xml)
+        var urls = xml.firstChild.childNodes
+       var url = null
+       console.log(urls)
+        urls.forEach(function (node) {
+           if (node.tagName && node.tagName.toLowerCase() === 'url' && node.getAttribute('type').indexOf('json') >= 0) {
+               url = node
+           }
+        })
+        if (!url)  {
+          return
+        }
+        var template = url.getAttribute('template')
+        var extract = template.match(/^(.*?search.json).*$/)
+        console.log(extract[1])
+        if (!extract[1]) {
+          return
+        } else {
+          this.api = extract[1]
+          console.log(extract[1])
+        }
+        var parameters = url.getElementsByTagName('parameters:Parameter')
+        console.log(parameters)
+        var self = this
+        for(var i=0; i < parameters.length; i++){
+          var name = parameters[i].getAttribute('name')
+          var obj= {
+              name: name,
+              title: parameters[i].getAttribute('title')
+          }
+          var pattern = parameters[i].getAttribute('pattern')
+          if (pattern) {
+            obj = Object.assign(obj, {pattern: pattern})
+          }
+          var min = parameters[i].getAttribute('minInclusive')
+          if (min) {
+            obj= Object.assign(obj, {min: min})
+          }
+          var max = parameters[i].getAttribute('maxInclusive')
+          if (max) {
+            obj = Object.assign(obj, {max: max})
+          }
+          var nodes = parameters[i].getElementsByTagName('parameters:Options')
+          if (nodes) {
+            var options= []
+            for(var k=0; k < nodes.length; k++) {
+              options.push(nodes[k].getAttribute('value'))
+            }
+            if (options.length > 0)
+            obj = Object.assign(obj, {options: options})
+          }
+          if (self.removedFields.indexOf(name) >=0) {
+            
+//           }else if (name.toLowerCase() === 'platform') {
+//             this.platform = obj
+//           } else if (name.toLowerCase() === 'q'){
+//             this.hasQ = true
+          } else if (self.geographic.indexOf(name) >=0) {
+            self.geoParameters.push(obj)
+          } else if (self.paging.indexOf(name) >= 0) {
+             self.pagingParameters.push(obj)
+          }else if (name.indexOf('Date') === -1 && name.indexOf('Cover') === -1) {
+          	self.osParameters.push(obj)
+          }
+          
+        }
+        this.hasChild = true
+        this.$set(this.tabs, 'search', true)
+        this.currentTab = 'search'
+        // this.requestApi(searchParameters)
       },
       handleSearch(e) {
-        if (this.describe) {
-          e.detail.describe = this.describe
+        if (this.api && e.detail.parentUuid === this.uuid) {
+          e.detail.api = this.api
         }
+        console.log('search dans metadata ', e.detail)
       }
 	    
   }
