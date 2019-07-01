@@ -45,7 +45,7 @@ export default {
 <style>
 .mtdt-export-links{
   float:right;
-  margin-right:5px;
+  margin-right:10px;
 }
 .mtdt-tab-export{
   min-width: 80px;

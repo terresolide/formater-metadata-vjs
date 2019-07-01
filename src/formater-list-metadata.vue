@@ -173,6 +173,11 @@ export default {
        var self = this
        links.forEach(function (link) {
          switch (link[3]) {
+         case 'OpenSearch':
+           meta.api = {}
+           meta.api.http = link[2]
+           meta.api.name = link[0].length > 0 ? link[0] : link[1]
+           break;
          case 'OGC:WMS': 
            if (!meta.layers) {
              meta.layers = []

@@ -153,8 +153,9 @@ export default {
      metaLang2: {},
      popstateListener: null,
      keydownListener: null,
-     srv: process.env.GEONETWORK + 'srv/' + (this.lang === 'fr'? 'fre' : 'eng') + '/',
-     api: process.env.GEONETWORK + '/srv/api/',
+     searchEventListener: null,
+    // srv: process.env.GEONETWORK + 'srv/' + (this.lang === 'fr'? 'fre' : 'eng') + '/',
+    // api: process.env.GEONETWORK + '/srv/api/',
      headers: {
        'Accept': 'application/json, text/plain, */*',
        'Accept-Language': this.lang === 'fr' ? 'fre': 'eng'
@@ -177,6 +178,8 @@ export default {
     document.addEventListener('popstate', this.popstateListener)
     this.keydownListener = this.checkEscape.bind(this)
     document.addEventListener('keydown', this.keydownListener)
+    this.searchEventListener = this.handleSearch.bind(this) 
+  	document.addEventListener('aerisSearchEvent', this.searchEventListener);
   },
   watch: {
     
@@ -233,11 +236,22 @@ export default {
         if (val.related && val.related.children) {
           // this.$set(this.tabs, 'complement', true)
            if (!this.hasChild) {
+             this.type = 'geonetwork'
+             this.api = null
              this.getRecords()
              this.hasChild = true
              this.$set(this.tabs, 'search', true)
              this.currentTab = 'search'
            }
+         } else if (val.api) {
+           if (!this.hasChild) {
+             this.getApiParameters(val.api)
+             this.type = 'opensearch'
+             this.hasChild = true
+             this.$set(this.tabs, 'search', true)
+             this.currentTab = 'search'
+           }
+           
          } else {
            this.hasChild = false
            this.$set(this.tabs, 'search', false)
@@ -299,9 +313,19 @@ export default {
 	  getRecords () {
           // useless, it's trigger when load formater-page-changed
       	  // lance le requeteur
-      	 // var event = new CustomEvent('fmt:metadataWithChildEvent', {detail: {uuid: this.uuid, nbRecords: this.nbRecords, depth: this.depth}})
-      	 // document.dispatchEvent(event)
-    }
+//       	  console.log('search child from metadata')
+//       	  var event = new CustomEvent('fmt:metadataWithChildEvent', {detail: {uuid: this.uuid, depth: this.depth}})
+//       	  document.dispatchEvent(event)
+      },
+      getApiParameters (describe) {
+        console.log(describe)
+        this.describe = describe
+      },
+      handleSearch(e) {
+        if (this.describe) {
+          e.detail.describe = this.describe
+        }
+      }
 	    
   }
 }
@@ -375,6 +399,7 @@ export default {
 .mtdt-metadata .mtdt-group-logo{
     float:right;
     margin-top:-5px;
+    margin-right: 15px;
 }
 .mtdt-metadata .mtdt-group-logo img{
 	max-width:100px; 

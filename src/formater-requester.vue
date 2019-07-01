@@ -37,7 +37,8 @@ export default {
   data() {
     return {
       srv: process.env.GEONETWORK + 'srv/' + (this.lang === 'fr'? 'fre' : 'eng') + '/',
-      api: process.env.GEONETWORK + '/srv/api/',
+      api: null,
+     // api: process.env.GEONETWORK + '/srv/api/',
       headers: {
         'Accept': 'application/json, text/plain, */*',
         'Accept-Language': this.lang === 'fr' ? 'fre': 'eng'
@@ -49,11 +50,19 @@ export default {
       temporalChangedListener: null,
       spatialChangedListener: null,
       dimensionChangedListener: null,
-     // metadataWithChildListener: null,
+      // metadataWithChildListener: null,
       textChangedListener: null,
       // listen a global reset event
       resetListener: null,
-      facet: []
+      facet: [],
+      // use for opensearch api
+      geographic: ['geometry', 'box', 'lat', 'lon', 'radius'],
+      paging: ['maxRecords', 'index', 'page'],
+      removedFields: ['lang', 'name', 'q'],
+      osParameters: [],
+      geoParameters: [],
+      pagingParameters: [],
+      type: 'geonetwork'
      }
   },
   created () {
@@ -102,17 +111,28 @@ export default {
   },
   methods: {
     initParameters () {
-      this.parameters = {
-        _content_type: 'json',
-         fast: 'index',
-      //  'facet.q': '',
-        bucket: '26041996',
-        from: 1,
-        to: this.nbRecord,
-        //  resultType: 'subtemplate',
-        // resultType: 'details',
-        sortBy: 'title',
-        sortOrder: 'reverse'
+      switch (this.type) {
+      case 'geonetwork':
+        this.parameters = {
+          _content_type: 'json',
+           fast: 'index',
+        //  'facet.q': '',
+          bucket: '26041996',
+          from: 1,
+          to: this.nbRecord,
+          //  resultType: 'subtemplate',
+          // resultType: 'details',
+          sortBy: 'title',
+          sortOrder: 'reverse'
+         }
+        break;
+        
+      case 'opensearch':
+        this.parameters = {
+          index: 1,
+          maxRecords: 20
+      	}
+        break;
       }
     }, 
     getRecords (event) {
@@ -124,12 +144,134 @@ export default {
       } else {
         var depth = this.depth
       }
-      this.initParameters()
+      
       var e = new CustomEvent("aerisSearchEvent", { detail: {depth: depth}});
       console.log(e)
 	  document.dispatchEvent(e);
-	  if (!e.detail.startDefault) {
-	    e.detail.renameProperty('start', 'extFrom')
+      
+      if (e.detail.describe && !this.api) {
+        console.log('before searchDescribe ', e.detail)
+        this.type = 'opensearch'
+        this.searchDescribe(e.detail)
+        return;
+      } else {
+        delete e.detail.describe
+      }
+      this.prepareRequest(e)
+//       this.initParameters()
+// 	  if (!e.detail.startDefault) {
+// 	    e.detail.renameProperty('start', 'extFrom')
+// 	  } else {
+// 	    delete e.detail.start
+// 	  }
+// 	  if (e.detail.endDefault) {
+// 	    delete e.detail.endDefault
+// 	    delete e.detail.end
+	    
+// 	  } else {
+// 	    e.detail.renameProperty('end', 'extTo')
+//       }
+// 	  delete e.detail.startDefault
+// 	  delete e.detail.endDefault
+// 	 // delete e.detail.depth
+// 	  delete e.detail.recordPerPage
+// 	  if (e.detail.parentUuid) {
+//         this.parameters.resultType = 'subtemplate'
+//       } else {
+//         this.parameters.isChild = false
+//         this.parameters.resultType = 'details'
+//       }
+// 	  if (this.depth > 0) {
+// 	    // voir plutôt les key à éliminer centre de données, variable, instruments, gemet, types?
+// 	    for(var key in e.detail) {
+// 		    if (['any', 'geometry', 'extTo', 'extFrom', 'from', 'to', 'parentUuid'].indexOf(key) >=0){
+// 		      this.parameters[key] = e.detail[key]
+// 		    }
+// 	    }
+// 	    if (event.detail && event.detail.nbRecords) {
+// 	      this.parameters.from = 1
+// 	      this.parameters.to = event.detail.nbRecords
+// 	    }
+// 	  } else {
+// 	    this.prepareFacet(e)
+// 	     this.parameters = Object.assign(this.parameters, e.detail)
+// 	  }
+	 
+	  //delete(e.detail.extTo)
+	  //delete(e.detail.extFrom)
+// 	  var headers =  {
+//           'Accept': 'application/json, text/plain, */*',
+//           'Accept-Language': this.lang === 'fr' ? 'fre': 'eng'
+//         }
+	 
+     	  
+//       var self = this
+//       this.parameters.sortOrder =  this.parameters.sortBy === 'title' ? 'ordering': 'reverse';
+//       var url = this.srv + 'q?' + Object.keys(this.parameters).map(function (prop) {
+//         return prop + '=' + self.parameters[prop]
+//       }).join('&');
+
+//       this.$http.get(url, {headers: headers, parameters: this.parameters}).then(
+//           response => { this.fill(response.body, depth);}
+//        )
+       this.requestApi()
+    },
+    prepareRequest (e) {
+      switch (this.type) {
+      case 'geonetwork':
+        this.prepareRequestGeonetwork(e)
+        break;
+      case 'opensearch':
+        this.prepareRequestOpensearch(e)
+      }
+    },
+    prepareRequestGeonetwork(e) {
+      
+      this.initParameters()
+  	  if (!e.detail.startDefault) {
+  	    e.detail.renameProperty('start', 'extFrom')
+  	  } else {
+  	    delete e.detail.start
+  	  }
+  	  if (e.detail.endDefault) {
+  	    delete e.detail.endDefault
+  	    delete e.detail.end
+  	    
+  	  } else {
+  	    e.detail.renameProperty('end', 'extTo')
+        }
+  	  delete e.detail.startDefault
+  	  delete e.detail.endDefault
+  	 // delete e.detail.depth
+  	  delete e.detail.recordPerPage
+  	  if (e.detail.parentUuid) {
+          this.parameters.resultType = 'subtemplate'
+        } else {
+          this.parameters.isChild = false
+          this.parameters.resultType = 'details'
+        }
+  	  if (this.depth > 0) {
+  	    // voir plutôt les key à éliminer centre de données, variable, instruments, gemet, types?
+  	    for(var key in e.detail) {
+  		    if (['any', 'geometry', 'extTo', 'extFrom', 'from', 'to', 'parentUuid'].indexOf(key) >=0){
+  		      this.parameters[key] = e.detail[key]
+  		    }
+  	    }
+  	    if (event.detail && event.detail.nbRecords) {
+  	      this.parameters.from = 1
+  	      this.parameters.to = event.detail.nbRecords
+  	    }
+  	  } else {
+  	    this.prepareFacet(e)
+  	     this.parameters = Object.assign(this.parameters, e.detail)
+  	  }
+    },
+    prepareRequestOpensearch(e) {
+      
+      this.initParameters()
+
+      if (!e.detail.startDefault) {
+	    e.detail.renameProperty('start', 'firstDateMin')
 	  } else {
 	    delete e.detail.start
 	  }
@@ -138,49 +280,77 @@ export default {
 	    delete e.detail.end
 	    
 	  } else {
-	    e.detail.renameProperty('end', 'extTo')
-      }
+	    e.detail.renameProperty('end', 'secondDateMax')
+     }
 	  delete e.detail.startDefault
 	  delete e.detail.endDefault
 	  delete e.detail.depth
-	  delete e.detail.recordPerPage
-	  if (e.detail.parentUuid) {
-        this.parameters.resultType = 'subtemplate'
-      } else {
-        this.parameters.isChild = false
-        this.parameters.resultType = 'details'
-      }
-	  if (this.depth > 0) {
-	    // voir plutôt les key à éliminer centre de données, variable, instruments, gemet, types?
-	    for(var key in e.detail) {
-		    if (['any', 'geometry', 'extTo', 'extFrom', 'from', 'to', 'parentUuid'].indexOf(key) >=0){
-		      this.parameters[key] = e.detail[key]
-		    }
-	    }
-	    if (event.detail && event.detail.nbRecords) {
-	      this.parameters.from = 1
-	      this.parameters.to = event.detail.nbRecords
-	    }
-	  } else {
-	    this.prepareFacet(e)
-	     this.parameters = Object.assign(this.parameters, e.detail)
-	  }
-	 
-	  //delete(e.detail.extTo)
-	  //delete(e.detail.extFrom)
-	  var headers =  {
-          'Accept': 'application/json, text/plain, */*',
-          'Accept-Language': this.lang === 'fr' ? 'fre': 'eng'
+	  
+	  this.parameters = Object.assign(this.parameters, e.detail)	 
+
+    },
+    requestApi ()  {
+        switch (this.type) {
+        case 'geonetwork':
+          this.requestApiGeonetwork()
+          break;
+        case 'opensearch':
+          this.requestApiOpensearch()
+          break;
         }
+//       var depth = (typeof parameters.depth != 'undefined') ? parameters.depth : this.depth
+//       console.log(parameters)
+//       console.log('depth', depth)
+//       delete parameters.depth
+//       var headers =  {
+//           'Accept': 'application/json, text/plain, */*',
+//           'Accept-Language': this.lang === 'fr' ? 'fre': 'eng'
+//         }
 	 
      	  
+//       var self = this
+//       this.parameters.sortOrder =  this.parameters.sortBy === 'title' ? 'ordering': 'reverse';
+//       var api = this.type === 'geonetwork' ?  (this.srv + 'q?') : this.api 
+//       var url = api + Object.keys(this.parameters).map(function (prop) {
+//         return prop + '=' + self.parameters[prop]
+//       }).join('&');
+       
+//       this.$http.get(url, {headers: headers}).then(
+//           response => { this.fill(response.body, depth);}
+//        )
+    },
+    requestApiGeonetwork () {
+      var depth = (typeof this.parameters.depth != 'undefined') ? this.parameters.depth : this.depth
+
+          delete this.parameters.depth
+          var headers =  {
+              'Accept': 'application/json, text/plain, */*',
+              'Accept-Language': this.lang === 'fr' ? 'fre': 'eng'
+            }
+    	 
+         	  
+          var self = this
+          this.parameters.sortOrder =  this.parameters.sortBy === 'title' ? 'ordering': 'reverse';
+   
+          var url = this.srv + 'q?' + Object.keys(this.parameters).map(function (prop) {
+            return prop + '=' + self.parameters[prop]
+          }).join('&');
+           
+          this.$http.get(url, {headers: headers}).then(
+              response => { this.fill(response.body, depth);}
+           )
+    },
+    requestApiOpensearch () {
+      var depth = (typeof this.parameters.depth != 'undefined') ? this.parameters.depth : this.depth
+
+          delete this.parameters.depth
       var self = this
-      this.parameters.sortOrder =  this.parameters.sortBy === 'title' ? 'ordering': 'reverse';
-      var url = this.srv + 'q?' + Object.keys(this.parameters).map(function (prop) {
+      var url = this.api + '?';
+      url += Object.keys(this.parameters).map(function (prop) {
         return prop + '=' + self.parameters[prop]
       }).join('&');
 
-      this.$http.get(url, {headers: headers, parameters: this.parameters}).then(
+      this.$http.jsonp(url).then(
           response => { this.fill(response.body, depth);}
        )
     },
@@ -215,6 +385,85 @@ export default {
         var event = new CustomEvent('fmt:metadataListEvent', {detail:  data})
         document.dispatchEvent(event)
     },*/
+    searchDescribe(detail) {
+      console.log(detail.describe)
+      this.$http.get(detail.describe.http)
+      .then(
+          response => { this.extractDescribeParameters(response.body, detail);}
+       )
+    },
+    extractDescribeParameters (parameters, searchParameters) {
+      var parser = new DOMParser()
+      var xml = parser.parseFromString(parameters, 'text/xml')
+      console.log(xml)
+      var urls = xml.firstChild.childNodes
+     var url = null
+     console.log(urls)
+      urls.forEach(function (node) {
+         if (node.tagName && node.tagName.toLowerCase() === 'url' && node.getAttribute('type').indexOf('json') >= 0) {
+             url = node
+         }
+      })
+      if (!url)  {
+        return
+      }
+      var template = url.getAttribute('template')
+      var extract = template.match(/^(.*?search.json).*$/)
+      console.log(extract[1])
+      if (!extract[1]) {
+        return
+      } else {
+        this.api = extract[1]
+        console.log(extract[1])
+      }
+      var parameters = url.getElementsByTagName('parameters:Parameter')
+      console.log(parameters)
+      var self = this
+      for(var i=0; i < parameters.length; i++){
+        var name = parameters[i].getAttribute('name')
+        var obj= {
+            name: name,
+            title: parameters[i].getAttribute('title')
+        }
+        var pattern = parameters[i].getAttribute('pattern')
+        if (pattern) {
+          obj = Object.assign(obj, {pattern: pattern})
+        }
+        var min = parameters[i].getAttribute('minInclusive')
+        if (min) {
+          obj= Object.assign(obj, {min: min})
+        }
+        var max = parameters[i].getAttribute('maxInclusive')
+        if (max) {
+          obj = Object.assign(obj, {max: max})
+        }
+        var nodes = parameters[i].getElementsByTagName('parameters:Options')
+        if (nodes) {
+          var options= []
+          for(var k=0; k < nodes.length; k++) {
+            options.push(nodes[k].getAttribute('value'))
+          }
+          if (options.length > 0)
+          obj = Object.assign(obj, {options: options})
+        }
+        if (self.removedFields.indexOf(name) >=0) {
+          
+//         }else if (name.toLowerCase() === 'platform') {
+//           this.platform = obj
+//         } else if (name.toLowerCase() === 'q'){
+//           this.hasQ = true
+        } else if (self.geographic.indexOf(name) >=0) {
+          self.geoParameters.push(obj)
+        } else if (self.paging.indexOf(name) >= 0) {
+           self.pagingParameters.push(obj)
+        }else if (name.indexOf('Date') === -1 && name.indexOf('Cover') === -1) {
+        	self.osParameters.push(obj)
+        }
+        
+      }
+     
+      this.requestApi(searchParameters)
+    },
     handleReset () {
       console.log('reset')
       var event = new CustomEvent('aerisResetEvent')
@@ -232,58 +481,3 @@ export default {
   }
 }
 </script>
-<style>
-/*.fmt-form{
-  padding: 0px 0px 30px 0px;
- border: 1px solid #ccc;
-  box-shadow: 1px 1px 1px 2px rgba(0, 0, 0, 0.1);
-}
-.fmt-form .formater-input-group {
-    display: flex;
-    flex-flow: row nowrap;
-    align-items: center;
-    margin: 5px 0;
-    width: 100%;
-    overflow: hidden;
-   background: #f8ebda;
-    margin: 0 0 10px 0;
-}
-.fmt-form .formater-search-box{
-  margin: 5px 0;
-  width:100%;
-  box-shadow: 0 2px 5px -5px rgba(0, 0, 0, 0.2);
-}
-.fmt-form  .formater-input-group input {
-    border: none;
-    background-color: transparent;
-    padding: 0 10px;
-    outline: none;
-}
-.fmt-form input[type="button"] {
-    margin: 0 0 3px 7px;
-    padding: 3px 12px;
-    text-align: center;
-    border-width: 1px;
-    border-style: solid;
-    border-radius: 1px;
-    font-size: 16px;
-    line-height: 1.7;
-    border-color: #e5b171 #cb8025 #cb8025;
-    background:#754a15;
-    color: #fff;
-    text-decoration: none;
-    vertical-align: top;
-    cursor: pointer;
-    pointer-events: auto;
-    box-sizing: border-box;
-    box-shadow: 0 1px 5px rgba(0,0,0,.65);
-}
-.fmt-form  .formater-input-group input[name="any"] {
-    line-height:35px;
-    height:35px;
-    width: calc(100% - 40px);
-}*/
-/*.fmt-form main.box-body > div > div.fmt-dimension{
-   margin-left: 15px;
-}*/
-</style>
