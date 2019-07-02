@@ -58,8 +58,9 @@ const MetadataToolsPlugin = {
          }
          return myArray;
        }
-       Vue.prototype.$gnLinkToLayer = function (arr) {
+       Vue.prototype.$gnLinkToLayer = function (arr, id) {
          var layer = {
+             id: id,
              name: arr[0],
              description: arr[1],
              href: arr[2],

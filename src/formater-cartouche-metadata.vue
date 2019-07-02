@@ -51,18 +51,6 @@
 		     </div>
 		   
 	     </div>
-	     <div v-if="meta.services && meta.services.browse">
-	        <div class="mtdt-related-type fa fa-globe" :style="{backgroundColor:primary}">
-		        <span class="fa fa-caret-down"></span>
-		     </div>
-		     <div class="mtdt-expand">
-		          <ul>
-		          <li v-for="key in layerList">
-		            @TODO
-			     </li>
-		         </ul>	
-		     </div>  
-	     </div>
 	      <div v-if="meta.layers && meta.layers.length === 1">
 	        <div class="mtdt-related-type fa fa-globe" @click="changeLayer(0)" :style="{backgroundColor: layerAdded ? '#8c0209' : primary}" :title="$t('display_layer')">
 		        
@@ -74,8 +62,8 @@
 		     </div>
 		     <div class="mtdt-expand">
 		          <ul class="mtdt-layers">
-		          <li v-for="(layer, index) in meta.layers" :key="index" @click="changeLayer(index)" >
-		           <i class="fa" :class="{'fa-square-o': !layer.checked, 'fa-check-square-o': layer.checked }" ></i>
+		          <li v-for="(layer, index) in meta.layers" :key="index" @click="changeLayer(layer);">
+		           <i class="fa" :class="layer.class"   ></i>
 		           <div  :title="layer.description">{{layer.name}}</div>
 			     </li>
 		         </ul>	
@@ -154,7 +142,6 @@ export default {
      uuid: null,
      hasBboxLayer: false,
      flatsimSingleFields: ['productType', 'processingLevel', 'processingMode', 'sensorMode', 'polarisation', 'subswath'],
-     layerList: ['CLASSIFICATION', 'CONFIDENCE', 'PIXELS_VALIDITY'],
      layerAdded: false
     }
   },
@@ -178,13 +165,14 @@ export default {
     },
     changeLayer (index) {
       console.log(index)
-      this.meta.layers[index].checked = !this.meta.layers[index].checked
+      // this.$set(this.meta.layers[index], 'checked', !this.meta.layers[index].checked)
+           this.meta.layers[index].checked = !this.meta.layers[index].checked
       if (this.meta.layers[index].checked) {
         var event = new CustomEvent('fmt:addLayerEvent', {detail: {layer: this.meta.layers[index], uuid: this.meta.uuid}})
         document.dispatchEvent(event)
         this.layerAdded = true
       } else {
-        var event = new CustomEvent('fmt:removeLayerEvent', {detail: {name: this.meta.layers[index].name}})
+        var event = new CustomEvent('fmt:removeLayerEvent', {detail: {id: this.meta.layers[index].id}})
         document.dispatchEvent(event)
         var self = this
         self.layerAdded = false
@@ -192,6 +180,23 @@ export default {
           self.layerAdded = self.layerAdded || layer.checked
         })
       }
+//       this.meta.layers[index].checked = !this.meta.layers[index].checked
+//       if (this.meta.layers[index].checked) {
+//         var event = new CustomEvent('fmt:addLayerEvent', {detail: {layer: this.meta.layers[index], uuid: this.meta.uuid}})
+//         document.dispatchEvent(event)
+//         this.layerAdded = true
+//       } else {
+//         var event = new CustomEvent('fmt:removeLayerEvent', {detail: {id: this.meta.layers[index].id}})
+//         document.dispatchEvent(event)
+//         var self = this
+//         self.layerAdded = false
+//         this.meta.layers.forEach(function (layer) {
+//           self.layerAdded = self.layerAdded || layer.checked
+//         })
+//       }
+      this.meta.layers.forEach(function (layer,index) {
+        console.log('layer checked ' , index,  layer.checked)
+      })
     },
     fixBbox (e) {
       e.target.fixed = true
@@ -250,8 +255,9 @@ export default {
 .mtdt-cartouche-metadata div.mtdt-header div{
 	display:inline-block;
 	float:left;
-    width:100%;
-	margin-left:7px;
+    width:calc(100% - 15px);
+	margin-left: 7px;
+	
 	overflow: hidden;
 	max-height:29px;
 }
@@ -266,13 +272,13 @@ export default {
 
 }
 .mtdt-cartouche-metadata div.mtdt-description{
-	max-height:160px;
+	max-height:170px;
 	overflow:hidden;
 	padding: 5px;
 	font-size:0.9em;
 }
 .mtdt-cartouche-metadata.mtdt-child div.mtdt-description{
-   max-height: 80px;
+   max-height: 170px;
 }
 .mtdt-cartouche-metadata div.mtdt-description img {
   position: relative;

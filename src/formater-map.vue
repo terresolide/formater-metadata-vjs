@@ -161,6 +161,7 @@ export default {
    addLayer (event) {
      var layer = event.detail.layer
      var bounds = this.searchBboxByUuid(event.detail.uuid)
+     console.log(layer.id)
      switch (layer.type) {
      case 'OGC:WMS':
        var extract = layer.href.match(/^(.*\?).*$/)
@@ -176,7 +177,7 @@ export default {
        if (!this.layers[this.depth]) {
          this.layers[this.depth] = new Map()
        }
-       this.layers[this.depth].set(layer.name, wmsLayer)
+       this.layers[this.depth].set(layer.id, wmsLayer)
        var bounds = this.searchBboxByUuid(event.detail.uuid)
        if (bounds) {
          this.map.fitBounds(bounds, {animate: true,  padding: [50,50]})
@@ -185,11 +186,11 @@ export default {
      }
    },
    removeLayer (event) {
-     var layer = this.layers[this.depth].get(event.detail.name)
+     var layer = this.layers[this.depth].get(event.detail.id)
      if (layer) {
        layer.remove()
      }
-     this.layers[this.depth].delete(event.detail.name)
+     this.layers[this.depth].delete(event.detail.id)
    },
    hideLayers () {
      for (var depth in this.layers) {

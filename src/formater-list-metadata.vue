@@ -52,7 +52,8 @@ export default {
       metadataListListener: null,
       resizeListener: null,
       type: null,
-      capsuleWidth: 300
+      capsuleWidth: 300,
+      flatsimLayerList: ['CLASSIFICATION', 'CONFIDENCE', 'PIXELS_VALIDITY'],
     }
   },
   created: function() {
@@ -116,6 +117,26 @@ export default {
        if (properties.completionDate) {
          properties.renameProperty('completionDate', 'tempExtentEnd')
        }
+      
+       if (properties.services) {
+         if(properties.services.browse && properties.services.browse.layer && properties.services.browse.layer.type === "WMS") {
+           var url = properties.services.browse.layer.url.substr(0, properties.services.browse.layer.url.indexOf('?')) 
+           console.log(url)
+           properties.layers = []
+           this.flatsimLayerList.forEach( function (name, index) {
+             var layer = {
+                 id: properties.id + '_' + index,
+                 name: name,
+                 description:  name,
+                 href: url + '/' + name + '?',
+                 type: 'OGC:WMS',
+                 checked: false
+             }
+             console.log(layer.id)
+             properties.layers.push(layer)
+           })
+         }
+       }
        return properties
      },
      treatmentGeojson (data) {
@@ -171,7 +192,7 @@ export default {
        }
        var links = this.$gnToArray(meta.link)
        var self = this
-       links.forEach(function (link) {
+       links.forEach(function (link, index) {
          switch (link[3]) {
          case 'OpenSearch':
            meta.api = {}
@@ -182,7 +203,8 @@ export default {
            if (!meta.layers) {
              meta.layers = []
            }
-           meta.layers.push(self.$gnLinkToLayer(link))
+           var id = meta.uuid + '_' + index
+           meta.layers.push(self.$gnLinkToLayer(link, id))
            break;
          case 'WWW:DOWNLOAD-1.0-link--download':
            if (!meta.download) {

@@ -6,7 +6,8 @@
      "spatial_extend": "Spatial extend",
      "groupOwners": "Data center",
      "gemetKeywords": "Inspire Gemet Keywords",
-     "formaterVariable": "Variables"
+     "formaterVariable": "Variables",
+     "parameters": "Parameters"
    },
    "fr":{
       "search": "Rechercher ...",
@@ -15,13 +16,14 @@
       "spatial_extend": "Zone géographique",
       "groupOwners": "Centre de données",
       "gemetKeywords": "Inspire Gemet Keywords",
-      "formaterVariable": "Variables"
+      "formaterVariable": "Variables",
+      "parameters": "Paramètres"
    }
 }
 </i18n>
 <template>
  <div class="mtdt-form">
-  <div style="text-align:center;margin: -10px 0 30px 0;"><input type="button" @click="reset" :value="$t('reset')"/></div>
+  <div style="text-align:center;margin: 10px 0 30px 0;"><input type="button" @click="reset" :value="$t('reset')"/></div>
   <div class="formater-input-group" style="margin:10px; width:calc(100% - 20px);">
      <input id="any" name="any" v-model="fulltextSearch" :placeholder="$t('search')" @change="changeText" @keypress="changeTextOnEnter" /><i class="fa fa-search"></i>
  </div>
@@ -29,9 +31,15 @@
  <formater-search-box header-icon-class="fa fa-globe" open-icon-class="fa fa-caret-right" :title="$t('spatial_extend')" :deployed="false" type="empty">
  <formater-spatial-search></formater-spatial-search>
  </formater-search-box>
+ 
 <formater-search-box header-icon-class="fa fa-calendar" open-icon-class="fa fa-caret-right" :title="$t('time_slot')" :deployed="true" type="empty">
   <formater-temporal-search :lang="lang" daymin="1900-01-01" daymax="2020-02-01"></formater-temporal-search>
 </formater-search-box>
+
+<formater-search-box header-icon-class="fa fa-thermometer-3" v-if="parameters.length > 0" open-icon-class="fa fa-caret-right" :title="$t('parameters')" :deployed="true" type="empty">
+ <formater-parameters-form :parameters="parameters" ></formater-parameters-form>
+ </formater-search-box>
+ 
 <formater-search-box v-if="dimension.category" :header-icon-class="facetToIcon(index)" open-icon-class="fa fa-caret-right" :disableLevel="disableLevel" :title="titleDimension(index)" type="empty" v-for="(dimension, index) in dimensions" :key="index">
   <formater-dimension-block v-if="!isFacet(index)"   :dimension="dimension.category" :name="dimensions[index]['@name']" :disable="disableLevel > 0"></formater-dimension-block>
   <formater-facet-block v-if="isFacet(index)"   :dimension="dimension.category" :name="dimensions[index]['@name']" :disable="disableLevel > 0"></formater-facet-block>
@@ -56,6 +64,7 @@ import FormaterSpatialSearch from './formater-spatial-search.vue'
 import FormaterMap from './formater-map.vue'
 import FormaterDimensionBlock from './formater-dimension-block.vue'
 import FormaterFacetBlock from './formater-facet-block.vue'
+const FormaterParametersForm = () => import('./formater-parameters-form.vue')
 // import FormaterSearchBox from './formater-search-box.vue'
 
 
@@ -67,7 +76,8 @@ export default {
     FormaterSpatialSearch,
     FormaterSearchBox,
     FormaterDimensionBlock,
-    FormaterFacetBlock
+    FormaterFacetBlock,
+    FormaterParametersForm
   },
   props: {
 
@@ -91,10 +101,12 @@ export default {
 
       fulltextSearch: '',
       first: true,
+      parameters: [],
       dimensions: [],
        aerisSearchListener: null,
        aerisResetListener: null,
-       metadataListListener: null
+       metadataListListener: null,
+       closeMetadataListener: null
     }
   },
   created () {
@@ -106,6 +118,10 @@ export default {
     document.addEventListener('aerisResetEvent', this.aerisResetListener)
     this.metadataListListener = this.fill.bind(this)
     document.addEventListener('fmt:metadataListEvent', this.metadataListListener)
+    this.parametersListener = this.changeParameters.bind(this)
+    document.addEventListener('fmt:changeParametersEvent', this.parametersListener)
+    this.closeMetadataListener = this.resetParameters.bind(this)
+    document.addEventListener('fmt:closeMetadataEvent', this.closeMetadataListener)
 
   },
   destroyed () {
@@ -115,6 +131,8 @@ export default {
     this.aerisResetListener = null
     document.removeEventListener('fmt:metadataListEvent', this.metadataListListener)
     this.metadataListListener = null;
+    document.addEventListener('fmt:closeMetadataEvent', this.closeMetadataListener)
+    this.closeMetadataListener = null
   },
  
   methods: {
@@ -225,6 +243,13 @@ export default {
        // trigger event change text
        var e = new CustomEvent('fmt:textChangeEvent')
        document.dispatchEvent(e)
+    },
+    changeParameters (evt) {
+      console.log(evt)
+      this.parameters = evt.detail.parameters
+    },
+    resetParameters (evt) {
+      this.parameters = []
     }
   }
 }
@@ -234,6 +259,8 @@ export default {
   padding: 0px 0px 30px 0px;
  border: 1px solid #ccc;
   box-shadow: 1px 1px 1px 2px rgba(0, 0, 0, 0.1);
+  max-height: 95vh;
+  overflow-y: auto;
 }
 .mtdt-form .formater-input-group {
     display: flex;

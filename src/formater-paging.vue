@@ -56,10 +56,6 @@ export default {
       type: Number,
       default: 0
     },
-    type: {
-      type: String,
-      default: null
-    },
     color: {
       type: String,
       default: '#754a15'
@@ -101,14 +97,16 @@ export default {
     this.orders.forEach( function (order) {
       self.options[order] = self.$i18n.t(order)
     })
+    console.log(this.type)
     console.log('charge formater-paging avec depth = ' + this.depth)
+    this.updateRecordsPerPage(this.recordByLine)
 //     if (this.orders.length == 0) {
 //       this.emitChange()
 //     }
   },
   mounted () {
     this.updateColor()
-     this.updateRecordsPerPage(this.recordByLine)
+    // this.updateRecordsPerPage(this.recordByLine)
   },
   destroyed () {
     document.removeEventListener('fmt:metadataListEvent', this.metadataListListener);
@@ -133,7 +131,8 @@ export default {
      // orders: ['title', 'changeDate'],
       options: {},
       metadataListListener: null,
-      searchEventListener: null
+      searchEventListener: null,
+      type: 'geonetwork'
     }
   },
   
@@ -142,17 +141,24 @@ export default {
      if (event.detail.depth !=  this.depth ){
        return;
      }
+     if (event.detail.summary) {
+       this.type = 'geonetwork'
+     } else {
+       this.type = 'opensearch'
+     }
      switch (this.type) {
-       case 'flatsim':
-         this.count = event.detail.properties.totalResults
-         this.to = this.from + event.detail.features.length -1
-         this.nbPage = Math.ceil(this.count/ this.recordPerPage)
-         break
-       default:
+       case 'geonetwork':
          this.count = parseInt(event.detail.summary['@count'])
          this.from = parseInt(event.detail['@from'])
          this.to = parseInt(event.detail['@to'])
          this.nbPage = Math.ceil(event.detail.summary['@count'] / this.recordPerPage) 
+         break
+       case 'opensearch':
+         this.count = event.detail.properties.totalResults
+         this.to = this.from + event.detail.features.length -1
+         this.nbPage = Math.ceil(this.count/ this.recordPerPage)
+         break
+      
      }
      if (this.count === 0) {
        this.from = 1
@@ -183,14 +189,15 @@ export default {
      }
      
      
-     if (this.initialize) {
-       this.recordPerPage = 6 * recordsByLine
-       this.initialize = false
+     //if (this.initialize) {
+       this.recordPerPage = 4 * recordsByLine
+     //  this.initialize = false
        this.recordsPerPage = options
-       this.emitChange()
-     } else {
-       this.recordsPerPage = options
-     }
+       
+//      } else {
+//        this.recordPerPage = 4 * recordsByLine
+//        this.recordsPerPage = options
+//      }
      console.log('valeur de recordPerPage = ' +  this.recordPerPage)
      // this.emitChange()
    },
@@ -208,7 +215,7 @@ export default {
      if (this.depth != event.detail.depth) {
        return
      }
-     if (this.type === 'flatsim') {
+     if (this.type === 'opensearch') {
        event.detail.index = this.from
        event.detail.maxRecords = this.recordPerPage
      } else {

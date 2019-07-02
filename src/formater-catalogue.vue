@@ -14,7 +14,7 @@
  <!--  </formater-draggable-block>  -->
   <div >
    <div class="mtdt-column-left" >
-    <formater-form :lang="lang" :disableLevel="metadatas.length > 0 ? 1 : 0"></formater-form>
+    <formater-form :lang="lang" :disableLevel="metadatas.length > 0 ? 1 : 0" ></formater-form>
     </div>
    
     <div class="mtdt-column-right" >
@@ -24,7 +24,7 @@
        <formater-list-metadata :lang="lang" :depth="0" @records="recordsPerLineChange"></formater-list-metadata>
      </div>
      <div  v-if="metadatas.length > 0" >
-	    	<formater-metadata v-for="(meta, index) in metadatas" :key="index" v-show="index === metadatas.length-1" :depth="index" :metadata="meta" :lang="lang" @close="resetMetadata"></formater-metadata>
+	    	<formater-metadata v-for="(meta, index) in metadatas" :key="index" v-show="index === metadatas.length-1" :depth="index" :metadata="meta" :lang="lang" @close="resetMetadata" ></formater-metadata>
 	    	
 	 </div>
 	  	 

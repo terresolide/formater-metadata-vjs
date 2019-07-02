@@ -40,7 +40,7 @@
       </div>
       <!--  tab search if have child -->
       <div v-if="tabs.search" v-show="currentTab === 'search'">
-           <formater-paging :lang="lang" :nb-record="nbRecord" :record-by-line="recordByLine" :depth="depth + 1"></formater-paging>
+           <formater-paging :lang="lang" :nb-record="nbRecord" :type="type" :record-by-line="recordByLine" :depth="depth + 1"></formater-paging>
       		<formater-list-metadata :lang="lang" :depth="depth + 1"  @records="recordsPerLineChange"></formater-list-metadata>
       </div>
       <!--  others tab -->
@@ -167,7 +167,7 @@ export default {
      api: null,
      geographic: ['geometry', 'box', 'lat', 'lon', 'radius'],
      paging: ['maxRecords', 'index', 'page'],
-     removedFields: ['lang', 'name', 'q'],
+     removedFields: ['lang', 'name', 'q', 'organisationName', 'parentIdentifier'],
      osParameters: [],
      geoParameters: [],
      pagingParameters: [],
@@ -392,11 +392,14 @@ export default {
             self.geoParameters.push(obj)
           } else if (self.paging.indexOf(name) >= 0) {
              self.pagingParameters.push(obj)
-          }else if (name.indexOf('Date') === -1 && name.indexOf('Cover') === -1) {
+          }else if (name.indexOf('Date') === -1 && name.indexOf('Cover') === -1 && (!obj.options || obj.options.length > 1)) {
           	self.osParameters.push(obj)
           }
           
         }
+        console.log('osParameters', this.osParameters)
+        var evt = new CustomEvent('fmt:changeParametersEvent', {detail: {parameters: this.osParameters}})
+        document.dispatchEvent(evt)
         this.hasChild = true
         this.$set(this.tabs, 'search', true)
         this.currentTab = 'search'
