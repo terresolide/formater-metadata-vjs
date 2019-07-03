@@ -319,8 +319,8 @@ export default {
           // useless, it's trigger when load formater-page-changed
       	  // lance le requeteur
 //       	  console.log('search child from metadata')
-//       	  var event = new CustomEvent('fmt:metadataWithChildEvent', {detail: {uuid: this.uuid, depth: this.depth}})
-//       	  document.dispatchEvent(event)
+      	  var event = new CustomEvent('fmt:metadataWithChildEvent', {detail: {uuid: this.uuid, depth: this.depth}})
+      	  document.dispatchEvent(event)
       },
       getApiParameters (describe) {
         this.$http.get(describe.http)
@@ -403,6 +403,7 @@ export default {
         this.hasChild = true
         this.$set(this.tabs, 'search', true)
         this.currentTab = 'search'
+        this.getRecords()
         // this.requestApi(searchParameters)
       },
       handleSearch(e) {

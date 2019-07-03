@@ -114,8 +114,8 @@ export default {
     document.addEventListener('aerisResetEvent', this.aerisResetListener)
   },
   mounted () {
-//     var evt = new CustomEvent('fmt:pageChangedEvent')
-//     document.dispatchEvent(evt)
+    var evt = new CustomEvent('fmt:pageChangedEvent')
+    document.dispatchEvent(evt)
   },
   destroyed () {
     document.removeEventListener('fmt:metadataEvent', this.metadataListener);

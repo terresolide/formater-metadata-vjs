@@ -84,8 +84,8 @@ export default {
     document.addEventListener('fmt:textChangeEvent', this.textChangedListener);
     this.selectChangedListener = this.getRecords.bind(this);
     document.addEventListener('fmt:selectChangeEvent', this.selectChangedListener)
-//     this.metadataWithChildListener = this.getRecords.bind(this)
-//     document.addEventListener('fmt:metadataWithChildEvent', this.metadataWithChildListener)
+     this.metadataWithChildListener = this.getRecords.bind(this)
+    document.addEventListener('fmt:metadataWithChildEvent', this.metadataWithChildListener)
     this.resetListener = this.handleReset.bind(this);
      document.addEventListener('fmt:resetEvent', this.resetListener);
   },
