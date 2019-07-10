@@ -52,7 +52,7 @@
 		   
 	     </div>
 	      <div v-if="meta.layers && meta.layers.length === 1">
-	        <div class="mtdt-related-type fa fa-globe" @click="changeLayer(0)" :style="{backgroundColor: layerAdded ? '#8c0209' : primary}" :title="$t('display_layer')">
+	        <div class="mtdt-related-type fa fa-globe" @click="changeLayer(meta.layers[0])" :style="{backgroundColor: layerAdded ? '#8c0209' : primary}" :title="$t('display_layer')">
 		        
 		     </div> 
 	     </div>
@@ -63,7 +63,7 @@
 		     <div class="mtdt-expand">
 		          <ul class="mtdt-layers">
 		          <li v-for="(layer, index) in meta.layers" :key="index" @click="changeLayer(layer);">
-		           <i class="fa" :class="layer.class"   ></i>
+		           <i class="fa fa-square-o"   :data-layer="index"></i>
 		           <div  :title="layer.description">{{layer.name}}</div>
 			     </li>
 		         </ul>	
@@ -163,16 +163,17 @@ export default {
       //return 'hello';
       return moment(date, 'YYYY-MM-DD').format('ll')
     },
-    changeLayer (index) {
-      console.log(index)
+    changeLayer (layer) {
+     // console.log(index)
       // this.$set(this.meta.layers[index], 'checked', !this.meta.layers[index].checked)
-           this.meta.layers[index].checked = !this.meta.layers[index].checked
-      if (this.meta.layers[index].checked) {
-        var event = new CustomEvent('fmt:addLayerEvent', {detail: {layer: this.meta.layers[index], uuid: this.meta.uuid}})
+      this.$set(layer, 'checked', !layer.checked)
+        //   this.meta.layers[index].checked = !this.meta.layers[index].checked
+      if (layer.checked) {
+        var event = new CustomEvent('fmt:addLayerEvent', {detail: {layer: layer, uuid: this.meta.uuid}})
         document.dispatchEvent(event)
         this.layerAdded = true
       } else {
-        var event = new CustomEvent('fmt:removeLayerEvent', {detail: {id: this.meta.layers[index].id}})
+        var event = new CustomEvent('fmt:removeLayerEvent', {detail: {id: layer.id}})
         document.dispatchEvent(event)
         var self = this
         self.layerAdded = false
@@ -197,6 +198,21 @@ export default {
       this.meta.layers.forEach(function (layer,index) {
         console.log('layer checked ' , index,  layer.checked)
       })
+      this.updateClass()
+    },
+    updateClass() {
+      var node = this.$el.querySelector('.mtdt-layers')
+      var nodes = node.querySelectorAll('i')
+      var self = this
+      nodes.forEach( function (node) {
+        var index = node.dataset.layer
+        if (self.meta.layers[index].checked) {
+          node.className = 'fa fa-check-square-o'
+        } else {
+          node.className = 'fa fa-square-o'
+        }
+      })
+      
     },
     fixBbox (e) {
       e.target.fixed = true
@@ -334,7 +350,7 @@ export default {
 .mtdt-related-type + .mtdt-expand{
 	display:none;
 	position:absolute;
-	top: 21px;
+	bottom: 21px;
 	right:0;
 	z-index:100;
 	height:auto;
