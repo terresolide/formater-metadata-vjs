@@ -24,6 +24,8 @@
     "build": "cross-env NODE_ENV=production webpack --progress --hide-modules"
   },
   "dependencies": {
+    "auth0-js": "^9.11.2",
+    "axios": "^0.19.0",
     "formater-commons-components-vjs": "github:terresolide/formater-commons-components-vjs#0.18.2",
     "formater-geotiff-visualizer-vjs": "github:terresolide/formater-geotiff-visualizer-vjs",
     "leaflet": "^1.5.1",

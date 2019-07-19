@@ -121,7 +121,6 @@ export default {
        if (properties.services) {
          if(properties.services.browse && properties.services.browse.layer && properties.services.browse.layer.type === "WMS") {
            var url = properties.services.browse.layer.url.substr(0, properties.services.browse.layer.url.indexOf('?')) 
-           console.log(url)
            properties.layers = []
            this.flatsimLayerList.forEach( function (name, index) {
              var layer = {
@@ -132,7 +131,6 @@ export default {
                  type: 'OGC:WMS',
                  checked: false
              }
-             console.log(layer.id)
              properties.layers.push(layer)
            })
          }
@@ -236,8 +234,7 @@ export default {
         var self = this
         this.$http.get(url, {
               headers: headers
-            }).then( response => { self.addRelated(response.body)})
-         
+            }).then( response => {self.addRelated(response.body)})
      },
      addRelated (related) {
        var self = this

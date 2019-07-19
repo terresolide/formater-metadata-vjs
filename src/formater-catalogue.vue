@@ -112,6 +112,11 @@ export default {
     document.addEventListener('aerisSearchEvent', this.aerisSearchListener)
     this.aerisResetListener = this.handleReset.bind(this)
     document.addEventListener('aerisResetEvent', this.aerisResetListener)
+    console.log(JSON.stringify({
+       "test": "test encore"
+     }));
+    this.$http.get('test2.json').then(response => {JSON.parse(response.body)})
+
   },
   mounted () {
     var evt = new CustomEvent('fmt:pageChangedEvent')

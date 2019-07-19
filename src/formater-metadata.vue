@@ -78,6 +78,7 @@ import FormaterExportLinks from './formater-export-links.vue'
 const FormaterPaging = () => import('./formater-paging.vue')
 const FormaterListMetadata = () => import('./formater-list-metadata.vue')
 import moment from 'moment';
+import axios from 'axios';
 // import { extendMoment } from 'moment-range';
 // window.momentCst = extendMoment(moment);
 
@@ -189,6 +190,21 @@ export default {
     document.addEventListener('keydown', this.keydownListener)
     this.searchEventListener = this.handleSearch.bind(this) 
   	document.addEventListener('aerisSearchEvent', this.searchEventListener);
+    var post = {
+        "clientId":"lJ9NjcIZLGYkgRzvRlBDQS_LeVoa",
+        "code":"62d32c7eb43e579b82713f8d04cfe7",
+        "redirectUri": "https://muscatemaj-pp.theia-land.fr/atdistrib/rocket/",
+         "state": "q9m4whb4nvldywjh7oahco"
+    }
+//      this.$http.get('https://muscatemaj-pp.theia-land.fr/atdistrib/resto2/api/collections//describe.xml').then(
+//         response => console.log(response));
+//     this.$http.post('https://muscatemaj-pp.theia-land.fr/atdistrib/resto2/api/auth/theia', JSON.stringify(post), {credentials: true}).then(
+//          response => console.log(response));
+     var xhr = new XMLHttpRequest();
+    xhr.open('POST', 'https://muscatemaj-pp.theia-land.fr/atdistrib/resto2/api/auth/theia', true);
+  //  xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+    xhr.withCredentials = true;
+    xhr.send(JSON.stringify(post));
   },
   watch: {
     
@@ -337,15 +353,21 @@ export default {
        console.log(urls)
         urls.forEach(function (node) {
            if (node.tagName && node.tagName.toLowerCase() === 'url' && node.getAttribute('type').indexOf('json') >= 0) {
-               url = node
+             var template = node.getAttribute('template')
+             console.log(template);
+             var extract = template.match(/^(.*(?:(?:search.json\?)|(?:\?format=FLATSIM))).*$/)
+             console.log(extract);
+             if( extract && extract[1] && extract[1] != ''){
+                 url = node;
+             }
            }
         })
         if (!url)  {
           return
         }
         var template = url.getAttribute('template')
-        var extract = template.match(/^(.*?search.json).*$/)
-        console.log(extract[1])
+        var extract = template.match(/^(.*(?:(?:search.json\?)|(?:\?format=FLATSIM))).*$/)
+        console.log(extract)
         if (!extract[1]) {
           return
         } else {
@@ -410,7 +432,6 @@ export default {
         if (this.api && e.detail.parentUuid === this.uuid) {
           e.detail.api = this.api
         }
-        console.log('search dans metadata ', e.detail)
       }
 	    
   }

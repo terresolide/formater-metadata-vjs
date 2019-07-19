@@ -345,7 +345,7 @@ export default {
           }).join('&');
            
           this.$http.get(url, {headers: headers}).then(
-              response => { this.fill(response.body, depth);}
+              response => {  this.fill(response.body, depth);}
            )
     },
     requestApiOpensearch () {
@@ -353,13 +353,13 @@ export default {
 
           delete this.parameters.depth
       var self = this
-      var url = this.api + '?';
+      var url = this.api + (this.api.indexOf('?') > 0 ? '&' :'?');
       url += Object.keys(this.parameters).map(function (prop) {
         return prop + '=' + self.parameters[prop]
       }).join('&');
 
       this.$http.jsonp(url).then(
-          response => { this.fill(response.body, depth);}
+          response => {   this.fill(response.body, depth);}
        )
     },
     // @todo DEPLACER DANS FORM VOIR MÊME DANS formater-dimension-block/ formater-facet-block!!
