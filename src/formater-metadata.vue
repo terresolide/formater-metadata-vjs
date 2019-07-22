@@ -41,7 +41,7 @@
       <!--  tab search if have child -->
       <div v-if="tabs.search" v-show="currentTab === 'search'">
            <formater-paging :lang="lang" :nb-record="nbRecord" :type="type" :record-by-line="recordByLine" :depth="depth + 1"></formater-paging>
-      		<formater-list-metadata :lang="lang" :depth="depth + 1"  @records="recordsPerLineChange"></formater-list-metadata>
+      		<formater-list-metadata :lang="lang" :depth="depth + 1"  :capsule-width="capsuleWidth"></formater-list-metadata>
       </div>
       <!--  others tab -->
       <div v-if="currentTab === 'main'" style="margin-top:20px;">
@@ -103,6 +103,14 @@ export default {
     depth: {
       type: Number,
       default:0
+    },
+    capsuleWidth: {
+      type: Number,
+      default: 300
+    },
+    recordByLine: {
+      type: Number,
+      default: 4
     }
 //     nbRecords: {
 //       type: Number,
@@ -162,7 +170,7 @@ export default {
        'Accept-Language': this.lang === 'fr' ? 'fre': 'eng'
      },
      parameters: {},
-     recordByLine: 4,
+    // recordByLine: 4,
      nbRecord: 12,
      // use for opensearch api
      api: null,
@@ -176,6 +184,7 @@ export default {
     }
   },
   created () {
+   // this.recordByLine = this.nbRecordPerLine
     this.$i18n.locale = this.lang
     this.$setGnLocale(this.lang)
     moment.locale(this.lang)
@@ -278,12 +287,12 @@ export default {
            this.$set(this.tabs, 'search', false)
          }
       },
-      recordsPerLineChange (count) {
-    	  this.recordByLine = count
-    	  this.nbRecord = count * 4
-//     	  var evt = new CustomEvent('fmt:pageChangedEvent')
-//     	  document.dispatchEvent(evt)
-      },
+//       recordsPerLineChange (count) {
+//     	  this.recordByLine = count
+//     	  this.nbRecord = count * 4
+// //     	  var evt = new CustomEvent('fmt:pageChangedEvent')
+// //     	  document.dispatchEvent(evt)
+//       },
 	  fillMetadata () {
 	     //get meta from other language if meta._locale != meta.docLocale
 	     if (this.meta['geonet:info']) {

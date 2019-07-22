@@ -357,8 +357,8 @@ export default {
       url += Object.keys(this.parameters).map(function (prop) {
         return prop + '=' + self.parameters[prop]
       }).join('&');
-
-      this.$http.jsonp(url).then(
+      // var url ="INTERFEROGRAM.js";
+      this.$http.get(url).then(
           response => {   this.fill(response.body, depth);}
        )
     },

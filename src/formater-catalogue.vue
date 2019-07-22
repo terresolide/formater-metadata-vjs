@@ -21,10 +21,10 @@
     <div id="fmtLargeMap"></div>
      <div v-show="metadatas.length === 0">
        <formater-paging :lang="lang" :nb-record="nbRecord" :record-by-line="recordByLine" :depth="0" :orders="['title','changeDate']" order-by="title"></formater-paging>
-       <formater-list-metadata :lang="lang" :depth="0" @records="recordsPerLineChange"></formater-list-metadata>
+       <formater-list-metadata :lang="lang" :depth="0" :capsule-width="capsuleWidth"></formater-list-metadata>
      </div>
      <div  v-if="metadatas.length > 0" >
-	    	<formater-metadata v-for="(meta, index) in metadatas" :key="index" v-show="index === metadatas.length-1" :depth="index" :metadata="meta" :lang="lang" @close="resetMetadata" ></formater-metadata>
+	    	<formater-metadata v-for="(meta, index) in metadatas" :key="index" v-show="index === metadatas.length-1" :depth="index" :metadata="meta" :lang="lang" :capsule-width="capsuleWidth - 10" :record-by-line="recordByLine" @close="resetMetadata" ></formater-metadata>
 	    	
 	 </div>
 	  	 
@@ -98,8 +98,10 @@ export default {
       drawing: false,
       aerisSearchListener: null,
       aerisResetListener: null,
+      resizeListener: null,
       recordByLine: 4,
-      nbRecord: 24
+      nbRecord: 24,
+      capsuleWidth: 300
     }
   },
   
@@ -112,11 +114,11 @@ export default {
     document.addEventListener('aerisSearchEvent', this.aerisSearchListener)
     this.aerisResetListener = this.handleReset.bind(this)
     document.addEventListener('aerisResetEvent', this.aerisResetListener)
-    console.log(JSON.stringify({
-       "test": "test encore"
-     }));
-    this.$http.get('test2.json').then(response => {JSON.parse(response.body)})
-
+    this.resizeListener = this.resize.bind(this)
+    window.addEventListener('resize', this.resizeListener);
+    console.log('formater-catalogue CREATED')
+    this.resize()
+    console.log('capsuleWidth dans catalogue = ' + this.capsuleWidth)
   },
   mounted () {
     var evt = new CustomEvent('fmt:pageChangedEvent')
@@ -165,12 +167,28 @@ export default {
 		
 // 	  }
 	},
-	recordsPerLineChange (count) {
-	  this.recordByLine = count
-	  this.nbRecord = count * 4
-// 	  var evt = new CustomEvent('fmt:pageChangedEvent')
-// 	  document.dispatchEvent(evt)
-	},
+  resize () {
+//     if (this.$el) {
+//       var node = this.$el
+//       while (node.offsetWidth === 0) {
+//         node = node.parentNode
+//       }
+      console.log('resize')
+      var width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+      width -= 330
+      var count = parseInt(width/334)
+      this.capsuleWidth = parseInt(width / count - 16)
+      console.log(this.capsuleWidth)
+      this.recordByLine = count
+  	  this.nbRecord = count * 4
+    //}
+  },
+// 	recordsPerLineChange (count) {
+// 	  this.recordByLine = count
+// 	  this.nbRecord = count * 4
+// // 	  var evt = new CustomEvent('fmt:pageChangedEvent')
+// // 	  document.dispatchEvent(evt)
+// 	},
 	handleReset (event) {
 	  console.log('reset')
 	  this.metadatas = []

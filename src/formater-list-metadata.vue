@@ -36,6 +36,10 @@ export default {
     color: {
       type: String,
       default: '#dd9946'
+    },
+    capsuleWidth: {
+      type: Number,
+      default: 300
     }
   },
   watch: {
@@ -50,9 +54,9 @@ export default {
       // list of children
       related: [],
       metadataListListener: null,
-      resizeListener: null,
+     // resizeListener: null,
       type: null,
-      capsuleWidth: 300,
+     // capsuleWidth: 300,
       flatsimLayerList: ['CLASSIFICATION', 'CONFIDENCE', 'PIXELS_VALIDITY'],
     }
   },
@@ -61,30 +65,32 @@ export default {
     this.$setGnLocale(this.lang)
     this.metadataListListener = this.receiveMetadatas.bind(this)
     document.addEventListener('fmt:metadataListEvent', this.metadataListListener);
-    this.resizeListener = this.resize.bind(this)
-    window.addEventListener('resize', this.resizeListener);
+ //   this.resizeListener = this.resize.bind(this)
+ //   window.addEventListener('resize', this.resizeListener);
     console.log('charge formater-list-metadata pour depth = ' +this.depth)
+    console.log('capsuleWidth = ' + this.capsuleWidth)
   },
   destroyed () {
     document.removeEventListener('fmt:metadataListEvent', this.metadataListListener);
     this.metadataListListener = null;
   },
   mounted () {
-    this.resize()
+    // this.resize()
   },
   methods: {
-     resize () {
-       if (this.$el) {
-         var node = this.$el
-         while (node.offsetWidth === 0) {
-           node = node.parentNode
-         }
-         var width = node.offsetWidth
-         var count = parseInt(width/334)
-         this.capsuleWidth = parseInt(width / count - 16)
-		 this.$emit('records', count)
-       }
-     },
+//      resize () {
+//        if (this.$el) {
+//          var node = this.$el
+//          while (node.offsetWidth === 0) {
+//            node = node.parentNode
+//          }
+//          console.log('resize')
+//          var width = node.offsetWidth
+//          var count = parseInt(width/334)
+//          this.capsuleWidth = parseInt(width / count - 16)
+// 		 this.$emit('records', count)
+//        }
+//      },
      getType (obj) {
        if (obj.type === 'FeatureCollection' || obj.type === 'Feature') {
          this.type = 'geojson'
