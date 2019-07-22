@@ -1,3 +1,6 @@
+/**
+ * Main component
+ */
 <i18n>{
    "en":{
    },
@@ -7,43 +10,41 @@
 </i18n>
 <template>
  <div class="mtdt-catalogue">
+  <!-- components not visible  -->
   <aeris-theme :primary="primary" :active="true" :emphasis="emphasis"></aeris-theme>
   <formater-requester :lang="lang"  :depth="metadatas.length"></formater-requester>
- <!-- <formater-draggable-block :show="true">  -->
+  <!-- component to draw bbox -->
   <formater-draw-bbox color="#fff" :lang="lang" :background="primary"></formater-draw-bbox>
- <!--  </formater-draggable-block>  -->
+
   <div >
+   <!-- components can be view -->
    <div class="mtdt-column-left" >
-    <formater-form :lang="lang" :disableLevel="metadatas.length > 0 ? 1 : 0" ></formater-form>
-    </div>
-   
-    <div class="mtdt-column-right" >
-    <div id="fmtLargeMap"></div>
-     <div v-show="metadatas.length === 0">
-       <formater-paging :lang="lang" :nb-record="nbRecord" :record-by-line="recordByLine" :depth="0" :orders="['title','changeDate']" order-by="title"></formater-paging>
-       <formater-list-metadata :lang="lang" :depth="0" :capsule-width="capsuleWidth"></formater-list-metadata>
+       <formater-form :lang="lang" :disableLevel="metadatas.length > 0 ? 1 : 0" ></formater-form>
+   </div>
+   <div class="mtdt-column-right" >
+        <!-- div where append map when enlarge it -->
+        <div id="fmtLargeMap"></div>
+        <!-- list of all records with page navigation -->
+        <div v-show="metadatas.length === 0">
+            <formater-paging :lang="lang" :nb-record="nbRecord" :record-by-line="recordByLine" :depth="0" :orders="['title','changeDate']" order-by="title"></formater-paging>
+            <formater-list-metadata :lang="lang" :depth="0" :capsule-width="capsuleWidth"></formater-list-metadata>
+        </div>
+        <!-- view of one record -->
+        <div  v-if="metadatas.length > 0" >
+            <formater-metadata v-for="(meta, index) in metadatas" :key="index" v-show="index === metadatas.length-1" :depth="index" :metadata="meta" :lang="lang"
+             :capsule-width="capsuleWidth - 10" :record-by-line="recordByLine" @close="resetMetadata" ></formater-metadata>
+        </div>
      </div>
-     <div  v-if="metadatas.length > 0" >
-	    	<formater-metadata v-for="(meta, index) in metadatas" :key="index" v-show="index === metadatas.length-1" :depth="index" :metadata="meta" :lang="lang" :capsule-width="capsuleWidth - 10" :record-by-line="recordByLine" @close="resetMetadata" ></formater-metadata>
-	    	
-	 </div>
-	  	 
-     </div>
     </div>
-   
   </div>
   
  </div>
 </template>
 <script>
-
 import FormaterForm from './formater-form.vue';
 import FormaterListMetadata from './formater-list-metadata.vue';
-// import FormaterMetadata from './formater-metadata.vue';
 const FormaterMetadata = () => import('./formater-metadata.vue')
 import FormaterPaging from './formater-paging.vue';
-// import {FormaterDraggableBlock} from 'formater-commons-components-vjs';
-//import FormaterDraggableBlock from './formater-draggable-block.vue';
 import FormaterDrawBbox from './formater-draw-bbox.vue';
 import AerisTheme from 'aeris-commons-components-vjs/src/aeris-theme/aeris-theme.vue'
 import FormaterRequester from './formater-requester.vue';
@@ -57,23 +58,13 @@ export default {
     FormaterMetadata,
     FormaterPaging,
     FormaterRequester,
-    // FormaterDraggableBlock,
     AerisTheme
   },
   props: {
-//     geonetwork: {
-//       type: String,
-//       default: null
-//     },
     lang: {
       type: String,
       default: 'en'
     },
-//     nbRecord: {
-//       type: Number,
-//       coerce: str => parseInt(str),
-//       default:12
-//     },
     primary: {
       type: String,
       default: '#754a15'
@@ -85,14 +76,15 @@ export default {
   },
   watch: {
     lang (newvalue) {
-    	this.$i18n.locale = newvalue
-    	this.$setGnLocale(this.lang)
+        this.$i18n.locale = newvalue
+        this.$setGnLocale(this.lang)
     }
   },
   data() {
     return {
       currentUuid: null,
       depth: null,
+      // array breadcrumb of records
       metadatas: [],
       metadataListener: null,
       drawing: false,
@@ -116,9 +108,7 @@ export default {
     document.addEventListener('aerisResetEvent', this.aerisResetListener)
     this.resizeListener = this.resize.bind(this)
     window.addEventListener('resize', this.resizeListener);
-    console.log('formater-catalogue CREATED')
     this.resize()
-    console.log('capsuleWidth dans catalogue = ' + this.capsuleWidth)
   },
   mounted () {
     var evt = new CustomEvent('fmt:pageChangedEvent')
@@ -133,73 +123,40 @@ export default {
     this.aerisResetListener = null
   },
   methods: {
-	receiveMetadata (event) {
-	  console.log(event.detail)
-	    this.metadatas.push(event.detail.meta)
-	    
-
-	
-	  //this.metadata =  event.detail.meta
-	  this.currentUuid = event.detail.meta['geonet:info'].uuid
-	  
-	  console.log(this.currentUuid)
-	},
-	resetMetadata (event) {
-	  
-	    this.metadatas.pop()
-	    if (this.metadatas.length > 0) {
-	      this.currentUuid = this.metadatas[this.metadatas.length - 1]['geonet:info'].uuid
-	    } else {
-	      this.currentUuid = null
-	    }
-	    console.log(this.currentUuid)
-	    console.log(this.metadatas.length)
-// 	    var previous = this.metadatas.length-1 ? this.metadatas[this.metadatas.length-1]:null
-// 	  if (previous) {
-// 		this.metadata = previous
-// 		this.currentUuid = this.metadata['geonet:info'].uuid
-		
-// 	  } else {
-// 	    this.metadata = null
-// 		  this.currentUuid = null
- 	    var event = new CustomEvent('fmt:closeMetadataEvent', {detail:  {depth: this.metadatas.length}})
- 		  document.dispatchEvent(event)
-		
-// 	  }
-	},
-  resize () {
-//     if (this.$el) {
-//       var node = this.$el
-//       while (node.offsetWidth === 0) {
-//         node = node.parentNode
-//       }
-      console.log('resize')
+    receiveMetadata (event) {
+      this.metadatas.push(event.detail.meta)
+      this.currentUuid = event.detail.meta['geonet:info'].uuid
+    },
+    resetMetadata (event) {
+      this.metadatas.pop()
+      if (this.metadatas.length > 0) {
+        this.currentUuid = this.metadatas[this.metadatas.length - 1]['geonet:info'].uuid
+        var parameters = this.metadatas[this.metadatas.length - 1].osParameters
+      } else {
+        this.currentUuid = null
+        var parameters = []
+      }
+      var event = new CustomEvent('fmt:closeMetadataEvent', {detail:  {depth: this.metadatas.length, parameters: parameters }})
+      document.dispatchEvent(event)
+    },
+   resize () {
       var width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
       width -= 330
       var count = parseInt(width/334)
       this.capsuleWidth = parseInt(width / count - 16)
-      console.log(this.capsuleWidth)
       this.recordByLine = count
-  	  this.nbRecord = count * 4
-    //}
-  },
-// 	recordsPerLineChange (count) {
-// 	  this.recordByLine = count
-// 	  this.nbRecord = count * 4
-// // 	  var evt = new CustomEvent('fmt:pageChangedEvent')
-// // 	  document.dispatchEvent(evt)
-// 	},
-	handleReset (event) {
-	  console.log('reset')
-	  this.metadatas = []
-	  this.metadatas.length = 0
-	  this.currentUuid = null
-	},
-	handleSearch (event) {
-	  if (this.metadatas.length > 0) {
-	    event.detail.parentUuid = this.currentUuid
-	  }
-	}
+      this.nbRecord = count * 4
+   },
+    handleReset (event) {
+      this.metadatas = []
+      this.metadatas.length = 0
+      this.currentUuid = null
+    },
+    handleSearch (event) {
+      if (this.metadatas.length > 0) {
+        event.detail.parentUuid = this.currentUuid
+      }
+    }
   }
 }
 </script>

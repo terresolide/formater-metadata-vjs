@@ -428,7 +428,6 @@ export default {
           }
           
         }
-        console.log('osParameters', this.osParameters)
         var evt = new CustomEvent('fmt:changeParametersEvent', {detail: {parameters: this.osParameters}})
         document.dispatchEvent(evt)
         this.hasChild = true

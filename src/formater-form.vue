@@ -98,15 +98,14 @@ export default {
   },
   data() {
     return {
-
       fulltextSearch: '',
       first: true,
       parameters: [],
       dimensions: [],
-       aerisSearchListener: null,
-       aerisResetListener: null,
-       metadataListListener: null,
-       closeMetadataListener: null
+      aerisSearchListener: null,
+      aerisResetListener: null,
+      metadataListListener: null,
+      closeMetadataListener: null
     }
   },
   created () {
@@ -120,7 +119,7 @@ export default {
     document.addEventListener('fmt:metadataListEvent', this.metadataListListener)
     this.parametersListener = this.changeParameters.bind(this)
     document.addEventListener('fmt:changeParametersEvent', this.parametersListener)
-    this.closeMetadataListener = this.resetParameters.bind(this)
+    this.closeMetadataListener = this.changeParameters.bind(this)
     document.addEventListener('fmt:closeMetadataEvent', this.closeMetadataListener)
 
   },
