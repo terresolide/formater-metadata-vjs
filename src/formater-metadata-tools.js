@@ -69,6 +69,16 @@ const MetadataToolsPlugin = {
          }
          return layer
        }
+       Vue.prototype.$gnLinkToDownload = function (arr, id) {
+         var download = {
+             id: id,
+             name: arr[0],
+             description: arr[1],
+             url: arr[2],
+             type: arr[3]
+         }
+         return download;
+       },
 		   Vue.prototype.$gn = function (str) {
 		     if (this.$gnLang && this.$gnLang[str]) {
 		       return this.$gnLang[str];

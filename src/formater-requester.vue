@@ -25,10 +25,10 @@ export default {
   },
   watch: {
     lang (newvalue) {
-    	this.$i18n.locale = newvalue
-    	this.$setGnLocale(newvalue)
-    	this.srv = process.env.GEONETWORK + 'srv/' + (newvalue === 'fr' ? 'fre' : 'eng') + '/'
-    	this.headers['Accept-Language'] =  newvalue === 'fr' ? 'fre': 'eng'
+      this.$i18n.locale = newvalue
+      this.$setGnLocale(newvalue)
+      this.srv = process.env.GEONETWORK + 'srv/' + (newvalue === 'fr' ? 'fre' : 'eng') + '/'
+      this.headers['Accept-Language'] =  newvalue === 'fr' ? 'fre': 'eng'
     },
     depth (newvalue) {
       console.log('nouvelle valeur depth = ' + this.depth)
@@ -102,8 +102,8 @@ export default {
     this.textChangedListener = null
     document.removeEventListener('fmt:selectChangeEvent', this.selectChangedListener)
     this.selectChangedListener = null
-//     document.removeEventListener('fmt:metadataWithChildEvent', this.metadataWithChildListener)
-//     this.metadataWithChildListener = null
+    document.removeEventListener('fmt:metadataWithChildEvent', this.metadataWithChildListener)
+    this.metadataWithChildListener = null
     document.addEventListener('fmt:resetEvent', this.resetListener);
     this.resetListener = null
   },
@@ -136,13 +136,11 @@ export default {
         this.parameters = {
           index: 1,
           maxRecords: 20
-      	}
+        }
         break;
       }
     }, 
     getRecords (event) {
-      console.log('REQUESTER')
-      console.log(event)
       // trigger search event like breadcrumb
       if (event.detail && typeof event.detail.depth == 'number') {
         var depth = event.detail.depth
@@ -151,8 +149,7 @@ export default {
       }
       
       var e = new CustomEvent("aerisSearchEvent", { detail: {depth: depth}});
-      console.log(e)
-	  document.dispatchEvent(e);
+      document.dispatchEvent(e);
       
       if (e.detail.api) {
         this.api = e.detail.api
@@ -163,65 +160,9 @@ export default {
         this.type = 'geonetwork'
         this.api = null
       }
-      console.log('api dans getRecord ', this.api)
-      this.prepareRequest(e)
-//       this.initParameters()
-// 	  if (!e.detail.startDefault) {
-// 	    e.detail.renameProperty('start', 'extFrom')
-// 	  } else {
-// 	    delete e.detail.start
-// 	  }
-// 	  if (e.detail.endDefault) {
-// 	    delete e.detail.endDefault
-// 	    delete e.detail.end
-	    
-// 	  } else {
-// 	    e.detail.renameProperty('end', 'extTo')
-//       }
-// 	  delete e.detail.startDefault
-// 	  delete e.detail.endDefault
-// 	 // delete e.detail.depth
-// 	  delete e.detail.recordPerPage
-// 	  if (e.detail.parentUuid) {
-//         this.parameters.resultType = 'subtemplate'
-//       } else {
-//         this.parameters.isChild = false
-//         this.parameters.resultType = 'details'
-//       }
-// 	  if (this.depth > 0) {
-// 	    // voir plutôt les key à éliminer centre de données, variable, instruments, gemet, types?
-// 	    for(var key in e.detail) {
-// 		    if (['any', 'geometry', 'extTo', 'extFrom', 'from', 'to', 'parentUuid'].indexOf(key) >=0){
-// 		      this.parameters[key] = e.detail[key]
-// 		    }
-// 	    }
-// 	    if (event.detail && event.detail.nbRecords) {
-// 	      this.parameters.from = 1
-// 	      this.parameters.to = event.detail.nbRecords
-// 	    }
-// 	  } else {
-// 	    this.prepareFacet(e)
-// 	     this.parameters = Object.assign(this.parameters, e.detail)
-// 	  }
-	 
-	  //delete(e.detail.extTo)
-	  //delete(e.detail.extFrom)
-// 	  var headers =  {
-//           'Accept': 'application/json, text/plain, */*',
-//           'Accept-Language': this.lang === 'fr' ? 'fre': 'eng'
-//         }
-	 
-     	  
-//       var self = this
-//       this.parameters.sortOrder =  this.parameters.sortBy === 'title' ? 'ordering': 'reverse';
-//       var url = this.srv + 'q?' + Object.keys(this.parameters).map(function (prop) {
-//         return prop + '=' + self.parameters[prop]
-//       }).join('&');
 
-//       this.$http.get(url, {headers: headers, parameters: this.parameters}).then(
-//           response => { this.fill(response.body, depth);}
-//        )
-       this.requestApi()
+      this.prepareRequest(e)
+      this.requestApi()
     },
     prepareRequest (e) {
       switch (this.type) {
@@ -236,65 +177,64 @@ export default {
     prepareRequestGeonetwork(e) {
       
       this.initParameters()
-  	  if (!e.detail.startDefault) {
-  	    e.detail.renameProperty('start', 'extFrom')
-  	  } else {
-  	    delete e.detail.start
-  	  }
-  	  if (e.detail.endDefault) {
-  	    delete e.detail.endDefault
-  	    delete e.detail.end
-  	    
-  	  } else {
-  	    e.detail.renameProperty('end', 'extTo')
+      if (!e.detail.startDefault) {
+        e.detail.renameProperty('start', 'extFrom')
+      } else {
+        delete e.detail.start
+      }
+      if (e.detail.endDefault) {
+        delete e.detail.endDefault
+        delete e.detail.end
+        
+      } else {
+        e.detail.renameProperty('end', 'extTo')
+      }
+      delete e.detail.startDefault
+      delete e.detail.endDefault
+     // delete e.detail.depth
+      delete e.detail.recordPerPage
+      if (e.detail.parentUuid) {
+        this.parameters.resultType = 'subtemplate'
+      } else {
+        this.parameters.isChild = false
+        this.parameters.resultType = 'details'
+      }
+      if (this.depth > 0) {
+        // voir plutôt les key à éliminer centre de données, variable, instruments, gemet, types?
+        for(var key in e.detail) {
+          if (['any', 'geometry', 'extTo', 'extFrom', 'from', 'to', 'parentUuid'].indexOf(key) >=0){
+            this.parameters[key] = e.detail[key]
+          }
         }
-  	  delete e.detail.startDefault
-  	  delete e.detail.endDefault
-  	 // delete e.detail.depth
-  	  delete e.detail.recordPerPage
-  	  if (e.detail.parentUuid) {
-          this.parameters.resultType = 'subtemplate'
-        } else {
-          this.parameters.isChild = false
-          this.parameters.resultType = 'details'
+        if (event.detail && event.detail.nbRecords) {
+          this.parameters.from = 1
+          this.parameters.to = event.detail.nbRecords
         }
-  	  if (this.depth > 0) {
-  	    // voir plutôt les key à éliminer centre de données, variable, instruments, gemet, types?
-  	    for(var key in e.detail) {
-  		    if (['any', 'geometry', 'extTo', 'extFrom', 'from', 'to', 'parentUuid'].indexOf(key) >=0){
-  		      this.parameters[key] = e.detail[key]
-  		    }
-  	    }
-  	    if (event.detail && event.detail.nbRecords) {
-  	      this.parameters.from = 1
-  	      this.parameters.to = event.detail.nbRecords
-  	    }
-  	  } else {
-  	    this.prepareFacet(e)
-  	     this.parameters = Object.assign(this.parameters, e.detail)
-  	  }
+      } else {
+        this.prepareFacet(e)
+        this.parameters = Object.assign(this.parameters, e.detail)
+      }
     },
     prepareRequestOpensearch(e) {
       
       this.initParameters()
-
       if (!e.detail.startDefault) {
-	    e.detail.renameProperty('start', 'firstDateMin')
-	  } else {
-	    delete e.detail.start
-	  }
-	  if (e.detail.endDefault) {
-	    delete e.detail.endDefault
-	    delete e.detail.end
-	    
-	  } else {
-	    e.detail.renameProperty('end', 'secondDateMax')
+      e.detail.renameProperty('start', 'firstDateMin')
+    } else {
+      delete e.detail.start
+    }
+    if (e.detail.endDefault) {
+      delete e.detail.endDefault
+      delete e.detail.end
+      
+    } else {
+      e.detail.renameProperty('end', 'secondDateMax')
      }
-	  delete e.detail.startDefault
-	  delete e.detail.endDefault
-	  delete e.detail.depth
-	  
-	  this.parameters = Object.assign(this.parameters, e.detail)	 
+    delete e.detail.startDefault
+    delete e.detail.endDefault
+    delete e.detail.depth
+    
+    this.parameters = Object.assign(this.parameters, e.detail)   
 
     },
     requestApi ()  {
@@ -306,58 +246,33 @@ export default {
           this.requestApiOpensearch()
           break;
         }
-//       var depth = (typeof parameters.depth != 'undefined') ? parameters.depth : this.depth
-//       console.log(parameters)
-//       console.log('depth', depth)
-//       delete parameters.depth
-//       var headers =  {
-//           'Accept': 'application/json, text/plain, */*',
-//           'Accept-Language': this.lang === 'fr' ? 'fre': 'eng'
-//         }
-	 
-     	  
-//       var self = this
-//       this.parameters.sortOrder =  this.parameters.sortBy === 'title' ? 'ordering': 'reverse';
-//       var api = this.type === 'geonetwork' ?  (this.srv + 'q?') : this.api 
-//       var url = api + Object.keys(this.parameters).map(function (prop) {
-//         return prop + '=' + self.parameters[prop]
-//       }).join('&');
-       
-//       this.$http.get(url, {headers: headers}).then(
-//           response => { this.fill(response.body, depth);}
-//        )
     },
     requestApiGeonetwork () {
       var depth = (typeof this.parameters.depth != 'undefined') ? this.parameters.depth : this.depth
 
-          delete this.parameters.depth
-          var headers =  {
-              'Accept': 'application/json, text/plain, */*',
-              'Accept-Language': this.lang === 'fr' ? 'fre': 'eng'
-            }
-    	 
-         	  
-          var self = this
-          this.parameters.sortOrder =  this.parameters.sortBy === 'title' ? 'ordering': 'reverse';
-   
-          var url = this.srv + 'q?' + Object.keys(this.parameters).map(function (prop) {
-            return prop + '=' + self.parameters[prop]
-          }).join('&');
-           
-          this.$http.get(url, {headers: headers}).then(
-              response => {  this.fill(response.body, depth);}
-           )
+      delete this.parameters.depth
+      var headers =  {
+          'Accept': 'application/json, text/plain, */*',
+          'Accept-Language': this.lang === 'fr' ? 'fre': 'eng'
+       }
+
+      var self = this
+      this.parameters.sortOrder =  this.parameters.sortBy === 'title' ? 'ordering': 'reverse';
+      var url = this.srv + 'q?' + Object.keys(this.parameters).map(function (prop) {
+        return prop + '=' + self.parameters[prop]
+      }).join('&');
+      this.$http.get(url, {headers: headers}).then(
+        response => {  this.fill(response.body, depth);}
+      )
     },
     requestApiOpensearch () {
       var depth = (typeof this.parameters.depth != 'undefined') ? this.parameters.depth : this.depth
-
-          delete this.parameters.depth
+      delete this.parameters.depth
       var self = this
       var url = this.api + (this.api.indexOf('?') > 0 ? '&' :'?');
       url += Object.keys(this.parameters).map(function (prop) {
         return prop + '=' + self.parameters[prop]
       }).join('&');
-      // var url ="INTERFEROGRAM.js";
       this.$http.get(url).then(
           response => {   this.fill(response.body, depth);}
        )
@@ -368,12 +283,12 @@ export default {
      
       for(var key in e.detail.facet) {
         if (e.detail.facet[key].length > 0) {
-	        if (facet === '') {
-	          facet = key +'/' + e.detail.facet[key]
-	        } else {
-	          facet += '&' + key + '/' + e.detail.facet[key]
-	        }
-      	}
+          if (facet === '') {
+            facet = key +'/' + e.detail.facet[key]
+          } else {
+            facet += '&' + key + '/' + e.detail.facet[key]
+          }
+        }
       }
       if (facet !== '') {
        e.detail['facet.q'] = encodeURIComponent(facet)
@@ -465,7 +380,7 @@ export default {
         } else if (self.paging.indexOf(name) >= 0) {
            self.pagingParameters.push(obj)
         }else if (name.indexOf('Date') === -1 && name.indexOf('Cover') === -1) {
-        	self.osParameters.push(obj)
+          self.osParameters.push(obj)
         }
         
       }

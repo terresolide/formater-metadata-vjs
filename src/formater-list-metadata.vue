@@ -74,23 +74,7 @@ export default {
     document.removeEventListener('fmt:metadataListEvent', this.metadataListListener);
     this.metadataListListener = null;
   },
-  mounted () {
-    // this.resize()
-  },
   methods: {
-//      resize () {
-//        if (this.$el) {
-//          var node = this.$el
-//          while (node.offsetWidth === 0) {
-//            node = node.parentNode
-//          }
-//          console.log('resize')
-//          var width = node.offsetWidth
-//          var count = parseInt(width/334)
-//          this.capsuleWidth = parseInt(width / count - 16)
-// 		 this.$emit('records', count)
-//        }
-//      },
      getType (obj) {
        if (obj.type === 'FeatureCollection' || obj.type === 'Feature') {
          this.type = 'geojson'
@@ -99,10 +83,7 @@ export default {
        }
      },
      receiveMetadatas (event) {
-       console.log(this.depth)
-       console.log(event.detail.depth)
        if (event.detail.depth != this.depth) {
-         console.log('RETOURNE')
          return;
        }
        var type = this.getType(event.detail)
@@ -139,6 +120,12 @@ export default {
              }
              properties.layers.push(layer)
            })
+         }
+         if(properties.services.download && properties.services.download.url) {
+           if (!properties.download) {
+             properties.download = []
+           }
+           properties.download.push(properties.services.download)
          }
        }
        return properties
@@ -211,10 +198,11 @@ export default {
            meta.layers.push(self.$gnLinkToLayer(link, id))
            break;
          case 'WWW:DOWNLOAD-1.0-link--download':
+         case 'telechargement':
            if (!meta.download) {
              meta.download = []
            }
-           meta.download.push(link)
+           meta.download.push(self.$gnLinkToDownload(link))
            break;
          case 'WWW:LINK-1.0-http--link':
          default:
@@ -225,6 +213,7 @@ export default {
            break;
          }
        }) 
+       console.log(meta.download);
        return meta;
      },
      searchRelated () {
