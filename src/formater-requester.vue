@@ -268,6 +268,8 @@ export default {
     requestApiOpensearch () {
       var depth = (typeof this.parameters.depth != 'undefined') ? this.parameters.depth : this.depth
       delete this.parameters.depth
+      delete this.parameters.geometry
+      console.log(this.parameters)
       var self = this
       var url = this.api + (this.api.indexOf('?') > 0 ? '&' :'?');
       url += Object.keys(this.parameters).map(function (prop) {

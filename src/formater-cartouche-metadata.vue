@@ -205,7 +205,7 @@ export default {
       var url = this.meta.download[index].url
       // var url = 'SENTINEL1.zip'
       headers = { "Upgrade-Insecure-Requests": 1}
-      this.$http.get(url, {credentials: true, headers: headers).then(
+      this.$http.get(url, {credentials: true}).then(
         response => {console.log(response);}
       )
     },
