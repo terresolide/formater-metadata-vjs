@@ -19,7 +19,7 @@
   <div >
    <!-- components can be view -->
    <div class="mtdt-column-left" >
-       <formater-form :lang="lang" :disableLevel="metadatas.length > 0 ? 1 : 0" ></formater-form>
+       <formater-form :lang="lang" :disableLevel="metadatas.length > 0 ? 1 : 0" :box="box" temporal-extent="temporalExtent"></formater-form>
    </div>
    <div class="mtdt-column-right" >
         <!-- div where append map when enlarge it -->
@@ -83,6 +83,8 @@ export default {
   data() {
     return {
       currentUuid: null,
+      box: null,
+      temporalExtent, 
       depth: null,
       // array breadcrumb of records
       metadatas: [],
@@ -126,12 +128,14 @@ export default {
     receiveMetadata (event) {
       this.metadatas.push(event.detail.meta)
       this.currentUuid = event.detail.meta['geonet:info'].uuid
+      this.box = event.detail.meta.box
     },
     resetMetadata (event) {
       this.metadatas.pop()
       if (this.metadatas.length > 0) {
         this.currentUuid = this.metadatas[this.metadatas.length - 1]['geonet:info'].uuid
         var parameters = this.metadatas[this.metadatas.length - 1].osParameters
+        this.box = this.metadatas[this.metadatas.length - 1].box
       } else {
         this.currentUuid = null
         var parameters = []

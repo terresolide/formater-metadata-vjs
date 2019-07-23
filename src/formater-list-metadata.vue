@@ -64,11 +64,7 @@ export default {
     this.$i18n.locale = this.lang
     this.$setGnLocale(this.lang)
     this.metadataListListener = this.receiveMetadatas.bind(this)
-    document.addEventListener('fmt:metadataListEvent', this.metadataListListener);
- //   this.resizeListener = this.resize.bind(this)
- //   window.addEventListener('resize', this.resizeListener);
-    console.log('charge formater-list-metadata pour depth = ' +this.depth)
-    console.log('capsuleWidth = ' + this.capsuleWidth)
+    document.addEventListener('fmt:metadataListEvent', this.metadataListListener)
   },
   destroyed () {
     document.removeEventListener('fmt:metadataListEvent', this.metadataListListener);
@@ -213,7 +209,6 @@ export default {
            break;
          }
        }) 
-       console.log(meta.download);
        return meta;
      },
      searchRelated () {
