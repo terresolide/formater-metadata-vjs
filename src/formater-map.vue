@@ -39,7 +39,7 @@ export default {
     this.$i18n.locale = this.lang
     this.metadataListListener = this.receiveMetadatas.bind(this)
     document.addEventListener('fmt:metadataListEvent', this.metadataListListener);
-    this.metadataListener = this.selectBbox.bind(this)
+    this.metadataListener = this.receiveMetadata.bind(this)
     document.addEventListener('fmt:metadataEvent', this.metadataListener);
     this.selectBboxListener = this.selectBbox.bind(this)
     document.addEventListener('fmt:selectBboxEvent', this.selectBboxListener)
@@ -90,7 +90,10 @@ export default {
      layers: [],
      selected: [],
      depth: 0,
+     // bounds of all records display for a depth
      bounds: [],
+     // bounds for the displayed record
+     metadataBoundsList: [],
      defaultRectangleOptions: {
        interactive: false,
      //  fillColor:'orange', 
@@ -160,7 +163,7 @@ export default {
    },
    addLayer (event) {
      var layer = event.detail.layer
-     var bounds = this.searchBboxByUuid(event.detail.uuid)
+     var bounds = this.searchBboxById(event.detail.id)
      console.log(layer.id)
      switch (layer.type) {
      case 'OGC:WMS':
@@ -178,7 +181,7 @@ export default {
          this.layers[this.depth] = new Map()
        }
        this.layers[this.depth].set(layer.id, wmsLayer)
-       var bounds = this.searchBboxByUuid(event.detail.uuid)
+       var bounds = this.searchBboxById(event.detail.id)
        if (bounds) {
          this.map.fitBounds(bounds, {animate: true,  padding: [50,50]})
        }
@@ -215,6 +218,11 @@ export default {
         this.type = 'geonetwork'
       }
       return this.type
+   },
+   receiveMetadata(event) {
+     var bounds = this.selectBbox(event)
+     console.log(bounds)
+     this.$emit('boundsChange', bounds)
    },
    receiveMetadatas (event) {
      if (this.bboxLayer[this.depth]) {
@@ -273,18 +281,18 @@ export default {
      var self = this
      if (!data.metadata.forEach) {
        // only one record
-       var uuid = data.metadata['geonet:info'].uuid
-       this.extractBbox(data.metadata.geoBox, uuid)
+       var id = data.metadata['geonet:info'].id
+       this.extractBbox(data.metadata.geoBox, id)
        
      } else {
        // array of records
        data.metadata.forEach( function (meta, index) {
-         var uuid = meta['geonet:info'].uuid
-         self.extractBbox(meta.geoBox, uuid)
+         var id = meta['geonet:info'].uuid
+         self.extractBbox(meta.geoBox, id)
        })
      }
    },
-   extractBbox(bbox, uuid) {
+   extractBbox(bbox, id) {
      if (!bbox) {
        return
      }
@@ -303,7 +311,7 @@ export default {
 	     var lngmax = Math.max(tab[0], tab[2])
 	     var path = [[latmin, lngmin], [latmax, lngmin], [latmax, lngmax], [latmin, lngmax], [latmin, lngmin]]
 	     var bounds = L.latLngBounds(L.latLng(latmax, lngmin), L.latLng(latmin, lngmax));
-	     options = Object.assign(options, {uuid:uuid})
+	     options = Object.assign(options, {id:id})
 	     var rectangle = L.polygon(path,options)
 	//      rectangle.on('mouseover', function(layer) {
 	//        console.log(layer.target.options.id)
@@ -321,17 +329,19 @@ export default {
      console.log('select Bbox')
      this.unselectBbox()
      if (!event.detail.meta) {
-       return;
+       return null;
      }
-
-     console.log(event.detail.meta.uuid)
-     if (event.detail.meta.uuid) {
-       console.log(event.detail.meta.uuid)
-       this.selectBboxByUuid(event.detail.meta.uuid, event.detail.temporaly)
+     var bounds = null
+     if (event.detail.meta.id) {
+       console.log(event.detail.meta.id)
+       bounds =this.selectBboxById(event.detail.meta.id, event.detail.temporaly)
+       this.metadataBoundsList[event.detail.meta.id] = bounds
 
      } else if (event.detail.meta.id) {
-        this.selectBboxByUuid(event.detail.meta.id, event.detail.temporaly)
+        bounds = this.selectBboxById(event.detail.meta.id, event.detail.temporaly)
+        this.metadataBoundsList[event.detail.meta.id] = bounds
      }
+     return bounds
 
    },
  
@@ -364,6 +374,10 @@ export default {
      this.layers[depth].clear()
    },
    back (event) {
+     if (this.metadataBoundsList.length > 0) {
+        this.metadataBoundsList.pop()
+        var bounds = this.metadataBoundsList.length > 0 ? this.metadataBoundsList[this.metadataBoundsList.length - 1] : null
+     }
      this.unselectBbox()
      console.log('depth = ' + this.depth)
      console.log('event depth = ' + event.detail.depth)
@@ -394,11 +408,11 @@ export default {
          this.map.fitBounds(this.bounds[this.depth])
        }
    },
-   searchBboxByUuid (uuid) {
+   searchBboxById (id) {
      var self = this
      var bounds = null
      this.bboxLayer[this.depth].eachLayer(function(layer) {
-       if (layer.options.uuid === uuid || (layer.feature && layer.feature.id === uuid)) {
+       if (layer.options.id === id || (layer.feature && layer.feature.id === id)) {
          var bds = layer.getBounds()
          if (!bounds) {
            bounds = bds
@@ -411,12 +425,12 @@ export default {
      return bounds
      
    },
-   selectBboxByUuid (uuid, temporaly) {
+   selectBboxById (id, temporaly) {
 
      var self = this
      var bounds = null
      this.bboxLayer[this.depth].eachLayer(function(layer) {
-       if (layer.options.uuid === uuid || (layer.feature && layer.feature.id === uuid)) {
+       if (layer.options.id === id || (layer.feature && layer.feature.id === id)) {
          self.setSelected(layer)
          var bds = layer.getBounds()
          if (!bounds) {
@@ -434,7 +448,11 @@ export default {
          setTimeout(() => {
 	        self.unselectBbox()
 	     }, 2000);
+       return null
+     } else {
+       return bounds
      }
+    
    },
    setSelected (layer) {
      this.selected.push(layer)

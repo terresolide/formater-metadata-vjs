@@ -56,6 +56,10 @@ export default {
     background: {
       type: String,
       default: 'none'
+    },
+    searchArea: {
+      type: Object,
+      default: null
     }
   },
   watch: {
@@ -283,7 +287,6 @@ export default {
      
    },
    close (event) {
-     console.log(event.detail)
      this.drawing = false
    },
    movestart (evt) {
@@ -329,6 +332,21 @@ export default {
             bbox.west = L.modLng(bbox.west);
             bbox.west = bbox.west === 180 ? -180 : bbox.west
             bbox.east = Math.min(bbox.west + delta, 180)
+          }
+          console.log(this.searchArea)
+          if (this.searchArea) {
+            if (bbox.west < this.searchArea.getWest()) {
+              bbox.west = this.searchArea.getWest()
+            }
+            if (bbox.east > this.searchArea.getEast()) {
+              bbox.east = this.searchArea.getEast()
+            }
+            if (bbox.north > this.searchArea.getNorth()) {
+              bbox.north = this.searchArea.getNorth()
+            }
+            if (bbox.south < this.searchArea.getSourth()) {
+              bbox.south = this.searchArea.getSouth()
+            }
           }
           // redraw if bbox change
           this.drawLayers.clearLayers()

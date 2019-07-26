@@ -54,9 +54,7 @@ export default {
       // list of children
       related: [],
       metadataListListener: null,
-     // resizeListener: null,
       type: null,
-     // capsuleWidth: 300,
       flatsimLayerList: ['CLASSIFICATION', 'CONFIDENCE', 'PIXELS_VALIDITY'],
     }
   },
@@ -157,7 +155,7 @@ export default {
      },
      treatment (meta, uuid) {
        meta.logo = process.env.GEONETWORK + meta.logo
-       meta.uuid = uuid
+       meta.id = uuid
        if (meta.abstract) {
          meta.abstract = meta.abstract.replace(/(?:\\[rn]|[\r\n])/g, '<br />');
        }
