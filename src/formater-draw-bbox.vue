@@ -76,6 +76,10 @@ export default {
           this.drawControl.addTo(this.map)
         }
     },
+    searchArea (newvalue) {
+      console.log(newvalue)
+     
+    },
     color (newvalue) {
       this.$el.querySelector(".mtdt-header").style.color = newvalue
     },
@@ -186,11 +190,7 @@ export default {
      this.map.on(L.Draw.Event.CREATED, function (e) {
        let layer = e.layer
        let bounds = e.layer.getBounds()
-//        let bbox = { north: bounds.getNorthEast().lat,
-//                     south: bounds.getSouthWest().lat,
-//                     east: bounds.getNorthEast().lng,
-//                     west: bounds.getSouthWest().lng
-//        }
+       console.log('LAYER CREATED')
        
        let bbox = self.validBbox(bounds)
        // trigger event fmt:selectAreaChange
@@ -203,6 +203,7 @@ export default {
   
      this.map.on(L.Draw.Event.EDITED, function (e) {
        let bounds
+       console.log('L.Draw.Event.EDITED')
        e.layers.eachLayer(function (layer) {
          bounds = layer.getBounds()
        })
@@ -257,6 +258,7 @@ export default {
        self.map.invalidateSize();
        self.selectAreaChange(event)
      }
+    
      setTimeout(next, 5)
    },
    drawEnd () {
@@ -278,11 +280,18 @@ export default {
        bbox2.east = Math.max(bbox.east, bbox.west)
        var bounds = [[bbox2.south, bbox2.west], [bbox2.north, bbox2.east]]
     // trigger event fmt:selectAreaChange
-       let e = new CustomEvent('fmt:selectAreaChange', {detail: bbox2})
-       document.dispatchEvent(e)
+       bounds = this.validBbox(bounds)
        var rectangle = L.rectangle(bounds, {color:'#ff0000'})
        this.drawLayers.addLayer(rectangle)
        this.map.fitBounds(bounds)
+       
+       let e = new CustomEvent('fmt:selectAreaChange', {detail: bbox2})
+       document.dispatchEvent(e)
+     } 
+     if (this.searchArea && !bbox) {
+       
+       this.map.fitBounds(this.searchArea, {padding: [10, 10]})
+       this.map.setMaxBounds(this.searchArea)
      }
      
    },
@@ -314,12 +323,14 @@ export default {
      this.map.invalidateSize()
    },
    validBbox (bounds) {
+       console.log('VALID BBOX')
        if (!bounds) {
          return null
        }
-       let bbox = { north: bounds.getNorthEast().lat,
-         south: bounds.getSouthWest().lat,
-         east: bounds.getNorthEast().lng,
+       console.log(bounds)
+       let bbox = { north: bounds.getNorth(),
+         south: bounds.getSouth(),
+         east: bounds.getEast(),
          west: bounds.getSouthWest().lng
        }
        // valid bbox
@@ -334,20 +345,22 @@ export default {
             bbox.east = Math.min(bbox.west + delta, 180)
           }
           console.log(this.searchArea)
-          if (this.searchArea) {
-            if (bbox.west < this.searchArea.getWest()) {
-              bbox.west = this.searchArea.getWest()
-            }
-            if (bbox.east > this.searchArea.getEast()) {
-              bbox.east = this.searchArea.getEast()
-            }
-            if (bbox.north > this.searchArea.getNorth()) {
-              bbox.north = this.searchArea.getNorth()
-            }
-            if (bbox.south < this.searchArea.getSourth()) {
-              bbox.south = this.searchArea.getSouth()
-            }
-          }
+         
+       }
+       if (this.searchArea) {
+         console.log('test SEARCH AREA')
+         if (bbox.west < this.searchArea.getWest()) {
+           bbox.west = this.searchArea.getWest()
+         }
+         if (bbox.east > this.searchArea.getEast()) {
+           bbox.east = this.searchArea.getEast()
+         }
+         if (bbox.north > this.searchArea.getNorth()) {
+           bbox.north = this.searchArea.getNorth()
+         }
+         if (bbox.south < this.searchArea.getSouth()) {
+           bbox.south = this.searchArea.getSouth()
+         }
           // redraw if bbox change
           this.drawLayers.clearLayers()
           var bounds = [[bbox.south, bbox.west], [bbox.north, bbox.east]]

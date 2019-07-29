@@ -211,6 +211,9 @@ export default {
     },
     updateClass() {
       var node = this.$el.querySelector('.mtdt-layers')
+      if (!node) {
+        return
+      }
       var nodes = node.querySelectorAll('i')
       var self = this
       nodes.forEach( function (node) {

@@ -356,16 +356,12 @@ export default {
       extractDescribeParameters (parameters) {
         var parser = new DOMParser()
         var xml = parser.parseFromString(parameters, 'text/xml')
-        console.log(xml)
         var urls = xml.firstChild.childNodes
        var url = null
-       console.log(urls)
         urls.forEach(function (node) {
            if (node.tagName && node.tagName.toLowerCase() === 'url' && node.getAttribute('type').indexOf('json') >= 0) {
              var template = node.getAttribute('template')
-             console.log(template);
              var extract = template.match(/^(.*(?:(?:search.json\?)|(?:\?format=FLATSIM))).*$/)
-             console.log(extract);
              if( extract && extract[1] && extract[1] != ''){
                  url = node;
              }
@@ -376,7 +372,6 @@ export default {
         }
         var template = url.getAttribute('template')
         var extract = template.match(/^(.*(?:(?:search.json\?)|(?:\?format=FLATSIM))).*$/)
-        console.log(extract)
         if (!extract[1]) {
           return
         } else {

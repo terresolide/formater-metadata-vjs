@@ -191,6 +191,7 @@ export default {
       }
       delete e.detail.startDefault
       delete e.detail.endDefault
+      delete e.detail.box
      // delete e.detail.depth
       delete e.detail.recordPerPage
       if (e.detail.parentUuid) {

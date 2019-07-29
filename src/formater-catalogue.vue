@@ -83,7 +83,9 @@ export default {
   data() {
     return {
       currentUuid: null,
-     // temporalExtent: null, 
+      box: null,
+      temporalExtent:null, 
+
       depth: null,
       // array breadcrumb of records
       metadatas: [],

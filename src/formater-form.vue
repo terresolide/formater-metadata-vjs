@@ -27,7 +27,7 @@
   <div class="formater-input-group" style="margin:10px; width:calc(100% - 20px);">
      <input id="any" name="any" v-model="fulltextSearch" :placeholder="$t('search')" @change="changeText" @keypress="changeTextOnEnter" /><i class="fa fa-search"></i>
  </div>
- <formater-map :lang="lang" @bounds-change="boundsChange"></formater-map>
+ <formater-map :lang="lang" @boundsChange="boundsChange"></formater-map>
  <formater-search-box header-icon-class="fa fa-globe" open-icon-class="fa fa-caret-right" :title="$t('spatial_extend')" :deployed="false" type="empty">
  <formater-spatial-search :bounds="bounds"></formater-spatial-search>
  </formater-search-box>
