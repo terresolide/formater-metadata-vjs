@@ -193,6 +193,7 @@ export default {
     },
     handleBounds: function(e){
     console.log('change bounds')
+      console.log(e.detail)
       this.north = e.detail.north;
       this.south = e.detail.south;
       this.east = e.detail.east;

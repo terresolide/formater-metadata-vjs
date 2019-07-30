@@ -10,8 +10,8 @@
 <template>
  <div class="mtdt-draw-bbox"  v-show="drawing">
  <div class="mtdt-header" >
-  	<span class="close fa fa-close" @click="drawEnd" ></span>
-	<h3  @mousedown="movestart" style="padding:10px;margin:0;">{{$t('draw_bbox')}}</h3>
+       <span class="close fa fa-close" @click="drawEnd" ></span>
+     <h3  @mousedown="movestart" style="padding:10px;margin:0;">{{$t('draw_bbox')}}</h3>
 </div>
   <div id="fmtDraw" class="mtdt-small"></div>
  </div>
@@ -20,22 +20,22 @@
 import L from 'leaflet';
 require('leaflet-draw')
 L.modLat = function( lat ){
-	lat = lat%180;
-	if( lat > 90 ){
-		lat -= 180;
-	}else if( lat < -90 ){
-		lat += 180;
-	}
-	return lat;
+     lat = lat%180;
+     if( lat > 90 ){
+          lat -= 180;
+     }else if( lat < -90 ){
+          lat += 180;
+     }
+     return lat;
 }
 L.modLng = function( lng ){
-	lng = lng%360;
-	if( lng > 180 ){
-		lng -= 360;
-	}else if( lng < -180 ){
-		lng += 360;
-	}
-	return lng;
+     lng = lng%360;
+     if( lng > 180 ){
+          lng -= 360;
+     }else if( lng < -180 ){
+          lng += 360;
+     }
+     return lng;
 }
 
 // import {Map, Control, LatLng, tileLayer, TileLayer} from 'leaflet'
@@ -64,8 +64,8 @@ export default {
   },
   watch: {
     lang (newvalue) {
-    	this.$i18n.locale = newvalue  
-    	if (newvalue === 'fr') {
+         this.$i18n.locale = newvalue  
+         if (newvalue === 'fr') {
           L.drawLocal = require('formater-geotiff-visualizer-vjs/src/module/leaflet.draw.fr.js')
         } else {
           L.drawLocal = require('formater-geotiff-visualizer-vjs/src/module/leaflet.draw.en.js')
@@ -77,7 +77,18 @@ export default {
         }
     },
     searchArea (newvalue) {
-      console.log(newvalue)
+      this.initBoundsLayer()
+      var bounds = this.getBounds()
+      var bbox = null
+      if (bounds.isValid()) {
+         bbox = {
+           north: bounds.getNorth(),
+           east: bounds.getEast(),
+           west: bounds.getWest(),
+           south: bounds.getSouth()
+         }
+      }
+      this.selectAreaChange({detail: bbox})
      
     },
     color (newvalue) {
@@ -89,7 +100,7 @@ export default {
   },
   created: function() {
     this.$i18n.locale = this.lang
-  	if (this.lang === 'fr') {
+       if (this.lang === 'fr') {
       L.drawLocal = require('formater-geotiff-visualizer-vjs/src/module/leaflet.draw.fr.js')
     } 
     // open and close
@@ -100,7 +111,7 @@ export default {
     this.bboxChangeListener = this.selectAreaChange.bind(this)
     document.addEventListener('fmt:bboxChange', this.bboxChangeListener)
     // drag and drop
-  	this.mousemoveListener = this.move.bind(this)
+       this.mousemoveListener = this.move.bind(this)
     document.addEventListener('mousemove', this.mousemoveListener)
     this.mouseupListener = this.moveEnd.bind(this)
     document.addEventListener('mouseup', this.mouseupListener)
@@ -127,8 +138,8 @@ export default {
     this.$el.querySelector(".mtdt-header").style.color = this.color
     this.$el.querySelector(".mtdt-header").style.background = this.background
     this.initHeight()
-    	// console.log(this.$el)
-  	// this.resizeListener = new ResizeObserver(this.resize).observe(this.$el)
+         // console.log(this.$el)
+       // this.resizeListener = new ResizeObserver(this.resize).observe(this.$el)
     this.initPosition()
     this.initMap()
   },
@@ -139,7 +150,8 @@ export default {
      resizeListener: null,
      drawing: false,
      map: null,
-     bounds: null,
+     // the search limit on map
+     boundsLayer: null,
      drawControl: null,
      drawLayers: null,
      selected: false,
@@ -161,6 +173,20 @@ export default {
      var height = this.$el.offsetHeight - this.$el.querySelector('.mtdt-header').offsetHeight -4
      console.log(height)
      this.$el.querySelector('#fmtDraw').style.height = height +'px'
+   },
+   removeBoundsLayer () {
+     if (this.boundsLayer) {
+       this.boundsLayer.remove()
+       this.boundsLayer = null
+     }
+   },
+   initBoundsLayer () {
+     this.removeBoundsLayer()
+     if (this.searchArea) {
+       this.boundsLayer = L.rectangle(this.searchArea, {color:'#cccccc', fillOpacity: 0.2, weight: 1})
+       this.boundsLayer.addTo(this.map)
+       this.map.fitBounds(this.boundsLayer.getBounds())
+     }
    },
    initDrawControl() {
      if (this.drawControl) {
@@ -193,11 +219,13 @@ export default {
        console.log('LAYER CREATED')
        
        let bbox = self.validBbox(bounds)
+       console.log(bbox)
        // trigger event fmt:selectAreaChange
        let event = new CustomEvent('fmt:selectAreaChange', {detail: bbox})
        document.dispatchEvent(event)
-       self.drawLayers.clearLayers()
-       self.drawLayers.addLayer(layer)
+      // self.drawLayers.clearLayers()
+      // var rectangle = L.rectangle([[bbox.south, bbox.west], [bbox.north, bbox.east]], {color:'#ff0000'})
+      // self.drawLayers.addLayer(rectangle)
 
      })
   
@@ -210,7 +238,9 @@ export default {
 
        
         let bbox = self.validBbox(bounds)
-       
+//        self.drawLayers.clearLayers()
+//        var rectangle = L.rectangle([[bbox.south, bbox.west], [bbox.north, bbox.east]], {color:'#ff0000'})
+//        self.drawLayers.addLayer(rectangle)
        // trigger event fmt:selectAreaChange
        let event = new CustomEvent('fmt:selectAreaChange', {detail: bbox})
        document.dispatchEvent(event)
@@ -236,20 +266,21 @@ export default {
      }
      var container = this.$el.querySelector('#fmtDraw');
      this.map = L.map( container).setView([51.505, -0.09], 2);
-     this.bounds = this.map.getBounds()
- 		
+           
      L.tileLayer('//server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
-			{
-			  attribution: 'Tiles © <a href="https://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer">ArcGIS</a>',
-		      maxZoom: 18,
-		      minZoom:1
-		      
-		    }).addTo( this.map );
+               {
+              attribution: 'Tiles © <a href="https://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer">ArcGIS</a>',
+             maxZoom: 18,
+             minZoom:1
+             
+           }).addTo( this.map );
+     this.initBoundsLayer()
      this.initDrawControl()
-	
+     
    },
    open (event) {
      console.log('open')
+     console.log(event)
      this.drawing = true
      var self = this
      var next = function () {
@@ -261,15 +292,19 @@ export default {
     
      setTimeout(next, 5)
    },
+   getBounds () {
+     return this.drawLayers.getBounds()
+   },
    drawEnd () {
      var event = new CustomEvent('fmt:drawClose')
      document.dispatchEvent(event)
    },
    selectAreaChange (event) {
      this.drawLayers.clearLayers()
-
-     if (event.detail.north !== "" && event.detail.south !== "" && event.detail.east !== "" && event.detail.west !== "") {
-       var bbox = event.detail
+     var bbox = event.detail
+     var hasBbox = false
+     if (bbox && bbox.north !== "" && bbox.south !== "" && bbox.east !== "" && bbox.west !== "") {
+       hasBbox = true
        for(var key in bbox){
          bbox[key] = parseFloat(bbox[key]);
        }
@@ -280,18 +315,23 @@ export default {
        bbox2.east = Math.max(bbox.east, bbox.west)
        var bounds = [[bbox2.south, bbox2.west], [bbox2.north, bbox2.east]]
     // trigger event fmt:selectAreaChange
-       bounds = this.validBbox(bounds)
-       var rectangle = L.rectangle(bounds, {color:'#ff0000'})
+       bbox = this.validBbox(L.latLngBounds(bounds))
+       var rectangle = L.rectangle([[bbox.south, bbox.west], [bbox.north, bbox.east]], {color:'#ff0000'})
        this.drawLayers.addLayer(rectangle)
-       this.map.fitBounds(bounds)
-       
-       let e = new CustomEvent('fmt:selectAreaChange', {detail: bbox2})
+
+       this.map.fitBounds(rectangle.getBounds())
+       let e = new CustomEvent('fmt:selectAreaChange', {detail: bbox})
        document.dispatchEvent(e)
      } 
-     if (this.searchArea && !bbox) {
+     console.log(this.searchArea)
+     console.log(bbox)
+     if (this.searchArea) {
+       console.log('not bbox0')
+       this.map.setMaxBounds(this.boundsLayer.getBounds())
+       if (!hasBbox) {
+         this.map.fitBounds(this.boundsLayer.getBounds(), {padding: [10, 10]})
+       }
        
-       this.map.fitBounds(this.searchArea, {padding: [10, 10]})
-       this.map.setMaxBounds(this.searchArea)
      }
      
    },
@@ -311,8 +351,8 @@ export default {
      this.pos.x = evt.clientX
      this.pos.y = evt.clientY
      if (this.selected) {
-     	this.$el.style.left = (this.pos.x - this.delta.x) + 'px'
-     	this.$el.style.top = (this.pos.y - this.delta.y) + 'px'
+          this.$el.style.left = (this.pos.x - this.delta.x) + 'px'
+          this.$el.style.top = (this.pos.y - this.delta.y) + 'px'
      }
    },
    moveEnd () {
@@ -463,10 +503,10 @@ div[id="fmtDraw"] a.leaflet-draw-edit-remove:before{
    cursor: move;
 }
 .mtdt-draw-bbox span.close{
-	position:absolute;
-	top:2px;
-	right:4px;
-	cursor: pointer;
+     position:absolute;
+     top:2px;
+     right:4px;
+     cursor: pointer;
 }
  @media screen and (min-width: 1024px) {
     .mtdt-draw-bbox {
