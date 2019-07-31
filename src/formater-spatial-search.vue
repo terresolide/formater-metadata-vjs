@@ -192,8 +192,6 @@ export default {
       document.dispatchEvent(event)
     },
     handleBounds: function(e){
-    console.log('change bounds')
-      console.log(e.detail)
       this.north = e.detail.north;
       this.south = e.detail.south;
       this.east = e.detail.east;
@@ -221,11 +219,11 @@ export default {
     },
     ensureTheme: function() {
       if ((this.$el) && (this.$el.querySelector)) {
-           var color3 =  this.$shadeColor( this.theme.emphasis, 0.8);
-           var nodes= this.$el.querySelectorAll(".formater-input-group");
-           [].forEach.call(nodes, function(node){
-             node.style.backgroundColor = color3;
-           })
+        var color3 =  this.$shadeColor( this.theme.emphasis, 0.8);
+        var nodes= this.$el.querySelectorAll(".formater-input-group");
+        [].forEach.call(nodes, function(node){
+          node.style.backgroundColor = color3;
+        })
            
       }
     }

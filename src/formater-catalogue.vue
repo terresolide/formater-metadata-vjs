@@ -83,7 +83,7 @@ export default {
   data() {
     return {
       currentUuid: null,
-      box: null,
+      // bbox: null,
       temporalExtent:null, 
 
       depth: null,
@@ -134,6 +134,7 @@ export default {
     receiveMetadata (event) {
       this.metadatas.push(event.detail.meta)
       this.currentUuid = event.detail.meta['geonet:info'].uuid
+      this.bounds = event.detail.meta.bounds
      // this.box = event.detail.meta.box
     },
     resetMetadata (event) {

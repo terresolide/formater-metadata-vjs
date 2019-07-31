@@ -221,7 +221,7 @@ export default {
    },
    receiveMetadata(event) {
      var bounds = this.selectBbox(event)
-     console.log(bounds)
+     console.log(this.metadataBoundsList)
      this.$emit('boundsChange', bounds)
    },
    receiveMetadatas (event) {
@@ -333,13 +333,8 @@ export default {
      }
      var bounds = null
      if (event.detail.meta.id) {
-       console.log(event.detail.meta.id)
        bounds =this.selectBboxById(event.detail.meta.id, event.detail.temporaly)
-       this.metadataBoundsList[event.detail.meta.id] = bounds
-
-     } else if (event.detail.meta.id) {
-        bounds = this.selectBboxById(event.detail.meta.id, event.detail.temporaly)
-        this.metadataBoundsList[event.detail.meta.id] = bounds
+       this.metadataBoundsList.push(bounds)
      }
      return bounds
 
@@ -374,10 +369,14 @@ export default {
      this.layers[depth].clear()
    },
    back (event) {
+     console.log(this.metadataBoundsList)
+     var bounds = null
      if (this.metadataBoundsList.length > 0) {
         this.metadataBoundsList.pop()
         var bounds = this.metadataBoundsList.length > 0 ? this.metadataBoundsList[this.metadataBoundsList.length - 1] : null
+        
      }
+     this.$emit('boundsChange', bounds)
      this.unselectBbox()
      console.log('depth = ' + this.depth)
      console.log('event depth = ' + event.detail.depth)

@@ -134,12 +134,9 @@ export default {
     this.resizeListener = null
   },
   mounted: function () {
-    console.log('mounted')
     this.$el.querySelector(".mtdt-header").style.color = this.color
     this.$el.querySelector(".mtdt-header").style.background = this.background
     this.initHeight()
-         // console.log(this.$el)
-       // this.resizeListener = new ResizeObserver(this.resize).observe(this.$el)
     this.initPosition()
     this.initMap()
   },
@@ -148,267 +145,274 @@ export default {
      mousemoveListener: null,
      mouseupListener: null,
      resizeListener: null,
+     drawStartListener: null,
+     drawEndListener: null,
+     bboxChangeListener: null,
+     resetListener: null,
      drawing: false,
      map: null,
      // the search limit on map
      boundsLayer: null,
+     bbox: null,
      drawControl: null,
      drawLayers: null,
      selected: false,
+     intersection: null,
      delta: {x: 0, y:0},
      pos: {x:0, y:0},
     }
   },
   methods: {
-   initPosition () {
-     
-     var left = (this.$el.parentNode.offsetWidth - this.$el.offsetWidth) / 2;
-     var top = 30;
-     this.$el.style.left = left + 'px';
-     this.$el.style.top = top + 'px';
-     this.pos.x = left
-     this.pos.y = this.$el.offsetTop
-   },
-   initHeight () {
-     var height = this.$el.offsetHeight - this.$el.querySelector('.mtdt-header').offsetHeight -4
-     console.log(height)
-     this.$el.querySelector('#fmtDraw').style.height = height +'px'
-   },
-   removeBoundsLayer () {
-     if (this.boundsLayer) {
-       this.boundsLayer.remove()
-       this.boundsLayer = null
-     }
-   },
-   initBoundsLayer () {
-     this.removeBoundsLayer()
-     if (this.searchArea) {
-       this.boundsLayer = L.rectangle(this.searchArea, {color:'#cccccc', fillOpacity: 0.2, weight: 1})
-       this.boundsLayer.addTo(this.map)
-       this.map.fitBounds(this.boundsLayer.getBounds())
-     }
-   },
-   initDrawControl() {
-     if (this.drawControl) {
-       return
-     }
-     this.drawLayers = new L.FeatureGroup()
-     this.map.addLayer(this.drawLayers)
-     this.drawControl = new L.Control.Draw({
-       draw: {
-         rectangle: {
-           shapeOptions: {
-             color: '#ff0000'
-           }
-         },
-         circlemarker: false,
-         circle: false,
-         marker: false,
-         polygon: false,
-         polyline: false
-       },
-       edit: {
-         featureGroup: this.drawLayers
-       }
-     })
-     this.drawControl.addTo(this.map)
-     var self = this
-     this.map.on(L.Draw.Event.CREATED, function (e) {
-       let layer = e.layer
-       let bounds = e.layer.getBounds()
-       console.log('LAYER CREATED')
-       
-       let bbox = self.validBbox(bounds)
-       console.log(bbox)
-       // trigger event fmt:selectAreaChange
-       let event = new CustomEvent('fmt:selectAreaChange', {detail: bbox})
-       document.dispatchEvent(event)
-      // self.drawLayers.clearLayers()
-      // var rectangle = L.rectangle([[bbox.south, bbox.west], [bbox.north, bbox.east]], {color:'#ff0000'})
-      // self.drawLayers.addLayer(rectangle)
-
-     })
-  
-     this.map.on(L.Draw.Event.EDITED, function (e) {
-       let bounds
-       console.log('L.Draw.Event.EDITED')
-       e.layers.eachLayer(function (layer) {
-         bounds = layer.getBounds()
-       })
-
-       
-        let bbox = self.validBbox(bounds)
-//        self.drawLayers.clearLayers()
-//        var rectangle = L.rectangle([[bbox.south, bbox.west], [bbox.north, bbox.east]], {color:'#ff0000'})
-//        self.drawLayers.addLayer(rectangle)
-       // trigger event fmt:selectAreaChange
-       let event = new CustomEvent('fmt:selectAreaChange', {detail: bbox})
-       document.dispatchEvent(event)
-     })
-
-    this.map.on(L.Draw.Event.DELETED , function (e) {
-      let bbox = { 
+    initPosition () {
+      var left = (this.$el.parentNode.offsetWidth - this.$el.offsetWidth) / 2;
+      this.$el.parentNode.style.position = 'absolute'
+      var top = 25;
+      this.$el.style.left = left + 'px';
+      this.$el.style.top = top + 'px';
+      this.pos.x = left
+      this.pos.y = this.$el.offsetTop
+    },
+    initHeight () {
+      var height = this.$el.offsetHeight - this.$el.querySelector('.mtdt-header').offsetHeight -4
+      this.$el.querySelector('#fmtDraw').style.height = height +'px'
+    },
+    removeBoundsLayer () {
+      if (this.boundsLayer) {
+        this.boundsLayer.remove()
+        this.boundsLayer = null
+        if (this.intersection) {
+          this.intersection.remove()
+          this.intersection = null
+        }
+      }
+    },
+    initBoundsLayer () {
+      this.removeBoundsLayer()
+      if (this.searchArea) {
+        this.boundsLayer = L.rectangle(this.searchArea, {color:'#cccccc', fillOpacity: 0.2, weight: 1})
+        this.boundsLayer.addTo(this.map)
+        this.map.fitBounds(this.boundsLayer.getBounds())
+        this.drawIntersection()
+    
+      }
+    },
+    initDrawControl() {
+      if (this.drawControl) {
+        return
+      }
+      this.drawLayers = new L.FeatureGroup()
+      this.map.addLayer(this.drawLayers)
+      this.drawControl = new L.Control.Draw({
+        draw: {
+          rectangle: {
+            shapeOptions: {
+              color: '#ff0000'
+            }
+          },
+          circlemarker: false,
+          circle: false,
+          marker: false,
+          polygon: false,
+          polyline: false
+        },
+        edit: {
+          featureGroup: this.drawLayers
+        }
+      })
+      this.drawControl.addTo(this.map)
+      var self = this
+      this.map.on(L.Draw.Event.CREATED, function (e) {
+        let layer = e.layer
+        let bounds = e.layer.getBounds()
+        self.bbox = self.drawValidBbox(bounds)
+        self.drawIntersection()
+        // trigger event fmt:selectAreaChange
+        let event = new CustomEvent('fmt:selectAreaChange', {detail: self.bbox})
+        document.dispatchEvent(event)
+      })
+    
+      this.map.on(L.Draw.Event.EDITED, function (e) {
+        let bounds
+        e.layers.eachLayer(function (layer) {
+          bounds = layer.getBounds()
+        })
+         self.bbox = self.drawValidBbox(bounds)
+         self.drawIntersection()
+        // trigger event fmt:selectAreaChange
+        let event = new CustomEvent('fmt:selectAreaChange', {detail: self.bbox})
+        document.dispatchEvent(event)
+      })
+    
+      this.map.on(L.Draw.Event.DELETED , function (e) {
+        var returnedBbox = { 
           north: '',
           south: '',
           east: '',
           west: ''
-       }
-      // trigger event fmt:selectAreaChange
-      let event = new CustomEvent('fmt:selectAreaChange', {detail: bbox})
-      document.dispatchEvent(event)
-     })
-
-   
-   },
-   initMap () {
-     if (this.map) {
-       return;
-     }
-     var container = this.$el.querySelector('#fmtDraw');
-     this.map = L.map( container).setView([51.505, -0.09], 2);
-           
-     L.tileLayer('//server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
-               {
-              attribution: 'Tiles © <a href="https://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer">ArcGIS</a>',
-             maxZoom: 18,
-             minZoom:1
-             
-           }).addTo( this.map );
-     this.initBoundsLayer()
-     this.initDrawControl()
-     
-   },
-   open (event) {
-     console.log('open')
-     console.log(event)
-     this.drawing = true
-     var self = this
-     var next = function () {
-       self.initHeight();
-       self.initPosition();
-       self.map.invalidateSize();
-       self.selectAreaChange(event)
-     }
-    
-     setTimeout(next, 5)
-   },
-   getBounds () {
-     return this.drawLayers.getBounds()
-   },
-   drawEnd () {
-     var event = new CustomEvent('fmt:drawClose')
-     document.dispatchEvent(event)
-   },
-   selectAreaChange (event) {
-     this.drawLayers.clearLayers()
-     var bbox = event.detail
-     var hasBbox = false
-     if (bbox && bbox.north !== "" && bbox.south !== "" && bbox.east !== "" && bbox.west !== "") {
-       hasBbox = true
-       for(var key in bbox){
-         bbox[key] = parseFloat(bbox[key]);
-       }
-       var bbox2 = {}
-       bbox2.south = Math.min(bbox.north, bbox.south)
-       bbox2.north = Math.max(bbox.north, bbox.south)
-       bbox2.west = Math.min(bbox.east, bbox.west)
-       bbox2.east = Math.max(bbox.east, bbox.west)
-       var bounds = [[bbox2.south, bbox2.west], [bbox2.north, bbox2.east]]
-    // trigger event fmt:selectAreaChange
-       bbox = this.validBbox(L.latLngBounds(bounds))
-       var rectangle = L.rectangle([[bbox.south, bbox.west], [bbox.north, bbox.east]], {color:'#ff0000'})
-       this.drawLayers.addLayer(rectangle)
-
-       this.map.fitBounds(rectangle.getBounds())
-       let e = new CustomEvent('fmt:selectAreaChange', {detail: bbox})
-       document.dispatchEvent(e)
-     } 
-     console.log(this.searchArea)
-     console.log(bbox)
-     if (this.searchArea) {
-       console.log('not bbox0')
-       this.map.setMaxBounds(this.boundsLayer.getBounds())
-       if (!hasBbox) {
-         this.map.fitBounds(this.boundsLayer.getBounds(), {padding: [10, 10]})
-       }
-       
-     }
-     
-   },
-   close (event) {
-     this.drawing = false
-   },
-   movestart (evt) {
-     console.log('start')
-     this.selected = true
-     this.delta = {
-         x: this.pos.x - this.$el.offsetLeft,
-         y: this.pos.y - this.$el.offsetTop
-     }
-   },
-   move (evt) {
-     // console.log(evt)
-     this.pos.x = evt.clientX
-     this.pos.y = evt.clientY
-     if (this.selected) {
-          this.$el.style.left = (this.pos.x - this.delta.x) + 'px'
-          this.$el.style.top = (this.pos.y - this.delta.y) + 'px'
-     }
-   },
-   moveEnd () {
-     this.selected = false
-   },
-   resize (evt) {
-     this.initHeight()
-     this.map.invalidateSize()
-   },
-   validBbox (bounds) {
-       console.log('VALID BBOX')
-       if (!bounds) {
-         return null
-       }
-       console.log(bounds)
-       let bbox = { north: bounds.getNorth(),
-         south: bounds.getSouth(),
-         east: bounds.getEast(),
-         west: bounds.getSouthWest().lng
-       }
-       // valid bbox
-       if (bbox.east > 180 || bbox.west < -180) {
-          var delta = bbox.east - bbox.west
-          if ( delta > 360) {
-            bbox.east = 180
-            bbox.west = -180
-          }else {
-            bbox.west = L.modLng(bbox.west);
-            bbox.west = bbox.west === 180 ? -180 : bbox.west
-            bbox.east = Math.min(bbox.west + delta, 180)
-          }
-          console.log(this.searchArea)
-         
-       }
-       if (this.searchArea) {
-         console.log('test SEARCH AREA')
-         if (bbox.west < this.searchArea.getWest()) {
-           bbox.west = this.searchArea.getWest()
-         }
-         if (bbox.east > this.searchArea.getEast()) {
-           bbox.east = this.searchArea.getEast()
-         }
-         if (bbox.north > this.searchArea.getNorth()) {
-           bbox.north = this.searchArea.getNorth()
-         }
-         if (bbox.south < this.searchArea.getSouth()) {
-           bbox.south = this.searchArea.getSouth()
-         }
-          // redraw if bbox change
-          this.drawLayers.clearLayers()
-          var bounds = [[bbox.south, bbox.west], [bbox.north, bbox.east]]
-          var rectangle = L.rectangle(bounds, {color: '#ff0000'})
-          this.drawLayers.addLayer(rectangle)
+        }
+        // self.bbox is null
+        self.bbox = self.drawValidBbox(null)
+        self.drawIntersection()
+        // trigger event fmt:selectAreaChange
+        let event = new CustomEvent('fmt:selectAreaChange', {detail: returnedBbox})
+        document.dispatchEvent(event)
+      })
+    },
+    initMap () {
+      if (this.map) {
+        return;
       }
-       return bbox;
+      var container = this.$el.querySelector('#fmtDraw');
+      this.map = L.map( container).setView([51.505, -0.09], 2);
+            
+      L.tileLayer('//server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
+        {
+          attribution: 'Tiles © <a href="https://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer">ArcGIS</a>',
+          maxZoom: 18,
+          minZoom:1
+        }).addTo( this.map );
+      this.initBoundsLayer()
+      this.initDrawControl()
+    },
+    open (event) {
+      this.drawing = true
+      var self = this
+      var next = function () {
+        self.initHeight();
+        self.initPosition();
+        self.map.invalidateSize();
+        self.selectAreaChange(event)
+      }
+     
+      setTimeout(next, 5)
+    },
+    getBounds () {
+      return this.drawLayers.getBounds()
+    },
+    drawEnd () {
+      var event = new CustomEvent('fmt:drawClose')
+      document.dispatchEvent(event)
+    },
+    selectAreaChange (event) {
+      var bbox = event.detail
+      if (bbox && bbox.north !== "" && bbox.south !== "" && bbox.east !== "" && bbox.west !== "") {
+        for(var key in bbox){
+          bbox[key] = parseFloat(bbox[key]);
+        }
+        var bbox2 = {}
+        bbox2.south = Math.min(bbox.north, bbox.south)
+        bbox2.north = Math.max(bbox.north, bbox.south)
+        bbox2.west = Math.min(bbox.east, bbox.west)
+        bbox2.east = Math.max(bbox.east, bbox.west)
+        var bounds = [[bbox2.south, bbox2.west], [bbox2.north, bbox2.east]]
+        // trigger event fmt:selectAreaChange
+        this.bbox = this.drawValidBbox(L.latLngBounds(bounds))
+        this.drawIntersection()
+    
+        let e = new CustomEvent('fmt:selectAreaChange', {detail: bbox})
+        document.dispatchEvent(e)
+      } else {
+        this.drawLayers.clearLayers()
+        this.bbox = null
+      }
+      if (this.intersection) {
+        this.map.fitBounds(this.intersection.getBounds(), {padding: [30,30]})
+      } else if( this.drawLayers.getLayers().length > 0 && !this.searchArea) {
+        this.map.fitBounds(this.drawLayers.getBounds(), {padding: [20,20]})
+      } else if (this.searchArea) {
+        this.map.fitBounds(this.boundsLayer.getBounds(), {padding: [10, 10]})
+      }
       
+    },
+    close (event) {
+      this.drawing = false
+    },
+    movestart (evt) {
+      this.selected = true
+      this.delta = {
+          x: this.pos.x - this.$el.offsetLeft,
+          y: this.pos.y - this.$el.offsetTop
+      }
+    },
+    move (evt) {
+      this.pos.x = evt.clientX
+      this.pos.y = evt.clientY
+      if (this.selected) {
+        this.$el.style.left = (this.pos.x - this.delta.x) + 'px'
+        this.$el.style.top = (this.pos.y - this.delta.y) + 'px'
+      }
+    },
+    moveEnd () {
+      this.selected = false
+    },
+    resize (evt) {
+      this.initHeight()
+      this.map.invalidateSize()
+    },
+    drawValidBbox (bounds) {
+      this.drawLayers.clearLayers()
+      if (!bounds) {
+        return null
+      }
+      let bbox = { north: bounds.getNorth(),
+        south: bounds.getSouth(),
+        east: bounds.getEast(),
+        west: bounds.getSouthWest().lng
+      }
+      // valid bbox
+      if (bbox.east > 180 || bbox.west < -180) {
+         var delta = bbox.east - bbox.west
+         if ( delta > 360) {
+           bbox.east = 180
+           bbox.west = -180
+         }else {
+           bbox.west = L.modLng(bbox.west);
+           bbox.west = bbox.west === 180 ? -180 : bbox.west
+           bbox.east = Math.min(bbox.west + delta, 180)
+         }
+      }
+      // draw or redraw if bbox change
+      var bounds = [[bbox.south, bbox.west], [bbox.north, bbox.east]]
+      var rectangle = L.rectangle(bounds, {color: '#ff0000'})
+      this.drawLayers.addLayer(rectangle)
+      
+      return bbox;
+    },
+    drawIntersection () {
+      if (this.intersection) {
+        this.intersection.remove()
+        this.intersection = null
+      }
+      if (!this.bbox) {
+        return;
+      }
+      var bbox = Object.create(this.bbox)
+      if (this.searchArea) {
+        if (bbox.west < this.searchArea.getWest()) {
+          bbox.west = this.searchArea.getWest()
+        } else if (bbox.west > this.searchArea.getEast()) {
+          bbox.west = this.searchArea.getEast()
+        }
+        if (bbox.east > this.searchArea.getEast()) {
+          bbox.east = this.searchArea.getEast()
+        } else if (bbox.east < this.searchArea.getWest()) {
+          bbox.east = this.searchArea.getWest()
+        }
+        if (bbox.north > this.searchArea.getNorth()) {
+          bbox.north = this.searchArea.getNorth()
+        } else if (bbox.north < this.searchArea.getSouth()) {
+          bbox.north = this.searchArea.getSouth()
+        }
+        if (bbox.south < this.searchArea.getSouth()) {
+          bbox.south = this.searchArea.getSouth()
+        } else if (bbox.south > this.searchArea.getNorth()) {
+          bbox.south = this.searchArea.getNorth()
+        }
+        var bounds = [[bbox.south, bbox.west], [bbox.north, bbox.east]]
+        this.intersection = L.rectangle(bounds, {color: '#ff0000'})
+        this.intersection.addTo(this.map)
+     }
+     
     }
   }
 }
@@ -416,9 +420,8 @@ export default {
 <style src="leaflet-draw/dist/leaflet.draw.css"></style>
 <style  >
  /* @import "leaflet-draw/dist/leaflet.draw.css";*/
-  
 
- .mtdt-draw-bbox{
+.mtdt-draw-bbox{
   position: absolute;
    width: 600px;
    height: 400px;
@@ -433,11 +436,11 @@ export default {
    background: white;
    border: 2px solid #ccc;
    box-shadow: 2px 2px 2px 2px rgba(0, 0, 0, 0.1);
- }
- .mtdt-draw-bbox div.mtdt-header{
-   margin:0;
-   border-radius: 6px 6px 0px 0px;
- }
+}
+.mtdt-draw-bbox div.mtdt-header{
+  margin:0;
+  border-radius: 6px 6px 0px 0px;
+}
 div[id="fmtDraw"]{
   border-radius: 0px 0px 6px 6px;
   height:350px;
