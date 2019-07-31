@@ -19,7 +19,7 @@
   <div >
    <!-- components can be view -->
    <div class="mtdt-column-left" >
-       <formater-form :lang="lang" :disableLevel="metadatas.length > 0 ? 1 : 0"   @boundsChange="boundsChange"></formater-form>
+       <formater-form :lang="lang" :disableLevel="metadatas.length > 0 ? 1 : 0" :temporalExtent="temporalExtent"  @boundsChange="boundsChange"></formater-form>
    </div>
    <div class="mtdt-column-right" >
         <!-- div where append map when enlarge it -->
@@ -72,6 +72,14 @@ export default {
     emphasis: {
       type: String,
       default: '#dd9946'
+    },
+    beginDate: {
+      type: String,
+      default: '1900-01-01'
+    },
+    endDate: {
+      type: String,
+      default: 'now'
     }
   },
   watch: {
@@ -84,7 +92,7 @@ export default {
     return {
       currentUuid: null,
       // bbox: null,
-      temporalExtent:null, 
+      
 
       depth: null,
       // array breadcrumb of records
@@ -97,11 +105,13 @@ export default {
       recordByLine: 4,
       nbRecord: 24,
       capsuleWidth: 300, 
-      bounds: null
+      bounds: null,
+      temporalExtent: {min: '1900-01-01', max: 'now'}, 
     }
   },
   
   created () {
+    this.initTemporalExtent()
     this.$i18n.locale = this.lang
     this.$setGnLocale(this.lang)
     this.metadataListener = this.receiveMetadata.bind(this)
@@ -127,6 +137,12 @@ export default {
     this.aerisResetListener = null
   },
   methods: {
+    initTemporalExtent () {
+      this.temporalExtent = {
+          min: this.beginDate,
+          max: this.endDate
+      }
+    },
     boundsChange (bounds) {
       console.log('dans catalogue bounds change', bounds)
       this.bounds = bounds
@@ -134,18 +150,53 @@ export default {
     receiveMetadata (event) {
       this.metadatas.push(event.detail.meta)
       this.currentUuid = event.detail.meta['geonet:info'].uuid
-      this.bounds = event.detail.meta.bounds
+     // this.bounds = event.detail.meta.bounds
+//       if (event.detail.meta.tempExtentBegin) {
+//         this.temporalExtent.min = event.detail.meta.tempExtentBegin.substring(0,10)
+//       } 
+//       console.log(event.detail.meta.tempExtentEnd)
+//       if (event.detail.meta.tempExtentEnd) {
+//         this.temporalExtent.max = event.detail.meta.tempExtentEnd.substring(0,10)
+//       }
+      var min = null
+      var max = null
+      if (event.detail.meta.tempExtentBegin) {
+        min = event.detail.meta.tempExtentBegin.substring(0, 10)
+      }
+      if (event.detail.meta.tempExtentEnd) {
+        max = event.detail.meta.tempExtentEnd.substring(0, 10)
+      }
+      var temp = {
+          min: min ? min : this.temporalExtent.min,
+          max: max ? max : this.temporalExtent.max
+      }
+      this.temporalExtent = temp
+      console.log(this.temporalExtent.max)
      // this.box = event.detail.meta.box
     },
     resetMetadata (event) {
       this.metadatas.pop()
       if (this.metadatas.length > 0) {
-        this.currentUuid = this.metadatas[this.metadatas.length - 1]['geonet:info'].uuid
-        var parameters = this.metadatas[this.metadatas.length - 1].osParameters
-       // this.box = this.metadatas[this.metadatas.length - 1].box
+        var metadata = this.metadatas[this.metadatas.length -1]
+        this.currentUuid = metadata['geonet:info'].uuid
+        var parameters = metadata.osParameters
+        var min = null
+        var max = null
+        if (metadata.tempExtentBegin) {
+          min = metadata.tempExtentBegin.substring(0, 10)
+        }
+        if (metadata.tempExtentEnd) {
+          max = metadata.tempExtentEnd.substring(0, 10)
+        }
+        var temp = {
+            min: min ? min : this.temporalExtent.min,
+            max: max ? max : this.temporalExtent.max
+        }
+        this.temporalExtent = temp
       } else {
         this.currentUuid = null
         var parameters = []
+        this.initTemporalExtent()
       }
       var event = new CustomEvent('fmt:closeMetadataEvent', {detail:  {depth: this.metadatas.length, parameters: parameters }})
       document.dispatchEvent(event)

@@ -33,7 +33,7 @@
  </formater-search-box>
  
 <formater-search-box header-icon-class="fa fa-calendar" open-icon-class="fa fa-caret-right" :title="$t('time_slot')" :deployed="true" type="empty">
-  <formater-temporal-search :lang="lang" daymin="1900-01-01" daymax="2020-02-01"></formater-temporal-search>
+  <formater-temporal-search :lang="lang" :daymin="temporalExtent.min" :daymax="temporalExtent.max"></formater-temporal-search>
 </formater-search-box>
 
 <formater-search-box header-icon-class="fa fa-thermometer-3" v-if="parameters.length > 0" open-icon-class="fa fa-caret-right" :title="$t('parameters')" :deployed="true" type="empty">
@@ -59,7 +59,11 @@ var iconClass = {
     facetPlatform: 'fa fa-rocket',
     facetInstrument: 'fa fa-calculator'
 }
+// import {FormaterSearchBox} from 'formater-commons-components-vjs'
+//  import FormaterTemporalSearch from './formater-temporal-search.vue'
+
 import {FormaterTemporalSearch, FormaterSearchBox} from 'formater-commons-components-vjs'
+
 import FormaterSpatialSearch from './formater-spatial-search.vue'
 import FormaterMap from './formater-map.vue'
 import FormaterDimensionBlock from './formater-dimension-block.vue'
@@ -88,12 +92,19 @@ export default {
     disableLevel: {
       type: Number,
       default: 0
+    },
+    temporalExtent: {
+      type: Object,
+      default: {min: '1900-01-01', max: 'now'}
     }
   },
   watch: {
     lang (newvalue) {
     	this.$i18n.locale = newvalue
     	this.$setGnLocale(newvalue)
+    },
+    temporalExtent (newvalue) {
+      console.log(newvalue.max)
     }
   },
   data() {
@@ -106,7 +117,8 @@ export default {
       aerisResetListener: null,
       metadataListListener: null,
       closeMetadataListener: null,
-      bounds: null
+      bounds: null,
+
     }
   },
   created () {
