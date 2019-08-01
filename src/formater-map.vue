@@ -281,14 +281,14 @@ export default {
      var self = this
      if (!data.metadata.forEach) {
        // only one record
-       var id = data.metadata['geonet:info'].id
-       this.extractBbox(data.metadata.geoBox, id)
+       // var id = data.metadata['geonet:info'].id
+       this.extractBbox(data.metadata.geoBox, data.metadata.id)
        
      } else {
        // array of records
        data.metadata.forEach( function (meta, index) {
-         var id = meta['geonet:info'].uuid
-         self.extractBbox(meta.geoBox, id)
+        // var id = meta['geonet:info'].uuid
+         self.extractBbox(meta.geoBox, meta.id)
        })
      }
    },

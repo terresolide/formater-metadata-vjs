@@ -63,7 +63,6 @@ var iconClass = {
 //  import FormaterTemporalSearch from './formater-temporal-search.vue'
 
 import {FormaterTemporalSearch, FormaterSearchBox} from 'formater-commons-components-vjs'
-
 import FormaterSpatialSearch from './formater-spatial-search.vue'
 import FormaterMap from './formater-map.vue'
 import FormaterDimensionBlock from './formater-dimension-block.vue'

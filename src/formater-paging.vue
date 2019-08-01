@@ -155,7 +155,7 @@ export default {
          break
        case 'opensearch':
          this.count = event.detail.properties.totalResults
-         this.to = this.from + event.detail.features.length -1
+         this.to = this.from + event.detail.metadata.length -1
          this.nbPage = Math.ceil(this.count/ this.recordPerPage)
          break
       

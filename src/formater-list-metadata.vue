@@ -80,15 +80,18 @@ export default {
        if (event.detail.depth != this.depth) {
          return;
        }
-       var type = this.getType(event.detail)
-       switch (this.type) {
-       case 'geojson':
-         this.treatmentGeojson(event.detail)
-         break;
-       case 'geonetwork':
-         this.treatmentGeonetwork(event.detail)
-         break;
-       }
+       console.log(event.detail.metadata)
+       this.type = event.detail.type
+       this.metadatas = event.detail.metadata
+//        var type = this.getType(event.detail)
+//        switch (this.type) {
+//        case 'geojson':
+//          this.treatmentGeojson(event.detail)
+//          break;
+//        case 'geonetwork':
+//          this.treatmentGeonetwork(event.detail)
+//          break;
+//        }
       
      },
      mapToGeonetwork (properties) {
