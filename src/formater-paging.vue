@@ -1,6 +1,6 @@
 <i18n>{
    "en":{
-     "results": "Results: {from} to {to} among {count}",
+     "results": "Results: {from} to {to} among {notExactly}{count}",
      "title": "Title",
      "relevance": "Relevance",
      "changeDate": "Change date",
@@ -8,7 +8,7 @@
      "per_page": "per page"
    },
    "fr":{
-     "results":  "Résultats: <strong>{from}</strong> à <strong>{to}</strong> sur {count}",
+     "results":  "Résultats: <strong>{from}</strong> à <strong>{to}</strong> sur {notExactly}{count}",
      "title": "Titre",
      "relevance": "Pertinence",
      "changeDate": "Mise à jour",
@@ -24,9 +24,9 @@
   	<span class="fa fa-angle-double-left" @click="goToFirst()"></span>
   	<span class="fa fa-angle-left" @click="changePage(-1)" ></span>
   </span>
-  <span style="margin: 0 10px;" v-html="$tc('results', count, {from: (count === 0) ? 0 : from, to: to, count: count})"></span>
+  <span style="margin: 0 10px;" v-html="$tc('results', count, {from: (count === 0) ? 0 : from, to: to, notExactly: notExactly, count: count})"></span>
    (<formater-select name="recordPerPage" :options="recordsPerPage" :defaut="recordPerPage + ''" type="associative" @input="nbRecordChange" color="#ffffff"></formater-select>)
-   <span :class="{disabled: (currentPage===nbPage || count=== 0 ? 'disabled': ''), 'mtdt-navigation':true}">
+   <span :class="{disabled: (!notExactly && (currentPage===nbPage || count=== 0) ? 'disabled': ''), 'mtdt-navigation':true}">
 	   <span class="fa fa-angle-right " @click="changePage(1)" ></span>
 	   <span class="fa fa-angle-double-right" @click="goToLast()"></span>
   </span>
@@ -127,6 +127,7 @@ export default {
       nbPage: 0,
       from: 1,
       to: 12,
+      notExactly: '',
      // sortBy: 'title',
      // orders: ['title', 'changeDate'],
       options: {},
@@ -141,11 +142,8 @@ export default {
      if (event.detail.depth !=  this.depth ){
        return;
      }
-     if (event.detail.summary) {
-       this.type = 'geonetwork'
-     } else {
-       this.type = 'opensearch'
-     }
+     console.log(event.detail.type)
+     this.type = event.detail.type
      switch (this.type) {
        case 'geonetwork':
          this.count = parseInt(event.detail.summary['@count'])
@@ -154,9 +152,12 @@ export default {
          this.nbPage = Math.ceil(event.detail.summary['@count'] / this.recordPerPage) 
          break
        case 'opensearch':
+         console.log(event.detail.properties)
          this.count = event.detail.properties.totalResults
-         this.to = this.from + event.detail.metadata.length -1
+         this.to = this.from + Object.keys(event.detail.metadata).length -1
          this.nbPage = Math.ceil(this.count/ this.recordPerPage)
+         this.notExactly = (event.detail.properties.exactCount ? '': '~')
+         console.log("EXACT = ", this.exactCount)
          break
       
      }
@@ -230,7 +231,7 @@ export default {
      if (sens < 0 && this.currentPage === 1 ){
        return
      }
-     if (sens > 0 && this.currentPage === this.nbPage) {
+     if (sens > 0 && this.currentPage === this.nbPage && !this.notExactly) {
        return;
      }
      

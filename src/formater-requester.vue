@@ -218,25 +218,24 @@ export default {
       }
     },
     prepareRequestOpensearch(e) {
-      
       this.initParameters()
       if (!e.detail.startDefault) {
-      e.detail.renameProperty('start', 'firstDateMin')
-    } else {
-      delete e.detail.start
-    }
-    if (e.detail.endDefault) {
+        e.detail.renameProperty('start', 'firstDateMin')
+      } else {
+        delete e.detail.start
+      }
+      if (e.detail.endDefault) {
+        delete e.detail.endDefault
+        delete e.detail.end
+        
+      } else {
+        e.detail.renameProperty('end', 'secondDateMax')
+      }
+      delete e.detail.startDefault
       delete e.detail.endDefault
-      delete e.detail.end
+      delete e.detail.depth
       
-    } else {
-      e.detail.renameProperty('end', 'secondDateMax')
-     }
-    delete e.detail.startDefault
-    delete e.detail.endDefault
-    delete e.detail.depth
-    
-    this.parameters = Object.assign(this.parameters, e.detail)   
+      this.parameters = Object.assign(this.parameters, e.detail)   
 
     },
     requestApi ()  {
@@ -271,7 +270,6 @@ export default {
       var depth = (typeof this.parameters.depth != 'undefined') ? this.parameters.depth : this.depth
       delete this.parameters.depth
       delete this.parameters.geometry
-      console.log(this.parameters)
       var self = this
       var url = this.api + (this.api.indexOf('?') > 0 ? '&' :'?');
       url += Object.keys(this.parameters).map(function (prop) {
@@ -284,31 +282,41 @@ export default {
     treatmentGeojson (data, depth) {
       var metadatas = {}
       var self = this
+      var features = []
       data.features.forEach( function (feature) {
         feature.properties.id = feature.id
-        // console.log(self.mapToGeonetwork(feature.properties))
         metadatas[feature.id] =  self.mapToGeonetwork(feature.properties)
+        features.push({type: feature.type, id: feature.id, geometry: feature.geometry})
        
       })
-      console.log(metadatas)
-      this.fill({ type: 'geojson', properties: data.properties, metadata:metadatas}, depth)
+      this.fill({ type: 'opensearch', properties: data.properties, features: features, metadata:metadatas}, depth)
     },
     treatmentGeonetwork (data, depth) {
       var metadatas = {}
+      var features = []
       var self = this
       if (!data.metadata){
         var metadatas = null
       } else if (data.metadata && !data.metadata.forEach) {
         var uuid = data.metadata['geonet:info'].uuid
         metadatas[uuid] = self.treatment(data.metadata ,uuid)
+        var feature = self.extractBboxGeonetwork(data.metadata.geoBox, uuid)
+        if (feature) {
+            features.push(feature)
+        }
       } else {
-	       data.metadata.forEach( function (meta, index) {
-	         var uuid = meta['geonet:info'].uuid
-	         metadatas[uuid] = self.treatment(meta ,uuid)
-	       })
+           data.metadata.forEach( function (meta, index) {
+             var uuid = meta['geonet:info'].uuid
+             metadatas[uuid] = self.treatment(meta ,uuid)
+              var feature = self.extractBboxGeonetwork(meta.geoBox, uuid)
+              if (feature) {
+                    features.push(feature)
+              }
+           })
       }
       data.metadata = metadatas
       data.type = 'geonetwork'
+      data.features = features
       this.fill(data, depth);
       // this.searchRelated()
     },
@@ -402,6 +410,52 @@ export default {
       }) 
       return meta;
     },
+    extractBboxGeonetwork(bbox, id) {
+      if (!bbox) {
+        return null
+      }
+      switch (typeof bbox) {
+      case 'string':
+        var geometryType = 'Polygon'
+        var path = this.bboxString2Array(bbox)
+        break;
+      case 'object':
+        var geometryType = 'MultiPolygon'
+        var self = this
+        var path = []
+        bbox.forEach(function(box) {
+          path.push(self.bboxString2Array(box))
+        })
+        break;
+      }
+      
+      if (path) {
+       var feature = {
+              type: 'Feature',
+              id: id,
+              geometry: {
+                type: geometryType,
+                coordinates:path
+              }
+            }
+      }
+      return feature
+    },
+    bboxString2Array (bbox) {
+      var bboxList = this.$gnToArray(bbox)
+      var path = []
+      //trouble with rectangle ??? add polygon!
+      bboxList.forEach(function (tab){
+        tab = tab.map(x => parseFloat(x))
+        var latmin = Math.min(tab[3], tab[1])
+        var latmax = Math.max(tab[3], tab[1])
+        var lngmin = Math.min(tab[0], tab[2])
+        var lngmax = Math.max(tab[0], tab[2])
+        path.push([[lngmin, latmin], [lngmin, latmax], [lngmax, latmax], [lngmax, latmin], [lngmin, latmin]])
+        
+      })
+      return path
+    },
     // @todo DEPLACER DANS FORM VOIR MÊME DANS formater-dimension-block/ formater-facet-block!!
     prepareFacet (e) {
       var facet = ''
@@ -422,102 +476,13 @@ export default {
       return e;
     },
     fill (data, depth) {
-      console.log(this.depth)
-      console.log(depth)
       data.depth = depth
-      console.log(data)
       var event = new CustomEvent('fmt:metadataListEvent', {detail:  data})
       document.dispatchEvent(event)
     },
-  /*  receiveChilds (data) {
-      data.depth =  this.depth + 1
-        var event = new CustomEvent('fmt:metadataListEvent', {detail:  data})
-        document.dispatchEvent(event)
-    },*/
-   /* searchDescribe(detail) {
-      console.log(detail.describe)
-      this.$http.get(detail.describe.http)
-      .then(
-          response => { this.extractDescribeParameters(response.body, detail);}
-       )
-    },
-    extractDescribeParameters (parameters, searchParameters) {
-      var parser = new DOMParser()
-      var xml = parser.parseFromString(parameters, 'text/xml')
-      console.log(xml)
-      var urls = xml.firstChild.childNodes
-     var url = null
-     console.log(urls)
-      urls.forEach(function (node) {
-         if (node.tagName && node.tagName.toLowerCase() === 'url' && node.getAttribute('type').indexOf('json') >= 0) {
-             url = node
-         }
-      })
-      if (!url)  {
-        return
-      }
-      var template = url.getAttribute('template')
-      var extract = template.match(/^(.*?search.json).*$/)
-      console.log(extract[1])
-      if (!extract[1]) {
-        return
-      } else {
-        this.api = extract[1]
-        console.log(extract[1])
-      }
-      var parameters = url.getElementsByTagName('parameters:Parameter')
-      console.log(parameters)
-      var self = this
-      for(var i=0; i < parameters.length; i++){
-        var name = parameters[i].getAttribute('name')
-        var obj= {
-            name: name,
-            title: parameters[i].getAttribute('title')
-        }
-        var pattern = parameters[i].getAttribute('pattern')
-        if (pattern) {
-          obj = Object.assign(obj, {pattern: pattern})
-        }
-        var min = parameters[i].getAttribute('minInclusive')
-        if (min) {
-          obj= Object.assign(obj, {min: min})
-        }
-        var max = parameters[i].getAttribute('maxInclusive')
-        if (max) {
-          obj = Object.assign(obj, {max: max})
-        }
-        var nodes = parameters[i].getElementsByTagName('parameters:Options')
-        if (nodes) {
-          var options= []
-          for(var k=0; k < nodes.length; k++) {
-            options.push(nodes[k].getAttribute('value'))
-          }
-          if (options.length > 0)
-          obj = Object.assign(obj, {options: options})
-        }
-        if (self.removedFields.indexOf(name) >=0) {
-          
-//         }else if (name.toLowerCase() === 'platform') {
-//           this.platform = obj
-//         } else if (name.toLowerCase() === 'q'){
-//           this.hasQ = true
-        } else if (self.geographic.indexOf(name) >=0) {
-          self.geoParameters.push(obj)
-        } else if (self.paging.indexOf(name) >= 0) {
-           self.pagingParameters.push(obj)
-        }else if (name.indexOf('Date') === -1 && name.indexOf('Cover') === -1) {
-          self.osParameters.push(obj)
-        }
-        
-      }
-     
-      this.requestApi(searchParameters)
-    },*/
     handleReset () {
-      console.log('reset')
       var event = new CustomEvent('aerisResetEvent')
       document.dispatchEvent(event)
-      console.log(this.depth)
       this.getRecords({detail: {depth:0}})
     },
     changePage (event) {

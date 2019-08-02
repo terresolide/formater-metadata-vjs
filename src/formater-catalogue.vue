@@ -203,7 +203,7 @@ export default {
     },
    resize () {
       var width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
-      width -= 330
+      width -= 350
       var count = parseInt(width/334)
       this.capsuleWidth = parseInt(width / count - 16)
       this.recordByLine = count
@@ -243,8 +243,9 @@ export default {
   float:left;
 }
 .mtdt-catalogue .mtdt-column-right{
-  width:calc(100% - 310px);
-  float:right;
+  width:calc(100% - 340px);
+  float:left;
+  margin-left:10px;
   margin-bottom:120px;
 }
 </style>

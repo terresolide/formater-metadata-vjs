@@ -164,7 +164,6 @@ export default {
    addLayer (event) {
      var layer = event.detail.layer
      var bounds = this.searchBboxById(event.detail.id)
-     console.log(layer.id)
      switch (layer.type) {
      case 'OGC:WMS':
        var extract = layer.href.match(/^(.*\?).*$/)
@@ -183,7 +182,7 @@ export default {
        this.layers[this.depth].set(layer.id, wmsLayer)
        var bounds = this.searchBboxById(event.detail.id)
        if (bounds) {
-         this.map.fitBounds(bounds, {animate: true,  padding: [50,50]})
+         this.map.fitBounds(bounds, {animate: true,  padding: [30,30]})
        }
        break;
      }
@@ -211,14 +210,14 @@ export default {
      var options = Object.assign(this.defaultRectangleOptions, {fillColor: this.colors[this.depth], color: this.colors[this.depth]})
      return options
    },
-   getType (data) {
-      if (data.type === 'FeatureCollection' || data.type === 'Feature') {
-        this.type = 'geojson'
-      } else {
-        this.type = 'geonetwork'
-      }
-      return this.type
-   },
+//    getType (data) {
+//       if (data.type === 'FeatureCollection' || data.type === 'Feature') {
+//         this.type = 'geojson'
+//       } else {
+//         this.type = 'geonetwork'
+//       }
+//       return this.type
+//    },
    receiveMetadata(event) {
      var bounds = this.selectBbox(event)
      console.log(this.metadataBoundsList)
@@ -243,88 +242,25 @@ export default {
        this.hideLayers()
        this.depth = event.detail.depth;
      }
+     this.type = event.detail.type
+     //this.type = this.getType(event.detail)
+    // console.log('TYPE = ' + this.type)
+     this.bboxLayer[this.depth] = L.geoJSON(event.detail.features, {style:this.getOptionsLayer()})
      
-     this.type = this.getType(event.detail)
-     switch (this.type) {
-	     case 'geojson':
-	       this.addBboxGeojson(event.detail)
-	       break;
-	     case 'geonetwork':
-	       this.addBboxGeonetwork(event.detail)
-	       break;
-     }
+     this.bounds[this.depth] = this.bboxLayer[this.depth].getBounds()
+    
+     this.bboxLayer[this.depth].addTo(this.map);
      if (this.bboxLayer[this.depth]) {
        this.controlLayer.addOverlay(this.bboxLayer[this.depth], this.$t('all_box'))
      }
 
      if (this.bounds[this.depth]) {
-       this.map.fitBounds(this.bounds[this.depth])
-       this.resetControl.setBounds(this.bounds[this.depth])
+      this.map.fitBounds(this.bounds[this.depth])
+      this.resetControl.setBounds(this.bounds[this.depth])
      }
      // this.bboxLayer[this.depth].addTo(this.map)
    },
-   addBboxGeojson (data) {
-     this.bboxLayer[this.depth] = L.geoJSON(data, {style:this.getOptionsLayer()})
-     
-     this.bounds[this.depth] = this.bboxLayer[this.depth].getBounds()
-    
-     this.bboxLayer[this.depth].addTo(this.map);
-     
-   },
-   addBboxGeonetwork (data) {
-     this.bboxLayer[this.depth] = L.layerGroup();
-     this.bboxLayer[this.depth].addTo(this.map);
-     if (!data.metadata) {
-       // no record
-       return
-     }
-     var self = this
-     if (!data.metadata.forEach) {
-       // only one record
-       // var id = data.metadata['geonet:info'].id
-       this.extractBbox(data.metadata.geoBox, data.metadata.id)
-       
-     } else {
-       // array of records
-       data.metadata.forEach( function (meta, index) {
-        // var id = meta['geonet:info'].uuid
-         self.extractBbox(meta.geoBox, meta.id)
-       })
-     }
-   },
-   extractBbox(bbox, id) {
-     if (!bbox) {
-       return
-     }
-     
-     var bboxList = this.$gnToArray(bbox)
-     //trouble with rectangle ??? add polygon!
-     var self = this;
-     var options = this.getOptionsLayer()
-     bboxList.forEach(function (tab){
-       
-	    // var tab = geoBox.split('|') 
-	     tab = tab.map(x => parseFloat(x))
-	     var latmin = Math.min(tab[3], tab[1])
-	     var latmax = Math.max(tab[3], tab[1])
-	     var lngmin = Math.min(tab[0], tab[2])
-	     var lngmax = Math.max(tab[0], tab[2])
-	     var path = [[latmin, lngmin], [latmax, lngmin], [latmax, lngmax], [latmin, lngmax], [latmin, lngmin]]
-	     var bounds = L.latLngBounds(L.latLng(latmax, lngmin), L.latLng(latmin, lngmax));
-	     options = Object.assign(options, {id:id})
-	     var rectangle = L.polygon(path,options)
-	//      rectangle.on('mouseover', function(layer) {
-	//        console.log(layer.target.options.id)
-	//      })
-	    self.bboxLayer[self.depth].addLayer(rectangle)
-	     if (!self.bounds[self.depth]) {
-	       self.bounds[self.depth] = bounds
-	     } else {
-	       self.bounds[self.depth].extend(bounds)
-	     }
-     })
-      
-   },
+  
    selectBbox (event) {
      console.log('select Bbox')
      this.unselectBbox()
@@ -421,6 +357,7 @@ export default {
         
        }
      })
+     console.log(bounds)
      return bounds
      
    },

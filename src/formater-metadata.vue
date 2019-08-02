@@ -266,7 +266,6 @@ export default {
         this.$emit('close');
       },
       computeHasChild (val) {
-        console.log(val)
         if (val.related && val.related.children) {
           // this.$set(this.tabs, 'complement', true)
            if (!this.hasChild) {
@@ -311,7 +310,6 @@ export default {
 	     var _this = this
 	     this.$http.get(url).then(
                response => {
-                 console.log(response.body)
                 // _this.extract(response.body.metadata)
                  _this.metaLang2 = response.body.metadata
                } 
@@ -376,7 +374,6 @@ export default {
           return
         } else {
           this.api = extract[1]
-          console.log(extract[1])
         }
         var parameters = url.getElementsByTagName('parameters:Parameter')
         console.log(parameters)

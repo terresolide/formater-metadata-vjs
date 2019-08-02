@@ -29,7 +29,7 @@
                 <span v-if="meta.tempExtentEnd">{{date2str(meta.tempExtentEnd)}}</span>
         </div>
          <span v-html="meta.description"></span>
-         <div v-for="(item, key) in meta" :key="key" v-if="type === 'geojson' && flatsimSingleFields.indexOf(key) >=0">
+         <div v-for="(item, key) in meta" :key="key" v-if="type === 'opensearch' && flatsimSingleFields.indexOf(key) >=0">
            <label style="text-transform:capitalize;" :style="{color:primary}">{{key}}: </label> {{item}}
          </div>
      </div>
@@ -187,7 +187,7 @@ export default {
       this.$set(layer, 'checked', !layer.checked)
         //   this.meta.layers[index].checked = !this.meta.layers[index].checked
       if (layer.checked) {
-        var event = new CustomEvent('fmt:addLayerEvent', {detail: {layer: layer, uuid: this.meta.uuid}})
+        var event = new CustomEvent('fmt:addLayerEvent', {detail: {layer: layer, id: this.meta.id}})
         document.dispatchEvent(event)
         this.layerAdded = true
       } else {
