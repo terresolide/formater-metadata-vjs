@@ -164,8 +164,6 @@ export default {
           max: max ? max : this.temporalExtent.max
       }
       this.temporalExtent = temp
-      console.log(this.temporalExtent.max)
-     // this.box = event.detail.meta.box
     },
     resetMetadata (event) {
       this.metadatas.pop()
