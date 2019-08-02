@@ -149,15 +149,8 @@ export default {
     },
     receiveMetadata (event) {
       this.metadatas.push(event.detail.meta)
-      this.currentUuid = event.detail.meta['geonet:info'].uuid
-     // this.bounds = event.detail.meta.bounds
-//       if (event.detail.meta.tempExtentBegin) {
-//         this.temporalExtent.min = event.detail.meta.tempExtentBegin.substring(0,10)
-//       } 
-//       console.log(event.detail.meta.tempExtentEnd)
-//       if (event.detail.meta.tempExtentEnd) {
-//         this.temporalExtent.max = event.detail.meta.tempExtentEnd.substring(0,10)
-//       }
+      this.currentUuid = event.detail.meta.id
+
       var min = null
       var max = null
       if (event.detail.meta.tempExtentBegin) {

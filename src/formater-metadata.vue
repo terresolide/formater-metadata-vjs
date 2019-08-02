@@ -376,7 +376,6 @@ export default {
           this.api = extract[1]
         }
         var parameters = url.getElementsByTagName('parameters:Parameter')
-        console.log(parameters)
         var self = this
         for(var i=0; i < parameters.length; i++){
           var name = parameters[i].getAttribute('name')

@@ -305,7 +305,6 @@ export default {
      this.layers[depth].clear()
    },
    back (event) {
-     console.log(this.metadataBoundsList)
      var bounds = null
      if (this.metadataBoundsList.length > 0) {
         this.metadataBoundsList.pop()
@@ -314,8 +313,6 @@ export default {
      }
      this.$emit('boundsChange', bounds)
      this.unselectBbox()
-     console.log('depth = ' + this.depth)
-     console.log('event depth = ' + event.detail.depth)
      if (this.depth > event.detail.depth) {
         if (this.bboxLayer[this.depth]) {
           this.controlLayer.removeLayer(this.bboxLayer[this.depth])
@@ -333,11 +330,6 @@ export default {
         })
         this.bboxLayer[this.depth].addTo(this.map)
         this.controlLayer.addOverlay(this.bboxLayer[this.depth], this.$t('all_box'))
-//         if (this.layers[this.depth])
-//         this.layers[this.depth].forEach(function (layer) {
-//           layer.addTo(self.map)
-//         })
-//         console.log(this.depth)
       } 
        if (this.bounds[this.depth]) {
          this.map.fitBounds(this.bounds[this.depth])
