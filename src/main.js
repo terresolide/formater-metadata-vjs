@@ -2,8 +2,12 @@ require("exports-loader?!./l.min.js")
 
 import Vue from 'vue'
 
+
+
 //import vueCustomElement from 'vue-custom-element'
 //Vue.use(vueCustomElement);
+// import ajax from './services/ajax'
+
 
 import Vuex from 'vuex'
 Vue.use(Vuex)
@@ -29,12 +33,19 @@ Vue.use(Tools)
 // main component for app
 import FormaterCatalogue from './formater-catalogue.vue'
 
+let config = {}
+if (typeof formaterConfig != 'undefined') {
+  let config = JSON.parse(formaterConfig.innerHTML)
+}
 let locale = navigator.language.substr(0, 2)
 console.log(locale)
-const i18n = new VueI18n({
-  fallbackLocale: 'en',
-  locale: locale
-})
+// console.log(formaterConfig)
+console.log(config)
+if (config.lang) {
+  locale = config.lang
+} 
+
+
 
 
 ljs.addAliases({
@@ -51,6 +62,11 @@ ljs.addAliases({
 })
 ljs.load('dep', function() {
   // Vue.customElement('formater-catalogue', FormaterCatalogue) 
+  console.log()
+  const i18n = new VueI18n({
+    fallbackLocale: 'en',
+    locale: locale
+  })
   const store = new Vuex.Store({
     state: {
       count: 0
@@ -62,7 +78,7 @@ ljs.load('dep', function() {
     }
   })
   new Vue({
-    el: '#app',
+    el: '#formaterCatalogue',
     template: '<FormaterCatalogue/>',
     i18n,
     store,
