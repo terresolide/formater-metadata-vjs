@@ -26,7 +26,11 @@ Vue.use(Tools)
 
 import FormaterCatalogue from './formater-catalogue.vue'
 
-
+const i18n = new VueI18n({
+  fallbackLocale: 'fr',
+  locale: locale
+})
+let locale = navigator.language.substr(0, 2)
 
 ljs.addAliases({
     dep: [
@@ -41,6 +45,13 @@ ljs.addAliases({
       ]
 })
 ljs.load('dep', function() {
-  Vue.customElement('formater-catalogue', FormaterCatalogue) 
+  // Vue.customElement('formater-catalogue', FormaterCatalogue) 
+  new Vue({
+    el: '#app',
+    template: '<FormaterCatalogue/>',
+    i18n,
+    components: { FormaterCatalogue }
+  })
+
 })
 
