@@ -33,19 +33,22 @@ Vue.use(Tools)
 // main component for app
 import FormaterCatalogue from './formater-catalogue.vue'
 
-let config = {}
+import makeStore from './store'
+
+var config = {}
 if (typeof formaterConfig != 'undefined') {
-  let config = JSON.parse(formaterConfig.innerHTML)
-}
+  config = JSON.parse(formaterConfig.innerHTML)
+  console.log(config)
+} 
 let locale = navigator.language.substr(0, 2)
 console.log(locale)
-// console.log(formaterConfig)
+ console.log(formaterConfig)
 console.log(config)
 if (config.lang) {
   locale = config.lang
 } 
-
-
+delete config.lang
+console.log(config.style)
 
 
 ljs.addAliases({
@@ -62,21 +65,21 @@ ljs.addAliases({
 })
 ljs.load('dep', function() {
   // Vue.customElement('formater-catalogue', FormaterCatalogue) 
-  console.log()
+  console.log(config.style.primary)
   const i18n = new VueI18n({
     fallbackLocale: 'en',
     locale: locale
   })
-  const store = new Vuex.Store({
-    state: {
-      count: 0
-    },
-    mutations: {
-      increment (state) {
-        state.count++
-      }
-    }
-  })
+  const store = makeStore(config)
+//  const store = new Vuex.Store({
+//    state: config,
+//    
+//    mutations: {
+//      temporalChange(state, newTemporal) {
+//        state.temporalExtent = newTemporal
+//      }
+//    }
+//  })
   new Vue({
     el: '#formaterCatalogue',
     template: '<FormaterCatalogue/>',

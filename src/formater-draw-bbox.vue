@@ -45,37 +45,25 @@ export default {
   components: {
   },
   props: {
-    lang: {
-      type: String,
-      default: 'en'
-    },
-    color: {
-      type: String,
-      default: 'black'
-    },
-    background: {
-      type: String,
-      default: 'none'
-    },
     searchArea: {
       type: Object,
       default: null
     }
   },
   watch: {
-    lang (newvalue) {
-         this.$i18n.locale = newvalue  
-         if (newvalue === 'fr') {
-          L.drawLocal = require('formater-geotiff-visualizer-vjs/src/module/leaflet.draw.fr.js')
-        } else {
-          L.drawLocal = require('formater-geotiff-visualizer-vjs/src/module/leaflet.draw.en.js')
-        }
-        // rerender leaflet draw
-        if (this.drawControl) {
-          this.drawControl.remove()
-          this.drawControl.addTo(this.map)
-        }
-    },
+//     lang (newvalue) {
+//          this.$i18n.locale = newvalue  
+//          if (newvalue === 'fr') {
+//           L.drawLocal = require('formater-geotiff-visualizer-vjs/src/module/leaflet.draw.fr.js')
+//         } else {
+//           L.drawLocal = require('formater-geotiff-visualizer-vjs/src/module/leaflet.draw.en.js')
+//         }
+//         // rerender leaflet draw
+//         if (this.drawControl) {
+//           this.drawControl.remove()
+//           this.drawControl.addTo(this.map)
+//         }
+//    },
     searchArea (newvalue) {
       this.initBoundsLayer()
       var bounds = this.getBounds()
@@ -90,17 +78,10 @@ export default {
       }
       this.selectAreaChange({detail: bbox})
      
-    },
-    color (newvalue) {
-      this.$el.querySelector(".mtdt-header").style.color = newvalue
-    },
-    background (newvalue) {
-      this.$el.querySelector(".mtdt-header").style.background = newvalue
     }
   },
   created: function() {
-    this.$i18n.locale = this.lang
-       if (this.lang === 'fr') {
+    if (this.$i18n.locale  === 'fr') {
       L.drawLocal = require('formater-geotiff-visualizer-vjs/src/module/leaflet.draw.fr.js')
     } 
     // open and close
@@ -134,8 +115,8 @@ export default {
     this.resizeListener = null
   },
   mounted: function () {
-    this.$el.querySelector(".mtdt-header").style.color = this.color
-    this.$el.querySelector(".mtdt-header").style.background = this.background
+    this.$el.querySelector(".mtdt-header").style.color = 'white'
+    this.$el.querySelector(".mtdt-header").style.background = this.$store.state.style.primary
     this.initHeight()
     this.initPosition()
     this.initMap()
@@ -321,6 +302,10 @@ export default {
         this.map.fitBounds(this.drawLayers.getBounds(), {padding: [20,20]})
       } else if (this.searchArea) {
         this.map.fitBounds(this.boundsLayer.getBounds(), {padding: [10, 10]})
+      } else {
+        console.log(this.$store.state.temporalExtent)
+        console.log(this.$store.state.bounds)
+        this.map.fitBounds([[-80,-120],[80,150]], {padding: [10, 10]})
       }
       
     },

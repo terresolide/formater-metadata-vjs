@@ -11,15 +11,15 @@
 <template>
  <div class="mtdt-catalogue">
   <!-- components not visible  -->
-  <aeris-theme :primary="primary" :active="true" :emphasis="emphasis"></aeris-theme>
+  <aeris-theme :primary="$store.state.style.primary" :active="true" :emphasis="$store.state.style.emphasis"></aeris-theme>
   <formater-requester  :depth="metadatas.length"></formater-requester>
   <!-- component to draw bbox -->
-  <formater-draw-bbox color="#fff" :lang="$i18n.locale" :background="primary" :search-area="bounds"></formater-draw-bbox>
+  <formater-draw-bbox color="#fff" :lang="$i18n.locale"  :search-area="bounds"></formater-draw-bbox>
 
   <div >
    <!-- components can be view -->
    <div class="mtdt-column-left" >
-       <formater-form :lang="$i18n.locale" :disableLevel="metadatas.length > 0 ? 1 : 0" :temporalExtent="temporalExtent"  @boundsChange="boundsChange"></formater-form>
+       <formater-form :lang="$i18n.locale" :disableLevel="metadatas.length > 0 ? 1 : 0"   @boundsChange="boundsChange"></formater-form>
    </div>
    <div class="mtdt-column-right" >
         <!-- div where append map when enlarge it -->
@@ -60,34 +60,6 @@ export default {
     FormaterRequester,
     AerisTheme
   },
-  props: {
-//     lang: {
-//       type: String,
-//       default: 'en'
-//     },
-    primary: {
-      type: String,
-      default: '#754a15'
-    },
-    emphasis: {
-      type: String,
-      default: '#dd9946'
-    },
-    beginDate: {
-      type: String,
-      default: '1900-01-01'
-    },
-    endDate: {
-      type: String,
-      default: 'now'
-    }
-  },
-  watch: {
-//     lang (newvalue) {
-//         this.$i18n.locale = newvalue
-//         this.$setGnLocale(this.lang)
-//     }
-  },
   data() {
     return {
       currentUuid: null,
@@ -106,11 +78,12 @@ export default {
       nbRecord: 24,
       capsuleWidth: 300, 
       bounds: null,
-      temporalExtent: {min: '1900-01-01', max: 'now'}, 
+      temporalExtent: {min: '1900-01-01', max: 'now'}
     }
   },
   
   created () {
+    console.log(this.$store.state.style.primary)
     this.initTemporalExtent()
    // this.$i18n.locale = this.lang
     this.$setGnLocale(this.$i18n.locale)
@@ -139,9 +112,11 @@ export default {
   },
   methods: {
     initTemporalExtent () {
-      this.temporalExtent = {
-          min: this.beginDate,
-          max: this.endDate
+      if(this.$store.state.temporalExtent && this.$store.state.temporalExtent.min) {
+        this.temporalExtent.min = this.$store.state.temporalExtent.min
+      }
+      if(this.$store.temporalExtent && this.$store.temporalExtent.max) {
+        this.temporalExtent.max = this.$store.temporalExtent.max
       }
     },
     boundsChange (bounds) {
@@ -164,7 +139,7 @@ export default {
           min: min ? min : this.temporalExtent.min,
           max: max ? max : this.temporalExtent.max
       }
-      this.temporalExtent = temp
+      this.$store.commit('temporalChange', temp)
     },
     resetMetadata (event) {
       this.metadatas.pop()
@@ -184,11 +159,11 @@ export default {
             min: min ? min : this.temporalExtent.min,
             max: max ? max : this.temporalExtent.max
         }
-        this.temporalExtent = temp
+        this.$store.commit('temporalChange', temp)
       } else {
         this.currentUuid = null
         var parameters = []
-        this.initTemporalExtent()
+        this.$store.commit('temporalChange', this.temporalExtent)
       }
       var event = new CustomEvent('fmt:closeMetadataEvent', {detail:  {depth: this.metadatas.length, parameters: parameters }})
       document.dispatchEvent(event)

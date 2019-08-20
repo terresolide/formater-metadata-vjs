@@ -33,7 +33,7 @@
  </formater-search-box>
  
 <formater-search-box header-icon-class="fa fa-calendar" open-icon-class="fa fa-caret-right" :title="$t('time_slot')" :deployed="true" type="empty">
-  <formater-temporal-search :lang="$i18n.locale" :daymin="temporalExtent.min" :daymax="temporalExtent.max"></formater-temporal-search>
+  <formater-temporal-search :lang="$i18n.locale" :daymin="$store.state.temporalExtent.min" :daymax="$store.state.temporalExtent.max"></formater-temporal-search>
 </formater-search-box>
 
 <formater-search-box header-icon-class="fa fa-thermometer-3" v-if="parameters.length > 0" open-icon-class="fa fa-caret-right" :title="$t('parameters')" :deployed="true" type="empty">
@@ -92,19 +92,19 @@ export default {
       type: Number,
       default: 0
     },
-    temporalExtent: {
-      type: Object,
-      default: {min: '1900-01-01', max: 'now'}
-    }
+//     temporalExtent: {
+//       type: Object,
+//       default: {min: '1900-01-01', max: 'now'}
+//     }
   },
   watch: {
 //     lang (newvalue) {
 //     	this.$i18n.locale = newvalue
 //     	this.$setGnLocale(newvalue)
-//     },
-    temporalExtent (newvalue) {
-      console.log(newvalue.max)
-    }
+// //     },
+//     temporalExtent (newvalue) {
+//       console.log(newvalue.max)
+//     }
   },
   data() {
     return {
@@ -276,8 +276,8 @@ export default {
   padding: 0px 0px 30px 0px;
  border: 1px solid #ccc;
   box-shadow: 1px 1px 1px 2px rgba(0, 0, 0, 0.1);
-  max-height: 95vh;
-  overflow-y: auto;
+ /* max-height: 95vh;
+  overflow-y: auto;*/
 }
 .mtdt-form .formater-input-group {
     display: flex;
