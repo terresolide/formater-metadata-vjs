@@ -14,22 +14,22 @@
 export default {
   name: 'FormaterRequester',
   props: {
-    lang: {
-      type: String,
-      default: 'en'
-    },
+//     lang: {
+//       type: String,
+//       default: 'en'
+//     },
     depth: {
       type: Number,
       default:0
     }
   },
   watch: {
-    lang (newvalue) {
-      this.$i18n.locale = newvalue
-      this.$setGnLocale(newvalue)
-      this.srv = process.env.GEONETWORK + 'srv/' + (newvalue === 'fr' ? 'fre' : 'eng') + '/'
-      this.headers['Accept-Language'] =  newvalue === 'fr' ? 'fre': 'eng'
-    },
+//     lang (newvalue) {
+//       this.$i18n.locale = newvalue
+//       this.$setGnLocale(newvalue)
+//       this.srv = process.env.GEONETWORK + 'srv/' + (newvalue === 'fr' ? 'fre' : 'eng') + '/'
+//       this.headers['Accept-Language'] =  newvalue === 'fr' ? 'fre': 'eng'
+//     },
     depth (newvalue) {
       console.log('nouvelle valeur depth = ' + this.depth)
     }
@@ -37,7 +37,7 @@ export default {
   data() {
     return {
       flatsimLayerList: ['CLASSIFICATION', 'CONFIDENCE', 'PIXELS_VALIDITY'],
-      srv: process.env.GEONETWORK + 'srv/' + (this.lang === 'fr'? 'fre' : 'eng') + '/',
+      srv: process.env.GEONETWORK + 'srv/' + (this.$i18n.locale === 'fr'? 'fre' : 'eng') + '/',
       api: null,
      // api: process.env.GEONETWORK + '/srv/api/',
       headers: {
@@ -70,8 +70,8 @@ export default {
   created () {
     this.parameters.from = 1
     this.parameters.to = this.nbRecord
-    this.$i18n.locale = this.lang
-    this.$setGnLocale(this.lang)
+    // this.$i18n.locale = this.lang
+    this.$setGnLocale(this.$i18n.locale)
     // this.getRecords() done when <formater-paging> is mounted with its pageChangeEvent on order control change
     this.pageChangedListener = this.changePage.bind(this)
     document.addEventListener('fmt:pageChangedEvent', this.pageChangedListener);
@@ -254,7 +254,7 @@ export default {
       delete this.parameters.depth
       var headers =  {
           'Accept': 'application/json, text/plain, */*',
-          'Accept-Language': this.lang === 'fr' ? 'fre': 'eng'
+          'Accept-Language': this.$i18n.locale === 'fr' ? 'fre': 'eng'
        }
 
       var self = this

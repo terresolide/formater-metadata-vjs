@@ -27,13 +27,13 @@
   <div class="formater-input-group" style="margin:10px; width:calc(100% - 20px);">
      <input id="any" name="any" v-model="fulltextSearch" :placeholder="$t('search')" @change="changeText" @keypress="changeTextOnEnter" /><i class="fa fa-search"></i>
  </div>
- <formater-map :lang="lang" @boundsChange="boundsChange"></formater-map>
+ <formater-map :lang="$i18n.locale" @boundsChange="boundsChange"></formater-map>
  <formater-search-box header-icon-class="fa fa-globe" open-icon-class="fa fa-caret-right" :title="$t('spatial_extend')" :deployed="false" type="empty">
  <formater-spatial-search :bounds="bounds"></formater-spatial-search>
  </formater-search-box>
  
 <formater-search-box header-icon-class="fa fa-calendar" open-icon-class="fa fa-caret-right" :title="$t('time_slot')" :deployed="true" type="empty">
-  <formater-temporal-search :lang="lang" :daymin="temporalExtent.min" :daymax="temporalExtent.max"></formater-temporal-search>
+  <formater-temporal-search :lang="$i18n.locale" :daymin="temporalExtent.min" :daymax="temporalExtent.max"></formater-temporal-search>
 </formater-search-box>
 
 <formater-search-box header-icon-class="fa fa-thermometer-3" v-if="parameters.length > 0" open-icon-class="fa fa-caret-right" :title="$t('parameters')" :deployed="true" type="empty">
@@ -84,10 +84,10 @@ export default {
   },
   props: {
 
-    lang: {
-      type: String,
-      default: 'en'
-    },
+//     lang: {
+//       type: String,
+//       default: 'en'
+//     },
     disableLevel: {
       type: Number,
       default: 0
@@ -98,10 +98,10 @@ export default {
     }
   },
   watch: {
-    lang (newvalue) {
-    	this.$i18n.locale = newvalue
-    	this.$setGnLocale(newvalue)
-    },
+//     lang (newvalue) {
+//     	this.$i18n.locale = newvalue
+//     	this.$setGnLocale(newvalue)
+//     },
     temporalExtent (newvalue) {
       console.log(newvalue.max)
     }
@@ -121,8 +121,8 @@ export default {
     }
   },
   created () {
-    this.$i18n.locale = this.lang
-    this.$setGnLocale(this.lang)
+   // this.$i18n.locale = this.lang
+    this.$setGnLocale(this.$i18n.locale)
     this.aerisSearchListener = this.handleSearch.bind(this)
     document.addEventListener('aerisSearchEvent', this.aerisSearchListener)
     this.aerisResetListener = this.handleReset.bind(this)
@@ -171,9 +171,9 @@ export default {
       }
       var name = this.dimensions[index]['@name'];
       var lang = name.substring(name.length -3, name.length)
-      if (this.lang === 'fr' && lang === 'Fre') {
+      if (this.$i18n.locale === 'fr' && lang === 'Fre') {
         return true;
-      } else if (this.lang != 'fr' && lang != 'Fre') {
+      } else if (this.$i18n.locale != 'fr' && lang != 'Fre') {
         return true;
       } else {
         return false;

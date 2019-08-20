@@ -12,26 +12,26 @@
  <div class="mtdt-catalogue">
   <!-- components not visible  -->
   <aeris-theme :primary="primary" :active="true" :emphasis="emphasis"></aeris-theme>
-  <formater-requester :lang="lang"  :depth="metadatas.length"></formater-requester>
+  <formater-requester  :depth="metadatas.length"></formater-requester>
   <!-- component to draw bbox -->
-  <formater-draw-bbox color="#fff" :lang="lang" :background="primary" :search-area="bounds"></formater-draw-bbox>
+  <formater-draw-bbox color="#fff" :lang="$i18n.locale" :background="primary" :search-area="bounds"></formater-draw-bbox>
 
   <div >
    <!-- components can be view -->
    <div class="mtdt-column-left" >
-       <formater-form :lang="lang" :disableLevel="metadatas.length > 0 ? 1 : 0" :temporalExtent="temporalExtent"  @boundsChange="boundsChange"></formater-form>
+       <formater-form :lang="$i18n.locale" :disableLevel="metadatas.length > 0 ? 1 : 0" :temporalExtent="temporalExtent"  @boundsChange="boundsChange"></formater-form>
    </div>
    <div class="mtdt-column-right" >
         <!-- div where append map when enlarge it -->
         <div id="fmtLargeMap"></div>
         <!-- list of all records with page navigation -->
         <div v-show="metadatas.length === 0">
-            <formater-paging :lang="lang" :nb-record="nbRecord" :record-by-line="recordByLine" :depth="0" :orders="['title','changeDate']" order-by="title"></formater-paging>
-            <formater-list-metadata :lang="lang" :depth="0" :capsule-width="capsuleWidth"></formater-list-metadata>
+            <formater-paging :lang="$i18n.locale" :nb-record="nbRecord" :record-by-line="recordByLine" :depth="0" :orders="['title','changeDate']" order-by="title"></formater-paging>
+            <formater-list-metadata :lang="$i18n.locale" :depth="0" :capsule-width="capsuleWidth"></formater-list-metadata>
         </div>
         <!-- view of one record -->
         <div  v-if="metadatas.length > 0" >
-            <formater-metadata v-for="(meta, index) in metadatas" :key="index" v-show="index === metadatas.length-1" :depth="index" :metadata="meta" :lang="lang"
+            <formater-metadata v-for="(meta, index) in metadatas" :key="index" v-show="index === metadatas.length-1" :depth="index" :metadata="meta" :lang="$i18n.locale"
              :capsule-width="capsuleWidth - 10" :record-by-line="recordByLine" @close="resetMetadata" ></formater-metadata>
         </div>
      </div>
@@ -61,10 +61,10 @@ export default {
     AerisTheme
   },
   props: {
-    lang: {
-      type: String,
-      default: 'en'
-    },
+//     lang: {
+//       type: String,
+//       default: 'en'
+//     },
     primary: {
       type: String,
       default: '#754a15'
@@ -83,10 +83,10 @@ export default {
     }
   },
   watch: {
-    lang (newvalue) {
-        this.$i18n.locale = newvalue
-        this.$setGnLocale(this.lang)
-    }
+//     lang (newvalue) {
+//         this.$i18n.locale = newvalue
+//         this.$setGnLocale(this.lang)
+//     }
   },
   data() {
     return {
@@ -112,8 +112,8 @@ export default {
   
   created () {
     this.initTemporalExtent()
-    this.$i18n.locale = this.lang
-    this.$setGnLocale(this.lang)
+   // this.$i18n.locale = this.lang
+    this.$setGnLocale(this.$i18n.locale)
     this.metadataListener = this.receiveMetadata.bind(this)
     document.addEventListener('fmt:metadataEvent', this.metadataListener);
     this.aerisSearchListener = this.handleSearch.bind(this)
@@ -123,6 +123,7 @@ export default {
     this.resizeListener = this.resize.bind(this)
     window.addEventListener('resize', this.resizeListener);
     this.resize()
+    console.log(this.$store)
   },
   mounted () {
     var evt = new CustomEvent('fmt:pageChangedEvent')
