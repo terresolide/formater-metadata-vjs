@@ -27,7 +27,7 @@ export default {
 //     lang (newvalue) {
 //       this.$i18n.locale = newvalue
 //       this.$setGnLocale(newvalue)
-//       this.srv = process.env.GEONETWORK + 'srv/' + (newvalue === 'fr' ? 'fre' : 'eng') + '/'
+//          this.srv = process.env.GEONETWORK + 'srv/' + (newvalue === 'fr' ? 'fre' : 'eng') + '/'
 //       this.headers['Accept-Language'] =  newvalue === 'fr' ? 'fre': 'eng'
 //     },
     depth (newvalue) {
@@ -37,7 +37,8 @@ export default {
   data() {
     return {
       flatsimLayerList: ['CLASSIFICATION', 'CONFIDENCE', 'PIXELS_VALIDITY'],
-      srv: process.env.GEONETWORK + 'srv/' + (this.$i18n.locale === 'fr'? 'fre' : 'eng') + '/',
+      // srv: process.env.GEONETWORK + 'srv/' + (this.$i18n.locale === 'fr'? 'fre' : 'eng') + '/',
+      srv: null,
       api: null,
      // api: process.env.GEONETWORK + '/srv/api/',
       headers: {
@@ -68,8 +69,10 @@ export default {
      }
   },
   created () {
+    this.srv = this.$store.state.srv +  'srv/' + (this.$i18n.locale === 'fr'? 'fre' : 'eng') + '/'
     this.parameters.from = 1
     this.parameters.to = this.nbRecord
+    console.log(process.env.GEONETWORK)
     // this.$i18n.locale = this.lang
     this.$setGnLocale(this.$i18n.locale)
     // this.getRecords() done when <formater-paging> is mounted with its pageChangeEvent on order control change
@@ -355,7 +358,7 @@ export default {
       return properties
     },
     treatment (meta, uuid) {
-      meta.logo = process.env.GEONETWORK + meta.logo
+      meta.logo = this.$store.state.srv + meta.logo
       meta.id = uuid
       if (meta.abstract) {
         meta.abstract = meta.abstract.replace(/(?:\\[rn]|[\r\n])/g, '<br />');

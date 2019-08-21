@@ -7,6 +7,7 @@ import Vuex from 'vuex'
 export default function makeStore( config ) {
   delete config.lang
   var defaultConfig = {
+      srv: "http://localhost/geonetwork/",
       style: 
       {
         primary:"#754a15",
