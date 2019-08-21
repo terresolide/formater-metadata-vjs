@@ -38,17 +38,12 @@ import makeStore from './store'
 var config = {}
 if (typeof formaterConfig != 'undefined') {
   config = JSON.parse(formaterConfig.innerHTML)
-  console.log(config)
 } 
 let locale = navigator.language.substr(0, 2)
-console.log(locale)
- console.log(formaterConfig)
-console.log(config)
+
 if (config.lang) {
   locale = config.lang
 } 
-delete config.lang
-console.log(config.style)
 
 
 ljs.addAliases({
