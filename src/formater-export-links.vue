@@ -36,8 +36,8 @@ export default {
   mounted () {
     console.log('mounted')
     this.$setGnLocale(this.lang)
-    this.xml = process.env.GEONETWORK +'srv/api/records/'+ this.uuid + '/formatters/xml?attachment=true'
-    this.pdf = process.env.GEONETWORK + 'srv/api/records/'+ this.uuid + '/formatters/xsl-view?root=div&output=pdf'
+    this.xml = this.$store.state.geonetwork + 'srv/api/records/'+ this.uuid + '/formatters/xml?attachment=true'
+    this.pdf = this.$store.state.geonetwork + 'srv/api/records/'+ this.uuid + '/formatters/xsl-view?root=div&output=pdf'
     console.log(this.$gnLang)
   }
 }

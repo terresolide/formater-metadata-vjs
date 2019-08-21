@@ -45,10 +45,10 @@ export default {
   components: {
   },
   props: {
-    searchArea: {
-      type: Object,
-      default: null
-    }
+//     searchArea: {
+//       type: Object,
+//       default: null
+//     }
   },
   watch: {
 //     lang (newvalue) {
@@ -64,8 +64,26 @@ export default {
 //           this.drawControl.addTo(this.map)
 //         }
 //    },
-    searchArea (newvalue) {
-      this.initBoundsLayer()
+//     searchArea (newvalue) {
+//       this.initBoundsLayer()
+//       var bounds = this.getBounds()
+//       var bbox = null
+//       if (bounds.isValid()) {
+//          bbox = {
+//            north: bounds.getNorth(),
+//            east: bounds.getEast(),
+//            west: bounds.getWest(),
+//            south: bounds.getSouth()
+//          }
+//       }
+//       this.selectAreaChange({detail: bbox})
+     
+//     }
+  },
+  computed: {
+    searchArea() {
+      var searchArea = this.$store.state.bounds
+      this.initBoundsLayer(searchArea)
       var bounds = this.getBounds()
       var bbox = null
       if (bounds.isValid()) {
@@ -77,13 +95,15 @@ export default {
          }
       }
       this.selectAreaChange({detail: bbox})
-     
+      return searchArea
     }
   },
   created: function() {
     if (this.$i18n.locale  === 'fr') {
       L.drawLocal = require('formater-geotiff-visualizer-vjs/src/module/leaflet.draw.fr.js')
     } 
+    console.log(this.$store.state.spatialExtent)
+    console.log(this.$store.getters.spatialExtent)
     // open and close
     this.drawStartListener = this.open.bind(this)
     document.addEventListener('fmt:selectAreaDrawStart', this.drawStartListener)
@@ -167,9 +187,9 @@ export default {
         }
       }
     },
-    initBoundsLayer () {
+    initBoundsLayer (searchArea) {
       this.removeBoundsLayer()
-      if (this.searchArea) {
+      if (searchArea) {
         this.boundsLayer = L.rectangle(this.searchArea, {color:'#cccccc', fillOpacity: 0.2, weight: 1})
         this.boundsLayer.addTo(this.map)
         this.map.fitBounds(this.boundsLayer.getBounds())
@@ -252,7 +272,7 @@ export default {
           maxZoom: 18,
           minZoom:1
         }).addTo( this.map );
-      this.initBoundsLayer()
+      // this.initBoundsLayer(this.searchArea)
       this.initDrawControl()
     },
     open (event) {
@@ -276,6 +296,7 @@ export default {
     },
     selectAreaChange (event) {
       var bbox = event.detail
+      console.log(bbox)
       if (bbox && bbox.north !== "" && bbox.south !== "" && bbox.east !== "" && bbox.west !== "") {
         for(var key in bbox){
           bbox[key] = parseFloat(bbox[key]);
@@ -303,9 +324,7 @@ export default {
       } else if (this.searchArea) {
         this.map.fitBounds(this.boundsLayer.getBounds(), {padding: [10, 10]})
       } else {
-        console.log(this.$store.state.temporalExtent)
-        console.log(this.$store.state.bounds)
-        this.map.fitBounds([[-80,-120],[80,150]], {padding: [10, 10]})
+        this.map.fitBounds(this.$store.state.spatialExtent)
       }
       
     },

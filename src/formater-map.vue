@@ -221,7 +221,8 @@ export default {
    receiveMetadata(event) {
      var bounds = this.selectBbox(event)
      console.log(this.metadataBoundsList)
-     this.$emit('boundsChange', bounds)
+     this.$store.commit('boundsChange', bounds)
+     // this.$emit('boundsChange', bounds)
    },
    receiveMetadatas (event) {
      if (this.bboxLayer[this.depth]) {
@@ -311,7 +312,8 @@ export default {
         var bounds = this.metadataBoundsList.length > 0 ? this.metadataBoundsList[this.metadataBoundsList.length - 1] : null
         
      }
-     this.$emit('boundsChange', bounds)
+     this.$store.commit('boundsChange', bounds)
+     // this.$emit('boundsChange', bounds)
      this.unselectBbox()
      if (this.depth > event.detail.depth) {
         if (this.bboxLayer[this.depth]) {

@@ -121,7 +121,7 @@ export default {
     lang (newvalue) {
     	this.$i18n.locale = newvalue
     	moment.locale(newvalue)
-    	this.srv = process.env.GEONETWORK + 'srv/' + (newvalue === 'fr' ? 'fre' : 'eng') + '/'
+    	this.srv = this.$store.state.geonetwork + 'srv/' + (newvalue === 'fr' ? 'fre' : 'eng') + '/'
     	this.headers['Accept-Language'] =  newvalue === 'fr' ? 'fre': 'eng'
     },
     metadata: {
@@ -306,7 +306,7 @@ export default {
 	       return
 	     }
 	     
-	     var url = process.env.GEONETWORK + 'srv/'+this.meta.docLocale+'/q?_content_type=json&fast=index&uuid=' + this.uuid;
+	     var url = this.$store.state.geonetwork + 'srv/'+this.meta.docLocale+'/q?_content_type=json&fast=index&uuid=' + this.uuid;
 	     var _this = this
 	     this.$http.get(url).then(
                response => {

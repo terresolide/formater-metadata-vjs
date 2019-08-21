@@ -69,11 +69,9 @@ export default {
      }
   },
   created () {
-    this.srv = this.$store.state.srv +  'srv/' + (this.$i18n.locale === 'fr'? 'fre' : 'eng') + '/'
+    this.srv = this.$store.state.geonetwork +  'srv/' + (this.$i18n.locale === 'fr'? 'fre' : 'eng') + '/'
     this.parameters.from = 1
     this.parameters.to = this.nbRecord
-    console.log(process.env.GEONETWORK)
-    // this.$i18n.locale = this.lang
     this.$setGnLocale(this.$i18n.locale)
     // this.getRecords() done when <formater-paging> is mounted with its pageChangeEvent on order control change
     this.pageChangedListener = this.changePage.bind(this)
@@ -302,7 +300,7 @@ export default {
         var metadatas = null
       } else if (data.metadata && !data.metadata.forEach) {
         var uuid = data.metadata['geonet:info'].uuid
-        metadatas[uuid] = self.treatment(data.metadata ,uuid)
+        metadatas[uuid] = self.treatmentSingleGeonetwork(data.metadata ,uuid)
         var feature = self.extractBboxGeonetwork(data.metadata.geoBox, uuid)
         if (feature) {
             features.push(feature)
@@ -310,7 +308,7 @@ export default {
       } else {
            data.metadata.forEach( function (meta, index) {
              var uuid = meta['geonet:info'].uuid
-             metadatas[uuid] = self.treatment(meta ,uuid)
+             metadatas[uuid] = self.treatmentSingleGeonetwork(meta ,uuid)
               var feature = self.extractBboxGeonetwork(meta.geoBox, uuid)
               if (feature) {
                     features.push(feature)
@@ -357,8 +355,8 @@ export default {
       }
       return properties
     },
-    treatment (meta, uuid) {
-      meta.logo = this.$store.state.srv + meta.logo
+    treatmentSingleGeonetwork (meta, uuid) {
+      meta.logo = this.$store.state.geonetwork + meta.logo
       meta.id = uuid
       if (meta.abstract) {
         meta.abstract = meta.abstract.replace(/(?:\\[rn]|[\r\n])/g, '<br />');

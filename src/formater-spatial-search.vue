@@ -59,10 +59,6 @@ export default {
     lang: {
       type:String,
       default:'fr'
-    },
-    box: {
-      type: Object,
-      default: null
     }
   },
   data(){
@@ -71,7 +67,6 @@ export default {
       south: "",
       east: "",
       west: "",
-      bounds: null,
       areaSelect: false,
       searchEventListener: null,
       resetEventListener: null,
@@ -104,7 +99,7 @@ export default {
     document.addEventListener('fmt:selectAreaChange', this.selectAreaChangeListener);
     this.drawCloseListener = this.handleDraw.bind(this)
     document.addEventListener('fmt:drawClose', this.drawCloseListener)
-    this.bounds = this.box
+    // this.bounds = this.box
   },
   mounted: function(){
      var event = new CustomEvent('aerisThemeRequest', {});

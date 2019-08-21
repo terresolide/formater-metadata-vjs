@@ -7,7 +7,7 @@ import Vuex from 'vuex'
 export default function makeStore( config ) {
   delete config.lang
   var defaultConfig = {
-      srv: "http://localhost/geonetwork/",
+      geonetwork: "http://localhost/geonetwork/",
       style: 
       {
         primary:"#754a15",
@@ -18,16 +18,27 @@ export default function makeStore( config ) {
         min: "1920-12-01",
         max: "now"
       },
-      bounds: [[-90,-180],[90,180]]
+      spatialExtent: [[-60,-120],[75,130]],
+      bounds: null,
+      parameters: {}
   }
-  defaultConfig = Object.assign(defaultConfig, config)
-  
+  var finalConfig = Object.assign(defaultConfig, config)
+  console.log(defaultConfig)
+  console.log(finalConfig.spatialExtent)
   return new Vuex.Store( {
-    state: config,
+    state: finalConfig,
     mutations: {
       temporalChange(state, newTemporal) {
         state.temporalExtent = newTemporal
+      },
+      parametersChange(state, newParameters) {
+        state.parameters = newParameters
+      },
+      boundsChange(state, newBounds) {
+        state.bounds = newBounds
       }
+    },
+    getters: {
     }
   } );
 }

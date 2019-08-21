@@ -27,9 +27,9 @@
   <div class="formater-input-group" style="margin:10px; width:calc(100% - 20px);">
      <input id="any" name="any" v-model="fulltextSearch" :placeholder="$t('search')" @change="changeText" @keypress="changeTextOnEnter" /><i class="fa fa-search"></i>
  </div>
- <formater-map :lang="$i18n.locale" @boundsChange="boundsChange"></formater-map>
+ <formater-map></formater-map>
  <formater-search-box header-icon-class="fa fa-globe" open-icon-class="fa fa-caret-right" :title="$t('spatial_extend')" :deployed="false" type="empty">
- <formater-spatial-search :bounds="bounds"></formater-spatial-search>
+ <formater-spatial-search ></formater-spatial-search>
  </formater-search-box>
  
 <formater-search-box header-icon-class="fa fa-calendar" open-icon-class="fa fa-caret-right" :title="$t('time_slot')" :deployed="true" type="empty">
@@ -115,9 +115,7 @@ export default {
       aerisSearchListener: null,
       aerisResetListener: null,
       metadataListListener: null,
-      closeMetadataListener: null,
-      bounds: null,
-
+      closeMetadataListener: null
     }
   },
   created () {
@@ -147,11 +145,11 @@ export default {
   },
  
   methods: {
-    boundsChange(bounds) {
-      console.log('dans formater form', bounds)
-      this.bounds = bounds
-      this.$emit('boundsChange', bounds)
-    },
+//     boundsChange(bounds) {
+//       console.log('dans formater form', bounds)
+//       this.bounds = bounds
+//       this.$emit('boundsChange', bounds)
+//     },
     facetToIcon (index) {
       return iconClass[this.dimensions[index]['@name']]
     },

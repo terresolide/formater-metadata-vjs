@@ -14,7 +14,7 @@
   <aeris-theme :primary="$store.state.style.primary" :active="true" :emphasis="$store.state.style.emphasis"></aeris-theme>
   <formater-requester  :depth="metadatas.length"></formater-requester>
   <!-- component to draw bbox -->
-  <formater-draw-bbox color="#fff" :lang="$i18n.locale"  :search-area="bounds"></formater-draw-bbox>
+  <formater-draw-bbox></formater-draw-bbox>
 
   <div >
    <!-- components can be view -->
