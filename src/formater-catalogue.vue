@@ -14,7 +14,7 @@
   <aeris-theme :primary="$store.state.style.primary" :active="true" :emphasis="$store.state.style.emphasis"></aeris-theme>
   <formater-requester  :depth="metadatas.length"></formater-requester>
   <!-- component to draw bbox -->
-  <formater-draw-bbox></formater-draw-bbox>
+  <formater-draw-bbox :search-area="$store.state.searchArea"></formater-draw-bbox>
 
   <div >
    <!-- components can be view -->
@@ -83,7 +83,6 @@ export default {
   },
   
   created () {
-    console.log(this.$store.state.style.primary)
     this.initTemporalExtent()
    // this.$i18n.locale = this.lang
     this.$setGnLocale(this.$i18n.locale)

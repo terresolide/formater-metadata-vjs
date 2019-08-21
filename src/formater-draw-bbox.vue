@@ -45,10 +45,10 @@ export default {
   components: {
   },
   props: {
-//     searchArea: {
-//       type: Object,
-//       default: null
-//     }
+    searchArea: {
+      type: Object,
+      default: null
+    }
   },
   watch: {
 //     lang (newvalue) {
@@ -64,26 +64,8 @@ export default {
 //           this.drawControl.addTo(this.map)
 //         }
 //    },
-//     searchArea (newvalue) {
-//       this.initBoundsLayer()
-//       var bounds = this.getBounds()
-//       var bbox = null
-//       if (bounds.isValid()) {
-//          bbox = {
-//            north: bounds.getNorth(),
-//            east: bounds.getEast(),
-//            west: bounds.getWest(),
-//            south: bounds.getSouth()
-//          }
-//       }
-//       this.selectAreaChange({detail: bbox})
-     
-//     }
-  },
-  computed: {
-    searchArea() {
-      var searchArea = this.$store.state.bounds
-      this.initBoundsLayer(searchArea)
+    searchArea (newvalue) {
+      this.initBoundsLayer()
       var bounds = this.getBounds()
       var bbox = null
       if (bounds.isValid()) {
@@ -95,9 +77,10 @@ export default {
          }
       }
       this.selectAreaChange({detail: bbox})
-      return searchArea
+     
     }
   },
+  
   created: function() {
     if (this.$i18n.locale  === 'fr') {
       L.drawLocal = require('formater-geotiff-visualizer-vjs/src/module/leaflet.draw.fr.js')
@@ -187,9 +170,9 @@ export default {
         }
       }
     },
-    initBoundsLayer (searchArea) {
+    initBoundsLayer () {
       this.removeBoundsLayer()
-      if (searchArea) {
+      if (this.searchArea) {
         this.boundsLayer = L.rectangle(this.searchArea, {color:'#cccccc', fillOpacity: 0.2, weight: 1})
         this.boundsLayer.addTo(this.map)
         this.map.fitBounds(this.boundsLayer.getBounds())

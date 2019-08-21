@@ -19,7 +19,7 @@ export default function makeStore( config ) {
         max: "now"
       },
       spatialExtent: [[-60,-120],[75,130]],
-      bounds: null,
+      searchArea: null,
       parameters: {}
   }
   var finalConfig = Object.assign(defaultConfig, config)
@@ -34,8 +34,9 @@ export default function makeStore( config ) {
       parametersChange(state, newParameters) {
         state.parameters = newParameters
       },
-      boundsChange(state, newBounds) {
-        state.bounds = newBounds
+      searchAreaChange(state, newBounds) {
+        console.log('commit bounds change')
+        state.searchArea = newBounds
       }
     },
     getters: {

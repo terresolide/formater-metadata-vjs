@@ -118,6 +118,7 @@ export default {
       closeMetadataListener: null
     }
   },
+
   created () {
    // this.$i18n.locale = this.lang
     this.$setGnLocale(this.$i18n.locale)
