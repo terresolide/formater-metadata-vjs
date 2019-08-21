@@ -9,7 +9,7 @@
 </i18n>
 <template></template>
 <script>
-import Opensearch from './opensearch'
+
 
 export default {
   name: 'FormaterRequester',

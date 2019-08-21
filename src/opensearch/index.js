@@ -4,26 +4,19 @@
  * 
  * @author epointal
  */
-import Vue from 'vue'
-import VueResource from 'vue-resource'
 
-var opensearch = {
+
+export default {
     _options: {
       
     },
-    reader: function(options) {
-      this._options = Object.assign(this._options, options)
-    }
-    
-}
-opensearch.reader = {
     load: function(describeUrl) {
       this.$http.get(describeUrl)
       .then(
           response => { this.extractDescribeParameters(response.body);}
       )
     },
-    extract: function (parametersString) {
+    extractDescribeParameters: function (parametersString) {
       var parser = new DOMParser()
       var xml = parser.parseFromString(parametersString, 'text/xml')
       var urls = xml.firstChild.childNodes
@@ -50,6 +43,7 @@ opensearch.reader = {
       var parameters = url.getElementsByTagName('parameters:Parameter')
       var self = this
       for(var i=0; i < parameters.length; i++){
+        var value = parameters[i].getAttribute('value')
         var name = parameters[i].getAttribute('name')
         var obj= {
             name: name,
@@ -99,5 +93,7 @@ opensearch.reader = {
       this.getRecords()
       // this.requestApi(searchParameters)
     }
+    
 }
-module.export = opensearch
+
+

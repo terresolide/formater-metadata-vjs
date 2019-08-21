@@ -78,7 +78,7 @@ import FormaterExportLinks from './formater-export-links.vue'
 const FormaterPaging = () => import('./formater-paging.vue')
 const FormaterListMetadata = () => import('./formater-list-metadata.vue')
 import moment from 'moment';
-import axios from 'axios';
+import opensearch from './opensearch'
 // import { extendMoment } from 'moment-range';
 // window.momentCst = extendMoment(moment);
 
@@ -199,21 +199,21 @@ export default {
     document.addEventListener('keydown', this.keydownListener)
     this.searchEventListener = this.handleSearch.bind(this) 
   	document.addEventListener('aerisSearchEvent', this.searchEventListener);
-    var post = {
-        "clientId":"lJ9NjcIZLGYkgRzvRlBDQS_LeVoa",
-        "code":"62d32c7eb43e579b82713f8d04cfe7",
-        "redirectUri": "https://muscatemaj-pp.theia-land.fr/atdistrib/rocket/",
-         "state": "q9m4whb4nvldywjh7oahco"
-    }
-//      this.$http.get('https://muscatemaj-pp.theia-land.fr/atdistrib/resto2/api/collections//describe.xml').then(
-//         response => console.log(response));
-//     this.$http.post('https://muscatemaj-pp.theia-land.fr/atdistrib/resto2/api/auth/theia', JSON.stringify(post), {credentials: true}).then(
-//          response => console.log(response));
-     var xhr = new XMLHttpRequest();
-    xhr.open('POST', 'https://muscatemaj-pp.theia-land.fr/atdistrib/resto2/api/auth/theia', true);
-  //  xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-    xhr.withCredentials = true;
-    xhr.send(JSON.stringify(post));
+//     var post = {
+//         "clientId":"lJ9NjcIZLGYkgRzvRlBDQS_LeVoa",
+//         "code":"62d32c7eb43e579b82713f8d04cfe7",
+//         "redirectUri": "https://muscatemaj-pp.theia-land.fr/atdistrib/rocket/",
+//          "state": "q9m4whb4nvldywjh7oahco"
+//     }
+// //      this.$http.get('https://muscatemaj-pp.theia-land.fr/atdistrib/resto2/api/collections//describe.xml').then(
+// //         response => console.log(response));
+// //     this.$http.post('https://muscatemaj-pp.theia-land.fr/atdistrib/resto2/api/auth/theia', JSON.stringify(post), {credentials: true}).then(
+// //          response => console.log(response));
+//      var xhr = new XMLHttpRequest();
+//     xhr.open('POST', 'https://muscatemaj-pp.theia-land.fr/atdistrib/resto2/api/auth/theia', true);
+//   //  xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+//     xhr.withCredentials = true;
+//     xhr.send(JSON.stringify(post));
   },
   watch: {
     
@@ -277,7 +277,8 @@ export default {
            }
          } else if (val.api) {
            if (!this.hasChild) {
-             this.getApiParameters(val.api)
+              this.getApiParameters(val.api)
+             var infosApi = opensearch.load(val.api)
              
            }
            
