@@ -36,8 +36,8 @@
   <formater-temporal-search :lang="$i18n.locale" :daymin="$store.state.temporalExtent.min" :daymax="$store.state.temporalExtent.max"></formater-temporal-search>
 </formater-search-box>
 
-<formater-search-box header-icon-class="fa fa-thermometer-3" v-if="parameters.length > 0" open-icon-class="fa fa-caret-right" :title="$t('parameters')" :deployed="true" type="empty">
- <formater-parameters-form :parameters="parameters" ></formater-parameters-form>
+<formater-search-box header-icon-class="fa fa-thermometer-3" v-if="$store.state.parameters.others.length > 0" open-icon-class="fa fa-caret-right" :title="$t('parameters')" :deployed="true" type="empty">
+ <formater-parameters-form :parameters="$store.state.parameters.others" ></formater-parameters-form>
  </formater-search-box>
  
 <formater-search-box v-if="dimension.category" :header-icon-class="facetToIcon(index)" open-icon-class="fa fa-caret-right" :disableLevel="disableLevel" :title="titleDimension(index)" type="empty" v-for="(dimension, index) in dimensions" :key="index">
@@ -128,10 +128,10 @@ export default {
     document.addEventListener('aerisResetEvent', this.aerisResetListener)
     this.metadataListListener = this.fill.bind(this)
     document.addEventListener('fmt:metadataListEvent', this.metadataListListener)
-    this.parametersListener = this.changeParameters.bind(this)
-    document.addEventListener('fmt:changeParametersEvent', this.parametersListener)
-    this.closeMetadataListener = this.changeParameters.bind(this)
-    document.addEventListener('fmt:closeMetadataEvent', this.closeMetadataListener)
+//     this.parametersListener = this.changeParameters.bind(this)
+//     document.addEventListener('fmt:changeParametersEvent', this.parametersListener)
+//     this.closeMetadataListener = this.changeParameters.bind(this)
+//     document.addEventListener('fmt:closeMetadataEvent', this.closeMetadataListener)
 
   },
   destroyed () {
@@ -141,8 +141,8 @@ export default {
     this.aerisResetListener = null
     document.removeEventListener('fmt:metadataListEvent', this.metadataListListener)
     this.metadataListListener = null;
-    document.addEventListener('fmt:closeMetadataEvent', this.closeMetadataListener)
-    this.closeMetadataListener = null
+//     document.addEventListener('fmt:closeMetadataEvent', this.closeMetadataListener)
+//     this.closeMetadataListener = null
   },
  
   methods: {
@@ -258,15 +258,15 @@ export default {
        // trigger event change text
        var e = new CustomEvent('fmt:textChangeEvent')
        document.dispatchEvent(e)
-    },
-    changeParameters (evt) {
-      if (evt.detail.parameters) {
-          this.parameters = evt.detail.parameters
-      }
-    },
-    resetParameters (evt) {
-      this.parameters = []
-    }
+    }//,
+//     changeParameters (evt) {
+//       if (evt.detail.parameters) {
+//           this.parameters = evt.detail.parameters
+//       }
+//     },
+//     resetParameters (evt) {
+//       this.parameters = []
+//     }
   }
 }
 </script>

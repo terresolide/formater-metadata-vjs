@@ -83,6 +83,16 @@ export default {
   },
   
   created () {
+    var regexList = ["\{geo\:(uid|geometry|name|lon|lat|radius)\}",
+      "\{searchTerms\}","\{fs:(first|second)Date(Min|Max)\}" ]
+  //  var regexList = ["/\{geo:uid\}/"]
+    var text = "{fs:firstDateMax}"
+    const isMatch = regexList.some(function(str) {
+      console.log(str)
+      var rx = new RegExp(str); 
+      return rx.test(text); 
+    });
+    console.log('regex match = ', isMatch)
     this.initTemporalExtent()
    // this.$i18n.locale = this.lang
     this.$setGnLocale(this.$i18n.locale)
@@ -164,7 +174,8 @@ export default {
         var parameters = []
         this.$store.commit('temporalChange', this.temporalExtent)
       }
-      var event = new CustomEvent('fmt:closeMetadataEvent', {detail:  {depth: this.metadatas.length, parameters: parameters }})
+      this.$store.commit('parametersChange', parameters)
+      var event = new CustomEvent('fmt:closeMetadataEvent', {detail:  {depth: this.metadatas.length }})
       document.dispatchEvent(event)
     },
    resize () {
