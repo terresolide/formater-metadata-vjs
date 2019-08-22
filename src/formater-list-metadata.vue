@@ -10,7 +10,7 @@
 <template>
  <div class="mtdt-list" >
     <div v-if="!metadatas" style="width:calc(100% - 150px);">{{$t('no_result')}}</div>
-    <formater-cartouche-metadata :width="capsuleWidth" :color="color" :depth="depth" :type="type" v-for="(meta, index) in metadatas" :key="index" :metadata="meta" v-if="meta" :lang="lang"></formater-cartouche-metadata>
+    <formater-cartouche-metadata :width="capsuleWidth" :color="color" :depth="depth" :type="type" v-for="(meta, index) in metadatas" :key="index" :metadata="meta" v-if="meta" :lang="$i18n.locale"></formater-cartouche-metadata>
   </div>
 </template>
 <script>
@@ -25,10 +25,10 @@ export default {
       type: Array,
       default: null
     },
-    lang: {
-      type: String,
-      default: 'en'
-    },
+//     lang: {
+//       type: String,
+//       default: 'en'
+//     },
     depth: {
       type: Number,
       default: 0
@@ -42,12 +42,12 @@ export default {
       default: 300
     }
   },
-  watch: {
-    lang (newvalue) {
-    	this.$i18n.locale = newvalue
-    	this.$setGnLocale(this.lang)
-    }
-  },
+//   watch: {
+//     lang (newvalue) {
+//     	this.$i18n.locale = newvalue
+//     	this.$setGnLocale(this.lang)
+//     }
+//   },
   data() {
     return {
       metadatas: {},
@@ -59,8 +59,8 @@ export default {
     }
   },
   created: function() {
-    this.$i18n.locale = this.lang
-    this.$setGnLocale(this.lang)
+    //this.$i18n.locale = this.lang
+   // this.$setGnLocale(this.lang)
     this.metadataListListener = this.receiveMetadatas.bind(this)
     document.addEventListener('fmt:metadataListEvent', this.metadataListListener)
   },
@@ -87,7 +87,7 @@ export default {
        }
         var headers =  {
           'Accept': 'application/json, text/plain, */*',
-          'Accept-Language': this.lang === 'fr' ? 'fre': 'eng'
+          'Accept-Language': this.$i18n.locale === 'fr' ? 'fre': 'eng'
         }
         var url = this.$store.state.geonetwork + 'srv/api/related?type=children'
         url += '&uuid=' + Object.keys(this.metadatas).join('&uuid=')

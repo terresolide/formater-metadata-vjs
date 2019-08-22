@@ -42,10 +42,10 @@ export default {
     FormaterContact
   },
   props: {
-    lang: {
-      type: String,
-      default: 'en'
-    },
+//     lang: {
+//       type: String,
+//       default: 'en'
+//     },
     responsibleParty: {
       type: Array,
       default: () => []
@@ -56,9 +56,9 @@ export default {
     }
   },
   watch: {
-    lang (newvalue) {
-    	this.$i18n.locale = newvalue
-    },
+//     lang (newvalue) {
+//     	this.$i18n.locale = newvalue
+//     },
     responsibleParty2 (newvalue) {
        this.updateContacts(newvalue)
     }
@@ -72,8 +72,8 @@ export default {
     }
   },
   created () {
-    this.$i18n.locale = this.lang
-    this.$setGnLocale(this.lang)
+    //this.$i18n.locale = this.lang
+    //this.$setGnLocale(this.lang)
     this.updateContacts(this.responsibleParty)
     this.updateContacts(this.responsibleParty2)
     

@@ -20,7 +20,11 @@ export default function makeStore( config ) {
       },
       spatialExtent: [[-60,-120],[75,130]],
       searchArea: null,
-      parameters: {}
+      parameters: {
+        paging:{},
+        geo: {},
+        dates: {}
+      }
   }
   var finalConfig = Object.assign(defaultConfig, config)
   console.log(defaultConfig)

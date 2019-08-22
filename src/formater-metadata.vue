@@ -39,9 +39,11 @@
          <formater-export-links :uuid="uuid" v-if="uuid"></formater-export-links>
       </div>
       <!--  tab search if have child -->
+      <formater-opensearch v-if="describe"  :describe="describe" :uuid="uuid" :depth="depth" @hasChild="setHasChild"></formater-opensearch>
       <div v-if="tabs.search" v-show="currentTab === 'search'">
-           <formater-paging :lang="lang" :nb-record="nbRecord" :type="type" :record-by-line="recordByLine" :depth="depth + 1"></formater-paging>
-      		<formater-list-metadata :lang="lang" :depth="depth + 1"  :capsule-width="capsuleWidth"></formater-list-metadata>
+           
+           <formater-paging  :nb-record="nbRecord" :type="type" :record-by-line="recordByLine" :depth="depth + 1"></formater-paging>
+      		<formater-list-metadata  :depth="depth + 1"  :capsule-width="capsuleWidth"></formater-list-metadata>
       </div>
       <!--  others tab -->
       <div v-if="currentTab === 'main'" style="margin-top:20px;">
@@ -58,15 +60,15 @@
 			</div>
 		  </div>
 		  <div >
-	          <formater-list-contact  :lang="lang" :responsible-party="meta.responsibleParty" :responsible-party2="metaLang2.responsibleParty"></formater-list-contact>
+	          <formater-list-contact   :responsible-party="meta.responsibleParty" :responsible-party2="metaLang2.responsibleParty"></formater-list-contact>
 	     </div>
 	 
       </div>
       <div v-if="currentTab === 'complement'" >
-             <formater-list-contact  :lang="lang" :responsible-party="meta.responsibleParty" :responsible-party2="metaLang2.responsibleParty"></formater-list-contact>
+             <formater-list-contact   :responsible-party="meta.responsibleParty" :responsible-party2="metaLang2.responsibleParty"></formater-list-contact>
       </div>
        <div v-if="currentTab === 'quality'" >
-             <formater-list-contact  :lang="lang" :responsible-party="meta.responsibleParty" :responsible-party2="metaLang2.responsibleParty"></formater-list-contact>
+             <formater-list-contact   :responsible-party="meta.responsibleParty" :responsible-party2="metaLang2.responsibleParty"></formater-list-contact>
       </div>
    </div>
  </div>
@@ -78,7 +80,7 @@ import FormaterExportLinks from './formater-export-links.vue'
 const FormaterPaging = () => import('./formater-paging.vue')
 const FormaterListMetadata = () => import('./formater-list-metadata.vue')
 import moment from 'moment';
-import opensearch from './opensearch'
+const FormaterOpensearch = () => import('./formater-opensearch.vue')
 // import { extendMoment } from 'moment-range';
 // window.momentCst = extendMoment(moment);
 
@@ -89,13 +91,14 @@ export default {
     FormaterQuicklooks,
     FormaterExportLinks,
     FormaterPaging,
-    FormaterListMetadata
+    FormaterListMetadata,
+    FormaterOpensearch
   },
   props: {
-    lang: {
+   /* lang: {
       type: String,
       default: 'en'
-    },
+    },*/
     metadata: {
       type: Object,
       default: null
@@ -118,34 +121,12 @@ export default {
 //     }
   },
   watch: {
-    lang (newvalue) {
-    	this.$i18n.locale = newvalue
-    	moment.locale(newvalue)
-    	this.srv = this.$store.state.geonetwork + 'srv/' + (newvalue === 'fr' ? 'fre' : 'eng') + '/'
-    	this.headers['Accept-Language'] =  newvalue === 'fr' ? 'fre': 'eng'
-    },
     metadata: {
       immediate: true,
       handler (newvalue) {
         this.computeHasChild(newvalue)
       }
-    } //,
-//     meta: {
-//       handler(val, old) {
-//         if (val.related && val.related.children) {
-//          // this.$set(this.tabs, 'complement', true)
-//           if (!this.hasChild) {
-//             this.getRecords()
-//             this.hasChild = true
-//             this.$set(this.tabs, 'search', true)
-//             this.currentTab = 'search'
-//           }
-//         } else {
-//           this.hasChild = false
-//           this.$set(this.tabs, 'search', false)
-//         }
-//       }
-//     }
+    } 
   },
   data() {
     return {
@@ -167,8 +148,9 @@ export default {
     // api: process.env.GEONETWORK + '/srv/api/',
      headers: {
        'Accept': 'application/json, text/plain, */*',
-       'Accept-Language': this.lang === 'fr' ? 'fre': 'eng'
+       'Accept-Language': this.$i18n.locale === 'fr' ? 'fre': 'eng'
      },
+     describe: null,
      parameters: {},
     // recordByLine: 4,
      nbRecord: 12,
@@ -185,8 +167,8 @@ export default {
   },
   created () {
    // this.recordByLine = this.nbRecordPerLine
-    this.$i18n.locale = this.lang
-    this.$setGnLocale(this.lang)
+    // this.$i18n.locale = this.lang
+    this.$setGnLocale(this.$i18n.locale)
     moment.locale(this.lang)
     if (this.metadata['geonet:info']) {
        this.uuid = this.metadata['geonet:info'].uuid
@@ -197,8 +179,6 @@ export default {
     document.addEventListener('popstate', this.popstateListener)
     this.keydownListener = this.checkEscape.bind(this)
     document.addEventListener('keydown', this.keydownListener)
-    this.searchEventListener = this.handleSearch.bind(this) 
-  	document.addEventListener('aerisSearchEvent', this.searchEventListener);
 //     var post = {
 //         "clientId":"lJ9NjcIZLGYkgRzvRlBDQS_LeVoa",
 //         "code":"62d32c7eb43e579b82713f8d04cfe7",
@@ -215,22 +195,6 @@ export default {
 //     xhr.withCredentials = true;
 //     xhr.send(JSON.stringify(post));
   },
-  watch: {
-    
-  },
- /* computed: {
-    hasChild () {
-      if (this.meta && this.meta.related && this.meta.related.children) {
-        console.log(this.meta.related)
-        this.tabs.complement = true
-        console.log(this.tabs)
-        return true;
-      } else {
-        this.$delete(this.tabs, 1 )
-        return false;
-      }
-    }
-  },*/
   mounted () {
    if (this.metadata) {
      this.meta = this.metadata
@@ -267,32 +231,27 @@ export default {
       },
       computeHasChild (val) {
         if (val.related && val.related.children) {
-          // this.$set(this.tabs, 'complement', true)
+          // case child in geonetwork
            if (!this.hasChild) {
-            
-             this.getRecords()
-             this.hasChild = true
-             this.$set(this.tabs, 'search', true)
-             this.currentTab = 'search'
+             this.setHasChild(true)
            }
          } else if (val.api) {
            if (!this.hasChild) {
-              this.getApiParameters(val.api)
-             var infosApi = opensearch.load(val.api)
-             
+           // case child from a custom api opensearch
+              this.describe = val.api.http
            }
-           
          } else {
-           this.hasChild = false
-           this.$set(this.tabs, 'search', false)
+           this.setHasChild(false)
          }
       },
-//       recordsPerLineChange (count) {
-//     	  this.recordByLine = count
-//     	  this.nbRecord = count * 4
-// //     	  var evt = new CustomEvent('fmt:pageChangedEvent')
-// //     	  document.dispatchEvent(evt)
-//       },
+      setHasChild(value) {
+        this.hasChild = value
+        this.$set(this.tabs, 'search', value)
+        if (value) {
+          this.currentTab = 'search'
+          this.getRecords()
+        }
+      },
 	  fillMetadata () {
 	     //get meta from other language if meta._locale != meta.docLocale
 	     if (this.meta['geonet:info']) {
@@ -300,8 +259,7 @@ export default {
 	     } else {
 	       this.uuid = this.meta.id
 	     }
-	     
-	     
+
 	     if (this.meta._locale ===  this.meta.docLocale) {
 	       
 	       return
@@ -315,30 +273,12 @@ export default {
                  _this.metaLang2 = response.body.metadata
                } 
        	 )
-       	 this.searchOnlines()
        	 if (this.meta.related && this.meta.related.children) {
        	   this.hasChild = true
        	   this.getRecords()
        	 } 
 	  },
-	  searchOnlines () {
-      if (!this.metadatas) {
-        return
-      }
-       var headers =  {
-         'Accept': 'application/json, text/plain, */*',
-         'Accept-Language': this.lang === 'fr' ? 'fre': 'eng'
-       }
-//        var url = process.env.GEONETWORK + 'srv/api/records/'+this.uuid+'related?type=onlines'
-//        var self = this
-//        this.$http.get(url, {
-//              headers: headers
-//            }).then( response => { self.addOnlines(response.body)})
-        
-      },
-//       addOnlines (data) {
-//         console.log(data)
-//       },
+
 	  getRecords () {
           // useless, it's trigger when load formater-page-changed
       	  // lance le requeteur
@@ -346,94 +286,7 @@ export default {
       	  var event = new CustomEvent('fmt:metadataWithChildEvent', {detail: {uuid: this.uuid, depth: this.depth}})
       	  document.dispatchEvent(event)
       },
-      getApiParameters (describe) {
-        this.$http.get(describe.http)
-        .then(
-            response => { this.extractDescribeParameters(response.body);}
-         )
-      },
-      extractDescribeParameters (parameters) {
-        var parser = new DOMParser()
-        var xml = parser.parseFromString(parameters, 'text/xml')
-        var urls = xml.firstChild.childNodes
-       var url = null
-        urls.forEach(function (node) {
-           if (node.tagName && node.tagName.toLowerCase() === 'url' && node.getAttribute('type').indexOf('json') >= 0) {
-             var template = node.getAttribute('template')
-             var extract = template.match(/^(.*(?:(?:search.json\?)|(?:\?format=FLATSIM))).*$/)
-             if( extract && extract[1] && extract[1] != ''){
-                 url = node;
-             }
-           }
-        })
-        if (!url)  {
-          return
-        }
-        var template = url.getAttribute('template')
-        var extract = template.match(/^(.*(?:(?:search.json\?)|(?:\?format=FLATSIM))).*$/)
-        if (!extract[1]) {
-          return
-        } else {
-          this.api = extract[1]
-        }
-        var parameters = url.getElementsByTagName('parameters:Parameter')
-        var self = this
-        for(var i=0; i < parameters.length; i++){
-          var name = parameters[i].getAttribute('name')
-          var obj= {
-              name: name,
-              title: parameters[i].getAttribute('title')
-          }
-          var pattern = parameters[i].getAttribute('pattern')
-          if (pattern) {
-            obj = Object.assign(obj, {pattern: pattern})
-          }
-          var min = parameters[i].getAttribute('minInclusive')
-          if (min) {
-            obj= Object.assign(obj, {min: min})
-          }
-          var max = parameters[i].getAttribute('maxInclusive')
-          if (max) {
-            obj = Object.assign(obj, {max: max})
-          }
-          var nodes = parameters[i].getElementsByTagName('parameters:Options')
-          if (nodes) {
-            var options= []
-            for(var k=0; k < nodes.length; k++) {
-              options.push(nodes[k].getAttribute('value'))
-            }
-            if (options.length > 0)
-            obj = Object.assign(obj, {options: options})
-          }
-          if (self.removedFields.indexOf(name) >=0) {
-            
-//           }else if (name.toLowerCase() === 'platform') {
-//             this.platform = obj
-//           } else if (name.toLowerCase() === 'q'){
-//             this.hasQ = true
-          } else if (self.geographic.indexOf(name) >=0) {
-            self.geoParameters.push(obj)
-          } else if (self.paging.indexOf(name) >= 0) {
-             self.pagingParameters.push(obj)
-          }else if (name.indexOf('Date') === -1 && name.indexOf('Cover') === -1 && (!obj.options || obj.options.length > 1)) {
-          	self.osParameters.push(obj)
-          }
-          
-        }
-        var evt = new CustomEvent('fmt:changeParametersEvent', {detail: {parameters: this.osParameters}})
-        document.dispatchEvent(evt)
-        this.hasChild = true
-        this.$set(this.tabs, 'search', true)
-        this.currentTab = 'search'
-        this.getRecords()
-        // this.requestApi(searchParameters)
-      },
-      handleSearch(e) {
-        if (this.api && e.detail.parentUuid === this.uuid) {
-          e.detail.api = this.api
-        }
-      }
-	    
+     
   }
 }
 </script>

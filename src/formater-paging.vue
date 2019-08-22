@@ -48,10 +48,10 @@ export default {
       type: Number,
       default: 4
     },
-    lang: {
-      type: String,
-      default: 'en'
-    },
+//     lang: {
+//       type: String,
+//       default: 'en'
+//     },
     depth: {
       type: Number,
       default: 0
@@ -74,10 +74,10 @@ export default {
     }
   },
   watch: {
-    lang (newvalue) {
-    	this.$i18n.locale = newvalue
+//     lang (newvalue) {
+//     	this.$i18n.locale = newvalue
     	
-    },
+//     },
     recordByLine (newvalue) {
       console.log('recordByLine change')
       this.updateRecordsPerPage(newvalue)
@@ -88,7 +88,7 @@ export default {
   },
   created: function() {
     this.recordPerPage = this.nbRecord
-    this.$i18n.locale = this.lang
+   // this.$i18n.locale = this.lang
     this.metadataListListener = this.receiveTotalRecord.bind(this)
     document.addEventListener('fmt:metadataListEvent', this.metadataListListener)
     this.searchEventListener = this.handleSearch.bind(this) 

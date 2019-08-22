@@ -3,20 +3,59 @@
  * and process the response to match a geonetwork response
  * 
  * @author epointal
- */
-
-
+ *
+ **/
+ 
+<template></template>
+<script>
 export default {
-    _options: {
-      
+  name: 'FormaterOpensearch',
+  props: {
+    describe: {
+      type: String,
+      default: null
     },
-    load: function(describeUrl) {
-      this.$http.get(describeUrl)
-      .then(
-          response => { this.extractDescribeParameters(response.body);}
-      )
+    uuid: {
+      type: String,
+      default: null
     },
-    extractDescribeParameters: function (parametersString) {
+    depth: {
+      type: Number,
+      default: null
+    }
+  },
+  created () {
+    this.searchEventListener = this.handleSearch.bind(this) 
+  	document.addEventListener('aerisSearchEvent', this.searchEventListener);
+    this.load()
+  },
+  destroyed () {
+    document.removeEventListener('aerisSearchEvent', this.searchEventListener);
+    this.searchEventListener = null
+  },
+  data () {
+    return {
+      searchEventListener: null,
+      api: null,
+      geographic: ['geometry', 'box', 'lat', 'lon', 'radius'],
+      paging: ['maxRecords', 'index', 'page'],
+      removedFields: ['lang', 'name', 'q', 'organisationName', 'parentIdentifier'],
+      osParameters: [],
+      geoParameters: [],
+      pagingParameters: [],
+      parameters: []
+    }
+  },
+  methods: {
+     load() {
+       console.log(this.describe)
+       this.$http.get(this.describe)
+       .then(
+           response => { this.extractDescribeParameters(response.body);}
+        )
+    },
+    extractDescribeParameters(parametersString) {
+      console.log(parametersString)
       var parser = new DOMParser()
       var xml = parser.parseFromString(parametersString, 'text/xml')
       var urls = xml.firstChild.childNodes
@@ -85,15 +124,24 @@ export default {
         }
         
       }
+      console.log('FIN DU DESCRIBE 2')
+      this.$emit('hasChild', true)
+      
+      // modification des paramètres
       var evt = new CustomEvent('fmt:changeParametersEvent', {detail: {parameters: this.osParameters}})
       document.dispatchEvent(evt)
-      this.hasChild = true
-      this.$set(this.tabs, 'search', true)
-      this.currentTab = 'search'
-      this.getRecords()
+//       var event = new CustomEvent('fmt:metadataWithChildEvent', {detail: {uuid: this.uuid, depth: this.depth}})
+//       	  document.dispatchEvent(event)
+     
       // this.requestApi(searchParameters)
+    },
+    handleSearch(e) {
+      if (this.api && e.detail.parentUuid === this.uuid) {
+        e.detail.api = this.api
+      }
     }
-    
+  }
 }
 
+</script>
 
