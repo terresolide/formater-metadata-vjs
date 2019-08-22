@@ -183,8 +183,8 @@ export default {
       
       this.$store.commit('parametersChange', this.osParameters)
       // modification des paramètres
-      var evt = new CustomEvent('fmt:changeParametersEvent', {detail: {parameters: this.osParameters}})
-      document.dispatchEvent(evt)
+//       var evt = new CustomEvent('fmt:changeParametersEvent', {detail: {parameters: this.osParameters}})
+//       document.dispatchEvent(evt)
 //       var event = new CustomEvent('fmt:metadataWithChildEvent', {detail: {uuid: this.uuid, depth: this.depth}})
 //       	  document.dispatchEvent(event)
      

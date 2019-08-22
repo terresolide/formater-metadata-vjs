@@ -14,22 +14,13 @@
 export default {
   name: 'FormaterRequester',
   props: {
-//     lang: {
-//       type: String,
-//       default: 'en'
-//     },
     depth: {
       type: Number,
       default:0
     }
   },
   watch: {
-//     lang (newvalue) {
-//       this.$i18n.locale = newvalue
-//       this.$setGnLocale(newvalue)
-//          this.srv = process.env.GEONETWORK + 'srv/' + (newvalue === 'fr' ? 'fre' : 'eng') + '/'
-//       this.headers['Accept-Language'] =  newvalue === 'fr' ? 'fre': 'eng'
-//     },
+
     depth (newvalue) {
       console.log('nouvelle valeur depth = ' + this.depth)
     }

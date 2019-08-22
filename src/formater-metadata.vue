@@ -151,17 +151,17 @@ export default {
        'Accept-Language': this.$i18n.locale === 'fr' ? 'fre': 'eng'
      },
      describe: null,
-     parameters: {},
+    // parameters: {},
     // recordByLine: 4,
      nbRecord: 12,
      // use for opensearch api
-     api: null,
-     geographic: ['geometry', 'box', 'lat', 'lon', 'radius'],
-     paging: ['maxRecords', 'index', 'page'],
-     removedFields: ['lang', 'name', 'q', 'organisationName', 'parentIdentifier'],
-     osParameters: [],
-     geoParameters: [],
-     pagingParameters: [],
+//     api: null,
+//      geographic: ['geometry', 'box', 'lat', 'lon', 'radius'],
+//      paging: ['maxRecords', 'index', 'page'],
+//      removedFields: ['lang', 'name', 'q', 'organisationName', 'parentIdentifier'],
+//      osParameters: [],
+//      geoParameters: [],
+//      pagingParameters: [],
      type: 'geonetwork'
     }
   },
