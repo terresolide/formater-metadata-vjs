@@ -40,7 +40,12 @@ export default function makeStore( config ) {
           index: "{startIndex}",
           page: "{startPage}"
         },
-        renamePredefined:{},
+        // FOR THE CURRENT API opensearch: 2 arrays (empty by default)
+        // associative array of: parameter name in this application => name in the opensearch api
+        // for the predefined parameters like box, temporalExtent, and paging (common for all api)
+        mapping:[],
+        // list of others specific opensearch api parameters 
+        // { name, title, pattern, min, max, options}
         others: []
       }
   }
@@ -59,7 +64,9 @@ export default function makeStore( config ) {
         state.searchArea = newBounds
       },
       parametersChange(state, newParameters) {
-        state.parameters.others = newParameters
+        console.log('PARAMETERS CHANGE', newParameters)
+        state.parameters.others = newParameters.parameters
+        state.parameters.mapping = newParameters.mapping
       }
     },
     getters: {

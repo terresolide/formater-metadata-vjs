@@ -8,7 +8,9 @@
  
 <template></template>
 <script>
-
+function getKeyByValue(object, value) {
+  return Object.keys(object).find(key => object[key] === value);
+}
 export default {
   name: 'FormaterOpensearch',
   props: {
@@ -38,12 +40,12 @@ export default {
     return {
       searchEventListener: null,
       api: null,
-      geographic: ['geometry', 'box', 'lat', 'lon', 'radius'],
-      paging: ['maxRecords', 'index', 'page'],
-      osParameters: [],
-      geoParameters: [],
-      pagingParameters: [],
-      parameters: []
+      // associative array of: parameter name in this application => name in the opensearch api
+      // for the predefined parameters like box, temporalExtent, and paging (common for all api)
+      mappingParameters: [],
+      // list of others specific opensearch api parameters 
+      // { name, title, pattern, min, max, options}
+      osParameters: []
     }
   },
   methods: {
@@ -53,12 +55,22 @@ export default {
            response => { this.extractDescribeParameters(response.body);}
         )
     },
-    extractParameter (parameterNode) {
+    extractParameter (parameterNode, specName) {
+      var listPredefined = this.$store.state.parameters.predefined
+      // name in this application
+      var appName = getKeyByValue(listPredefined, specName)
+      // name in the opensearch api
       var name = parameterNode.getAttribute('name')
+      if (typeof appName !== 'undefined') {
+        this.mappingParameters[appName] = name
+        return
+      }
+      
       var obj= {
           name: name,
           title: parameterNode.getAttribute('title')
       }
+      
       var pattern = parameterNode.getAttribute('pattern')
       if (pattern) {
         obj = Object.assign(obj, {pattern: pattern})
@@ -87,11 +99,12 @@ export default {
 //       } else if (name.toLowerCase() === 'q'){
 //         this.hasQ = true
 //      } else
-        if (this.geographic.indexOf(name) >=0) {
-        this.geoParameters.push(obj)
-      } else if (this.paging.indexOf(name) >= 0) {
-         this.pagingParameters.push(obj)
-      }else if (name.indexOf('Date') === -1 && name.indexOf('Cover') === -1 && (!obj.options || obj.options.length > 1)) {
+//         if (this.geographic.indexOf(name) >=0) {
+//         this.geoParameters.push(obj)
+//       } else if (this.paging.indexOf(name) >= 0) {
+//          this.pagingParameters.push(obj)
+//       }else 
+      if (!obj.options || obj.options.length > 1) {
         this.osParameters.push(obj)
       }
     },
@@ -100,7 +113,8 @@ export default {
       var parser = new DOMParser()
       var xml = parser.parseFromString(parametersString, 'text/xml')
       var urls = xml.firstChild.childNodes
-     var url = null
+      var url = null
+      // loop to find the good url
       urls.forEach(function (node) {
          if (node.tagName && node.tagName.toLowerCase() === 'url' && node.getAttribute('type').indexOf('json') >= 0) {
            var template = node.getAttribute('template')
@@ -123,72 +137,21 @@ export default {
       var parameters = url.getElementsByTagName('parameters:Parameter')
       var self = this
       var regexList = this.$store.state.parameters.excluedRegex
+      // loop on the parameters node
       for(var i=0; i < parameters.length; i++){
-        var value = parameters[i].getAttribute('value')
-       
+        var specName = parameters[i].getAttribute('value')
+        // search if the parameter is exclued (@see list in store/index.js)
         var isExclued = regexList.some(function(str) {
           var rx = new RegExp(str)
-          return rx.test(value)
+          return rx.test(specName)
         })
-        if (isExclued) {
-          console.log(value)
-        }
-        
         if (!isExclued) {
-          var obj = self.extractParameter(parameters[i])
+          var obj = self.extractParameter(parameters[i] , specName)
         }
-//         var name = parameters[i].getAttribute('name')
-//         var obj= {
-//             name: name,
-//             title: parameters[i].getAttribute('title')
-//         }
-//         var pattern = parameters[i].getAttribute('pattern')
-//         if (pattern) {
-//           obj = Object.assign(obj, {pattern: pattern})
-//         }
-//         var min = parameters[i].getAttribute('minInclusive')
-//         if (min) {
-//           obj= Object.assign(obj, {min: min})
-//         }
-//         var max = parameters[i].getAttribute('maxInclusive')
-//         if (max) {
-//           obj = Object.assign(obj, {max: max})
-//         }
-//         var nodes = parameters[i].getElementsByTagName('parameters:Options')
-//         if (nodes) {
-//           var options= []
-//           for(var k=0; k < nodes.length; k++) {
-//             options.push(nodes[k].getAttribute('value'))
-//           }
-//           if (options.length > 0)
-//           obj = Object.assign(obj, {options: options})
-//         }
-//         if (self.removedFields.indexOf(name) >=0) {
-          
-// //         }else if (name.toLowerCase() === 'platform') {
-// //           this.platform = obj
-// //         } else if (name.toLowerCase() === 'q'){
-// //           this.hasQ = true
-//         } else if (self.geographic.indexOf(name) >=0) {
-//           self.geoParameters.push(obj)
-//         } else if (self.paging.indexOf(name) >= 0) {
-//            self.pagingParameters.push(obj)
-//         }else if (name.indexOf('Date') === -1 && name.indexOf('Cover') === -1 && (!obj.options || obj.options.length > 1)) {
-//           self.osParameters.push(obj)
-//         }
         
       }
-      console.log('FIN DU DESCRIBE 2')
-      this.$emit('parametersChange', this.osParameters)
-      
-      this.$store.commit('parametersChange', this.osParameters)
-      // modification des paramètres
-//       var evt = new CustomEvent('fmt:changeParametersEvent', {detail: {parameters: this.osParameters}})
-//       document.dispatchEvent(evt)
-//       var event = new CustomEvent('fmt:metadataWithChildEvent', {detail: {uuid: this.uuid, depth: this.depth}})
-//       	  document.dispatchEvent(event)
-     
-      // this.requestApi(searchParameters)
+      this.$emit('parametersChange', {parameters:this.osParameters, mapping: this.mappingParameters})
+      this.$store.commit('parametersChange', {parameters:this.osParameters, mapping: this.mappingParameters})
     },
     handleSearch(e) {
       if (this.api && e.detail.parentUuid === this.uuid) {

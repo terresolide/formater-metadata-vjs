@@ -157,6 +157,7 @@ export default {
         var metadata = this.metadatas[this.metadatas.length -1]
         this.currentUuid = metadata['geonet:info'].uuid
         var parameters = metadata.osParameters
+        var mapping = metadata.mapping
         var min = null
         var max = null
         if (metadata.tempExtentBegin) {
@@ -173,9 +174,10 @@ export default {
       } else {
         this.currentUuid = null
         var parameters = []
+        var mapping = []
         this.$store.commit('temporalChange', this.temporalExtent)
       }
-      this.$store.commit('parametersChange', parameters)
+      this.$store.commit('parametersChange', {parameters: parameters, mapping: mapping})
       var event = new CustomEvent('fmt:closeMetadataEvent', {detail:  {depth: this.metadatas.length }})
       document.dispatchEvent(event)
     },

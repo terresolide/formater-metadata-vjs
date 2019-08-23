@@ -43,26 +43,26 @@
       <div v-if="tabs.search" v-show="currentTab === 'search'">
            
            <formater-paging  :nb-record="nbRecord" :type="type" :record-by-line="recordByLine" :depth="depth + 1"></formater-paging>
-      		<formater-list-metadata  :depth="depth + 1"  :capsule-width="capsuleWidth"></formater-list-metadata>
+              <formater-list-metadata  :depth="depth + 1"  :capsule-width="capsuleWidth"></formater-list-metadata>
       </div>
       <!--  others tab -->
       <div v-if="currentTab === 'main'" style="margin-top:20px;">
-	      <div class="mtdt-description">
-	        <formater-quicklooks :quicklooks="meta.images"></formater-quicklooks>
-	        <span v-html="meta.description"></span>
-	      </div>
-		  <div class="mtdt-temporalExtent" style="clear:both;" v-if="meta.tempExtentBegin">
-			<h2><i class="fa fa-clock-o"></i>{{$t('temporal_extent')}}</h2>
-			 <div>
-			    {{date2str(meta.tempExtentBegin)}}
-			    <i class="fa fa-long-arrow-right" ></i>
-			    {{date2str(meta.tempExtentEnd)}}
-			</div>
-		  </div>
-		  <div >
-	          <formater-list-contact   :responsible-party="meta.responsibleParty" :responsible-party2="metaLang2.responsibleParty"></formater-list-contact>
-	     </div>
-	 
+          <div class="mtdt-description">
+            <formater-quicklooks :quicklooks="meta.images"></formater-quicklooks>
+            <span v-html="meta.description"></span>
+          </div>
+          <div class="mtdt-temporalExtent" style="clear:both;" v-if="meta.tempExtentBegin">
+            <h2><i class="fa fa-clock-o"></i>{{$t('temporal_extent')}}</h2>
+             <div>
+                {{date2str(meta.tempExtentBegin)}}
+                <i class="fa fa-long-arrow-right" ></i>
+                {{date2str(meta.tempExtentEnd)}}
+            </div>
+          </div>
+          <div >
+              <formater-list-contact   :responsible-party="meta.responsibleParty" :responsible-party2="metaLang2.responsibleParty"></formater-list-contact>
+         </div>
+     
       </div>
       <div v-if="currentTab === 'complement'" >
              <formater-list-contact   :responsible-party="meta.responsibleParty" :responsible-party2="metaLang2.responsibleParty"></formater-list-contact>
@@ -143,25 +143,9 @@ export default {
      metaLang2: {},
      popstateListener: null,
      keydownListener: null,
-     searchEventListener: null,
-    // srv: process.env.GEONETWORK + 'srv/' + (this.lang === 'fr'? 'fre' : 'eng') + '/',
-    // api: process.env.GEONETWORK + '/srv/api/',
-     headers: {
-       'Accept': 'application/json, text/plain, */*',
-       'Accept-Language': this.$i18n.locale === 'fr' ? 'fre': 'eng'
-     },
+
      describe: null,
-    // parameters: {},
-    // recordByLine: 4,
      nbRecord: 12,
-     // use for opensearch api
-//     api: null,
-//      geographic: ['geometry', 'box', 'lat', 'lon', 'radius'],
-//      paging: ['maxRecords', 'index', 'page'],
-//      removedFields: ['lang', 'name', 'q', 'organisationName', 'parentIdentifier'],
-//      osParameters: [],
-//      geoParameters: [],
-//      pagingParameters: [],
      type: 'geonetwork'
     }
   },
@@ -244,8 +228,9 @@ export default {
            this.setHasChild(false)
          }
       },
-      setParameters(value) {
-        this.metadata.osParameters = value
+      setParameters(osParameters) {
+        this.metadata.osParameters = osParameters.parameters
+        this.metadata.mapping = osParameters.mapping
         this.setHasChild(true)
       },
       setHasChild(value) {
@@ -255,42 +240,39 @@ export default {
           this.currentTab = 'search'
           this.getRecords()
         } else {
-          this.$store.commit('parametersChange', [])
+          this.$store.commit('parametersChange', {parameters: [], mapping:[]})
         }
       },
-	  fillMetadata () {
-	     //get meta from other language if meta._locale != meta.docLocale
-	     if (this.meta['geonet:info']) {
-	       this.uuid = this.meta['geonet:info'].uuid;
-	     } else {
-	       this.uuid = this.meta.id
-	     }
+      fillMetadata () {
+         //get meta from other language if meta._locale != meta.docLocale
+         if (this.meta['geonet:info']) {
+           this.uuid = this.meta['geonet:info'].uuid;
+         } else {
+           this.uuid = this.meta.id
+         }
 
-	     if (this.meta._locale ===  this.meta.docLocale) {
-	       
-	       return
-	     }
-	     
-	     var url = this.$store.state.geonetwork + 'srv/'+this.meta.docLocale+'/q?_content_type=json&fast=index&uuid=' + this.uuid;
-	     var _this = this
-	     this.$http.get(url).then(
+         if (this.meta._locale ===  this.meta.docLocale) {
+           
+           return
+         }
+         
+         var url = this.$store.state.geonetwork + 'srv/'+this.meta.docLocale+'/q?_content_type=json&fast=index&uuid=' + this.uuid;
+         var _this = this
+         this.$http.get(url).then(
                response => {
                 // _this.extract(response.body.metadata)
                  _this.metaLang2 = response.body.metadata
                } 
-       	 )
-       	 if (this.meta.related && this.meta.related.children) {
-       	   this.hasChild = true
-       	   this.getRecords()
-       	 } 
-	  },
-
-	  getRecords () {
+            )
+            if (this.meta.related && this.meta.related.children) {
+              this.hasChild = true
+              this.getRecords()
+            } 
+      },
+      getRecords () {
           // useless, it's trigger when load formater-page-changed
-      	  // lance le requeteur
-//       	  console.log('search child from metadata')
-      	  var event = new CustomEvent('fmt:metadataWithChildEvent', {detail: {uuid: this.uuid, depth: this.depth}})
-      	  document.dispatchEvent(event)
+          var event = new CustomEvent('fmt:metadataWithChildEvent', {detail: {uuid: this.uuid, depth: this.depth}})
+          document.dispatchEvent(event)
       },
      
   }
@@ -332,8 +314,8 @@ export default {
 .mtdt-metadata h2,
 .mtdt-metadata h3,
 .mtdt-metadata h4{
-    max-width: 100%;
-    color:#754a15;
+  max-width: 100%;
+  color:#754a15;
 }
 .mtdt-metadata h2 {
 
@@ -363,13 +345,13 @@ export default {
   line-height:1.5;
 }
 .mtdt-metadata .mtdt-group-logo{
-    float:right;
-    margin-top:-5px;
-    margin-right: 15px;
+  float:right;
+  margin-top:-5px;
+  margin-right: 15px;
 }
 .mtdt-metadata .mtdt-group-logo img{
-	max-width:100px; 
-	height:40px;
+  max-width:100px; 
+  height:40px;
 }
 .mtdt-metadata .mtdt-contacts h3{
     margin-bottom:0;

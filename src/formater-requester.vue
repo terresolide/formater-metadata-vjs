@@ -211,24 +211,34 @@ export default {
     },
     prepareRequestOpensearch(e) {
       this.initParameters()
-      if (!e.detail.startDefault) {
-        e.detail.renameProperty('start', 'firstDateMin')
-      } else {
+       if (e.detail.startDefault) {
         delete e.detail.start
       }
       if (e.detail.endDefault) {
-        delete e.detail.endDefault
         delete e.detail.end
-        
-      } else {
-        e.detail.renameProperty('end', 'secondDateMax')
-      }
-      delete e.detail.startDefault
-      delete e.detail.endDefault
-      delete e.detail.depth
+      } 
+      this.mapParameters(e)
       
       this.parameters = Object.assign(this.parameters, e.detail)   
 
+    },
+    mapParameters(e) {
+      // transform the name of parameter from this application to the opensearch api for the predefined parameter
+      // or test if it is an opensearch parameter
+      var specificParameters = this.$store.state.parameters.others
+      var mappingParameters = this.$store.state.parameters.mapping
+      for(var name in e.detail){
+        var isSpecific = specificParameters.find(function (obj) {
+          if (obj.name === name) {
+            return true
+          }
+        })
+        if (typeof mappingParameters[name] !== 'undefined') {
+          e.detail.renameProperty(name, mappingParameters[name])
+        } else if (!isSpecific) {
+          delete e.detail[name]
+        } 
+      }
     },
     requestApi ()  {
         switch (this.type) {
