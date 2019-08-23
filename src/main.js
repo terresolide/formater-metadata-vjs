@@ -61,21 +61,11 @@ ljs.addAliases({
 })
 ljs.load('dep', function() {
   // Vue.customElement('formater-catalogue', FormaterCatalogue) 
-  console.log(config.style.primary)
   const i18n = new VueI18n({
     fallbackLocale: 'en',
     locale: locale
   })
   const store = makeStore(config)
-//  const store = new Vuex.Store({
-//    state: config,
-//    
-//    mutations: {
-//      temporalChange(state, newTemporal) {
-//        state.temporalExtent = newTemporal
-//      }
-//    }
-//  })
   new Vue({
     el: '#formaterCatalogue',
     template: '<FormaterCatalogue/>',

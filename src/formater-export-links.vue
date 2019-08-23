@@ -20,10 +20,6 @@ export default {
     uuid: {
       type: String,
       default: null
-    },
-    lang: {
-      type: String,
-      default: 'en'
     }
   },
   data() {
@@ -34,11 +30,9 @@ export default {
   },
   
   mounted () {
-    console.log('mounted')
-    this.$setGnLocale(this.lang)
     this.xml = this.$store.state.geonetwork + 'srv/api/records/'+ this.uuid + '/formatters/xml?attachment=true'
     this.pdf = this.$store.state.geonetwork + 'srv/api/records/'+ this.uuid + '/formatters/xsl-view?root=div&output=pdf'
-    console.log(this.$gnLang)
+
   }
 }
 </script>

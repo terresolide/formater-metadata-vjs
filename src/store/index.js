@@ -12,6 +12,12 @@ export default function makeStore( config ) {
         primary:"#754a15",
         emphasis: "#dd9946"
       },
+      size: {
+        capsuleWidth: 300,
+        recordByLine: 4,
+        nbLine: 4,
+        nbRecord: 16
+      },
       // default temporalExtent
       temporalExtent: 
       {
@@ -68,6 +74,14 @@ export default function makeStore( config ) {
         console.log('PARAMETERS CHANGE', newParameters)
         state.parameters.others = newParameters.parameters
         state.parameters.mapping = newParameters.mapping
+      },
+      sizeChange(state) {
+        var width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+        width -= 350
+        var count = parseInt(width/334)
+        state.size.capsuleWidth = parseInt(width / count - 16)
+        state.size.recordByLine = count
+        state.size.nbRecord = count * state.size.nbLine
       }
     },
     getters: {

@@ -32,8 +32,6 @@
     onAdd : function(map){
         this._nodeSmall = map._container.parentNode
         this._nodeLarge = document.querySelector('#' + this._large)
-        console.log(this._nodeSmall)
-        console.log(this._nodeLarge)
         if (!this._nodeLarge) {
           return
         }

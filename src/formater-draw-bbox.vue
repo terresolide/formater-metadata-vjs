@@ -45,25 +45,13 @@ export default {
   components: {
   },
   props: {
-    searchArea: {
-      type: Object,
-      default: null
+  },
+  computed: {
+    searchArea() {
+      return this.$store.state.searchArea
     }
   },
   watch: {
-//     lang (newvalue) {
-//          this.$i18n.locale = newvalue  
-//          if (newvalue === 'fr') {
-//           L.drawLocal = require('formater-geotiff-visualizer-vjs/src/module/leaflet.draw.fr.js')
-//         } else {
-//           L.drawLocal = require('formater-geotiff-visualizer-vjs/src/module/leaflet.draw.en.js')
-//         }
-//         // rerender leaflet draw
-//         if (this.drawControl) {
-//           this.drawControl.remove()
-//           this.drawControl.addTo(this.map)
-//         }
-//    },
     searchArea (newvalue) {
       this.initBoundsLayer()
       var bounds = this.getBounds()
@@ -77,7 +65,6 @@ export default {
          }
       }
       this.selectAreaChange({detail: bbox})
-     
     }
   },
   
@@ -85,8 +72,7 @@ export default {
     if (this.$i18n.locale  === 'fr') {
       L.drawLocal = require('formater-geotiff-visualizer-vjs/src/module/leaflet.draw.fr.js')
     } 
-    console.log(this.$store.state.spatialExtent)
-    console.log(this.$store.getters.spatialExtent)
+
     // open and close
     this.drawStartListener = this.open.bind(this)
     document.addEventListener('fmt:selectAreaDrawStart', this.drawStartListener)

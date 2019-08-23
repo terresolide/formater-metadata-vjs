@@ -48,49 +48,37 @@ export default {
       type: Number,
       default: 4
     },
-//     lang: {
-//       type: String,
-//       default: 'en'
-//     },
+
     depth: {
       type: Number,
       default: 0
     },
-//     color: {
-//       type: String,
-//       default: '#754a15'
-//     },
+
     orders: {
       type: Array,
       default: () => []
     },
-    recordByLine: {
-      type: Number,
-      value: 4
-    },
+
     orderBy: {
       type: String,
       default: null
     }
   },
   computed: {
-    color() {
+    color () {
       return this.$store.state.style.primary
+    },
+    recordByLine () {
+      return this.$store.state.size.recordByLine
     }
   },
   watch: {
-//     lang (newvalue) {
-//     	this.$i18n.locale = newvalue
-    	
-//     },
     recordByLine (newvalue) {
-      console.log('recordByLine change')
       this.updateRecordsPerPage(newvalue)
     }
   },
   created: function() {
     this.recordPerPage = this.nbRecord
-   // this.$i18n.locale = this.lang
     this.metadataListListener = this.receiveTotalRecord.bind(this)
     document.addEventListener('fmt:metadataListEvent', this.metadataListListener)
     this.searchEventListener = this.handleSearch.bind(this) 
@@ -101,16 +89,7 @@ export default {
     this.orders.forEach( function (order) {
       self.options[order] = self.$i18n.t(order)
     })
-    console.log(this.type)
-    console.log('charge formater-paging avec depth = ' + this.depth)
     this.updateRecordsPerPage(this.recordByLine)
-//     if (this.orders.length == 0) {
-//       this.emitChange()
-//     }
-  },
-  mounted () {
-    this.updateColor()
-    // this.updateRecordsPerPage(this.recordByLine)
   },
   destroyed () {
     document.removeEventListener('fmt:metadataListEvent', this.metadataListListener);
@@ -134,8 +113,6 @@ export default {
       from: 1,
       to: 12,
       notExactly: '',
-     // sortBy: 'title',
-     // orders: ['title', 'changeDate'],
       options: {},
       metadataListListener: null,
       searchEventListener: null,
@@ -148,7 +125,6 @@ export default {
      if (event.detail.depth !=  this.depth ){
        return;
      }
-     console.log(event.detail.type)
      this.type = event.detail.type
      switch (this.type) {
        case 'geonetwork':
@@ -158,7 +134,6 @@ export default {
          this.nbPage = Math.ceil(event.detail.summary['@count'] / this.recordPerPage) 
          break
        case 'opensearch':
-         console.log(event.detail.properties)
          this.count = event.detail.properties.totalResults
          this.to = this.from + Object.keys(event.detail.metadata).length -1
          this.nbPage = Math.ceil(this.count/ this.recordPerPage)
@@ -176,13 +151,6 @@ export default {
        this.goToLast()
      }
    },
-   updateColor () {
-     var nodes = this.$el.querySelectorAll('.mtdt-paging span.mtdt-navigation span')
-     var _this = this
-     nodes.forEach( function (node) {
-       node.style.backgroundColor = _this.color
-     })
-   },
    updateRecordsPerPage (recordsByLine) {
      var options = {}
      var i = 1
@@ -195,19 +163,9 @@ export default {
 		i++
 		nbRecords = recordsByLine * i
      }
-     
-     
-     //if (this.initialize) {
        this.recordPerPage = 4 * recordsByLine
-     //  this.initialize = false
        this.recordsPerPage = options
-       
-//      } else {
-//        this.recordPerPage = 4 * recordsByLine
-//        this.recordsPerPage = options
-//      }
-     console.log('valeur de recordPerPage = ' +  this.recordPerPage)
-     // this.emitChange()
+
    },
    goToFirst () {
      this.from = 1

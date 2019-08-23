@@ -10,7 +10,7 @@
 <template>
  <div class="mtdt-list" >
     <div v-if="!metadatas" style="width:calc(100% - 150px);">{{$t('no_result')}}</div>
-    <formater-cartouche-metadata :width="capsuleWidth" :color="color" :depth="depth" :type="type" v-for="(meta, index) in metadatas" :key="index" :metadata="meta" v-if="meta" :lang="$i18n.locale"></formater-cartouche-metadata>
+    <formater-cartouche-metadata  :depth="depth" :type="type" v-for="(meta, index) in metadatas" :key="index" :metadata="meta" v-if="meta" ></formater-cartouche-metadata>
   </div>
 </template>
 <script>
@@ -25,29 +25,12 @@ export default {
       type: Array,
       default: null
     },
-//     lang: {
-//       type: String,
-//       default: 'en'
-//     },
     depth: {
       type: Number,
       default: 0
-    },
-    color: {
-      type: String,
-      default: '#dd9946'
-    },
-    capsuleWidth: {
-      type: Number,
-      default: 300
     }
   },
-//   watch: {
-//     lang (newvalue) {
-//     	this.$i18n.locale = newvalue
-//     	this.$setGnLocale(this.lang)
-//     }
-//   },
+
   data() {
     return {
       metadatas: {},

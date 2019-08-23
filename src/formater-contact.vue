@@ -25,19 +25,6 @@ export default {
     contact: {
       type: Array,
       default: []
-    },
-    lang: {
-      type: String,
-      default: 'en'
-    }
-  },
-  watch: {
-    lang (newvalue) {
-    	this.$i18n.locale = newvalue
-    	this.$setGnLocale(this.lang)
-    },
-    contact (newvalue) {
-      console.log(newvalue)
     }
   },
   data() {
@@ -47,10 +34,7 @@ export default {
   },
   
   mounted () {
-    console.log(this.contact)
     this.fields = this.contact
-    this.$i18n.locale = this.lang
-    this.$setGnLocale(this.lang)
   },
   methods: {
 

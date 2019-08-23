@@ -96,13 +96,13 @@
                  <label v-if="meta.related.parent">{{$t('parent')}}</label>
                  <ul v-if="meta.related.parent">
                   <li v-for="(item,index) in meta.related.children">
-                    {{item.title[(lang === 'fr'? 'fre' : 'eng')]}}
+                    {{item.title[($i18n.locale === 'fr'? 'fre' : 'eng')]}}
                  </li>
                  </ul>    
                  <label v-if="meta.related.children">{{$t('children')}}</label>
                  <ul v-if="meta.related.children">
                   <li v-for="(item,index) in meta.related.children">
-                   {{item.title[(lang === 'fr'? 'fre' : 'eng')]}}
+                   {{item.title[($i18n.locale === 'fr'? 'fre' : 'eng')]}}
                  </li>
                  </ul>        
              </div>
@@ -119,10 +119,7 @@ export default {
     FormaterOnline
   },
   props: {
-    lang: {
-      type: String,
-      default: 'en'
-    },
+
     metadata: {
       type: Object,
       default: null
@@ -134,24 +131,19 @@ export default {
     type: {
       type: String,
       default: null
-    },
-    width: {
-      type: Number,
-      default: 300
-    },
-    primary: {
-      type: String,
-      default: '#754a15'
-    },
-    emphasis: {
-      type: String,
-      default: '#dd9946'
     }
   },
-  watch: {
-    lang (newvalue) {
-        this.$i18n.locale = newvalue
-        moment.locale(newvalue)
+  
+  computed: {
+    width() {
+      var depth = this.depth ? 3 : 0
+      return this.$store.state.size.capsuleWidth - depth
+    },
+    primary() {
+      return this.$store.state.style.primary
+    },
+    emphasis() {
+      return this.$store.state.style.emphasis
     }
   },
   data() {
@@ -164,9 +156,7 @@ export default {
     }
   },
   created () {
-   this.$i18n.locale = this.lang
-   this.$setGnLocale(this.lang)
-   moment.locale(this.lang)
+   moment.locale(this.$i18n.locale)
    this.meta = this.metadata
    if (this.meta.geoBox  || this.meta.id) {
      this.hasBboxLayer = true

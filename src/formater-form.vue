@@ -83,28 +83,10 @@ export default {
     FormaterParametersForm
   },
   props: {
-
-//     lang: {
-//       type: String,
-//       default: 'en'
-//     },
     disableLevel: {
       type: Number,
       default: 0
     },
-//     temporalExtent: {
-//       type: Object,
-//       default: {min: '1900-01-01', max: 'now'}
-//     }
-  },
-  watch: {
-//     lang (newvalue) {
-//     	this.$i18n.locale = newvalue
-//     	this.$setGnLocale(newvalue)
-// //     },
-//     temporalExtent (newvalue) {
-//       console.log(newvalue.max)
-//     }
   },
   data() {
     return {
@@ -128,10 +110,6 @@ export default {
     document.addEventListener('aerisResetEvent', this.aerisResetListener)
     this.metadataListListener = this.fill.bind(this)
     document.addEventListener('fmt:metadataListEvent', this.metadataListListener)
-//     this.parametersListener = this.changeParameters.bind(this)
-//     document.addEventListener('fmt:changeParametersEvent', this.parametersListener)
-//     this.closeMetadataListener = this.changeParameters.bind(this)
-//     document.addEventListener('fmt:closeMetadataEvent', this.closeMetadataListener)
 
   },
   destroyed () {
@@ -141,16 +119,9 @@ export default {
     this.aerisResetListener = null
     document.removeEventListener('fmt:metadataListEvent', this.metadataListListener)
     this.metadataListListener = null;
-//     document.addEventListener('fmt:closeMetadataEvent', this.closeMetadataListener)
-//     this.closeMetadataListener = null
   },
  
   methods: {
-//     boundsChange(bounds) {
-//       console.log('dans formater form', bounds)
-//       this.bounds = bounds
-//       this.$emit('boundsChange', bounds)
-//     },
     facetToIcon (index) {
       return iconClass[this.dimensions[index]['@name']]
     },
@@ -259,14 +230,6 @@ export default {
        var e = new CustomEvent('fmt:textChangeEvent')
        document.dispatchEvent(e)
     }//,
-//     changeParameters (evt) {
-//       if (evt.detail.parameters) {
-//           this.parameters = evt.detail.parameters
-//       }
-//     },
-//     resetParameters (evt) {
-//       this.parameters = []
-//     }
   }
 }
 </script>

@@ -42,8 +42,8 @@
       <formater-opensearch v-if="describe"  :describe="describe" :uuid="uuid" :depth="depth" @parametersChange="setParameters"></formater-opensearch>
       <div v-if="tabs.search" v-show="currentTab === 'search'">
            
-           <formater-paging  :nb-record="nbRecord" :type="type"  :record-by-line="recordByLine" :depth="depth + 1"></formater-paging>
-              <formater-list-metadata  :depth="depth + 1"  :capsule-width="capsuleWidth"></formater-list-metadata>
+           <formater-paging  :nb-record="nbRecord" :type="type"  :depth="depth + 1"></formater-paging>
+              <formater-list-metadata  :depth="depth + 1"  ></formater-list-metadata>
       </div>
       <!--  others tab -->
       <div v-if="currentTab === 'main'" style="margin-top:20px;">
@@ -95,10 +95,6 @@ export default {
     FormaterOpensearch
   },
   props: {
-   /* lang: {
-      type: String,
-      default: 'en'
-    },*/
     metadata: {
       type: Object,
       default: null
@@ -106,19 +102,7 @@ export default {
     depth: {
       type: Number,
       default:0
-    },
-    capsuleWidth: {
-      type: Number,
-      default: 300
-    },
-    recordByLine: {
-      type: Number,
-      default: 4
     }
-//     nbRecords: {
-//       type: Number,
-//       default: 4
-//     }
   },
   watch: {
     metadata: {
@@ -150,10 +134,7 @@ export default {
     }
   },
   created () {
-   // this.recordByLine = this.nbRecordPerLine
-    // this.$i18n.locale = this.lang
-    this.$setGnLocale(this.$i18n.locale)
-    moment.locale(this.lang)
+    moment.locale(this.$i18n.locale)
     if (this.metadata['geonet:info']) {
        this.uuid = this.metadata['geonet:info'].uuid
     } else {
@@ -184,6 +165,7 @@ export default {
      this.meta = this.metadata
      this.computeHasChild(this.metadata)
      this.fillMetadata()
+     console.log('TYPE OF METADATA', this.type)
    }
   },
   destroyed () {

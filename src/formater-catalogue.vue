@@ -14,25 +14,25 @@
   <aeris-theme :primary="$store.state.style.primary" :active="true" :emphasis="$store.state.style.emphasis"></aeris-theme>
   <formater-requester  :depth="metadatas.length"></formater-requester>
   <!-- component to draw bbox -->
-  <formater-draw-bbox :search-area="$store.state.searchArea"></formater-draw-bbox>
+  <formater-draw-bbox ></formater-draw-bbox>
 
   <div >
    <!-- components can be view -->
    <div class="mtdt-column-left" >
-       <formater-form :lang="$i18n.locale" :disableLevel="metadatas.length > 0 ? 1 : 0"   @boundsChange="boundsChange"></formater-form>
+       <formater-form  :disableLevel="metadatas.length > 0 ? 1 : 0"  ></formater-form>
    </div>
    <div class="mtdt-column-right" >
         <!-- div where append map when enlarge it -->
         <div id="fmtLargeMap"></div>
         <!-- list of all records with page navigation -->
         <div v-show="metadatas.length === 0">
-            <formater-paging  :nb-record="nbRecord" :record-by-line="recordByLine" :depth="0" :orders="['title','changeDate']" order-by="title"></formater-paging>
-            <formater-list-metadata  :depth="0" :capsule-width="capsuleWidth"></formater-list-metadata>
+            <formater-paging   :depth="0" :orders="['title','changeDate']" order-by="title"></formater-paging>
+            <formater-list-metadata  :depth="0"></formater-list-metadata>
         </div>
         <!-- view of one record -->
         <div  v-if="metadatas.length > 0" >
-            <formater-metadata v-for="(meta, index) in metadatas" :key="index" v-show="index === metadatas.length-1" :depth="index" :metadata="meta" :lang="$i18n.locale"
-             :capsule-width="capsuleWidth - 10" :record-by-line="recordByLine" @close="resetMetadata" ></formater-metadata>
+            <formater-metadata v-for="(meta, index) in metadatas" :key="index" v-show="index === metadatas.length-1" :depth="index" :metadata="meta" 
+             @close="resetMetadata" ></formater-metadata>
         </div>
      </div>
     </div>
@@ -74,25 +74,12 @@ export default {
       aerisSearchListener: null,
       aerisResetListener: null,
       resizeListener: null,
-      recordByLine: 4,
-      nbRecord: 24,
-      capsuleWidth: 300, 
-      bounds: null,
+      // default temporalExtent
       temporalExtent: {min: '1900-01-01', max: 'now'}
     }
   },
   
   created () {
-    var regexList = ["\{geo\:(uid|geometry|name|lon|lat|radius)\}",
-      "\{searchTerms\}","\{fs:(first|second)Date(Min|Max)\}" ]
-  //  var regexList = ["/\{geo:uid\}/"]
-    var text = "{fs:firstDateMax}"
-    const isMatch = regexList.some(function(str) {
-      console.log(str)
-      var rx = new RegExp(str); 
-      return rx.test(text); 
-    });
-    console.log('regex match = ', isMatch)
     this.initTemporalExtent()
    // this.$i18n.locale = this.lang
     this.$setGnLocale(this.$i18n.locale)
@@ -105,7 +92,6 @@ export default {
     this.resizeListener = this.resize.bind(this)
     window.addEventListener('resize', this.resizeListener);
     this.resize()
-    console.log(this.$store)
   },
   mounted () {
     var evt = new CustomEvent('fmt:pageChangedEvent')
@@ -118,6 +104,9 @@ export default {
     this.aerisSearchListener = null
     document.removeEventListener('aerisResetEvent', this.aerisResetListener)
     this.aerisResetListener = null
+    window.removeEventListener('resize', this.resizeListener)
+    this.resizeListener = null
+
   },
   methods: {
     initTemporalExtent () {
@@ -127,10 +116,6 @@ export default {
       if(this.$store.temporalExtent && this.$store.temporalExtent.max) {
         this.temporalExtent.max = this.$store.temporalExtent.max
       }
-    },
-    boundsChange (bounds) {
-      console.log('dans catalogue bounds change', bounds)
-      this.bounds = bounds
     },
     receiveMetadata (event) {
       this.metadatas.push(event.detail.meta)
@@ -148,7 +133,6 @@ export default {
           min: min ? min : this.temporalExtent.min,
           max: max ? max : this.temporalExtent.max
       }
-     // this.$store.commit('parametersChange', parameters)
       this.$store.commit('temporalChange', temp)
     },
     resetMetadata (event) {
@@ -182,12 +166,7 @@ export default {
       document.dispatchEvent(event)
     },
    resize () {
-      var width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
-      width -= 350
-      var count = parseInt(width/334)
-      this.capsuleWidth = parseInt(width / count - 16)
-      this.recordByLine = count
-      this.nbRecord = count * 4
+      this.$store.commit('sizeChange')
    },
     handleReset (event) {
       this.metadatas = []
