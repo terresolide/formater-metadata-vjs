@@ -95,7 +95,6 @@ export default {
     facetChange (e) {
 	  if (typeof e.detail[this.name] != 'undefined') {
 	    this.defaut = e.detail[this.name]
-	    console.log(this.defaut)
 	    var event = new CustomEvent('fmt:dimensionChangeEvent', {detail: e.detail})
 	    document.dispatchEvent(event)
 	  }

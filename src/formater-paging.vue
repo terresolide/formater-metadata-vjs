@@ -44,10 +44,6 @@ export default {
     FormaterSelect
   },
   props: {
-    nbRecord: {
-      type: Number,
-      default: 4
-    },
 
     depth: {
       type: Number,
@@ -78,7 +74,7 @@ export default {
     }
   },
   created: function() {
-    this.recordPerPage = this.nbRecord
+    this.recordPerPage = this.$store.state.size.nbRecord
     this.metadataListListener = this.receiveTotalRecord.bind(this)
     document.addEventListener('fmt:metadataListEvent', this.metadataListListener)
     this.searchEventListener = this.handleSearch.bind(this) 
@@ -91,6 +87,9 @@ export default {
     })
     this.updateRecordsPerPage(this.recordByLine)
   },
+  mounted () {
+    
+  }
   destroyed () {
     document.removeEventListener('fmt:metadataListEvent', this.metadataListListener);
     this.metadataListListener = null;
@@ -111,7 +110,7 @@ export default {
       currentPage : 1,
       nbPage: 0,
       from: 1,
-      to: 12,
+      to: 24,
       notExactly: '',
       options: {},
       metadataListListener: null,
@@ -165,7 +164,7 @@ export default {
      }
        this.recordPerPage = 4 * recordsByLine
        this.recordsPerPage = options
-
+       console.log(this.recordPerPage)
    },
    goToFirst () {
      this.from = 1
@@ -179,19 +178,24 @@ export default {
    },
    handleReset(event) {
      this.from = 1
-     this.to = this.recordPerPage
      this.currentPage = 1
    },
    handleSearch (event) {
+     console.log('EVENT DEPTH', event.detail.depth)
+     console.log('RECORD PER PAGE DANS SEARCH', this.recordPerPage)
+     console.log('PAGING DEPTH', this.depth)
      if (this.depth != event.detail.depth) {
        return
      }
+     console.log('RECORD PER PAGE DANS SEARCH', this.recordPerPage)
      if (this.type === 'opensearch') {
        event.detail.index = this.from
+       
        event.detail.maxRecords = this.recordPerPage
      } else {
       event.detail.from = this.from
       event.detail.to = this.from + this.recordPerPage - 1
+      console.log(this.from + this.recordPerPage - 1)
      }
      if (this.sortBy) {
      	event.detail.sortBy = this.sortBy

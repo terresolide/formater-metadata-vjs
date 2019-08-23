@@ -42,8 +42,8 @@
       <formater-opensearch v-if="describe"  :describe="describe" :uuid="uuid" :depth="depth" @parametersChange="setParameters"></formater-opensearch>
       <div v-if="tabs.search" v-show="currentTab === 'search'">
            
-           <formater-paging  :nb-record="nbRecord" :type="type"  :depth="depth + 1"></formater-paging>
-              <formater-list-metadata  :depth="depth + 1"  ></formater-list-metadata>
+           <formater-paging   :type="type"  :depth="depth"></formater-paging>
+           <formater-list-metadata  :depth="depth"  ></formater-list-metadata>
       </div>
       <!--  others tab -->
       <div v-if="currentTab === 'main'" style="margin-top:20px;">
@@ -129,11 +129,11 @@ export default {
      keydownListener: null,
 
      describe: null,
-     nbRecord: 12,
      type: 'geonetwork'
     }
   },
   created () {
+    console.log('METADATA DEPTH', this.depth)
     moment.locale(this.$i18n.locale)
     if (this.metadata['geonet:info']) {
        this.uuid = this.metadata['geonet:info'].uuid
@@ -165,7 +165,6 @@ export default {
      this.meta = this.metadata
      this.computeHasChild(this.metadata)
      this.fillMetadata()
-     console.log('TYPE OF METADATA', this.type)
    }
   },
   destroyed () {

@@ -154,7 +154,6 @@ export default {
       this.isChecked = false
     },
     handleSearch (e) {
-      console.log(e)
       if (this.isChecked) {
         if (!e.detail.facet) {
           e.detail.facet = []

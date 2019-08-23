@@ -85,8 +85,6 @@ export default {
       if (this.disable) {
         return
       }
-      console.log('handleChange')
-      
       this.isChecked = !this.isChecked;
       var event = new CustomEvent('fmt:dimensionChangeEvent')
       document.dispatchEvent(event)

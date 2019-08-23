@@ -31,7 +31,7 @@
         </div>
         <!-- view of one record -->
         <div  v-if="metadatas.length > 0" >
-            <formater-metadata v-for="(meta, index) in metadatas" :key="index" v-show="index === metadatas.length-1" :depth="index" :metadata="meta" 
+            <formater-metadata v-for="(meta, index) in metadatas" :key="index" v-show="index === metadatas.length-1" :depth="index + 1" :metadata="meta" 
              @close="resetMetadata" ></formater-metadata>
         </div>
      </div>
@@ -139,7 +139,7 @@ export default {
       this.metadatas.pop()
       if (this.metadatas.length > 0) {
         var metadata = this.metadatas[this.metadatas.length -1]
-        this.currentUuid = metadata['geonet:info'].uuid
+        this.currentUuid = metadata.id
         var parameters = metadata.osParameters
         var mapping = metadata.mapping
         var min = null

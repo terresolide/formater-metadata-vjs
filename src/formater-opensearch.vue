@@ -108,7 +108,6 @@ export default {
       }
     },
     extractDescribeParameters(parametersString) {
-      console.log(parametersString)
       var parser = new DOMParser()
       var xml = parser.parseFromString(parametersString, 'text/xml')
       var urls = xml.firstChild.childNodes

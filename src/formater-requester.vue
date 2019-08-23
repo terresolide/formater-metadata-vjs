@@ -19,19 +19,11 @@ export default {
       default:0
     }
   },
-  watch: {
-
-    depth (newvalue) {
-      console.log('nouvelle valeur depth = ' + this.depth)
-    }
-  },
   data() {
     return {
       flatsimLayerList: ['CLASSIFICATION', 'CONFIDENCE', 'PIXELS_VALIDITY'],
-      // srv: process.env.GEONETWORK + 'srv/' + (this.$i18n.locale === 'fr'? 'fre' : 'eng') + '/',
       srv: null,
       api: null,
-     // api: process.env.GEONETWORK + '/srv/api/',
       headers: {
         'Accept': 'application/json, text/plain, */*',
         'Accept-Language': this.lang === 'fr' ? 'fre': 'eng'
@@ -43,7 +35,6 @@ export default {
       temporalChangedListener: null,
       spatialChangedListener: null,
       dimensionChangedListener: null,
-      // metadataWithChildListener: null,
       textChangedListener: null,
       selectChangedListener: null,
       // listen a global reset event
@@ -54,8 +45,6 @@ export default {
   },
   created () {
     this.srv = this.$store.state.geonetwork +  'srv/' + (this.$i18n.locale === 'fr'? 'fre' : 'eng') + '/'
-    this.parameters.from = 1
-    this.parameters.to = this.nbRecord
     this.$setGnLocale(this.$i18n.locale)
     // this.getRecords() done when <formater-paging> is mounted with its pageChangeEvent on order control change
     this.pageChangedListener = this.changePage.bind(this)
@@ -110,7 +99,7 @@ export default {
         //  'facet.q': '',
           bucket: '26041996',
           from: 1,
-          to: this.nbRecord,
+          to: this.$store.state.size.nbRecord,
           //  resultType: 'subtemplate',
           // resultType: 'details',
           sortBy: 'title',
@@ -128,6 +117,7 @@ export default {
     }, 
     getRecords (event) {
       // trigger search event like breadcrumb
+      
       if (event.detail && typeof event.detail.depth == 'number') {
         var depth = event.detail.depth
       } else {
@@ -192,10 +182,6 @@ export default {
           if (['any', 'geometry', 'extTo', 'extFrom', 'from', 'to', 'parentUuid'].indexOf(key) >=0){
             this.parameters[key] = e.detail[key]
           }
-        }
-        if (event.detail && event.detail.nbRecords) {
-          this.parameters.from = 1
-          this.parameters.to = event.detail.nbRecords
         }
       } else {
         this.prepareFacet(e)
@@ -321,7 +307,8 @@ export default {
       if (properties.completionDate) {
         properties.renameProperty('completionDate', 'tempExtentEnd')
       }
-     
+      properties.osParameters = []
+      properties.mapping = []
       if (properties.services) {
         if(properties.services.browse && properties.services.browse.layer && properties.services.browse.layer.type === "WMS") {
           var url = properties.services.browse.layer.url.substr(0, properties.services.browse.layer.url.indexOf('?')) 
@@ -357,7 +344,8 @@ export default {
         meta.defaultAbstract = meta.defaultAbstract.replace(/(?:\\[rn]|[\r\n])/g, '<br />');
       }
       meta.description = meta.abstract ? meta.abstract: meta.defaultAbstract
-      
+      meta.osParameters = []
+      meta.mapping = []
       if (meta.image) {
           meta.images =  this.$gnToArray(meta.image)
           meta.images.forEach( function (image, index) {

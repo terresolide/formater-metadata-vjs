@@ -265,7 +265,6 @@ export default {
     },
     selectAreaChange (event) {
       var bbox = event.detail
-      console.log(bbox)
       if (bbox && bbox.north !== "" && bbox.south !== "" && bbox.east !== "" && bbox.west !== "") {
         for(var key in bbox){
           bbox[key] = parseFloat(bbox[key]);

@@ -220,9 +220,7 @@ export default {
 //    },
    receiveMetadata(event) {
      var bounds = this.selectBbox(event)
-     console.log(this.metadataBoundsList)
      this.$store.commit('searchAreaChange', bounds)
-     // this.$emit('boundsChange', bounds)
    },
    receiveMetadatas (event) {
      if (this.bboxLayer[this.depth]) {
@@ -278,7 +276,6 @@ export default {
    },
  
    unselectBbox () {
-    // console.log('depth dans metadata tout seul = ' + event.detail.depth)
      var self = this
      var options = this.getOptionsLayer()
      for(var i in this.selected) {
@@ -291,10 +288,6 @@ export default {
       
      }
       this.selected = []
-//       if (this.bounds[this.depth]) {
-//         this.map.fitBounds(this.bounds[this.depth])
-//       }
-       
    },
    clearLayers (depth) {
      if (!this.layers[depth]) {
@@ -351,9 +344,7 @@ export default {
         
        }
      })
-     console.log(bounds)
      return bounds
-     
    },
    selectBboxById (id, temporaly) {
 
