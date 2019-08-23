@@ -87,9 +87,6 @@ export default {
     })
     this.updateRecordsPerPage(this.recordByLine)
   },
-  mounted () {
-    
-  }
   destroyed () {
     document.removeEventListener('fmt:metadataListEvent', this.metadataListListener);
     this.metadataListListener = null;
