@@ -254,6 +254,8 @@ export default {
         if (value) {
           this.currentTab = 'search'
           this.getRecords()
+        } else {
+          this.$store.commit('parametersChange', [])
         }
       },
 	  fillMetadata () {

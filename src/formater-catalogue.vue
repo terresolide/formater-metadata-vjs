@@ -148,6 +148,7 @@ export default {
           min: min ? min : this.temporalExtent.min,
           max: max ? max : this.temporalExtent.max
       }
+     // this.$store.commit('parametersChange', parameters)
       this.$store.commit('temporalChange', temp)
     },
     resetMetadata (event) {
