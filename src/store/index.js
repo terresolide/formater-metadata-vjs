@@ -27,12 +27,13 @@ export default function makeStore( config ) {
       parameters: {
         // regex of parameter (value attribute) which are exclued to use in request
         excluedRegex: ["\{geo:(uid|geometry|name|lon|lat|radius)\}",
-          "\{searchTerms\}", "\{language\}", "\{eo:parentIdentifier\}",
+          "\{language\}", "\{eo:parentIdentifier\}",
           "\{(fs|eo):(first|second|creation|modification|processing){0,1}Date(Min|Max){0,1}\}", 
           "\{resto:[a-zA-Z]+\}"],
         // list of predefined parameters (temporalExtent, spatialExtent and page information)
         // its name in application and the corresponding value of parameter in opensearch api
         predefined: {
+          any: "{searchTerms}",
           start: "{time:start}",
           end: "{time:end}",
           box: "{geo:box}",

@@ -93,6 +93,8 @@ export default {
     document.addEventListener('fmt:metadataListEvent', this.metadataListListener)
     this.searchEventListener = this.handleSearch.bind(this) 
 	document.addEventListener('aerisSearchEvent', this.searchEventListener);
+    this.resetEventListener = this.handleReset.bind(this) 
+  	document.addEventListener('aerisResetEvent', this.resetEventListener);
     var self = this
     this.orders.forEach( function (order) {
       self.options[order] = self.$i18n.t(order)
@@ -113,6 +115,8 @@ export default {
     this.metadataListListener = null;
     document.addEventListener('aerisSearchEvent', this.searchEventListener);
     this.searchEventListener = null;
+    document.addEventListener('aerisResetEvent', this.resetEventListener);
+    this.resetEventListener = null;
   },
 
   data() {
@@ -156,8 +160,9 @@ export default {
          this.count = event.detail.properties.totalResults
          this.to = this.from + Object.keys(event.detail.metadata).length -1
          this.nbPage = Math.ceil(this.count/ this.recordPerPage)
-         this.notExactly = (event.detail.properties.exactCount ? '': '~')
-         console.log("EXACT = ", this.exactCount)
+         if (typeof event.detail.properties.exactCount !== 'undefined') {
+           this.notExactly = (event.detail.properties.exactCount ? '': '~')
+         }
          break
       
      }
@@ -211,6 +216,11 @@ export default {
      this.from = (this.nbPage -1) * this.recordPerPage + 1
      this.currentPage = this.nbPage
      this.emitChange()
+   },
+   handleReset(event) {
+     this.from = 1
+     this.to = this.recordPerPage
+     this.currentPage = 1
    },
    handleSearch (event) {
      if (this.depth != event.detail.depth) {

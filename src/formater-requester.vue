@@ -49,13 +49,6 @@ export default {
       // listen a global reset event
       resetListener: null,
       facet: [],
-//       // use for opensearch api
-//       geographic: ['geometry', 'box', 'lat', 'lon', 'radius'],
-//       paging: ['maxRecords', 'index', 'page'],
-//       removedFields: ['lang', 'name', 'q'],
-//       osParameters: [],
-//       geoParameters: [],
-//       pagingParameters: [],
        type: 'geonetwork'
      }
   },
@@ -270,8 +263,6 @@ export default {
     },
     requestApiOpensearch () {
       var depth = (typeof this.parameters.depth != 'undefined') ? this.parameters.depth : this.depth
-      delete this.parameters.depth
-      delete this.parameters.geometry
       var self = this
       var url = this.api + (this.api.indexOf('?') > 0 ? '&' :'?');
       url += Object.keys(this.parameters).map(function (prop) {

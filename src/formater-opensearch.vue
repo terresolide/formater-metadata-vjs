@@ -1,6 +1,5 @@
 /**
  * Tools to read the opensearch describe xml and extract the api and parameters 
- * and process the response to match a geonetwork response
  * 
  * @author epointal
  *
