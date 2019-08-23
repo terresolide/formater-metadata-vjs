@@ -26,8 +26,8 @@
         <div id="fmtLargeMap"></div>
         <!-- list of all records with page navigation -->
         <div v-show="metadatas.length === 0">
-            <formater-paging :lang="$i18n.locale" :nb-record="nbRecord" :record-by-line="recordByLine" :depth="0" :orders="['title','changeDate']" order-by="title"></formater-paging>
-            <formater-list-metadata :lang="$i18n.locale" :depth="0" :capsule-width="capsuleWidth"></formater-list-metadata>
+            <formater-paging  :nb-record="nbRecord" :record-by-line="recordByLine" :depth="0" :orders="['title','changeDate']" order-by="title"></formater-paging>
+            <formater-list-metadata  :depth="0" :capsule-width="capsuleWidth"></formater-list-metadata>
         </div>
         <!-- view of one record -->
         <div  v-if="metadatas.length > 0" >

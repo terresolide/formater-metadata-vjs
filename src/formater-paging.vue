@@ -56,10 +56,10 @@ export default {
       type: Number,
       default: 0
     },
-    color: {
-      type: String,
-      default: '#754a15'
-    },
+//     color: {
+//       type: String,
+//       default: '#754a15'
+//     },
     orders: {
       type: Array,
       default: () => []
@@ -73,6 +73,11 @@ export default {
       default: null
     }
   },
+  computed: {
+    color() {
+      return this.$store.state.style.primary
+    }
+  },
   watch: {
 //     lang (newvalue) {
 //     	this.$i18n.locale = newvalue
@@ -81,9 +86,6 @@ export default {
     recordByLine (newvalue) {
       console.log('recordByLine change')
       this.updateRecordsPerPage(newvalue)
-    },
-    color (newvalue) {
-      console.log('color changed')
     }
   },
   created: function() {

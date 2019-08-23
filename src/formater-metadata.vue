@@ -42,7 +42,7 @@
       <formater-opensearch v-if="describe"  :describe="describe" :uuid="uuid" :depth="depth" @parametersChange="setParameters"></formater-opensearch>
       <div v-if="tabs.search" v-show="currentTab === 'search'">
            
-           <formater-paging  :nb-record="nbRecord" :type="type" :record-by-line="recordByLine" :depth="depth + 1"></formater-paging>
+           <formater-paging  :nb-record="nbRecord" :type="type"  :record-by-line="recordByLine" :depth="depth + 1"></formater-paging>
               <formater-list-metadata  :depth="depth + 1"  :capsule-width="capsuleWidth"></formater-list-metadata>
       </div>
       <!--  others tab -->
