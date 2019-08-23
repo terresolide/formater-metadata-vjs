@@ -179,7 +179,7 @@ export default {
         
       }
       console.log('FIN DU DESCRIBE 2')
-      this.$emit('hasChild', true)
+      this.$emit('parametersChange', this.osParameters)
       
       this.$store.commit('parametersChange', this.osParameters)
       // modification des paramètres

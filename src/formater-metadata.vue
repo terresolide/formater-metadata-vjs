@@ -39,7 +39,7 @@
          <formater-export-links :uuid="uuid" v-if="uuid"></formater-export-links>
       </div>
       <!--  tab search if have child -->
-      <formater-opensearch v-if="describe"  :describe="describe" :uuid="uuid" :depth="depth" @hasChild="setHasChild"></formater-opensearch>
+      <formater-opensearch v-if="describe"  :describe="describe" :uuid="uuid" :depth="depth" @parametersChange="setParameters"></formater-opensearch>
       <div v-if="tabs.search" v-show="currentTab === 'search'">
            
            <formater-paging  :nb-record="nbRecord" :type="type" :record-by-line="recordByLine" :depth="depth + 1"></formater-paging>
@@ -243,6 +243,10 @@ export default {
          } else {
            this.setHasChild(false)
          }
+      },
+      setParameters(value) {
+        this.metadata.osParameters = value
+        this.setHasChild(true)
       },
       setHasChild(value) {
         this.hasChild = value
