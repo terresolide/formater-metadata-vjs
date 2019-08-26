@@ -6,6 +6,7 @@ import Vuex from 'vuex'
 
 export default function makeStore( config ) {
   var defaultConfig = {
+      currentUuid: null,
       geonetwork: "http://localhost/geonetwork/",
       style: 
       {
@@ -67,11 +68,9 @@ export default function makeStore( config ) {
         state.parameters = newParameters
       },
       searchAreaChange(state, newBounds) {
-        console.log('commit bounds change')
         state.searchArea = newBounds
       },
       parametersChange(state, newParameters) {
-        console.log('PARAMETERS CHANGE', newParameters)
         state.parameters.others = newParameters.parameters
         state.parameters.mapping = newParameters.mapping
       },
@@ -82,6 +81,9 @@ export default function makeStore( config ) {
         state.size.capsuleWidth = parseInt(width / count - 16)
         state.size.recordByLine = count
         state.size.nbRecord = count * state.size.nbLine
+      },
+      currentUuidChange(state, id) {
+        state.currentUuid = id
       }
     },
     getters: {

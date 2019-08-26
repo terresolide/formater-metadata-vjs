@@ -19,7 +19,7 @@
     
    <span class="mtdt-metadata-close fa fa-close" @click="close"></span>
    <div v-if="meta">
-      <h1 class="mtdt-metadata-header">
+      <h1 class="mtdt-metadata-header" :style="{color:$store.state.style.primary}">
            <a v-if="meta.groupWebsite" :href="meta.groupWebsite" :title="$gn('group-'+ meta.groupOwner)" starget="_blank" class="mtdt-group-logo">
              <img :src="meta.logo"/>
           </a>
@@ -42,7 +42,7 @@
       <formater-opensearch v-if="describe"  :describe="describe" :uuid="uuid" :depth="depth" @parametersChange="setParameters"></formater-opensearch>
       <div v-if="tabs.search" v-show="currentTab === 'search'">
            
-           <formater-paging   :type="type"  :depth="depth"></formater-paging>
+           <formater-paging  :uuid="uuid"  :depth="depth" :type="describe ? 'opensearch': 'geonetwork'"></formater-paging>
            <formater-list-metadata  :depth="depth"  ></formater-list-metadata>
       </div>
       <!--  others tab -->
@@ -52,7 +52,7 @@
             <span v-html="meta.description"></span>
           </div>
           <div class="mtdt-temporalExtent" style="clear:both;" v-if="meta.tempExtentBegin">
-            <h2><i class="fa fa-clock-o"></i>{{$t('temporal_extent')}}</h2>
+            <h2 :style="{color:$store.state.style.primary}"><i class="fa fa-clock-o"></i>{{$t('temporal_extent')}}</h2>
              <div>
                 {{date2str(meta.tempExtentBegin)}}
                 <i class="fa fa-long-arrow-right" ></i>
@@ -161,6 +161,8 @@ export default {
 //     xhr.send(JSON.stringify(post));
   },
   mounted () {
+   console.log('METADATA MOUNTED')
+
    if (this.metadata) {
      this.meta = this.metadata
      this.computeHasChild(this.metadata)
@@ -252,8 +254,8 @@ export default {
       },
       getRecords () {
           // useless, it's trigger when load formater-page-changed
-          var event = new CustomEvent('fmt:metadataWithChildEvent', {detail: {uuid: this.uuid, depth: this.depth}})
-          document.dispatchEvent(event)
+         // var event = new CustomEvent('fmt:metadataWithChildEvent', {detail: {uuid: this.uuid, depth: this.depth}})
+         // document.dispatchEvent(event)
       },
      
   }

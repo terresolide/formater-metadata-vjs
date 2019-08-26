@@ -64,8 +64,6 @@ export default {
     return {
       currentUuid: null,
       // bbox: null,
-      
-
       depth: null,
       // array breadcrumb of records
       metadatas: [],
@@ -94,8 +92,8 @@ export default {
     this.resize()
   },
   mounted () {
-    var evt = new CustomEvent('fmt:pageChangedEvent')
-    document.dispatchEvent(evt)
+//     var evt = new CustomEvent('fmt:pageChangedEvent')
+//     document.dispatchEvent(evt)
   },
   destroyed () {
     document.removeEventListener('fmt:metadataEvent', this.metadataListener);
@@ -120,7 +118,7 @@ export default {
     receiveMetadata (event) {
       this.metadatas.push(event.detail.meta)
       this.currentUuid = event.detail.meta.id
-
+      this.$store.commit('currentUuidChange', this.currentUuid)
       var min = null
       var max = null
       if (event.detail.meta.tempExtentBegin) {
@@ -140,6 +138,7 @@ export default {
       if (this.metadatas.length > 0) {
         var metadata = this.metadatas[this.metadatas.length -1]
         this.currentUuid = metadata.id
+        
         var parameters = metadata.osParameters
         var mapping = metadata.mapping
         var min = null
@@ -161,6 +160,7 @@ export default {
         var mapping = []
         this.$store.commit('temporalChange', this.temporalExtent)
       }
+      this.$store.commit('currentUuidChange', this.currentUuid)
       this.$store.commit('parametersChange', {parameters: parameters, mapping: mapping})
       var event = new CustomEvent('fmt:closeMetadataEvent', {detail:  {depth: this.metadatas.length }})
       document.dispatchEvent(event)
@@ -172,6 +172,7 @@ export default {
       this.metadatas = []
       this.metadatas.length = 0
       this.currentUuid = null
+      this.$store.commit('currentUuidChange', this.currentUuid)
     },
     handleSearch (event) {
       if (this.metadatas.length > 0) {

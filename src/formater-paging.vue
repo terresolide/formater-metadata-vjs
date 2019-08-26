@@ -49,7 +49,14 @@ export default {
       type: Number,
       default: 0
     },
-
+    type: {
+      type: String,
+      default: 'geonetwork'
+    },
+    uuid: {
+      type: String,
+      default: null
+    },
     orders: {
       type: Array,
       default: () => []
@@ -61,9 +68,6 @@ export default {
     }
   },
   computed: {
-    color () {
-      return this.$store.state.style.primary
-    },
     recordByLine () {
       return this.$store.state.size.recordByLine
     }
@@ -86,6 +90,10 @@ export default {
       self.options[order] = self.$i18n.t(order)
     })
     this.updateRecordsPerPage(this.recordByLine)
+    this.emitChange()
+  },
+  mounted () {
+    this.handleTheme()
   },
   destroyed () {
     document.removeEventListener('fmt:metadataListEvent', this.metadataListListener);
@@ -100,6 +108,7 @@ export default {
     return {
       initialize: true,
       recordPerPage: 24,
+      // recordByLine: 4,
       recordsPerPage: { 
          "24": "24 per page"
       },
@@ -111,8 +120,7 @@ export default {
       notExactly: '',
       options: {},
       metadataListListener: null,
-      searchEventListener: null,
-      type: 'geonetwork'
+      searchEventListener: null
     }
   },
   
@@ -121,7 +129,6 @@ export default {
      if (event.detail.depth !=  this.depth ){
        return;
      }
-     this.type = event.detail.type
      switch (this.type) {
        case 'geonetwork':
          this.count = parseInt(event.detail.summary['@count'])
@@ -137,7 +144,6 @@ export default {
            this.notExactly = (event.detail.properties.exactCount ? '': '~')
          }
          break
-      
      }
      if (this.count === 0) {
        this.from = 1
@@ -148,20 +154,25 @@ export default {
      }
    },
    updateRecordsPerPage (recordsByLine) {
+     var isCurrent = (this.$store.state.currentUuid === this.uuid)
      var options = {}
      var i = 1
      var nbRecords = recordsByLine * i
      while(i < 9) {
-       if (!this.initialize && this.recordPerPage < nbRecords && this.recordPerPage > (i-1) * recordsByLine ) {
+       if (!isCurrent && this.recordPerPage < nbRecords && this.recordPerPage > (i-1) * recordsByLine ) {
+         // keep the value in list of options
          options[this.recordPerPage] = this.recordPerPage + ' ' + this.$t('per_page')
        }
 		options[nbRecords] = nbRecords + ' ' + this.$t('per_page')
 		i++
 		nbRecords = recordsByLine * i
      }
+     if (isCurrent) {
+       // change the record per page only for the current metadata
        this.recordPerPage = 4 * recordsByLine
-       this.recordsPerPage = options
-       console.log(this.recordPerPage)
+     }
+     // change the list of options for all
+     this.recordsPerPage = options
    },
    goToFirst () {
      this.from = 1
@@ -178,25 +189,26 @@ export default {
      this.currentPage = 1
    },
    handleSearch (event) {
-     console.log('EVENT DEPTH', event.detail.depth)
-     console.log('RECORD PER PAGE DANS SEARCH', this.recordPerPage)
-     console.log('PAGING DEPTH', this.depth)
      if (this.depth != event.detail.depth) {
        return
      }
-     console.log('RECORD PER PAGE DANS SEARCH', this.recordPerPage)
      if (this.type === 'opensearch') {
        event.detail.index = this.from
-       
        event.detail.maxRecords = this.recordPerPage
      } else {
       event.detail.from = this.from
       event.detail.to = this.from + this.recordPerPage - 1
-      console.log(this.from + this.recordPerPage - 1)
      }
      if (this.sortBy) {
      	event.detail.sortBy = this.sortBy
      }
+   },
+   handleTheme () {
+     var nodes = this.$el.querySelectorAll('.mtdt-paging span.mtdt-navigation span')
+     var self = this
+     nodes.forEach( function (node) {
+       node.style.backgroundColor = self.$store.state.style.primary
+     })
    },
    changePage(sens) {
      if (sens < 0 && this.currentPage === 1 ){
@@ -205,7 +217,6 @@ export default {
      if (sens > 0 && this.currentPage === this.nbPage && !this.notExactly) {
        return;
      }
-     
      this.currentPage += sens
      this.from = (this.currentPage - 1) * this.recordPerPage +1
      this.emitChange()

@@ -15,18 +15,18 @@
     
 
       <div class="mtdt-contacts" v-if="contacts.resource">
-	        <h2><i class="fa fa-users"></i>{{$tc('resource_contact', Object.keys(contacts.resource).length)}}</h2>
+	        <h2 :style="{color:$store.state.style.primary}"><i class="fa fa-users"></i>{{$tc('resource_contact', Object.keys(contacts.resource).length)}}</h2>
 	        <div v-for="(fonction, key) in contacts.resource" :key="key" style="float:left;">
-		         <h3><i class="fa fa-user"></i>{{$gn(key)}}</h3>
+		         <h3 :style="{color:$store.state.style.primary}"><i class="fa fa-user"></i>{{$gn(key)}}</h3>
 		        <formater-contact  v-for="(item, index) in fonction" :key="index" :contact="item" ></formater-contact>
 	        </div>
 	        <div style="clear:both;"></div>
 	      </div>
 
 	       <div class="mtdt-contacts" v-if="contacts.metadata">
-	        <h2><i class="fa fa-users"></i>{{$tc('metadata_contact', Object.keys(contacts.metadata).length)}}</h2>
+	        <h2 :style="{color:$store.state.style.primary}"><i class="fa fa-users"></i>{{$tc('metadata_contact', Object.keys(contacts.metadata).length)}}</h2>
 	         <div v-for="(fonction, key) in contacts.metadata" :key="key" >
-		         <h3><i class="fa fa-user"></i>{{$gn(key)}}</h3>
+		         <h3 :style="{color:$store.state.style.primary}"><i class="fa fa-user"></i>{{$gn(key)}}</h3>
 		        <formater-contact  v-for="(item, index) in fonction" :key="index" :contact="item" ></formater-contact>
 	        </div>  
 	       </div>

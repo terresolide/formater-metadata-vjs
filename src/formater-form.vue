@@ -23,7 +23,7 @@
 </i18n>
 <template>
  <div class="mtdt-form">
-  <div style="text-align:center;margin: 10px 0 30px 0;"><input type="button" @click="reset" :value="$t('reset')"/></div>
+  <div style="text-align:center;margin: 10px 0 30px 0;"><input id="globalReset" type="button" @click="reset" :value="$t('reset')"/></div>
   <div class="formater-input-group" style="margin:10px; width:calc(100% - 20px);">
      <input id="any" name="any" v-model="fulltextSearch" :placeholder="$t('search')" @change="changeText" @keypress="changeTextOnEnter" /><i class="fa fa-search"></i>
  </div>
@@ -110,7 +110,9 @@ export default {
     document.addEventListener('aerisResetEvent', this.aerisResetListener)
     this.metadataListListener = this.fill.bind(this)
     document.addEventListener('fmt:metadataListEvent', this.metadataListListener)
-
+  },
+  mounted () {
+    this.handleTheme()
   },
   destroyed () {
     document.removeEventListener('aerisSearchEvent', this.aerisSearchListener)
@@ -218,6 +220,17 @@ export default {
       if (this.fulltextSearch.length > 0) {
       	e.detail.any = this.fulltextSearch
       } 
+      if (this.$store.state.group) {
+        e.detail._groupOwner = this.$store.state.group
+      }
+    },
+    handleTheme() {
+      var node = this.$el.querySelector('#globalReset')
+      node.style.backgroundColor = this.$store.state.style.primary
+      var color1 = this.$shadeColor(this.$store.state.style.primary, 0.2)
+      node.style.borderColor = color1
+      var node = this.$el.querySelector('.formater-input-group')
+      node.style.backgroundColor = this.$shadeColor(this.$store.state.style.emphasis, 0.8)
     },
     changeTextOnEnter (event) {
       if (event.which == 13 || event.keyCode == 13) {

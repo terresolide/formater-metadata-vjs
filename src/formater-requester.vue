@@ -198,6 +198,7 @@ export default {
       } 
       this.mapParameters(e)
       
+      console.log('maxRecords dans requete = ', e.detail.maxRecords)
       this.parameters = Object.assign(this.parameters, e.detail)   
 
     },
