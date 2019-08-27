@@ -47,6 +47,7 @@
       </div>
       <!--  others tab -->
       <div v-if="currentTab === 'main'" style="margin-top:20px;">
+        <div class="mtdt-column-left">
           <div class="mtdt-description">
             <formater-quicklooks :quicklooks="meta.images"></formater-quicklooks>
             <span v-html="meta.description"></span>
@@ -62,7 +63,9 @@
           <div >
               <formater-list-contact   :responsible-party="meta.responsibleParty" :responsible-party2="metaLang2.responsibleParty"></formater-list-contact>
          </div>
-     
+        </div>
+      </div>
+      <div class="mtdt-column-right">
       </div>
       <div v-if="currentTab === 'complement'" >
              <formater-list-contact   :responsible-party="meta.responsibleParty" :responsible-party2="metaLang2.responsibleParty"></formater-list-contact>
@@ -70,6 +73,7 @@
        <div v-if="currentTab === 'quality'" >
              <formater-list-contact   :responsible-party="meta.responsibleParty" :responsible-party2="metaLang2.responsibleParty"></formater-list-contact>
       </div>
+   
    </div>
  </div>
 </template>
@@ -133,7 +137,7 @@ export default {
     }
   },
   created () {
-    console.log('METADATA DEPTH', this.depth)
+
     moment.locale(this.$i18n.locale)
     if (this.metadata['geonet:info']) {
        this.uuid = this.metadata['geonet:info'].uuid
@@ -161,8 +165,6 @@ export default {
 //     xhr.send(JSON.stringify(post));
   },
   mounted () {
-   console.log('METADATA MOUNTED')
-
    if (this.metadata) {
      this.meta = this.metadata
      this.computeHasChild(this.metadata)
@@ -233,7 +235,7 @@ export default {
          } else {
            this.uuid = this.meta.id
          }
-
+         return
          if (this.meta._locale ===  this.meta.docLocale) {
            
            return
@@ -272,6 +274,16 @@ export default {
   overflow: hidden;
  
 }
+.mtdt-metadata .mtdt-column-left{
+  width:calc(100% - 330px);
+  padding-left: 10px;
+}
+.mtdt-metadata .mtdt-column-right{
+  width: 300px;
+  background: #eee;
+  min-height:500px;
+  margin:0 10px 0 0;
+ }
 .mtdt-metadata span.mtdt-metadata-close{
   position: absolute;
   top:3px;
