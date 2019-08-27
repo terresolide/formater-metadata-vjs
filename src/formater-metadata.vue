@@ -66,6 +66,7 @@
         </div>
       </div>
       <div class="mtdt-column-right">
+        <formater-related type="metadata" :download="meta.download" :id="meta.id" :layers="meta.layers" :related="meta.related"></formater-related>
       </div>
       <div v-if="currentTab === 'complement'" >
              <formater-list-contact   :responsible-party="meta.responsibleParty" :responsible-party2="metaLang2.responsibleParty"></formater-list-contact>
@@ -85,6 +86,7 @@ const FormaterPaging = () => import('./formater-paging.vue')
 const FormaterListMetadata = () => import('./formater-list-metadata.vue')
 import moment from 'moment';
 const FormaterOpensearch = () => import('./formater-opensearch.vue')
+import FormaterRelated from './formater-related.vue';
 // import { extendMoment } from 'moment-range';
 // window.momentCst = extendMoment(moment);
 
@@ -96,7 +98,8 @@ export default {
     FormaterExportLinks,
     FormaterPaging,
     FormaterListMetadata,
-    FormaterOpensearch
+    FormaterOpensearch,
+    FormaterRelated
   },
   props: {
     metadata: {

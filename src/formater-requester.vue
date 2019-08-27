@@ -371,7 +371,7 @@ export default {
           if (!meta.layers) {
             meta.layers = []
           }
-          var id = meta.uuid + '_' + index
+          var id = meta.id + '_' + index
           meta.layers.push(self.$gnLinkToLayer(link, id))
           break;
         case 'WWW:DOWNLOAD-1.0-link--download':

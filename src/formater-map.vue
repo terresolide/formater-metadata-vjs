@@ -263,12 +263,15 @@ export default {
    selectBbox (event) {
      console.log('select Bbox')
      this.unselectBbox()
-     if (!event.detail.meta) {
-       return null;
-     }
      var bounds = null
-     if (event.detail.meta.id) {
-       bounds =this.selectBboxById(event.detail.meta.id, event.detail.temporaly)
+     var id = null
+     if (event.detail.id) {
+       id = event.detail.id
+     } else if (event.detail.meta && event.detail.id) {
+       id = event.detail.meta.id
+     } 
+     if (id) {
+       bounds =this.selectBboxById(id, event.detail.temporaly)
        this.metadataBoundsList.push(bounds)
      }
      return bounds
