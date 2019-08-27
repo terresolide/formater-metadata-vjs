@@ -46,7 +46,7 @@
               <img :src="meta.logo"  />
           </a>
        </div>
-       <formater-related type="cartouche" :id="meta.id" :download="meta.download" :has-bbox-layer="hasBboxLayer" :layers="meta.layers" :related="meta.related"></formater-related>
+       <formater-related type="cartouche" :id="meta.id" :download="meta.download" :has-bbox-layer="hasBboxLayer" :layers="meta.layers" :links="meta.links"></formater-related>
      </div>
  </div>
 </template>
@@ -113,7 +113,7 @@ export default {
       //return 'hello';
       return moment(date, 'YYYY-MM-DD').format('ll')
     },
-    changeLayer (layer) {
+  /*  changeLayer (layer) {
      // console.log(index)
       // this.$set(this.meta.layers[index], 'checked', !this.meta.layers[index].checked)
       this.$set(layer, 'checked', !layer.checked)
@@ -178,7 +178,7 @@ export default {
       }
       var event = new CustomEvent('fmt:unselectBboxEvent', {detail: {meta: this.meta}})
       document.dispatchEvent(event)
-    }
+    }*/
   }
 }
 </script>

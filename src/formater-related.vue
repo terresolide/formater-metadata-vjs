@@ -14,7 +14,7 @@
 }
 </i18n>
 <template>
-  <span class="mtdt-related" :class="'mtdt-related' + type">
+  <span class="mtdt-related" :class="'mtdt-related-' + type">
     <div v-if="download && download.length === 1">
        <div class="mtdt-related-type fa fa-download" @click="triggerDownload(0)" :style="{backgroundColor: primary}" :title="$t('download_data')">
       </div> 
@@ -55,8 +55,10 @@
            </ul>    
        </div>  
    </div>
-   
-   <div v-if="related && (related.children || related.parent)" style="position:relative;">
+   <div v-if="links">
+   		<div class="mtdt-related-type fa fa-link" :style="{backgroundColor: primary}"></div>
+   </div>
+  <!--  <div v-if="related && (related.children || related.parent)" style="position:relative;">
    <div class="mtdt-related-type fa fa-code-fork" :style="{backgroundColor:primary}">
       <span class="fa fa-caret-down"></span>
          </div>
@@ -74,7 +76,7 @@
              </li>
              </ul>        
          </div>
-     </div>
+     </div> -->
   </span>
   </template>>
   <script>
@@ -100,13 +102,17 @@
         type: Array,
         default: null
       },
-      related: {
-        type: Object,
+      links: {
+        type: Array,
         default: null
       }
     },
     mounted () {
       console.log(this.id)
+      console.log('DOWNLOAD = ', this.download)
+      console.log('LAYERS = ', this.layers)
+      console.log('RELATED = ', this.related)
+      console.log(this.related && (this.related.children || this.related.parent))
     },
     computed: {
       primary() {
@@ -194,16 +200,24 @@
   }
   </script>
   <style>
-  .mtdt-cartouche-metadata .mtdt-footer .mtdt-related{
+ .mtdt-related-metadata{
+   margin: 10px;
+   padding:10px;
+
+}
+.mtdt-related-metadata > div{
+  display: block;
+}
+.mtdt-related-cartouche{
  float: right;
  margin-right:3px;
  max-height: 25px;
  max-width: 50%;
 }
- .mtdt-related > div {
- display:inline-block;
+.mtdt-related-cartouche > div {
+  display:inline-block;
 }
-.mtdt-cartouche-metadata .mtdt-footer .mtdt-related-type{
+ .mtdt-related-type{
  text-align:center;
  min-width:20px;
  vertical-align:bottom;
@@ -217,7 +231,7 @@
  margin-right:3px;
  opacity:0.9;
 }
-.mtdt-cartouche-metadata .mtdt-footer .mtdt-related-type:hover{
+ .mtdt-related-type:hover{
   opacity:1;
 }
 .mtdt-related-type + .mtdt-expand{
@@ -239,37 +253,37 @@
 .mtdt-expand:hover {
   display: block;
 }
-.mtdt-cartouche-metadata .mtdt-footer .mtdt-related-type:hover + .mtdt-expand{
+ .mtdt-related-type:hover + .mtdt-expand{
   display:block;
 }
-.mtdt-cartouche-metadata .mtdt-footer .mtdt-related-type span{
+ .mtdt-related-type span{
  font-size:0.8em;
  margin-left:3px;
 }
-.mtdt-cartouche-metadata .mtdt-expand label{
+ .mtdt-related .mtdt-expand label{
   font-weight: 500;
 }
  
-.mtdt-cartouche-metadata .mtdt-expand ul {
+  .mtdt-related .mtdt-expand ul {
   padding:0;
   list-style-position: outside;
   margin:  5px 3px 5px 9px;
 }
-.mtdt-cartouche-metadata .mtdt-expand ul li {
+ .mtdt-related .mtdt-expand ul li {
   padding: 0px;
   margin:  0;
 }
-.mtdt-cartouche-metadata ul.mtdt-layers{
+ .mtdt-related ul.mtdt-layers{
   list-style-type: none;
   margin-left:0px;
 }
-.mtdt-cartouche-metadata ul.mtdt-layers li{
+ ul.mtdt-layers li{
   cursor: pointer;
 }
-.mtdt-cartouche-metadata ul.mtdt-layers li {
+ .mtdt-related ul.mtdt-layers li {
   vertical-align:text-top;
 }
-.mtdt-cartouche-metadata ul.mtdt-layers li div{
+ .mtdt-related ul.mtdt-layers li div{
       display: inline-block;
     text-overflow: clip;
     margin:0;

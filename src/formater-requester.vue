@@ -389,7 +389,8 @@ export default {
           meta.links.push(link)
           break;
         }
-      }) 
+      })
+      console.log(meta.links)
       return meta;
     },
     extractBboxGeonetwork(bbox, id) {

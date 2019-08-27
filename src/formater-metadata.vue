@@ -64,10 +64,11 @@
               <formater-list-contact   :responsible-party="meta.responsibleParty" :responsible-party2="metaLang2.responsibleParty"></formater-list-contact>
          </div>
         </div>
-      </div>
-      <div class="mtdt-column-right">
+              <div class="mtdt-column-right">
         <formater-related type="metadata" :download="meta.download" :id="meta.id" :layers="meta.layers" :related="meta.related"></formater-related>
       </div>
+      </div>
+
       <div v-if="currentTab === 'complement'" >
              <formater-list-contact   :responsible-party="meta.responsibleParty" :responsible-party2="metaLang2.responsibleParty"></formater-list-contact>
       </div>
