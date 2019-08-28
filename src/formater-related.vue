@@ -13,21 +13,23 @@
 </i18n>
 <template>
   <span class="mtdt-related" :class="'mtdt-related-' + type">
-    <div v-if="download && download.length === 1">
+    <div v-if="download && download.length === 1 && type === 'cartouche'">
        <div class="mtdt-related-type fa fa-download" @click="triggerDownload(0)" :style="{backgroundColor: primary}" :title="$t('download_data')">
       </div> 
     </div>
-    <div v-if="download && download.length >1">
+    <div v-if="download && (download.length >1 || (type === 'metadata' && download.length > 0))">
        <div class="mtdt-related-type fa fa-download"  :style="{backgroundColor: primary}" :title="$t('download_data')">
-         <span class="fa fa-caret-down"></span>
+         <span v-if="type === 'cartouche'" class="fa fa-caret-down"></span>
       </div> 
-      <div class="mtdt-expand">
-           <ul class="mtdt-layers">
-           <li v-for="(download, index) in download" :key="index" @click="triggerDownload(index);">
-            <div  :title="download.description">{{download.name}}</div>
+      <div v-if="type === 'metadata'"></div>
+      <div class="mtdt-expand mtdt-links" >
+           <ul >
+           <li v-for="(download, index) in download" :key="index" @click="triggerDownload(index);" >
+            <div  :title="download.description" class="mtdt-link" :style="{color:primary}" @mouseover="handleOver" @mouseout="handleOut">{{download.name? download.name: $t('download_data')}}</div>
           </li>
           </ul>    
-      </div>  
+      </div> 
+        <hr v-if="type === 'metadata'" /> 
     </div>
     <div v-if="type === 'cartouche' && hasBboxLayer" style="display:inline-block;" >
       <div class="mtdt-related-type fa fa-dot-circle-o" :style="{backgroundColor:primary}" 
@@ -35,13 +37,14 @@
       </div>
     
     </div>
-    <div v-if="layers && layers.length === 1">
+    <div v-if="layers && layers.length === 1 && type === 'cartouche'">
       <div class="mtdt-related-type fa fa-globe" @click="changeLayer(layers[0])" :style="{backgroundColor: layerAdded ? '#8c0209' : primary}" :title="$t('display_layer')">
           
        </div> 
    </div>
-    <div v-if="layers && layers.length > 1">
-      <div class="mtdt-related-type fa fa-globe" :style="{backgroundColor: layerAdded ? '#8c0209' : primary}" >
+         <div v-if="type === 'metadata'"></div>
+    <div v-if="layers && (layers.length > 1 || (type === 'metadata' && layers.length > 0))">
+      <div class="mtdt-related-type fa fa-globe" :style="{backgroundColor: layerAdded ? '#8c0209' : primary}" :title="$t('display_layer')">
           <span class="fa fa-caret-down" v-if="type === 'cartouche'"></span>
        </div>
        <div class="mtdt-expand">
@@ -51,19 +54,22 @@
              <div  :title="layer.description">{{layer.name}}</div>
            </li>
            </ul>   
-       </div>  
+       </div> 
+         <hr v-if="type === 'metadata'" />
    </div>
    <div v-if="links">
    		<div class="mtdt-related-type fa fa-link" :style="{backgroundColor: primary}">
-          <span class="fa fa-caret-down" ></span>
+          <span v-if="type === 'cartouche'" class="fa fa-caret-down" ></span>
        </div>
-       <div class="mtdt-expand">
-            <ul class="mtdt-links">
+             <div v-if="type === 'metadata'"></div>
+       <div class="mtdt-expand mtdt-links">
+            <ul >
             <li v-for="(link, index) in links" :key="index" v-if="link">
              <a :href="link.href" target="_blank" :title="link.description">{{link.title}}</a>
            </li>
            </ul>    
-       </div>  
+       </div> 
+         <hr v-if="type === 'metadata'" /> 
    </div>
   <!--  <div v-if="related && (related.children || related.parent)" style="position:relative;">
    <div class="mtdt-related-type fa fa-code-fork" :style="{backgroundColor:primary}">
@@ -156,6 +162,12 @@
          }
          this.updateClass()
        },
+       handleOver (e) {
+         e.target.style.color = this.$store.state.style.over
+       },
+       handleOut (e) {
+         e.target.style.color = this.$store.state.style.link
+       },
        triggerDownload (index) {
          var url = this.download[index].url
          // var url = 'SENTINEL1.zip'
@@ -207,6 +219,10 @@
   }
   </script>
   <style>
+  .mtdt-link {
+    text-decoration: underline;
+    cursor: pointer;
+  }
  .mtdt-related-metadata{
    margin: 10px;
    padding:10px;
@@ -214,8 +230,16 @@
 }
 .mtdt-related-metadata > div{
   display: block;
-  margin-bottom: 30px;
+  margin-bottom: 10px;
 }
+.mtdt-related-metadata hr {
+  margin: 0 25px;
+   border: 0;
+    height: 1px;
+    background: #333;
+    background-image: linear-gradient(to right, #ccc, #333, #ccc);
+}
+
 .mtdt-related-cartouche{
  float: right;
  margin-right:3px;
@@ -225,11 +249,11 @@
 .mtdt-related-cartouche > div {
   display:inline-block;
 }
- .mtdt-related-type{
+ .mtdt-related .mtdt-related-type{
  text-align:center;
  min-width:20px;
  vertical-align:bottom;
- cursor:pointer;
+
  border-radius:3px;
  /*background:#8c0209;*/
  background:#754a15;
@@ -237,9 +261,12 @@
  color:white;
  font-size:1.3em;
  margin-right:3px;
- opacity:0.9;
 }
- .mtdt-related-type:hover{
+.mtdt-related-cartouche .mtdt-related-type{
+   cursor:pointer;
+   opacity:0.9
+}
+ .mtdt-related-cartouche .mtdt-related-type:hover{
   opacity:1;
 }
 .mtdt-related-metadata .mtdt-expand{
@@ -247,6 +274,10 @@
   margin: 20px 10px 30px 10px;
   text-align:left;
 }
+.mtdt-related-metadata .mtdt-links.mtdt-expand{
+  display:block;
+}
+
 .mtdt-related-cartouche .mtdt-related-type + .mtdt-expand{
     display:none;
     position:absolute;

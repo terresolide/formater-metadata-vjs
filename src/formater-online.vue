@@ -72,10 +72,12 @@ export default {
 .mtdt-online{
   margin-left:5px;
 }
-.mtdt-catalogue a{
+.mtdt-catalogue a,
+.mtdt-catalogue .mtdt-link{
   color:#754a15;
 }
-.mtdt-catalogue a:hover{
+.mtdt-catalogue a:hover,
+.mtdt-catalogue .mtdt-link:hover{
   color:#8c0209;
 }
 

@@ -69,7 +69,7 @@ export default {
    background: #ccc;
 }
 .mtdt-tab-export:hover + div.mtdt-expand,
-div.mtdt-expand:hover{
+.mtdt-export-links .mtdt-expand:hover{
   display: block;
 }
 </style>
