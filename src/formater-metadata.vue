@@ -36,7 +36,7 @@
       <hr style="border:1px solid grey;margin-bottom:0px;clear:both;"/>
       <div class="mtdt-tabs">
          <div v-for="(tab,index) in tabs" v-if="tab === true" class="mtdt-tab" :class="{'selected': currentTab === index}" @click="currentTab = index">{{$t(index)}}</div>
-         <formater-export-links :uuid="uuid" v-if="uuid"></formater-export-links>
+        <formater-export-links v-if="meta.exportLinks" :export-links="meta.exportLinks"></formater-export-links> 
       </div>
       <!--  tab search if have child -->
       <formater-opensearch v-if="describe"  :describe="describe" :uuid="uuid" :depth="depth" @parametersChange="setParameters"></formater-opensearch>

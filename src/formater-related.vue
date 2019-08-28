@@ -1,12 +1,10 @@
 <i18n>{
    "en":{
-     "children": "Children",
      "localize": "Localize on the map",
      "display_layer": "Display the layer on the map",
      "download_data": "Download data"
    },
    "fr":{
-     "children": "Fiches Enfants",
      "localize": "Localiser sur la carte, cliquer pour garder la position",
      "display_layer": "Afficher sur la carte",
      "download_data": "Télécharger les données"
@@ -44,7 +42,7 @@
    </div>
     <div v-if="layers && layers.length > 1">
       <div class="mtdt-related-type fa fa-globe" :style="{backgroundColor: layerAdded ? '#8c0209' : primary}" >
-          <span class="fa fa-caret-down" ></span>
+          <span class="fa fa-caret-down" v-if="type === 'cartouche'"></span>
        </div>
        <div class="mtdt-expand">
             <ul class="mtdt-layers">
@@ -52,11 +50,20 @@
              <i class="fa fa-square-o"   :data-layer="index"></i>
              <div  :title="layer.description">{{layer.name}}</div>
            </li>
-           </ul>    
+           </ul>   
        </div>  
    </div>
    <div v-if="links">
-   		<div class="mtdt-related-type fa fa-link" :style="{backgroundColor: primary}"></div>
+   		<div class="mtdt-related-type fa fa-link" :style="{backgroundColor: primary}">
+          <span class="fa fa-caret-down" ></span>
+       </div>
+       <div class="mtdt-expand">
+            <ul class="mtdt-links">
+            <li v-for="(link, index) in links" :key="index" v-if="link">
+             <a :href="link.href" target="_blank" :title="link.description">{{link.title}}</a>
+           </li>
+           </ul>    
+       </div>  
    </div>
   <!--  <div v-if="related && (related.children || related.parent)" style="position:relative;">
    <div class="mtdt-related-type fa fa-code-fork" :style="{backgroundColor:primary}">
@@ -203,10 +210,11 @@
  .mtdt-related-metadata{
    margin: 10px;
    padding:10px;
-
+   text-align: center;
 }
 .mtdt-related-metadata > div{
   display: block;
+  margin-bottom: 30px;
 }
 .mtdt-related-cartouche{
  float: right;
@@ -234,7 +242,12 @@
  .mtdt-related-type:hover{
   opacity:1;
 }
-.mtdt-related-type + .mtdt-expand{
+.mtdt-related-metadata .mtdt-expand{
+  display: inline-block;
+  margin: 20px 10px 30px 10px;
+  text-align:left;
+}
+.mtdt-related-cartouche .mtdt-related-type + .mtdt-expand{
     display:none;
     position:absolute;
     bottom: 21px;
@@ -250,10 +263,10 @@
     width:auto;
     text-align:left;
 }
-.mtdt-expand:hover {
+.mtdt-related-cartouche .mtdt-expand:hover {
   display: block;
 }
- .mtdt-related-type:hover + .mtdt-expand{
+.mtdt-related-cartouche  .mtdt-related-type:hover + .mtdt-expand{
   display:block;
 }
  .mtdt-related-type span{
@@ -268,23 +281,39 @@
   padding:0;
   list-style-position: outside;
   margin:  5px 3px 5px 9px;
+
+}
+.mtdt-related-metadata .mtdt-expand ul {
+  display:inline;
 }
  .mtdt-related .mtdt-expand ul li {
   padding: 0px;
   margin:  0;
+
+}
+.mtdt-related-metadata .mtdt-expand ul li{
+    display: inline-block;
+  min-width:51%;
 }
  .mtdt-related ul.mtdt-layers{
   list-style-type: none;
   margin-left:0px;
+  text-align:left;
 }
  ul.mtdt-layers li{
   cursor: pointer;
+  text-align:left;
 }
  .mtdt-related ul.mtdt-layers li {
   vertical-align:text-top;
 }
- .mtdt-related ul.mtdt-layers li div{
-      display: inline-block;
+.mtdt-related ul.mtdt-layers li div{
+   display: inline-block;
+   max-width:90%;
+   vertical-align:top;
+}
+ .mtdt-related-cartouche ul.mtdt-layers li div{
+
     text-overflow: clip;
     margin:0;
     padding:0;

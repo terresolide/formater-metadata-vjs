@@ -311,6 +311,7 @@ export default {
       properties.osParameters = []
       properties.mapping = []
       if (properties.services) {
+        // @todo cas très très particulier de flatsim
         if(properties.services.browse && properties.services.browse.layer && properties.services.browse.layer.type === "WMS") {
           var url = properties.services.browse.layer.url.substr(0, properties.services.browse.layer.url.indexOf('?')) 
           properties.layers = []
@@ -331,13 +332,38 @@ export default {
             properties.download = []
           }
           properties.download.push(properties.services.download)
+          
         }
+        delete properties.services
+        if( !properties.exportLinks) {
+          properties.exportLinks = {}
+        }
+        // @todo Flatsim cas particulier des LIENS D'EXPORT qui se trouve dans link
+        if (properties.links) {
+          var i = properties.links.length
+          while (i--) {
+            if (properties.links[i].type === 'application/json' && !properties.exportLinks.json) {
+              properties.exportLinks.json = properties.links[i].href
+              properties.links.splice(i,1)
+            }
+            if (properties.links[i].type === 'application/xml' && !properties.exportLinks.xml) {
+              properties.exportLinks.xml = properties.links[i].href
+              properties.links.splice(i,1)
+            }
+          }
+        }
+        
+        console.log(properties.links)
       }
       return properties
     },
     treatmentSingleGeonetwork (meta, uuid) {
       meta.logo = this.$store.state.geonetwork + meta.logo
       meta.id = uuid
+      meta.exportLinks = {
+          xml: this.$store.state.geonetwork + 'srv/api/records/'+ uuid + '/formatters/xml?attachment=true',
+          pdf: this.$store.state.geonetwork + 'srv/api/records/'+ uuid + '/formatters/xsl-view?root=div&output=pdf'
+      }
       if (meta.abstract) {
         meta.abstract = meta.abstract.replace(/(?:\\[rn]|[\r\n])/g, '<br />');
       }
@@ -386,7 +412,7 @@ export default {
           if (!meta.links) {
             meta.links = []
           }
-          meta.links.push(link)
+          meta.links.push(self.$gnLinkToLink(link))
           break;
         }
       })

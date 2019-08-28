@@ -7,7 +7,7 @@ import Vuex from 'vuex'
 export default function makeStore( config ) {
   var defaultConfig = {
       currentUuid: null,
-      geonetwork: "http://localhost/geonetwork/",
+      geonetwork: null,
       style: 
       {
         primary:"#754a15",

@@ -1,38 +1,40 @@
-
-<template>
- <span class="mtdt-export-links">
+<i18n>
+{
+  "en": {
+     "export": "Export",
+     "exportJSON": "Export JSON",
+     "exportXML": "Export XML",
+     "exportPDF": "Export PDF"
+  },
+  "fr": {
+     "export": "Export",
+     "exportJSON": "Export JSON",
+     "exportXML": "Export XML",
+     "exportPDF": "Export PDF"
+  }
+}
+</i18n>
+<template >
+ <span class="mtdt-export-links" v-if="exportLinks.xml || exportLinks.pdf || exportLinks.json">
   <div  class="mtdt-tab-export">
     <i class="fa fa-chevron-down"></i>
-  	<span style="">{{$gn('export')}}</span>
+  	<span style="">{{$t('export')}}</span>
   </div>
   <div class="mtdt-expand">
-     <div><a :href="xml">{{$gn('exportXML')}}</a></div>
-     <div><a :href="pdf" target="_blank">{{$gn('exportPDF')}}</a></div>
+     <div v-if="exportLinks.json"><a :href="exportLinks.json" target="_blank">{{$t('exportJSON')}}</a></div>
+     <div v-if="exportLinks.xml"><a :href="exportLinks.xml" target="_blank">{{$t('exportXML')}}</a></div>
+     <div v-if="exportLinks.pdf"><a :href="exportLinks.pdf" target="_blank">{{$t('exportPDF')}}</a></div>
   </div>
  </span>
 </template>
 <script>
 export default {
   name: 'FormaterExportLinks',
-  components: {
-  },
   props: {
-    uuid: {
-      type: String,
-      default: null
+    exportLinks: {
+      type: Object,
+      default: () => {}
     }
-  },
-  data() {
-    return {
-      xml: null,
-      pdf: null
-    }
-  },
-  
-  mounted () {
-    this.xml = this.$store.state.geonetwork + 'srv/api/records/'+ this.uuid + '/formatters/xml?attachment=true'
-    this.pdf = this.$store.state.geonetwork + 'srv/api/records/'+ this.uuid + '/formatters/xsl-view?root=div&output=pdf'
-
   }
 }
 </script>
