@@ -65,7 +65,8 @@
          </div>
         </div>
               <div class="mtdt-column-right">
-        <formater-related type="metadata" :download="meta.download" :id="meta.id" :layers="meta.layers" :links="meta.links"></formater-related>
+        <formater-related type="metadata" :download="meta.download" :id="meta.id"
+         :layers="meta.layers" :links="meta.links"></formater-related>
       </div>
       </div>
 
@@ -141,7 +142,6 @@ export default {
     }
   },
   created () {
-
     moment.locale(this.$i18n.locale)
     if (this.metadata['geonet:info']) {
        this.uuid = this.metadata['geonet:info'].uuid

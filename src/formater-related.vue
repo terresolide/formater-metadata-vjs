@@ -50,7 +50,7 @@
        <div class="mtdt-expand">
             <ul class="mtdt-layers">
             <li v-for="(layer, index) in layers" :key="index" @click="changeLayer(layer);">
-             <i class="fa fa-square-o"   :data-layer="index"></i>
+             <i class="fa" :class="{'fa-square-o': !layer.checked,'fa-check-square-o': layer.checked}"  :data-layer="index"></i>
              <div  :title="layer.description">{{layer.name}}</div>
            </li>
            </ul>   
@@ -120,13 +120,6 @@
         default: null
       }
     },
-    mounted () {
-      console.log(this.id)
-      console.log('DOWNLOAD = ', this.download)
-      console.log('LAYERS = ', this.layers)
-      console.log('RELATED = ', this.related)
-      console.log(this.related && (this.related.children || this.related.parent))
-    },
     computed: {
       primary() {
         return this.$store.state.style.primary
@@ -142,11 +135,11 @@
     },
     methods: {
       changeLayer (layer) {
-         console.log(layer.id)
         // console.log(index)
          // this.$set(this.meta.layers[index], 'checked', !this.meta.layers[index].checked)
          this.$set(layer, 'checked', !layer.checked)
            //   this.meta.layers[index].checked = !this.meta.layers[index].checked
+
          if (layer.checked) {
            var event = new CustomEvent('fmt:addLayerEvent', {detail: {layer: layer, id: this.id}})
            document.dispatchEvent(event)
@@ -160,7 +153,7 @@
              self.layerAdded = self.layerAdded || layer.checked
            })
          }
-         this.updateClass()
+         // this.updateClass()
        },
        handleOver (e) {
          e.target.style.color = this.$store.state.style.over
@@ -175,23 +168,6 @@
          this.$http.get(url, {credentials: true}).then(
            response => {console.log(response);}
          )
-       },
-       updateClass() {
-         var node = this.$el.querySelector('.mtdt-layers')
-         if (!node) {
-           return
-         }
-         var nodes = node.querySelectorAll('i')
-         var self = this
-         nodes.forEach( function (node) {
-           var index = node.dataset.layer
-           if (self.layers[index].checked) {
-             node.className = 'fa fa-check-square-o'
-           } else {
-             node.className = 'fa fa-square-o'
-           }
-         })
-         
        },
        fixBbox (e) {
          e.target.fixed = true
