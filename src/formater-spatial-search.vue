@@ -84,7 +84,6 @@ export default {
     this.drawCloseListener = null
   },
   created: function () {
-    this.$i18n.locale = this.lang;
     this.resetEventListener = this.handleReset.bind(this) 
     document.addEventListener('aerisResetEvent', this.resetEventListener);
     this.searchEventListener = this.handleSearch.bind(this) 

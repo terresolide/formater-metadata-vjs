@@ -37,6 +37,7 @@ export default {
       dimensionChangedListener: null,
       textChangedListener: null,
       selectChangedListener: null,
+      closeMetadataListener: null,
       // listen a global reset event
       resetListener: null,
       facet: [],
@@ -61,6 +62,8 @@ export default {
     document.addEventListener('fmt:selectChangeEvent', this.selectChangedListener)
      this.metadataWithChildListener = this.getRecords.bind(this)
     document.addEventListener('fmt:metadataWithChildEvent', this.metadataWithChildListener)
+//     this.closeMetadataListener = this.getRecords.bind(this)
+//     document.addEventListener('fmt:closeMetadataEvent', this.closeMetadataListener)
     this.resetListener = this.handleReset.bind(this);
      document.addEventListener('fmt:resetEvent', this.resetListener);
   },
@@ -79,6 +82,8 @@ export default {
     this.selectChangedListener = null
     document.removeEventListener('fmt:metadataWithChildEvent', this.metadataWithChildListener)
     this.metadataWithChildListener = null
+//     document.addEventListener('fmt:closeMetadataEvent', this.closeMetadataListener)
+//     this.closeMetadataListener = null
     document.addEventListener('fmt:resetEvent', this.resetListener);
     this.resetListener = null
   },

@@ -161,7 +161,6 @@ export default {
         var type = null
         this.$store.commit('temporalChange', this.temporalExtent)
       }
-      console.log('DANS CATALOGUE type = ', type)
       this.$store.commit('currentUuidChange', this.currentUuid)
       this.$store.commit('parametersChange', {parameters: parameters, mapping: mapping, type: type})
       var event = new CustomEvent('fmt:closeMetadataEvent', {detail:  {depth: this.metadatas.length }})

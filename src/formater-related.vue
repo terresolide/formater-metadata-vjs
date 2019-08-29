@@ -247,7 +247,7 @@
 }
 .mtdt-related-metadata .mtdt-expand{
   display: inline-block;
-  margin: 20px 10px 30px 10px;
+  margin: 20px 10px 30px 20px;
   text-align:left;
 }
 .mtdt-related-metadata .mtdt-links.mtdt-expand{
@@ -298,10 +298,7 @@
   margin:  0;
 
 }
-.mtdt-related-metadata .mtdt-expand ul li{
-    display: inline-block;
-  min-width:51%;
-}
+
  .mtdt-related ul.mtdt-layers{
   list-style-type: none;
   margin-left:0px;
@@ -313,6 +310,9 @@
 }
  .mtdt-related ul.mtdt-layers li {
   vertical-align:text-top;
+  min-width:51%;
+  max-width:100%;
+  
 }
 .mtdt-related ul.mtdt-layers li div{
    display: inline-block;

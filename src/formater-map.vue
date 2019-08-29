@@ -309,7 +309,7 @@ export default {
         
      }
      this.$store.commit('searchAreaChange', bounds)
-     // this.$emit('boundsChange', bounds)
+
      this.unselectBbox()
      if (this.depth > event.detail.depth) {
         if (this.bboxLayer[this.depth]) {

@@ -237,8 +237,6 @@ export default {
           this.metadata.disableType = 'noChild'
           this.$store.commit('parametersChange', {parameters: [], mapping:[], type: 'noChild'})
         }
-        console.log('disable = ', this.$store.state.disable)
-        console.log('int value = ', +this.$store.state.disable.temporal)
       },
       fillMetadata () {
          //get meta from other language if meta._locale != meta.docLocale
