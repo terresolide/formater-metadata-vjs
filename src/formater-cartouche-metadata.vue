@@ -46,7 +46,7 @@
               <img :src="meta.logo"  />
           </a>
        </div>
-       <formater-related type="cartouche" :id="meta.id" :download="meta.download" :has-bbox-layer="hasBboxLayer" :layers="meta.layers" :links="meta.links"></formater-related>
+       <formater-related type="cartouche" :id="meta.id" :download="meta.download" :has-bbox-layer="hasBboxLayer" :layers="meta.layers"  :links="meta.links"></formater-related>
      </div>
  </div>
 </template>
@@ -100,6 +100,10 @@ export default {
 
    moment.locale(this.$i18n.locale)
    this.meta = this.metadata
+   if (!this.meta.treatment) {
+     this.meta.treatment = {}
+   }
+   this.meta.treatment.layerAdded = false
    if (this.meta.geoBox  || this.meta.id) {
      this.hasBboxLayer = true
    }

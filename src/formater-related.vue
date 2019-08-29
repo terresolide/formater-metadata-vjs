@@ -126,13 +126,16 @@
       },
       emphasis() {
         return this.$store.state.style.emphasis
+      },
+      layerAdded () {
+        var layerAdded = false
+        this.layers.forEach(function (layer) {
+          layerAdded = layerAdded || layer.checked
+        })
+        return layerAdded
       }
     },
-    data () {
-      return {
-        layerAdded: false
-      }
-    },
+
     methods: {
       changeLayer (layer) {
         // console.log(index)
@@ -147,8 +150,7 @@
          } else {
            var event = new CustomEvent('fmt:removeLayerEvent', {detail: {id: layer.id}})
            document.dispatchEvent(event)
-           var self = this
-           self.layerAdded = false
+           
            this.layers.forEach(function (layer) {
              self.layerAdded = self.layerAdded || layer.checked
            })
@@ -246,8 +248,7 @@
   opacity:1;
 }
 .mtdt-related-metadata .mtdt-expand{
-  display: inline-block;
-  margin: 20px 10px 30px 20px;
+  margin: 20px 10px 30px 10px;
   text-align:left;
 }
 .mtdt-related-metadata .mtdt-links.mtdt-expand{
@@ -286,19 +287,32 @@
  
   .mtdt-related .mtdt-expand ul {
   padding:0;
-  list-style-position: outside;
+  list-style: none;
   margin:  5px 3px 5px 9px;
 
 }
 .mtdt-related-metadata .mtdt-expand ul {
   display:inline;
 }
- .mtdt-related .mtdt-expand ul li {
-  padding: 0px;
+ .mtdt-related-metadata .mtdt-expand ul li {
+ word-break: break-word;
+  padding: 2px;
   margin:  0;
-
+ 
+}
+.mtdt-related-metadata .mtdt-expand ul:not(.mtdt-layers)  li:before{
+content: "\2192";
+padding: 0 5px;
+display: table-cell;
+font-size: 1.1em;
 }
 
+.mtdt-related-metadata .mtdt-expand ul:not(.mtdt-layers)  li a,
+.mtdt-related-metadata .mtdt-expand ul:not(.mtdt-layers)  li div{
+
+display: table-cell;
+max-width:90%;
+}
  .mtdt-related ul.mtdt-layers{
   list-style-type: none;
   margin-left:0px;
@@ -316,7 +330,7 @@
 }
 .mtdt-related ul.mtdt-layers li div{
    display: inline-block;
-   max-width:90%;
+   max-width:85%;
    vertical-align:top;
 }
  .mtdt-related-cartouche ul.mtdt-layers li div{

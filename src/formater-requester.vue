@@ -313,6 +313,10 @@ export default {
       if (properties.completionDate) {
         properties.renameProperty('completionDate', 'tempExtentEnd')
       }
+      if (properties.quicklook) {
+        properties.images = [['', properties.quicklook, '']]
+      }
+      
       properties.osParameters = []
       properties.mapping = []
       if (properties.services) {
