@@ -27,6 +27,11 @@ export default function makeStore( config ) {
         min: "1920-12-01",
         max: "now"
       },
+      disable: {
+        temporal: false,
+        spatial: false,
+        searchTerm: false
+      },
       // default map bounds
       spatialExtent: [[-60,-120],[75,130]],
       // search area 
@@ -75,6 +80,28 @@ export default function makeStore( config ) {
       parametersChange(state, newParameters) {
         state.parameters.others = newParameters.parameters
         state.parameters.mapping = newParameters.mapping
+        switch(newParameters.type) {
+        case 'noChild':
+          state.disable = {temporal: true, spatial: true, searchTerm: true}
+          break;
+        case 'opensearch':
+          // according to mapping element
+          var disable = {temporal: true, spatial: true, searchTerm: true}
+          if (state.parameters.mapping['any']) {
+            disable.searchTerm = false
+          }
+          if (state.parameters.mapping['start'] && state.parameters.mapping['end']) {
+            disable.temporal = false
+          }
+          if (state.parameters.mapping['box']) {
+            disable.spatial = false
+          }
+          state.disable = disable
+          break;
+        case 'geonetwork':
+        default:
+          state.disable = {temporal: false, spatial: false, searchTerm: false}
+        }
       },
       sizeChange(state) {
         var width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;

@@ -136,12 +136,12 @@ export default {
      metaLang2: {},
      popstateListener: null,
      keydownListener: null,
-
      describe: null,
      type: 'geonetwork'
     }
   },
   created () {
+
     moment.locale(this.$i18n.locale)
     if (this.metadata['geonet:info']) {
        this.uuid = this.metadata['geonet:info'].uuid
@@ -220,17 +220,25 @@ export default {
       setParameters(osParameters) {
         this.metadata.osParameters = osParameters.parameters
         this.metadata.mapping = osParameters.mapping
-        this.setHasChild(true)
+         this.setHasChild(true)
       },
       setHasChild(value) {
+        console.log('type = ', this.type)
         this.hasChild = value
         this.$set(this.tabs, 'search', value)
         if (value) {
           this.currentTab = 'search'
+          var type = this.describe ? 'opensearch' : 'geonetwork'
+          this.metadata.disableType = type
+          this.$store.commit('parametersChange', {parameters:this.metadata.osParameters, mapping: this.metadata.mapping, type: type})
+            
           this.getRecords()
         } else {
-          this.$store.commit('parametersChange', {parameters: [], mapping:[]})
+          this.metadata.disableType = 'noChild'
+          this.$store.commit('parametersChange', {parameters: [], mapping:[], type: 'noChild'})
         }
+        console.log('disable = ', this.$store.state.disable)
+        console.log('int value = ', +this.$store.state.disable.temporal)
       },
       fillMetadata () {
          //get meta from other language if meta._locale != meta.docLocale

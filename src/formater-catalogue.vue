@@ -138,7 +138,7 @@ export default {
       if (this.metadatas.length > 0) {
         var metadata = this.metadatas[this.metadatas.length -1]
         this.currentUuid = metadata.id
-        
+        var type = metadata.disableType
         var parameters = metadata.osParameters
         var mapping = metadata.mapping
         var min = null
@@ -158,10 +158,12 @@ export default {
         this.currentUuid = null
         var parameters = []
         var mapping = []
+        var type = null
         this.$store.commit('temporalChange', this.temporalExtent)
       }
+      console.log('DANS CATALOGUE type = ', type)
       this.$store.commit('currentUuidChange', this.currentUuid)
-      this.$store.commit('parametersChange', {parameters: parameters, mapping: mapping})
+      this.$store.commit('parametersChange', {parameters: parameters, mapping: mapping, type: type})
       var event = new CustomEvent('fmt:closeMetadataEvent', {detail:  {depth: this.metadatas.length }})
       document.dispatchEvent(event)
     },

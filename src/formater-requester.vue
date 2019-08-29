@@ -352,8 +352,6 @@ export default {
             }
           }
         }
-        
-        console.log(properties.links)
       }
       return properties
     },
@@ -416,7 +414,6 @@ export default {
           break;
         }
       })
-      console.log(meta.links)
       return meta;
     },
     extractBboxGeonetwork(bbox, id) {

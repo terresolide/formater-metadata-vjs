@@ -25,22 +25,22 @@
  <div class="mtdt-form">
   <div style="text-align:center;margin: 10px 0 30px 0;"><input id="globalReset" type="button" @click="reset" :value="$t('reset')"/></div>
   <div class="formater-input-group" style="margin:10px; width:calc(100% - 20px);">
-     <input id="any" name="any" v-model="fulltextSearch" :placeholder="$t('search')" @change="changeText" @keypress="changeTextOnEnter" /><i class="fa fa-search"></i>
+     <input id="any" name="any" v-model="fulltextSearch" :placeholder="$t('search')" @change="changeText" @keypress="changeTextOnEnter"  :disable="+ $store.state.disable.searchTerm"/><i class="fa fa-search"></i>
  </div>
  <formater-map></formater-map>
- <formater-search-box header-icon-class="fa fa-globe" open-icon-class="fa fa-caret-right" :title="$t('spatial_extend')" :deployed="false" type="empty">
- <formater-spatial-search ></formater-spatial-search>
+ <formater-search-box header-icon-class="fa fa-globe" open-icon-class="fa fa-caret-right" :title="$t('spatial_extend')" :deployed="false" type="empty" :disable-level="+ $store.state.disable.spatial">
+ <formater-spatial-search :disable="$store.state.disable.spatial"></formater-spatial-search>
  </formater-search-box>
  
-<formater-search-box header-icon-class="fa fa-calendar" open-icon-class="fa fa-caret-right" :title="$t('time_slot')" :deployed="true" type="empty">
-  <formater-temporal-search :lang="$i18n.locale" :daymin="$store.state.temporalExtent.min" :daymax="$store.state.temporalExtent.max"></formater-temporal-search>
+<formater-search-box header-icon-class="fa fa-calendar" open-icon-class="fa fa-caret-right" :title="$t('time_slot')" :deployed="true" type="empty" :disable-level="+ $store.state.disable.temporal">
+  <formater-temporal-search :lang="$i18n.locale" :daymin="$store.state.temporalExtent.min" :daymax="$store.state.temporalExtent.max" :disable="$store.state.disable.temporal"></formater-temporal-search>
 </formater-search-box>
 
 <formater-search-box header-icon-class="fa fa-thermometer-3" v-if="$store.state.parameters.others.length > 0" open-icon-class="fa fa-caret-right" :title="$t('parameters')" :deployed="true" type="empty">
  <formater-parameters-form :parameters="$store.state.parameters.others" ></formater-parameters-form>
  </formater-search-box>
  
-<formater-search-box v-if="dimension.category" :header-icon-class="facetToIcon(index)" open-icon-class="fa fa-caret-right" :disableLevel="disableLevel" :title="titleDimension(index)" type="empty" v-for="(dimension, index) in dimensions" :key="index">
+<formater-search-box v-if="dimension.category" :header-icon-class="facetToIcon(index)" open-icon-class="fa fa-caret-right" :disable-level="disableLevel" :title="titleDimension(index)" type="empty" v-for="(dimension, index) in dimensions" :key="index">
   <formater-dimension-block v-if="!isFacet(index)"   :dimension="dimension.category" :name="dimensions[index]['@name']" :disable="disableLevel > 0"></formater-dimension-block>
   <formater-facet-block v-if="isFacet(index)"   :dimension="dimension.category" :name="dimensions[index]['@name']" :disable="disableLevel > 0"></formater-facet-block>
  </formater-search-box>
@@ -97,7 +97,7 @@ export default {
       aerisSearchListener: null,
       aerisResetListener: null,
       metadataListListener: null,
-      closeMetadataListener: null
+      closeMetadataListener: null,
     }
   },
 

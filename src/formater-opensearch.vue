@@ -149,7 +149,7 @@ export default {
         
       }
       this.$emit('parametersChange', {parameters:this.osParameters, mapping: this.mappingParameters})
-      this.$store.commit('parametersChange', {parameters:this.osParameters, mapping: this.mappingParameters})
+      
     },
     handleSearch(e) {
       if (this.api && e.detail.parentUuid === this.uuid) {
