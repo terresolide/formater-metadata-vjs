@@ -24,8 +24,8 @@
 <template>
  <div class="mtdt-form">
   <div style="text-align:center;margin: 10px 0 30px 0;"><input id="globalReset" type="button" @click="reset" :value="$t('reset')"/></div>
-  <div class="formater-input-group" style="margin:10px; width:calc(100% - 20px);">
-     <input id="any" name="any" v-model="fulltextSearch" :placeholder="$t('search')" @change="changeText" @keypress="changeTextOnEnter"  :disable="+ $store.state.disable.searchTerm"/><i class="fa fa-search"></i>
+  <div class="formater-input-group" :class="{disable: $store.state.disable.searchTerm}" style="margin:10px; width:calc(100% - 20px);">
+     <input id="any" name="any" v-model="fulltextSearch" :placeholder="$t('search')" @change="changeText" @keypress="changeTextOnEnter"  /><i class="fa fa-search"></i>
  </div>
  <formater-map></formater-map>
  <formater-search-box header-icon-class="fa fa-globe" open-icon-class="fa fa-caret-right" :title="$t('spatial_extend')" :deployed="false" type="empty" :disable-level="+ $store.state.disable.spatial">
@@ -264,6 +264,11 @@ export default {
    background: #f8ebda;
     /* background: #e3dbd0;*/
     margin: 0 0 10px 0;
+}
+.mtdt-form .formater-input-group.disable{
+   opacity: 0.8;
+   pointer-events: none;
+   
 }
 .mtdt-form .formater-search-box{
   margin: 5px 0;

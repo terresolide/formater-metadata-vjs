@@ -24,7 +24,7 @@
 }
 </i18n>
 <template>
-<span class="formater-spatial-search">
+<span class="formater-spatial-search" :class="{disable:$store.state.disable.spatial}">
      <div class="box-toolbar" style="background: none;">
       <button class="spatial-edit-button" :title="$t('draw')" @click="handleDraw"><i class="fa fa-pencil-square-o"></i></button>
       <button class="spatial-reset-button" :title="$t('reset')" @click="handleResetLocal"><i class="fa fa-remove"></i></button>
@@ -56,10 +56,6 @@
 <script>
 export default {
   props:{
-    lang: {
-      type:String,
-      default:'fr'
-    }
   },
   data(){
     return {
@@ -226,6 +222,10 @@ export default {
 }
 </script>
 <style>
+.formater-spatial-search.disable{
+  pointer-events: none;
+  opacity: 0.8;
+}
 .formater-spatial-search .formater-input-group {
     border: none;
     display:inline-block;

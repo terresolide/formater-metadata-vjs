@@ -8,7 +8,7 @@
 }
 </i18n>
 <template>
- <div class="mtdt-draw-bbox"  v-show="drawing">
+ <div class="mtdt-draw-bbox"  v-show="drawing && !$store.state.disable.spatial">
  <div class="mtdt-header" >
        <span class="close fa fa-close" @click="drawEnd" ></span>
      <h3  @mousedown="movestart" style="padding:10px;margin:0;">{{$t('draw_bbox')}}</h3>
