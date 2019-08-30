@@ -54,7 +54,7 @@
             <formater-quicklooks :quicklooks="meta.images"></formater-quicklooks>
             <span v-html="meta.description"></span>
           </div>
-
+          <formater-metadata-content :metadata="meta"></formater-metadata-content>
           <div style="clear:both;" >
               <formater-list-contact   :responsible-party="meta.responsibleParty" :responsible-party2="metaLang2.responsibleParty"></formater-list-contact>
          </div>
@@ -91,6 +91,7 @@ import moment from 'moment';
 const FormaterOpensearch = () => import('./formater-opensearch.vue')
 const FormaterFullMetadata = () => import('./formater-full-metadata.vue')
 import FormaterRelated from './formater-related.vue';
+import FormaterMetadataContent from './formater-metadata-content.vue'
 // import { extendMoment } from 'moment-range';
 // window.momentCst = extendMoment(moment);
 
@@ -104,7 +105,8 @@ export default {
     FormaterListMetadata,
     FormaterOpensearch,
     FormaterRelated,
-    FormaterFullMetadata
+    FormaterFullMetadata,
+    FormaterMetadataContent
   },
   props: {
     metadata: {
