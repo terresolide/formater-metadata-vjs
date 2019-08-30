@@ -108,7 +108,8 @@ export default {
           //  resultType: 'subtemplate',
           // resultType: 'details',
           sortBy: 'title',
-          sortOrder: 'reverse'
+          sortOrder: 'reverse',
+          type:'dataset+or+series+or+publication'
          }
         break;
         
@@ -184,7 +185,7 @@ export default {
       if (this.depth > 0) {
         // voir plutôt les key à éliminer centre de données, variable, instruments, gemet, types?
         for(var key in e.detail) {
-          if (['any', 'geometry', 'extTo', 'extFrom', 'from', 'to', 'parentUuid'].indexOf(key) >=0){
+          if (['any', 'geometry', 'extTo', 'extFrom', 'from', 'to', 'parentUuid', 'type'].indexOf(key) >=0){
             this.parameters[key] = e.detail[key]
           }
         }

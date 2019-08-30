@@ -3,13 +3,15 @@
      "main": "Decription",
      "complement": "Others informations",
      "temporal_extent": "Temporal extent",
-     "search": "Search"
+     "search": "Search",
+     "full": "Complete"
    },
    "fr":{
       "main": "Decription",
        "complement": "Informations complémentaires",
       "temporal_extent": "Etendue temporelle",
-      "search": "Rechercher"
+      "search": "Rechercher",
+      "full": "Complète"
       
    }
 }
@@ -70,12 +72,10 @@
       </div>
       </div>
 
-      <div v-if="currentTab === 'complement'" >
-             <formater-list-contact   :responsible-party="meta.responsibleParty" :responsible-party2="metaLang2.responsibleParty"></formater-list-contact>
+      <div v-show="currentTab === 'full'" >
+             <formater-full-metadata :uuid="uuid"></formater-full-metadata>
       </div>
-       <div v-if="currentTab === 'quality'" >
-             <formater-list-contact   :responsible-party="meta.responsibleParty" :responsible-party2="metaLang2.responsibleParty"></formater-list-contact>
-      </div>
+      
    
    </div>
  </div>
@@ -88,6 +88,7 @@ const FormaterPaging = () => import('./formater-paging.vue')
 const FormaterListMetadata = () => import('./formater-list-metadata.vue')
 import moment from 'moment';
 const FormaterOpensearch = () => import('./formater-opensearch.vue')
+const FormaterFullMetadata = () => import('./formater-full-metadata.vue')
 import FormaterRelated from './formater-related.vue';
 // import { extendMoment } from 'moment-range';
 // window.momentCst = extendMoment(moment);
@@ -101,7 +102,8 @@ export default {
     FormaterPaging,
     FormaterListMetadata,
     FormaterOpensearch,
-    FormaterRelated
+    FormaterRelated,
+    FormaterFullMetadata
   },
   props: {
     metadata: {
@@ -126,8 +128,7 @@ export default {
      tabs: {
        search: false,
        main: true,
-       complement: false,
-       quality: false
+       full: false
      },
      uuid: null,
      currentTab: 'main',
@@ -145,8 +146,10 @@ export default {
     moment.locale(this.$i18n.locale)
     if (this.metadata['geonet:info']) {
        this.uuid = this.metadata['geonet:info'].uuid
+       this.tabs.full = true
     } else {
        this.uuid = this.metadata.id
+       this.type = 'opensearch'
     }
     this.popstateListener = this.close.bind(this)
     document.addEventListener('popstate', this.popstateListener)

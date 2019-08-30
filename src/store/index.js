@@ -8,6 +8,7 @@ export default function makeStore( config ) {
   var defaultConfig = {
       currentUuid: null,
       geonetwork: null,
+      apiVersion: '0.1',
       style: 
       {
         primary:"#754a15",
