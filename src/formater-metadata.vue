@@ -54,7 +54,11 @@
             <formater-quicklooks :quicklooks="meta.images"></formater-quicklooks>
             <span v-html="meta.description"></span>
           </div>
-          <div class="mtdt-temporalExtent" style="clear:both;" v-if="meta.tempExtentBegin">
+
+          <div style="clear:both;" >
+              <formater-list-contact   :responsible-party="meta.responsibleParty" :responsible-party2="metaLang2.responsibleParty"></formater-list-contact>
+         </div>
+         <div class="mtdt-temporalExtent" style="clear:both;" v-if="meta.tempExtentBegin">
             <h2 :style="{color:$store.state.style.primary}"><i class="fa fa-clock-o"></i>{{$t('temporal_extent')}}</h2>
              <div>
                 {{date2str(meta.tempExtentBegin)}}
@@ -62,9 +66,6 @@
                 {{date2str(meta.tempExtentEnd)}}
             </div>
           </div>
-          <div >
-              <formater-list-contact   :responsible-party="meta.responsibleParty" :responsible-party2="metaLang2.responsibleParty"></formater-list-contact>
-         </div>
         </div>
               <div class="mtdt-column-right">
         <formater-related type="metadata" :download="meta.download" :id="meta.id"
@@ -327,12 +328,16 @@ export default {
 }
 .mtdt-metadata h2 {
 
-  font-size: 1.2rem;
-  margin-bottom:0;
+  font-size: 1.1rem;
+  margin: 20px 0 0 0;
 }
 .mtdt-metadata h1{
   font-size:1.5rem;
 }
+.mtdt-metadata h3,
+.mtdt-metadata h4{
+  font-size: 1rem;
+  }
 .mtdt-metadata div.mtdt-tab,
 .mtdt-metadata .mtdt-tab-export{
   display:inline-block;

@@ -121,10 +121,10 @@ export default {
       this.$store.commit('currentUuidChange', this.currentUuid)
       var min = null
       var max = null
-      if (event.detail.meta.tempExtentBegin) {
+      if (typeof event.detail.meta.tempExtentBegin === 'string') {
         min = event.detail.meta.tempExtentBegin.substring(0, 10)
       }
-      if (event.detail.meta.tempExtentEnd) {
+      if (typeof event.detail.meta.tempExtentEnd === 'string') {
         max = event.detail.meta.tempExtentEnd.substring(0, 10)
       }
       var temp = {

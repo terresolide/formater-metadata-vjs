@@ -11,8 +11,7 @@
 }
 </i18n>
 <template>
- <div class="mtdt-list-contact" v-if="responsibleParty || responsibleParty2">
-    
+ <div class="mtdt-list-contact" v-if="responsibleParty || responsibleParty2" >
 
       <div class="mtdt-contacts" v-if="contacts.resource">
 	        <h2 :style="{color:$store.state.style.primary}"><i class="fa fa-users"></i>{{$tc('resource_contact', Object.keys(contacts.resource).length)}}</h2>
@@ -30,7 +29,8 @@
 		        <formater-contact  v-for="(item, index) in fonction" :key="index" :contact="item" ></formater-contact>
 	        </div>  
 	       </div>
-	    </div>
+	   <div style="clear:both;"></div>
+ </div>
 
 </template>
 <script>
@@ -107,7 +107,10 @@ export default {
 <style>
 
 .mtdt-metadata .fmt-contacts h3{
-    margin-bottom:0;
+    margin:0 0 8px 0;
+}
+.mtdt-metadata div.mtdt-contacts > div{
+  margin-left:30px;
 }
 
 </style>
