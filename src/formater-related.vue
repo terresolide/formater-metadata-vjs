@@ -146,14 +146,14 @@
          if (layer.checked) {
            var event = new CustomEvent('fmt:addLayerEvent', {detail: {layer: layer, id: this.id}})
            document.dispatchEvent(event)
-           this.layerAdded = true
+           // this.layerAdded = true
          } else {
            var event = new CustomEvent('fmt:removeLayerEvent', {detail: {id: layer.id}})
            document.dispatchEvent(event)
            
-           this.layers.forEach(function (layer) {
-             self.layerAdded = self.layerAdded || layer.checked
-           })
+//            this.layers.forEach(function (layer) {
+//              self.layerAdded = self.layerAdded || layer.checked
+//            })
          }
          // this.updateClass()
        },
