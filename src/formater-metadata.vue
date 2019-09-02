@@ -22,10 +22,10 @@
    <span class="mtdt-metadata-close fa fa-close" @click="close"></span>
    <div v-if="meta">
       <h1 class="mtdt-metadata-header" :style="{color:$store.state.style.primary}">
-           <a v-if="meta.groupWebsite" :href="meta.groupWebsite" :title="$gn('group-'+ meta.groupOwner)" starget="_blank" class="mtdt-group-logo">
+           <a v-if="meta.groupWebsite" :href="meta.groupWebsite" :title="$gn.t('group-'+ meta.groupOwner)" starget="_blank" class="mtdt-group-logo">
              <img :src="meta.logo"/>
           </a>
-          <a v-else href="#" :alt="$gn('group-'+ meta.groupOwner)" :title="$gn('group-'+ meta.groupOwner)" class="mtdt-group-logo">
+          <a v-else href="#" :alt="$gn.t('group-'+ meta.groupOwner)" :title="$gn.t('group-'+ meta.groupOwner)" class="mtdt-group-logo">
               <img :src="meta.logo"  />
           </a>
           <i  class="fa" :class="meta.type === 'series' ? 'fa-files-o' : 'fa-file'"  v-if="['dataset','series'].indexOf(meta.type) >= 0"></i>
@@ -50,22 +50,13 @@
       <!--  others tab -->
       <div v-if="currentTab === 'main'" style="margin-top:20px;">
         <div class="mtdt-column-left">
-          <div class="mtdt-description">
+          <div class="mtdt-description" style="display:block;">
             <formater-quicklooks :quicklooks="meta.images"></formater-quicklooks>
             <span v-html="meta.description"></span>
           </div>
           <formater-metadata-content :metadata="meta"></formater-metadata-content>
-          <div style="clear:both;" >
-              <formater-list-contact   :responsible-party="meta.responsibleParty" :responsible-party2="metaLang2.responsibleParty"></formater-list-contact>
-         </div>
-         <div class="mtdt-temporalExtent" style="clear:both;" v-if="meta.tempExtentBegin">
-            <h2 :style="{color:$store.state.style.primary}"><i class="fa fa-clock-o"></i>{{$t('temporal_extent')}}</h2>
-             <div>
-                {{date2str(meta.tempExtentBegin)}}
-                <i class="fa fa-long-arrow-right" ></i>
-                {{date2str(meta.tempExtentEnd)}}
-            </div>
-          </div>
+
+
         </div>
               <div class="mtdt-column-right">
         <formater-related type="metadata" :download="meta.download" :id="meta.id"
@@ -82,23 +73,21 @@
  </div>
 </template>
 <script>
-import FormaterListContact from './formater-list-contact.vue'
+
 import FormaterQuicklooks from './formater-quicklooks.vue'
 import FormaterExportLinks from './formater-export-links.vue'
 const FormaterPaging = () => import('./formater-paging.vue')
 const FormaterListMetadata = () => import('./formater-list-metadata.vue')
-import moment from 'moment';
+
 const FormaterOpensearch = () => import('./formater-opensearch.vue')
 const FormaterFullMetadata = () => import('./formater-full-metadata.vue')
 import FormaterRelated from './formater-related.vue';
 import FormaterMetadataContent from './formater-metadata-content.vue'
-// import { extendMoment } from 'moment-range';
-// window.momentCst = extendMoment(moment);
+
 
 export default {
   name: 'FormaterMetadata',
   components: {
-    FormaterListContact,
     FormaterQuicklooks,
     FormaterExportLinks,
     FormaterPaging,
@@ -145,7 +134,7 @@ export default {
     }
   },
   created () {
-
+    console.log(this.metadata.contacts)
     moment.locale(this.$i18n.locale)
     if (this.metadata['geonet:info']) {
        this.uuid = this.metadata['geonet:info'].uuid
@@ -188,10 +177,7 @@ export default {
     this.keydownListener = this.checkEscape.bind(this)
   },
   methods: {
-      date2str (date) {
-        //return 'hello';
-        return moment(date, 'YYYY-MM-DD').format('ll')
-      },
+
       checkEscape (event) {
         var event = event || window.event
         var isEscape = false;

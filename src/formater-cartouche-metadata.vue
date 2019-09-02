@@ -18,7 +18,7 @@
 <template>
  <div class="mtdt-cartouche-metadata mtdt-capsule" :class="{'mtdt-child': depth > 0}" :style="{width: width + 'px'}">
      <div class="mtdt-header" @click="displayMetadata" @dblclick="displayMetadata" :style="{backgroundColor: emphasis}">
-        <i class="fa" :class="meta.type === 'series' ? 'fa-files-o' : 'fa-file'" v-if="['dataset','series'].indexOf(meta.type) >= 0" :title="$gn(meta.type)"></i>
+        <i class="fa" :class="meta.type === 'series' ? 'fa-files-o' : 'fa-file'" v-if="['dataset','series'].indexOf(meta.type) >= 0" :title="$gn.t(meta.type)"></i>
         <div>{{meta.title ? meta.title: meta.defaultTitle}}</div>
      </div>
      <div class="mtdt-description">
@@ -39,10 +39,10 @@
      </div>
      <div class="mtdt-footer"  v-if="">
        <div class="mtdt-group" v-if="depth === 0">
-         <a v-if="meta.groupWebsite" :href="meta.groupWebsite" :title="$gn('group-'+ meta.groupOwner)" target="_blank" class="mtdt-group-logo">
+         <a v-if="meta.groupWebsite" :href="meta.groupWebsite" :title="$gn.t('group-'+ meta.groupOwner)" target="_blank" class="mtdt-group-logo">
              <img :src="meta.logo"/>
           </a>
-          <a v-else href="#" :alt="$gn('group-'+ meta.groupOwner)" :title="$gn('group-'+ meta.groupOwner)" class="mtdt-group-logo">
+          <a v-else href="#" :alt="$gn.t('group-'+ meta.groupOwner)" :title="$gn.t('group-'+ meta.groupOwner)" class="mtdt-group-logo">
               <img :src="meta.logo"  />
           </a>
        </div>

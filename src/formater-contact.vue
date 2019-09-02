@@ -43,8 +43,9 @@ export default {
   },
   methods: {
     extractAddress() {
-      this.address = this.fields[7].split(',')
-      
+      if (this.fields[7]) {
+        this.address = this.fields[7].split(',')
+      }
     }
 
   }

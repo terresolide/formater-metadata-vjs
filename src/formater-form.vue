@@ -102,8 +102,6 @@ export default {
   },
 
   created () {
-   // this.$i18n.locale = this.lang
-    this.$setGnLocale(this.$i18n.locale)
     this.aerisSearchListener = this.handleSearch.bind(this)
     document.addEventListener('aerisSearchEvent', this.aerisSearchListener)
     this.aerisResetListener = this.handleReset.bind(this)

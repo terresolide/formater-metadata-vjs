@@ -80,7 +80,8 @@ export default {
   created () {
     this.initTemporalExtent()
    // this.$i18n.locale = this.lang
-    this.$setGnLocale(this.$i18n.locale)
+   console.log(this.$gn)
+    this.$gn.init(this.$i18n.locale, this.$store.state.geonetwork, this.$http)
     this.metadataListener = this.receiveMetadata.bind(this)
     document.addEventListener('fmt:metadataEvent', this.metadataListener);
     this.aerisSearchListener = this.handleSearch.bind(this)

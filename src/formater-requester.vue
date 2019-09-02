@@ -46,7 +46,7 @@ export default {
   },
   created () {
     this.srv = this.$store.state.geonetwork +  'srv/' + (this.$i18n.locale === 'fr'? 'fre' : 'eng') + '/'
-    this.$setGnLocale(this.$i18n.locale)
+
     // this.getRecords() done when <formater-paging> is mounted with its pageChangeEvent on order control change
     this.pageChangedListener = this.changePage.bind(this)
     document.addEventListener('fmt:pageChangedEvent', this.pageChangedListener);
@@ -306,6 +306,25 @@ export default {
       this.fill(data, depth);
       // this.searchRelated()
     },
+    updateGeonetworkContacts (data) {
+      data.responsibleParty.forEach( function (contact)  {
+          var fields = contact.split('|');
+          if (fields[1] === 'metadata' || fields[1] === 'metadonnées') {
+           if (_this.contacts.metadata[fields[0]]){
+             _this.contacts.metadata[fields[0]].push(fields)
+           } else {
+             _this.contacts.metadata[fields[0]] = [fields]
+           }
+          }else{
+            if (_this.contacts.resource[fields[0]]){
+                 _this.contacts.resource[fields[0]].push(fields)
+               } else {
+                 _this.contacts.resource[fields[0]] = [fields]
+               }
+          }
+                
+      })
+    },
     mapToGeonetwork (properties) {
       var properties = Object.assign({}, properties)
       if (properties.startDate) {
@@ -363,6 +382,18 @@ export default {
           }
         }
       }
+      if (!properties.contacts) {
+        properties.contacts = {metadata: {}, resource: {}}
+        if (properties.organisationName) {
+          if (typeof properties.organisationName === 'string') {
+            var responsible = new Array(10)
+            responsible[0] = 'Point of contact'
+            responsible[2] = properties.organisationName
+            properties.contacts.metadata['Point of contact'] = [responsible]
+            delete properties.organisationName
+          }
+        }
+      }
       return properties
     },
     treatmentSingleGeonetwork (meta, uuid) {
@@ -382,17 +413,42 @@ export default {
       meta.osParameters = []
       meta.mapping = []
       if (meta.image) {
-          meta.images =  this.$gnToArray(meta.image)
+          meta.images =  this.$gn.strToArray(meta.image)
           meta.images.forEach( function (image, index) {
             if(image[0] === 'thumbnail') {
               meta.thumbnail = image[1]
             }
           })
       }
+      
+      // contacts
+      var contacts = {metadata: {}, resource: {}}
+      if (meta.responsibleParty) {
+	       meta.responsibleParty.forEach( function (contact)  {
+	          var fields = contact.split('|');
+	          if (fields[1] === 'metadata' || fields[1] === 'metadonnées') {
+	           if (contacts.metadata[fields[0]]){
+	             contacts.metadata[fields[0]].push(fields)
+	           } else {
+	             contacts.metadata[fields[0]] = [fields]
+	           }
+	          }else{
+	            if (contacts.resource[fields[0]]){
+	               contacts.resource[fields[0]].push(fields)
+	            } else {
+	               contacts.resource[fields[0]] = [fields]
+	            }
+	          }
+	      })
+      }
+      delete meta.responsibleParty
+      meta.contacts = contacts
+      
       if (!meta.link) {
         return meta;
       }
-      var links = this.$gnToArray(meta.link)
+      // links
+      var links = this.$gn.strToArray(meta.link)
       var self = this
       links.forEach(function (link, index) {
         switch (link[3]) {
@@ -406,21 +462,21 @@ export default {
             meta.layers = []
           }
           var id = meta.id + '_' + index
-          meta.layers.push(self.$gnLinkToLayer(link, id))
+          meta.layers.push(self.$gn.linkToLayer(link, id))
           break;
         case 'WWW:DOWNLOAD-1.0-link--download':
         case 'telechargement':
           if (!meta.download) {
             meta.download = []
           }
-          meta.download.push(self.$gnLinkToDownload(link))
+          meta.download.push(self.$gn.linkToDownload(link))
           break;
         case 'WWW:LINK-1.0-http--link':
         default:
           if (!meta.links) {
             meta.links = []
           }
-          meta.links.push(self.$gnLinkToLink(link))
+          meta.links.push(self.$gn.linkToLink(link))
           break;
         }
       })
@@ -458,7 +514,7 @@ export default {
       return feature
     },
     bboxString2Array (bbox) {
-      var bboxList = this.$gnToArray(bbox)
+      var bboxList = this.$gn.strToArray(bbox)
       var path = []
       //trouble with rectangle ??? add polygon!
       bboxList.forEach(function (tab){

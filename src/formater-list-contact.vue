@@ -11,26 +11,16 @@
 }
 </i18n>
 <template>
- <div class="mtdt-list-contact" v-if="responsibleParty || responsibleParty2" >
+ <span class="mtdt-contacts"  v-if="Object.keys(contacts).length > 0">
 
-      <div class="mtdt-contacts" v-if="contacts.resource">
-	        <h2 :style="{color:$store.state.style.primary}"><i class="fa fa-users"></i>{{$tc('resource_contact', Object.keys(contacts.resource).length)}}</h2>
-	        <div v-for="(fonction, key) in contacts.resource" :key="key" style="float:left;">
-		         <h3 :style="{color:$store.state.style.primary}"><i class="fa fa-user"></i>{{$gn(key)}}</h3>
-		        <formater-contact  v-for="(item, index) in fonction" :key="index" :contact="item" ></formater-contact>
-	        </div>
-	        <div style="clear:both;"></div>
-	      </div>
+     <h2 :style="{color:$store.state.style.primary}"><i class="fa fa-users"></i>{{title()}}</h2>
+     <div v-for="(fonction, key) in contacts" :key="key" style="float:left;">
+       <h3 :style="{color:$store.state.style.primary}"><i class="fa fa-user"></i>{{$gn.t(key)}}</h3>
+      <formater-contact  v-for="(item, index) in fonction" :key="index" :contact="item" ></formater-contact>
+     </div>
+     <div style="clear:both;"></div>
 
-	       <div class="mtdt-contacts" v-if="contacts.metadata">
-	        <h2 :style="{color:$store.state.style.primary}"><i class="fa fa-users"></i>{{$tc('metadata_contact', Object.keys(contacts.metadata).length)}}</h2>
-	         <div v-for="(fonction, key) in contacts.metadata" :key="key" >
-		         <h3 :style="{color:$store.state.style.primary}"><i class="fa fa-user"></i>{{$gn(key)}}</h3>
-		        <formater-contact  v-for="(item, index) in fonction" :key="index" :contact="item" ></formater-contact>
-	        </div>  
-	       </div>
-	   <div style="clear:both;"></div>
- </div>
+ </span>
 
 </template>
 <script>
@@ -46,70 +36,46 @@ export default {
 //       type: String,
 //       default: 'en'
 //     },
-    responsibleParty: {
-      type: Array,
-      default: () => []
+    contacts: {
+      type: Object,
+      default: () => {}
     },
-    responsibleParty2: {
-      type: Array,
-      default: () => []
+    type: {
+      type: String,
+      default: 'resource'
     }
   },
   watch: {
 //     lang (newvalue) {
 //     	this.$i18n.locale = newvalue
 //     },
-    responsibleParty2 (newvalue) {
-       this.updateContacts(newvalue)
-    }
-  },
-  data() {
-    return {
-       contacts: {
-         metadata:{},
-         resource:{}
-       }
-    }
-  },
-  created () {
-    //this.$i18n.locale = this.lang
-    //this.$setGnLocale(this.lang)
-    this.updateContacts(this.responsibleParty)
-    this.updateContacts(this.responsibleParty2)
-    
 
-   
+  },
+//   data() {
+    
+//   },
+  created () {
+   console.log(this.contacts)
   },
   methods: {
-    updateContacts (responsibleParty) {
-      var _this = this
-      responsibleParty.forEach( function (contact)  {
-	      var fields = contact.split('|');
-	      if (fields[1] === 'metadata' || fields[1] === 'metadonnées') {
-	       if (_this.contacts.metadata[fields[0]]){
-	         _this.contacts.metadata[fields[0]].push(fields)
-	       } else {
-	         _this.contacts.metadata[fields[0]] = [fields]
-	       }
-	      }else{
-	        if (_this.contacts.resource[fields[0]]){
-		         _this.contacts.resource[fields[0]].push(fields)
-		       } else {
-		         _this.contacts.resource[fields[0]] = [fields]
-		       }
-	      }
-		        
-	})
+    title () {
+      
+      if (this.type === 'metadata') {
+        return this.$i18n.tc('metadata_contact', Object.keys(this.contacts).length)
+      } else {
+        return this.$i18n.tc('resource_contact', Object.keys(this.contacts).length)
+      }
     }
+
   }
 }
 </script>
 <style>
 
-.mtdt-metadata .fmt-contacts h3{
+.mtdt-metadata .mtdt-contacts h3{
     margin:0 0 8px 0;
 }
-.mtdt-metadata div.mtdt-contacts > div{
+.mtdt-metadata .mtdt-contacts > div{
   margin-left:30px;
 }
 
