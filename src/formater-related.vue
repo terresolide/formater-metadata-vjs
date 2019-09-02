@@ -61,7 +61,7 @@
    		<div class="mtdt-related-type fa fa-link" :style="{backgroundColor: primary}">
           <span v-if="type === 'cartouche'" class="fa fa-caret-down" ></span>
        </div>
-             <div v-if="type === 'metadata'"></div>
+       <div v-if="type === 'metadata'"></div>
        <div class="mtdt-expand mtdt-links">
             <ul >
             <li v-for="(link, index) in links" :key="index" v-if="link">

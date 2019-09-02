@@ -190,7 +190,7 @@ export default {
 
 .mtdt-cartouche-metadata{
   position: relative;
-  font-size: 12px;
+  font-size: 13px;
 /*  width: calc(30% - 15px);*/
   max-width: 450px;
   min-width: 320px;
@@ -208,7 +208,7 @@ export default {
   margin: 0;
   font-weight:600;
   font-size: 1.1em;
-  min-height:29px;
+  min-height:34px;
   padding: 5px;
   cursor: pointer;
 }
@@ -223,7 +223,7 @@ export default {
     margin-left: 7px;
     
     overflow: hidden;
-    max-height:29px;
+    max-height:34px;
 }
 .mtdt-cartouche-metadata div.mtdt-header i + div {
     width:calc(100% - 28px); 
@@ -236,10 +236,10 @@ export default {
 
 }
 .mtdt-cartouche-metadata div.mtdt-description{
-    max-height:170px;
+    max-height:157px;
     overflow:hidden;
     padding: 5px;
-    font-size:0.9em;
+    font-size:12.8px;
 }
 .mtdt-cartouche-metadata.mtdt-child div.mtdt-description{
    max-height: 170px;

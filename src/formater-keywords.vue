@@ -1,16 +1,6 @@
-<i18n>
-{
-  "en": {
-    "keywords": "Keywords"
-   },
-   "fr": {
-     "keywords": "Mots-clés"
-   }
-}
-</i18n>
+
 <template>
-  <span class="mtdt-keywords" v-if="keywords.length > 0">
-  <h2 :style="{color:$store.state.style.primary}"><i class="fa fa-key"></i>{{$t('keywords')}}</h2>
+  <span class="mtdt-keywords" >
   <div>
     <div class="mtdt-keyword" v-for="(item, key) in keywords">{{item}}</div>
   </div>
@@ -23,9 +13,6 @@ export default{
       type: Array,
       default: () => []
     }
-  },
-  created () {
-    console.log(this.keywords)
   }
 }
 </script>
@@ -36,9 +23,10 @@ export default{
 .mtdt-keyword{
   display: inline-block;
   margin: 3px 5px;
-  padding:3px 5px;
-  border-radius:3px;
+  padding:3px 6px;
+  border-radius:4px;
   font-size: 1rem;
-  background: #ccc;
+  background: #ddd;
+  box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.4);
 }
 </style>

@@ -87,6 +87,7 @@ const MetadataToolsPlugin = {
                  href: arr[2],
                  type: arr[3]
              }
+             return link
            },
            t (str) {
              if (this.lang && this.lang[str]) {

@@ -317,10 +317,10 @@ export default {
            }
           }else{
             if (_this.contacts.resource[fields[0]]){
-                 _this.contacts.resource[fields[0]].push(fields)
-               } else {
-                 _this.contacts.resource[fields[0]] = [fields]
-               }
+               _this.contacts.resource[fields[0]].push(fields)
+            } else {
+               _this.contacts.resource[fields[0]] = [fields]
+            }
           }
                 
       })

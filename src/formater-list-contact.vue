@@ -11,9 +11,7 @@
 }
 </i18n>
 <template>
- <span class="mtdt-contacts"  v-if="Object.keys(contacts).length > 0">
-
-     <h2 :style="{color:$store.state.style.primary}"><i class="fa fa-users"></i>{{title()}}</h2>
+ <span class="mtdt-contacts"  >
      <div v-for="(fonction, key) in contacts" :key="key" style="float:left;">
        <h3 :style="{color:$store.state.style.primary}"><i class="fa fa-user"></i>{{$gn.t(key)}}</h3>
       <formater-contact  v-for="(item, index) in fonction" :key="index" :contact="item" ></formater-contact>
@@ -56,17 +54,6 @@ export default {
 //   },
   created () {
    console.log(this.contacts)
-  },
-  methods: {
-    title () {
-      
-      if (this.type === 'metadata') {
-        return this.$i18n.tc('metadata_contact', Object.keys(this.contacts).length)
-      } else {
-        return this.$i18n.tc('resource_contact', Object.keys(this.contacts).length)
-      }
-    }
-
   }
 }
 </script>

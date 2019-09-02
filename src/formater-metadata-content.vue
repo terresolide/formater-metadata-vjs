@@ -12,24 +12,27 @@
 }
 </i18n>
 <template>
-<span class="mtdt-content">
-         <formater-list-contact   :contacts="metadata.contacts.resource" type="resource" ></formater-list-contact>
-
-
-
-         <div class="mtdt-temporalExtent" style="clear:both;" v-if="metadata.tempExtentBegin">
-            <h2 :style="{color:$store.state.style.primary}"><i class="fa fa-clock-o"></i>{{$t('temporal_extent')}}</h2>
-             <div>
-                {{date2str(metadata.tempExtentBegin)}}
-                <i class="fa fa-long-arrow-right" ></i>
-                {{date2str(metadata.tempExtentEnd)}}
-            </div>
-          </div>
-          <formater-keywords :keywords="metadata.keyword"></formater-keywords>
+<div class="mtdt-content">
+<dl v-if="Object.keys(metadata.contacts.resource).length  > 0 ">
+  <dt>Contacts resource</dt>
+  <dd> <formater-list-contact   :contacts="metadata.contacts.resource" type="resource" ></formater-list-contact></dd>
+</dl>
+<dl v-if="metadata.keyword.length > 0">
+  <dt>mot clés</dt>
+  <dd> <formater-keywords :keywords="metadata.keyword"></formater-keywords></dd>
+</dl>
+<dl  v-if="metadata.tempExtentBegin">
+  <dt>{{$t('temporal_extent')}}</dt>
+  <dd>
+      {{date2str(metadata.tempExtentBegin)}}
+      <i class="fa fa-long-arrow-right" ></i>
+      {{date2str(metadata.tempExtentEnd)}}
+  </dd>
+</dl>
           
-          <hr />
+          <hr style="margin:60px 50px;"/>
            <formater-list-contact   :contacts="metadata.contacts.metadata" type="metadata" ></formater-list-contact>
-</span>
+</div>
 </template>
 <script>
 import FormaterListContact from './formater-list-contact.vue'
@@ -59,4 +62,19 @@ export default {
 }
 </script>
 <style>
+.mtdt-metadata .mtdt-content dl{
+  display: block;
+  clear:left;
+  padding-top: 10px;
+  margin-bottom:0;
+  padding-bottom:10px;
+}
+.mtdt-metadata .mtdt-content dt{
+  width:160px;
+  float:left;
+}
+.mtdt-metadata .mtdt-content dd{
+  width:calc(100% - 200px);
+  float:left;
+}
 </style>
