@@ -223,7 +223,7 @@ export default {
     margin-left: 7px;
     
     overflow: hidden;
-    max-height:34px;
+    max-height:36px;
 }
 .mtdt-cartouche-metadata div.mtdt-header i + div {
     width:calc(100% - 28px); 
