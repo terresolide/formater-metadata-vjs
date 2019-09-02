@@ -254,6 +254,9 @@ export default {
  /* max-height: 95vh;
   overflow-y: auto;*/
 }
+.mtdt-form h4{
+  word-break: break-all;
+}
 .mtdt-form .formater-input-group {
     display: flex;
     flex-flow: row nowrap;

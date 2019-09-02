@@ -8,23 +8,17 @@
     <title>Metadata visualiser</title>
   </head>
   <body>
- 
-    <div style="width:100%;margin:auto;height:auto;">
-    <!--  <formater-catalogue lang="fr" nb-record="24"></formater-catalogue>-->
+
     <div id="formaterCatalogue"></div>
-    <div style="display:none;">
-     "group": 112,
-     "style": 
-       {
-         "primary":"#05578e",
-         "emphasis": "#07a8d5"
-       },
-         
-    </div>
+   
   <script id="formaterConfig" type="application/json"  >
     {
      "lang": "fr", 
      "geonetwork": "http://demo.formater/geonetwork/",
+     "summaryType": {
+       "step1": "details",
+       "step2": "subtemplate"
+     },
      "style": {
          "primary":"#754a15",
          "emphasis": "#dd9946",

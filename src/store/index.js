@@ -8,6 +8,10 @@ export default function makeStore( config ) {
   var defaultConfig = {
       currentUuid: null,
       geonetwork: null,
+      summaryType:{
+        step1: 'details',
+        step2: 'details'
+      },
       apiVersion: '0.1',
       style: 
       {

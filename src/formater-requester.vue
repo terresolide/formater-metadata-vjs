@@ -177,10 +177,10 @@ export default {
      // delete e.detail.depth
       delete e.detail.recordPerPage
       if (e.detail.parentUuid) {
-        this.parameters.resultType = 'subtemplate'
+        this.parameters.resultType = this.$store.state.summaryType.step2
       } else {
         this.parameters.isChild = false
-        this.parameters.resultType = 'details'
+        this.parameters.resultType = this.$store.state.summaryType.step1
       }
       if (this.depth > 0) {
         // voir plutôt les key à éliminer centre de données, variable, instruments, gemet, types?
