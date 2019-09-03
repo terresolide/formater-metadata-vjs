@@ -1,19 +1,21 @@
 <i18n>
 {
    "en":{
-     "resource_contact": "Resource Contact | Resource Contacts",
-     "metadata_contact": "Metadata Contact | Metadata Contacts"
+     "distributor": "Distributor",
+     "owner": "Owner",
+     "point of contact": "Point of contact"
    },
    "fr":{
-     "resource_contact": "Contact pour les données| Contacts pour les données",
-     "metadata_contact": "Contact pour les métadonnées | Contacts pour les métadonnées"
+      "distributor": "Distributeur",
+     "owner": "Propriétaire",
+     "point of contact": "Point de contact"
    }
 }
 </i18n>
 <template>
  <span class="mtdt-contacts"  >
      <div v-for="(fonction, key) in contacts" :key="key" style="float:left;">
-       <h3 :style="{color:$store.state.style.primary}"><i class="fa fa-user"></i>{{$gn.t(key)}}</h3>
+       <h3 :style="{color:$store.state.style.primary}">{{$t(key.toLowerCase())}}</h3>
       <formater-contact  v-for="(item, index) in fonction" :key="index" :contact="item" ></formater-contact>
      </div>
      <div style="clear:both;"></div>
@@ -63,7 +65,7 @@ export default {
     margin:0 0 8px 0;
 }
 .mtdt-metadata .mtdt-contacts > div{
-  margin-left:30px;
+  margin-left:0px;
 }
 
 </style>

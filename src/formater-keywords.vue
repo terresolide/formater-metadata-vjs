@@ -18,11 +18,11 @@ export default{
 </script>
 <style>
 .mtdt-keywords > div{
-  margin-left:30px;
+  margin-left:-6px;
 }
 .mtdt-keyword{
   display: inline-block;
-  margin: 3px 5px;
+  margin: 3px 10px 3px 0;
   padding:3px 6px;
   border-radius:4px;
   font-size: 1rem;

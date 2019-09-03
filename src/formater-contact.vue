@@ -56,7 +56,7 @@ export default {
   font-size: 1em;
   max-width:300px;
   min-width:250px;
-  margin: 5px 10px;
+  margin: 5px 20px 5px 0;
   float:left;
   vertical-align:text-top;
 }
@@ -68,7 +68,7 @@ export default {
   margin-bottom: 5px;
 }
 .formater-contact address{
-  margin-left:16px;
+  margin-left:5px;
 }
 .formater-contact .formater-organism{
   font-weight: 800;

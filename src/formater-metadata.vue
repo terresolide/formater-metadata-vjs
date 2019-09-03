@@ -316,15 +316,15 @@ export default {
 }
 .mtdt-metadata h2 {
 
-  font-size: 1.1rem;
+  font-size: 1.1em;
   margin: 20px 0 0 0;
 }
 .mtdt-metadata h1{
-  font-size:1.5rem;
+  font-size:1.5em;
 }
 .mtdt-metadata h3,
 .mtdt-metadata h4{
-  font-size: 1rem;
+  font-size: 1em;
   }
 .mtdt-metadata div.mtdt-tab,
 .mtdt-metadata .mtdt-tab-export{
