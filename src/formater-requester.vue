@@ -341,15 +341,18 @@ export default {
       properties.mapping = []
       if (properties.services) {
         // @todo cas très très particulier de flatsim
-        if(properties.services.browse && properties.services.browse.layer && properties.services.browse.layer.type === "WMS") {
-          var url = properties.services.browse.layer.url.substr(0, properties.services.browse.layer.url.indexOf('?')) 
+        if(properties.services.browse && properties.services.browse.layers) {
           properties.layers = []
-          this.flatsimLayerList.forEach( function (name, index) {
+          properties.services.browse.layers.forEach(function (flatsimLayer, index) {
+            var type = 'OGC:' + flatsimLayer.type
+            console.log(type)
+            var url = flatsimLayer.url.substr(0, flatsimLayer.url.indexOf('?')) 
+            console.log(url)
             var layer = {
                 id: properties.id + '_' + index,
-                name: name,
-                description:  name,
-                href: url + '/' + name + '?',
+                name: flatsimLayer.name,
+                description:  flatsimLayer.name,
+                href: flatsimLayer.url,
                 type: 'OGC:WMS',
                 checked: false
             }

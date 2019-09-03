@@ -69,7 +69,7 @@ export default {
 </script>
 <style>
 
-.mtdt-online{
+/*.mtdt-online{
   margin-left:5px;
 }
 .mtdt-catalogue a,
@@ -79,6 +79,6 @@ export default {
 .mtdt-catalogue a:hover,
 .mtdt-catalogue .mtdt-link:hover{
   color:#8c0209;
-}
+}*/
 
 </style>

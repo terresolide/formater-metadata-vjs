@@ -162,14 +162,14 @@ export default {
   padding-bottom:10px;
 }
 .mtdt-metadata .mtdt-content dt{
-  width:160px;
+  width:120px;
   float:left;
   word-break: break-word;
   font-size:1.1em;
   font-weight:600;
 }
 .mtdt-metadata .mtdt-content dd{
-  width:calc(100% - 200px);
+  width:calc(100% - 160px);
   float:left;
   line-height: 1.3em;
   vertical-align: bottom;
@@ -181,11 +181,11 @@ export default {
   padding-top:0px;
 }
 .mtdt-metadata .mtdt-content dd dl dt{
-  width:100px;
+  width:100%;
   font-size:1em;
 }
 .mtdt-metadata .mtdt-content dd dl dd{
-  width:(100% - 130px);
+  width:100%;
   font-size:1em;
 }
 </style>

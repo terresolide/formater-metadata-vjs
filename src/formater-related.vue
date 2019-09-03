@@ -25,7 +25,7 @@
       <div class="mtdt-expand mtdt-links" >
            <ul >
            <li v-for="(download, index) in download" :key="index" @click="triggerDownload(index);" >
-            <div  :title="download.description" class="mtdt-link" :style="{color:primary}" @mouseover="handleOver" @mouseout="handleOut">{{download.name? download.name: $t('download_data')}}</div>
+            <a :href="download.url"  :title="download.description" target="_blank">{{download.name? download.name: $t('download_data')}}</a>
           </li>
           </ul>    
       </div> 
