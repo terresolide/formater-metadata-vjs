@@ -29,9 +29,7 @@
                 <span v-if="meta.tempExtentEnd">{{date2str(meta.tempExtentEnd)}}</span>
         </div>
          <span v-html="meta.description"></span>
-         <div v-for="(item, key) in meta" :key="key" v-if="type === 'opensearch' && flatsimSingleFields.indexOf(key) >=0">
-           <label style="text-transform:capitalize;" :style="{color:primary}">{{key}}: </label> {{item}}
-         </div>
+          <formater-parameters type="cartouche" :metadata="meta"></formater-parameters>
      </div>
       
      <div class="mtdt-resource" v-if="depth > 0 && meta.related && meta.related.onlines">
@@ -53,11 +51,13 @@
 <script>
 import FormaterOnline from './formater-online.vue'
 import FormaterRelated from './formater-related.vue'
+const FormaterParameters = () => import('./formater-parameters.vue')
 export default {
   name: 'FormaterCartoucheMetadata',
   components: {
     FormaterOnline,
-    FormaterRelated
+    FormaterRelated,
+    FormaterParameters
   },
   props: {
 

@@ -53,6 +53,7 @@
           <div class="mtdt-description" style="display:block;">
             <formater-quicklooks :quicklooks="meta.images"></formater-quicklooks>
             <span v-html="meta.description"></span>
+            <formater-parameters type="metadata" :metadata="meta"></formater-parameters>
           </div>
           <formater-metadata-content :metadata="meta"></formater-metadata-content>
 
@@ -83,7 +84,7 @@ const FormaterOpensearch = () => import('./formater-opensearch.vue')
 const FormaterFullMetadata = () => import('./formater-full-metadata.vue')
 import FormaterRelated from './formater-related.vue';
 import FormaterMetadataContent from './formater-metadata-content.vue'
-
+const FormaterParameters = () => import('./formater-parameters.vue')
 
 export default {
   name: 'FormaterMetadata',
@@ -95,7 +96,8 @@ export default {
     FormaterOpensearch,
     FormaterRelated,
     FormaterFullMetadata,
-    FormaterMetadataContent
+    FormaterMetadataContent,
+    FormaterParameters
   },
   props: {
     metadata: {
@@ -134,11 +136,11 @@ export default {
     }
   },
   created () {
-    console.log(this.metadata.contacts)
     moment.locale(this.$i18n.locale)
     if (this.metadata['geonet:info']) {
        this.uuid = this.metadata['geonet:info'].uuid
-       this.tabs.full = true
+       // @todo attendre d'avoir une fiche complete dans geonetwork
+       // this.tabs.full = true
     } else {
        this.uuid = this.metadata.id
        this.type = 'opensearch'

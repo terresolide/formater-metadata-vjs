@@ -37,6 +37,21 @@ export default function makeStore( config ) {
         spatial: false,
         searchTerm: false
       },
+      osFields: {
+        cartouche: {
+          identifier: ['productType'],
+          quality: ['resolution'],
+          acquisition:  [ 'sensorMode', 'polarisation',  'relativeOrbitNumber', 'orbitDirection', 'subswath'],
+          process:  ['processingLevel', 'processingMode',  'correction', 'version']
+        },
+        metadata: {
+          identifier: ['productIdentifier', 'parentIdentifier', 'productType'],
+          quality: [ 'resolution', 'nbCols', 'nbRows', 'waterCover', 'snowCover', 'cloudCover'],
+          acquisition: [ 'platform', 'instrument','sensorMode', 'polarisation', 
+            'orbitNumber', 'relativeOrbitNumber', 'orbitDirection', 'subswath'],
+          process: ['processingLevel', 'processingMode', 'processingContext', 'correction', 'version']
+        }
+      },
       // default map bounds
       spatialExtent: [[-60,-120],[75,130]],
       // search area 

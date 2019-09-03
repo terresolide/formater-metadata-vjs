@@ -14,8 +14,11 @@
 <template>
   <span class="mtdt-related" :class="'mtdt-related-' + type">
     <div v-if="download && download.length === 1 && type === 'cartouche'">
-       <div class="mtdt-related-type fa fa-download" @click="triggerDownload(0)" :style="{backgroundColor: primary}" :title="$t('download_data')">
-      </div> 
+    <a :href="download[0].url" download>
+       <div class="mtdt-related-type fa fa-download"  :style="{backgroundColor: primary}" :title="$t('download_data')">
+         
+      </div>
+    </a> 
     </div>
     <div v-if="download && (download.length >1 || (type === 'metadata' && download.length > 0))">
        <div class="mtdt-related-type fa fa-download"  :style="{backgroundColor: primary}" :title="$t('download_data')">

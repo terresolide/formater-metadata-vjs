@@ -327,16 +327,33 @@ export default {
     },
     mapToGeonetwork (properties) {
       var properties = Object.assign({}, properties)
+      properties.fromOs = true
       if (properties.startDate) {
         properties.renameProperty('startDate', 'tempExtentBegin')
       }
       if (properties.completionDate) {
         properties.renameProperty('completionDate', 'tempExtentEnd')
       }
+      if (properties.updated) {
+        properties.renameProperty('updated', 'revisionDate')
+      }
+      if (properties.published) {
+        properties.renameProperty('published', 'publicationDate')
+      }
+      if (properties.produced) {
+        properties.renameProperty('produced', 'creationDate')
+      }
+      if (!properties.type) {
+        properties.type = 'dataset'
+      }
       if (properties.quicklook) {
         properties.images = [['', properties.quicklook, '']]
+        delete properties.quicklook
       }
-      
+      if (properties.license) {
+        properties.legalConstraints = [properties.license.licenseId]
+        delete properties.license
+      }
       properties.osParameters = []
       properties.mapping = []
       if (properties.services) {
@@ -345,9 +362,6 @@ export default {
           properties.layers = []
           properties.services.browse.layers.forEach(function (flatsimLayer, index) {
             var type = 'OGC:' + flatsimLayer.type
-            console.log(type)
-            var url = flatsimLayer.url.substr(0, flatsimLayer.url.indexOf('?')) 
-            console.log(url)
             var layer = {
                 id: properties.id + '_' + index,
                 name: flatsimLayer.name,
@@ -367,24 +381,26 @@ export default {
           
         }
         delete properties.services
-        if( !properties.exportLinks) {
-          properties.exportLinks = {}
-        }
-        // @todo Flatsim cas particulier des LIENS D'EXPORT qui se trouve dans link
-        if (properties.links) {
-          var i = properties.links.length
-          while (i--) {
-            if (properties.links[i].type === 'application/json' && !properties.exportLinks.json) {
-              properties.exportLinks.json = properties.links[i].href
-              properties.links.splice(i,1)
-            }
-            if (properties.links[i].type === 'application/xml' && !properties.exportLinks.xml) {
-              properties.exportLinks.xml = properties.links[i].href
-              properties.links.splice(i,1)
-            }
+      }
+      if( !properties.exportLinks) {
+        properties.exportLinks = {}
+      }
+      // @todo Flatsim cas particulier des LIENS D'EXPORT qui se trouve dans link
+      if (properties.links) {
+        var i = properties.links.length
+        while (i--) {
+          if (properties.links[i].type === 'application/json' && !properties.exportLinks.json) {
+            properties.exportLinks.json = properties.links[i].href
+            properties.links.splice(i,1)
+          }
+          if (properties.links[i].type === 'application/xml' && !properties.exportLinks.xml) {
+            properties.exportLinks.xml = properties.links[i].href
+            properties.links.splice(i,1)
           }
         }
+        delete properties.links
       }
+
       if (!properties.contacts) {
         properties.contacts = {metadata: {}, resource: {}}
         if (properties.organisationName) {
@@ -396,6 +412,13 @@ export default {
             delete properties.organisationName
           }
         }
+      }
+      if (properties.keywords) {
+        properties.keyword = []
+        properties.keywords.forEach(function (keyword) {
+          properties.keyword.push(keyword.name)
+        })
+        delete properties.keywords
       }
       return properties
     },
