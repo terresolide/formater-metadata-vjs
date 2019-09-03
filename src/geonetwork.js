@@ -1,4 +1,4 @@
-const MetadataToolsPlugin = {
+const GeonetworkPlugin = {
     install(Vue, options) {
        Vue.prototype.$gn = {
            $http: null,
@@ -100,4 +100,4 @@ const MetadataToolsPlugin = {
    }
 }
 
-export default MetadataToolsPlugin;
+export default GeonetworkPlugin;

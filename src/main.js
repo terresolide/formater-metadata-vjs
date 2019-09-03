@@ -28,8 +28,8 @@ Vue.use(VueColorPlugin)
 import {VueTools} from 'formater-commons-components-vjs'
 Vue.use(VueTools)
 
-import Tools from './formater-metadata-tools.js'
-Vue.use(Tools)
+import GeonetworkPlugin from './geonetwork.js'
+Vue.use(GeonetworkPlugin)
 
 // main component for app
 import FormaterCatalogue from './formater-catalogue.vue'
