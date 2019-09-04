@@ -51,7 +51,7 @@
       <div v-if="currentTab === 'main'" style="margin-top:20px;">
         <div class="mtdt-column-left">
           <div class="mtdt-description" style="display:block;">
-            <formater-quicklooks :quicklooks="meta.images"></formater-quicklooks>
+            <formater-quicklooks :quicklooks="meta.images" :legend="meta.legend"></formater-quicklooks>
             <span v-html="meta.description"></span>
             <formater-parameters type="metadata" :metadata="meta"></formater-parameters>
           </div>

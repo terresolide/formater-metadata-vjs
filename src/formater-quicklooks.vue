@@ -8,6 +8,11 @@
       <img :src="image[1]" :alt="image[2]" />
     </div>
 	</div>
+	<div v-if="legend" style="min-height:300px; padding:20px;text-align:center">
+
+	<img :src="legend" />
+		<div>LEGEND</div>
+	</div>
  </span>
 </template>
 <script>
@@ -19,6 +24,10 @@ export default {
   props: {
     quicklooks: {
       type: String | Array,
+      default: null
+    },
+    legend: {
+      type: String,
       default: null
     }
   },
@@ -39,7 +48,7 @@ export default {
   position: relative;
    float:left;
    max-width: 340px;
-   max-height:260px;
+  /* max-height:260px;*/
    background: #ddd;
    margin: 0px 15px 10px 0;
 }
@@ -66,6 +75,7 @@ export default {
   max-width:320px;
   max-height:260px;
   display:block;
+  margin:auto;
   vertical-align:middle;
 }
 .mtdt-quicklooks .fa-chevron-circle-right,
