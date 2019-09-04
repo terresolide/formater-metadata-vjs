@@ -8,9 +8,9 @@
       <img :src="image[1]" :alt="image[2]" />
     </div>
 	</div>
-	<div v-if="legend" style="min-height:300px; padding:20px;text-align:center">
+	<div v-if="legend" style="padding:20px;text-align:center">
 
-	<img :src="legend" />
+	<img :src="legend" style="max-width:260px;"/>
 		<div>LEGEND</div>
 	</div>
  </span>

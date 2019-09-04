@@ -50,11 +50,12 @@
       <!--  others tab -->
       <div v-if="currentTab === 'main'" style="margin-top:20px;">
         <div class="mtdt-column-left">
-          <div class="mtdt-description" style="display:block;">
+          <!--  <div class="mtdt-description" style="display:block;">
             <formater-quicklooks :quicklooks="meta.images" :legend="meta.legend"></formater-quicklooks>
-            <span v-html="meta.description"></span>
+            <dl class="mtdt-content" v-if="meta.identifier"><dt :style="{color: $store.state.style.primary}">Identifiant</dt><dd>{{meta.identifier}}</dd></dl>
+             <span v-html="meta.description"></span>
             <formater-parameters type="metadata" :metadata="meta"></formater-parameters>
-          </div>
+          </div> -->
           <formater-metadata-content :metadata="meta"></formater-metadata-content>
 
 
@@ -75,7 +76,7 @@
 </template>
 <script>
 
-import FormaterQuicklooks from './formater-quicklooks.vue'
+// import FormaterQuicklooks from './formater-quicklooks.vue'
 import FormaterExportLinks from './formater-export-links.vue'
 const FormaterPaging = () => import('./formater-paging.vue')
 const FormaterListMetadata = () => import('./formater-list-metadata.vue')
@@ -83,21 +84,21 @@ const FormaterListMetadata = () => import('./formater-list-metadata.vue')
 const FormaterOpensearch = () => import('./formater-opensearch.vue')
 const FormaterFullMetadata = () => import('./formater-full-metadata.vue')
 import FormaterRelated from './formater-related.vue';
-import FormaterMetadataContent from './formater-metadata-content.vue'
-const FormaterParameters = () => import('./formater-parameters.vue')
+ import FormaterMetadataContent from './formater-metadata-content.vue'
+// const FormaterParameters = () => import('./formater-parameters.vue')
 
 export default {
   name: 'FormaterMetadata',
   components: {
-    FormaterQuicklooks,
+   // FormaterQuicklooks,
     FormaterExportLinks,
     FormaterPaging,
     FormaterListMetadata,
     FormaterOpensearch,
     FormaterRelated,
-    FormaterFullMetadata,
-    FormaterMetadataContent,
-    FormaterParameters
+    FormaterFullMetadata ,
+    FormaterMetadataContent
+   // FormaterParameters
   },
   props: {
     metadata: {

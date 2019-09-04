@@ -175,7 +175,7 @@ export default {
       this.metadatas.length = 0
       this.currentUuid = null
       this.$store.commit('currentUuidChange', this.currentUuid)
-       this.$store.commit('parametersChange', {parameters: [], mapping: [], type: 'geonetwork'})
+      this.$store.commit('parametersChange', {parameters: [], mapping: [], type: 'geonetwork'})
     },
     handleSearch (event) {
       if (this.metadatas.length > 0) {

@@ -328,6 +328,9 @@ export default {
     mapToGeonetwork (properties) {
       var properties = Object.assign({}, properties)
       properties.fromOs = true
+      if (properties.productIdentifier) {
+        properties.renameProperty('productIdentifier', 'identifier')
+      }
       if (properties.startDate) {
         properties.renameProperty('startDate', 'tempExtentBegin')
       }

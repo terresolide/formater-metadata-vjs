@@ -12,7 +12,9 @@
      "securityConstraints": "security",
      "resourceConstraints": "resource",
      "temporal_extent": "Temporal extent",
-     "now": "Now"
+     "now": "Now",
+     "identifier": "Identifier"
+     
 
    },
    "fr":{
@@ -28,13 +30,27 @@
      "securityConstraints": "de sécurité",
      "resourceConstraints": "sur les données",
       "temporal_extent": "Etendue temporelle",
-      "now": "Aujourd'hui"
+      "now": "Aujourd'hui",
+      "identifier": "Identifiant"
    }
 }
 </i18n>
 <template>
 <div class="mtdt-content">
-<dl v-if="countDate > 0">
+ <div class="mtdt-description" style="display:block;">
+       <formater-quicklooks :quicklooks="metadata.images" :legend="metadata.legend"></formater-quicklooks>
+       <dl class="mtdt-identifier" v-if="metadata.identifier && !metadata.description">
+             <dt :style="dtStyle()">{{$t('identifier')}}</dt>
+              <dd >{{metadata.identifier}}</dd>
+       </dl>
+       <span v-html="metadata.description" v-if="metadata.description" style="margin-bottom:20px;"></span> 
+       <dl class="mtdt-identifier" v-if="metadata.identifier && metadata.description" :style="{clear: (type === 'opensearch' ? 'none' : 'left')}">
+             <dt :style="dtStyle()">{{$t('identifier')}}</dt>
+              <dd >{{metadata.identifier}}</dd>
+       </dl>
+       <formater-parameters type="metadata" :metadata="metadata" ></formater-parameters>
+</div>
+<dl v-if="countDate > 0" class="mtdt-main-parameter">
    <dt :style="dtStyle()">{{$tc('date', countDate)}} </dt>
    <dd>
       <div v-for="key in dateList" v-if="metadata[key]">
@@ -42,15 +58,15 @@
       </div>
    </dd>
 </dl>
-<dl v-if="countContactResource > 0 ">
+<dl v-if="countContactResource > 0 " class="mtdt-main-parameter">
   <dt :style="dtStyle()">{{$tc('contact_resource', countContactResource)}}</dt>
   <dd> <formater-list-contact   :contacts="metadata.contacts.resource" type="resource" ></formater-list-contact></dd>
 </dl>
-<dl v-if="metadata.keyword.length > 0">
+<dl v-if="metadata.keyword.length > 0" class="mtdt-main-parameter">
   <dt :style="dtStyle()">{{$tc('keyword', metadata.keyword.length)}}</dt>
   <dd> <formater-keywords :keywords="metadata.keyword"></formater-keywords></dd>
 </dl>
-<dl  v-if="metadata.tempExtentBegin">
+<dl  v-if="metadata.tempExtentBegin" class="mtdt-main-parameter">
   <dt :style="dtStyle()">{{$t('temporal_extent')}}</dt>
   <dd>
       {{date2str(metadata.tempExtentBegin)}}
@@ -58,11 +74,11 @@
       {{date2str(metadata.tempExtentEnd)}}
   </dd>
 </dl>
-<dl v-if="metadata.lineage">
+<dl v-if="metadata.lineage" class="mtdt-main-parameter">
     <dt :style="dtStyle()">{{$t('lineage')}}</dt>
    <dd>{{metadata.lineage}}</dd>
 </dl>
-<dl v-if="countConstraint > 0">
+<dl v-if="countConstraint > 0" class="mtdt-main-parameter">
   <dt :style="dtStyle()">{{$t('constraint')}}</dt>
   <dd>
      <dl v-for="key in constraintList" v-if="metadata[key]">
@@ -73,6 +89,7 @@
 </dl>
           
  <dl>         <hr style="margin:60px 50px;"/> </dl>
+ <dl><dt :style="dtStyle()">{{$t('identifier')}}</dt><dd>{{metadata.id}}</dd></dl>
  <dl v-if="Object.keys(metadata.contacts.metadata).length > 0">
    <dt :style="dtStyle()">Contacts métadonnées</dt>
    <dd>
@@ -82,11 +99,15 @@
 </div>
 </template>
 <script>
+import FormaterQuicklooks from './formater-quicklooks.vue'
+import FormaterParameters from './formater-parameters.vue'
 import FormaterListContact from './formater-list-contact.vue'
 import FormaterKeywords from './formater-keywords.vue'
 export default {
   name: 'FormaterMetadataContent',
   components: {
+    FormaterQuicklooks,
+    FormaterParameters,
     FormaterListContact,
     FormaterKeywords
   },
@@ -126,8 +147,7 @@ export default {
     }
   },
   created () {
-    console.log(this.metadata.contacts)
-    console.log(this.metadata.contacts.resource)
+    console.log(this.metadata.identifier)
   },
   data () {
     return {
@@ -156,30 +176,44 @@ export default {
 <style>
 .mtdt-metadata .mtdt-content dl{
   display: block;
-  clear:left;
-  padding-top: 20px;
-  margin-bottom:0;
-  padding-bottom:10px;
-}
-.mtdt-metadata .mtdt-content dt{
-  width:120px;
-  float:left;
-  word-break: break-word;
-  font-size:1.1em;
-  font-weight:600;
-}
-.mtdt-metadata .mtdt-content dd{
-  width:calc(100% - 160px);
-  float:left;
-  line-height: 1.3em;
-  vertical-align: bottom;
-}
-.mtdt-metadata .mtdt-content dd dl {
-  padding-top:8px;
+ /* clear:left;*/
+ /* width:100%;*/
+ /* padding-top: 20px;*/
+  margin:0;
+  padding-top:20px;
 }
 .mtdt-metadata .mtdt-content dd dl:first-child {
   padding-top:0px;
 }
+.mtdt-metadata .mtdt-content dt{
+  width:130px;
+  display: inline-block;
+  word-break: break-word;
+  font-size:1.1em;
+  font-weight:600;
+  vertical-align: top;
+}
+.mtdt-metadata .mtdt-content dd{
+  width:auto;
+  display: inline-block;
+  word-break: break-all;
+  line-height: 1.3em;
+  vertical-align: top;
+}
+.mtdt-metadata .mtdt-content dl.mtdt-main-parameter{
+  clear: left;
+}
+.mtdt-metadata .mtdt-content dl.mtdt-main-parameter dd{
+  width: calc(100% - 180px);
+}
+/*.mtdt-metadata .mtdt-content dd div,
+.mtdt-metadata .mtdt-content dd span{
+  display: inline-block;
+}*/
+/*.mtdt-metadata .mtdt-content dd dl {
+  padding-top:8px;
+}
+
 .mtdt-metadata .mtdt-content dd dl dt{
   width:100%;
   font-size:1em;
@@ -187,5 +221,5 @@ export default {
 .mtdt-metadata .mtdt-content dd dl dd{
   width:100%;
   font-size:1em;
-}
+}*/
 </style>
