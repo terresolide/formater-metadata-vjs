@@ -190,7 +190,7 @@ export default {
 
 .mtdt-cartouche-metadata{
   position: relative;
-  font-size: 13px;
+  font-size: 15px;
 /*  width: calc(30% - 15px);*/
   max-width: 450px;
   min-width: 320px;
@@ -239,7 +239,7 @@ export default {
     max-height:157px;
     overflow:hidden;
     padding: 5px;
-    font-size:12.8px;
+    font-size:15px;
 }
 .mtdt-cartouche-metadata.mtdt-child div.mtdt-description{
    max-height: 170px;

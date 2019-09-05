@@ -425,7 +425,7 @@ div[id="fmtDraw"].mtdt-small .leaflet-left .leaflet-control{
 }
 div[id="fmtDraw"].mtdt-small .leaflet-control .leaflet-control-zoom-in, 
 div[id="fmtDraw"].mtdt-small .leaflet-control .leaflet-control-zoom-out{
-  font-size:16px;
+  font-size:18px;
 }
 div[id="fmtDraw"].mtdt-small .leaflet-bar a{
  background-image:none;

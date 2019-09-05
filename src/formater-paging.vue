@@ -239,7 +239,7 @@ export default {
 </script>
 <style>
 .mtdt-paging span.mtdt-navigation span{
-  font-size: 14px;
+  font-size: 1.3em;
   cursor: pointer;
   margin: 0 1px;
   padding:5px;
@@ -249,7 +249,6 @@ export default {
  background:#754a15;
  padding:3px 5px;
  color:white;
- font-size:1.3em;;
   vertical-align:middle;
   opacity:0.9;
 }

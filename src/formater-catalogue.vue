@@ -186,10 +186,17 @@ export default {
 <style src="formater-commons-components-vjs/src/assets/css/formater-icon.css"></style>
 <style>
 .mtdt-catalogue{
-  font-size: 13px;
+  font-family: "Times New Roman", Times, serif;
+  color: #000000;
+  font-size: 15px;
+  line-height: 16px;
   height:auto;
   width:100%;
   }
+ .mtdt-catalogue .formater-search-box .box-title h4 {
+    margin: 0;
+    font-size: 18px;
+}
  .mtdt-catalogue .fa{
   font-size: inherit;
  }
@@ -208,5 +215,8 @@ export default {
   float:left;
   margin-left:10px;
   margin-bottom:120px;
+}
+.mtdt-catalogue .formater-select select {
+  font-size: 13px;
 }
 </style>

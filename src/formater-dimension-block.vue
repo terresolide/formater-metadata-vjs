@@ -49,7 +49,6 @@ export default {
 <style>
 .mtdt-dimension-block {
  margin-left: 5px;
- font-size:12px;
  line-height:18px;
  
 }
