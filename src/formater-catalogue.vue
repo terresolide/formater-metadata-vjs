@@ -25,7 +25,7 @@
         <!-- div where append map when enlarge it -->
         <div id="fmtLargeMap"></div>
         <!-- list of all records with page navigation -->
-        <div v-show="metadatas.length === 0">
+        <div v-if="!$store.state.metadata" v-show="metadatas.length === 0">
             <formater-paging   :depth="0" :orders="['title','changeDate']" order-by="title"></formater-paging>
             <formater-list-metadata  :depth="0"></formater-list-metadata>
         </div>

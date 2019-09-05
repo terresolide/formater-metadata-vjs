@@ -152,10 +152,14 @@ export default {
     },
 
     fill (e) {
-      if (this.first) {
+      if (!e.detail.summary) {
+        this.first = false
+        return
+      }
+      if (this.first ) {
         this.dimensions = this.initializeDimensions(e.detail.summary.dimension)
         this.first = false
-      } else if( this.depth === 0){
+      } else if( this.depth === 0 ){
          var  newdimensions = this.initializeDimensions(e.detail.summary.dimension)
          this.dimensions = this.updateDimensions(this.dimensions, newdimensions)
       }

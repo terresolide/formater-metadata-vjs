@@ -8,6 +8,7 @@ export default function makeStore( config ) {
   var defaultConfig = {
       currentUuid: null,
       geonetwork: null,
+      metadata: null,
       summaryType:{
         step1: 'details',
         step2: 'details'

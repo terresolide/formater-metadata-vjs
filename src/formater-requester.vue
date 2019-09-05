@@ -45,7 +45,12 @@ export default {
      }
   },
   created () {
-    this.srv = this.$store.state.geonetwork +  'srv/' + (this.$i18n.locale === 'fr'? 'fre' : 'eng') + '/'
+    if (this.$store.state.geonetwork) {
+        this.srv = this.$store.state.geonetwork +  'srv/' + (this.$i18n.locale === 'fr'? 'fre' : 'eng') + '/'
+    }
+    if (this.$store.state.metadata) {
+      this.searchSimpleMetadata()
+    }
 
     // this.getRecords() done when <formater-paging> is mounted with its pageChangeEvent on order control change
     this.pageChangedListener = this.changePage.bind(this)
@@ -205,6 +210,17 @@ export default {
       this.mapParameters(e)
       this.parameters = Object.assign(this.parameters, e.detail)   
 
+    },
+    searchSimpleMetadata() {
+      this.$http.get(this.$store.state.metadata).then(
+          response => {  
+            var data = response.body
+            var uuid = data['geonet:info'].uuid
+            var meta = this.treatmentSingleGeonetwork(data, uuid);
+            var event = new CustomEvent('fmt:metadataEvent', {detail: {meta:meta, depth: 0 } })
+            document.dispatchEvent(event)
+         }
+        )
     },
     mapParameters(e) {
       // transform the name of parameter from this application to the opensearch api for the predefined parameter
@@ -424,12 +440,17 @@ export default {
       return properties
     },
     treatmentSingleGeonetwork (meta, uuid) {
-      meta.logo = this.$store.state.geonetwork + meta.logo
       meta.id = uuid
-      meta.exportLinks = {
-          xml: this.$store.state.geonetwork + 'srv/api/records/'+ uuid + '/formatters/xml?attachment=true',
-          pdf: this.$store.state.geonetwork + 'srv/api/records/'+ uuid + '/formatters/xsl-view?root=div&output=pdf'
+      if (this.$store.state.geonetwork) {
+          meta.logo = this.$store.state.geonetwork + meta.logo
+          meta.exportLinks = {
+              xml: this.$store.state.geonetwork + 'srv/api/records/'+ uuid + '/formatters/xml?attachment=true',
+              pdf: this.$store.state.geonetwork + 'srv/api/records/'+ uuid + '/formatters/xsl-view?root=div&output=pdf'
+          }
       }
+
+      
+     
       if (meta.abstract) {
         meta.abstract = meta.abstract.replace(/(?:\\[rn]|[\r\n])/g, '<br />');
       }

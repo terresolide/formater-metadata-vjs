@@ -344,9 +344,6 @@ export default {
 .mtdt-metadata div.mtdt-tab.selected{
   background: #ddd;
 }
-.mtdt-metadata div.mtdt-description{
-  line-height:1.5;
-}
 .mtdt-metadata .mtdt-group-logo{
   float:right;
   margin-top:-5px;
