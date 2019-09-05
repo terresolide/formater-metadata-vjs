@@ -211,6 +211,7 @@ export default {
   min-height:34px;
   padding: 5px;
   cursor: pointer;
+  overflow: hidden;
 }
 /*.mtdt-cartouche-metadata.mtdt-child div.mtdt-header{
   color: #9e631d;
@@ -223,7 +224,7 @@ export default {
     margin-left: 7px;
     
     overflow: hidden;
-    max-height:36px;
+    max-height:34px;
 }
 .mtdt-cartouche-metadata div.mtdt-header i + div {
     width:calc(100% - 28px); 
