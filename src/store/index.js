@@ -98,7 +98,6 @@ export default function makeStore( config ) {
         state.parameters = newParameters
       },
       searchAreaChange(state, newBounds) {
-        console.log(newBounds)
         state.searchArea = newBounds
       },
       parametersChange(state, newParameters) {

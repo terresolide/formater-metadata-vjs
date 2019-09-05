@@ -313,8 +313,9 @@ export default {
      if (this.depth > event.detail.depth) {
         if (this.bboxLayer[this.depth]) {
           this.controlLayer.removeLayer(this.bboxLayer[this.depth])
+          this.bboxLayer[this.depth].remove()
         }
-        this.bboxLayer[this.depth].remove()
+
         this.bboxLayer.pop()
         this.bounds.pop()
         this.clearLayers(this.depth)
@@ -384,6 +385,7 @@ export default {
      this.unselectBbox()
      for (var i in this.bboxLayer){
        this.bboxLayer[i].remove()
+       this.controlLayer.removeLayer(this.bboxLayer[i])
      }
      this.bboxLayer = []
      this.bounds = []

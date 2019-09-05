@@ -44,19 +44,8 @@ export default {
       type: String,
       default: 'resource'
     }
-  },
-  watch: {
-//     lang (newvalue) {
-//     	this.$i18n.locale = newvalue
-//     },
-
-  },
-//   data() {
-    
-//   },
-  created () {
-   console.log(this.contacts)
   }
+
 }
 </script>
 <style>

@@ -218,7 +218,6 @@ export default {
          this.setHasChild(true)
       },
       setHasChild(value) {
-        console.log('type = ', this.type)
         this.hasChild = value
         this.$set(this.tabs, 'search', value)
         if (value) {

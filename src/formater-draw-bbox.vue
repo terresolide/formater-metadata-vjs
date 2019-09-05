@@ -53,8 +53,6 @@ export default {
   },
   watch: {
     searchArea (newvalue) {
-      console.log('searchArea change')
-      console.log(newvalue)
       this.initBoundsLayer()
       var bounds = this.getBounds()
       var bbox = null
