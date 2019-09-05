@@ -13,7 +13,9 @@
      "resourceConstraints": "resource",
      "temporal_extent": "Temporal extent",
      "now": "Now",
-     "identifier": "Identifier"
+     "identifier": "Identifier",
+     "about_resource": "About the resource",
+     "about_metadata": "About the metadata"
      
 
    },
@@ -31,12 +33,15 @@
      "resourceConstraints": "sur les données",
       "temporal_extent": "Etendue temporelle",
       "now": "Aujourd'hui",
-      "identifier": "Identifiant"
+      "identifier": "Identifiant",
+      "about_resource": "A propos des données",
+     "about_metadata": "A propos des métadonnées"
    }
 }
 </i18n>
 <template>
 <div class="mtdt-content">
+<h1>{{$t('about_resource')}}</h1>
  <div class="mtdt-description" style="display:block;">
        <formater-quicklooks :quicklooks="metadata.images" :legend="metadata.legend"></formater-quicklooks>
        <dl class="mtdt-identifier" v-if="metadata.identifier && !metadata.description">
@@ -53,7 +58,7 @@
 <dl v-if="countDate > 0" class="mtdt-main-parameter">
    <dt :style="dtStyle()">{{$tc('date', countDate)}} </dt>
    <dd>
-      <div v-for="key in dateList" v-if="metadata[key]">
+      <div v-for="key in $store.state.dataList" v-if="metadata[key]">
            {{date2str(metadata[key])}} ({{$t(key)}})
       </div>
    </dd>
@@ -81,14 +86,15 @@
 <dl v-if="countConstraint > 0" class="mtdt-main-parameter">
   <dt :style="dtStyle()">{{$t('constraint')}}</dt>
   <dd>
-     <dl v-for="key in constraintList" v-if="metadata[key]">
+     <dl v-for="key in $store.state.constraintList" v-if="metadata[key]">
        <dt>{{$t(key)}}</dt>
        <dd><div v-for="line in metadata[key]">{{line}}</div></dd>
      </dl>
   </dd>
 </dl>
           
- <dl>         <hr style="margin:60px 50px;"/> </dl>
+ <dl>         <hr /> </dl>
+ <h1>{{$t('about_metadata')}}</h1>
  <dl><dt :style="dtStyle()">{{$t('identifier')}}</dt><dd>{{metadata.id}}</dd></dl>
  <dl v-if="Object.keys(metadata.contacts.metadata).length > 0">
    <dt :style="dtStyle()">Contacts métadonnées</dt>
@@ -115,13 +121,17 @@ export default {
     metadata: {
       type: Object,
       default: null
+    },
+    type: {
+      type: String,
+      default: 'geonetwork'
     }
   },
   computed: {
     countDate() {
       var n = 0
       var _this = this
-      this.dateList.forEach(function (key){
+      this.$store.state.dateList.forEach(function (key){
         if (_this.metadata.hasOwnProperty(key)) {
           n ++
         }
@@ -138,21 +148,12 @@ export default {
     countConstraint () {
       var n = 0
       var _this = this
-      this.constraintList.forEach( function (key) {
+      this.$store.state.constraintList.forEach( function (key) {
         if (_this.metadata.hasOwnProperty(key)) {
           n++
         }
       })
       return n
-    }
-  },
-  created () {
-    console.log(this.metadata.identifier)
-  },
-  data () {
-    return {
-      dateList: ['createDate', 'publicationDate', 'revisionDate'],
-      constraintList: ['legalConstraints', 'securityConstraints', 'resourceConstraints']
     }
   },
   methods:{
@@ -174,6 +175,14 @@ export default {
 }
 </script>
 <style>
+.mtdt-content hr{
+margin: 20px 50px;
+border: 0;
+height: 1px;
+background: #333;
+    background-image: none;
+background-image: linear-gradient(to right, #ccc, #333, #ccc);
+}
 .mtdt-metadata .mtdt-content dl{
   display: block;
  /* clear:left;*/

@@ -56,7 +56,7 @@
              <span v-html="meta.description"></span>
             <formater-parameters type="metadata" :metadata="meta"></formater-parameters>
           </div> -->
-          <formater-metadata-content :metadata="meta"></formater-metadata-content>
+          <formater-metadata-content :metadata="meta" :type="type"></formater-metadata-content>
 
 
         </div>

@@ -52,6 +52,9 @@ export default function makeStore( config ) {
           process: ['processingLevel', 'processingMode', 'processingContext', 'correction', 'version']
         }
       },
+      // default date & constraint list
+      dateList: ['createDate', 'publicationDate', 'revisionDate'],
+      constraintList: ['legalConstraints', 'securityConstraints', 'resourceConstraints'],
       // default map bounds
       spatialExtent: [[-60,-120],[75,130]],
       // search area 
@@ -95,6 +98,7 @@ export default function makeStore( config ) {
         state.parameters = newParameters
       },
       searchAreaChange(state, newBounds) {
+        console.log(newBounds)
         state.searchArea = newBounds
       },
       parametersChange(state, newParameters) {

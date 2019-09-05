@@ -261,13 +261,12 @@ export default {
    },
   
    selectBbox (event) {
-     console.log('select Bbox')
      this.unselectBbox()
      var bounds = null
      var id = null
      if (event.detail.id) {
        id = event.detail.id
-     } else if (event.detail.meta && event.detail.id) {
+     } else if (event.detail.meta && event.detail.meta.id) {
        id = event.detail.meta.id
      } 
      if (id) {
@@ -350,7 +349,6 @@ export default {
      return bounds
    },
    selectBboxById (id, temporaly) {
-
      var self = this
      var bounds = null
      this.bboxLayer[this.depth].eachLayer(function(layer) {

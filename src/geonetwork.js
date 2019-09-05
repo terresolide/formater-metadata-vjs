@@ -39,7 +39,7 @@ const GeonetworkPlugin = {
               }).then( response => { this.lang = Object.assign(this.lang,response.body)})
            },
            setLocale: function (lang) {
-             if (!this.geonetwork || this.$http) {
+             if (!this.geonetwork || !this.$http) {
                return
              }
              if (['en', 'fr'].indexOf(lang) >=0) {

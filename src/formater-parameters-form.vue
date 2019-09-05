@@ -33,14 +33,6 @@ export default {
       type: String,
       default: 'en'
     },
-    primary: {
-      type: String,
-      default: '#754a15'
-    },
-    emphasis: {
-      type: String,
-      default: '#dd9946'
-    },
     parameters: {
       type: Array,
       default: []
@@ -49,17 +41,15 @@ export default {
   data () {
     return {
       inputColor: null,
-      textColor: this.primary,
+      textColor: null,
       aerisSearchListener: null,
       aerisResetListener: null
       
     }
   },
   created () {
-  	this.$i18n.locale = this.lang
-    console.log('FLATSIM-FORM created')
-  	
-  	this.handleTheme(this.emphasis)
+    this.textColor = this.$store.state.style.primary
+    this.handleTheme(this.$store.state.style.emphasis)
   	this.aerisSearchListener = this.handleSearch.bind(this)
     document.addEventListener('aerisSearchEvent', this.aerisSearchListener)
     this.aerisResetListener = this.handleReset.bind(this)
@@ -79,7 +69,6 @@ export default {
         var nodes = this.$el.querySelectorAll('.flt-input')
         var _this = this
         nodes.forEach( function (node) {
-          console.log('colorChanged ')
           node.style.backgroundColor = _this.$shadeColor( color, 0.8)
         })
     	}

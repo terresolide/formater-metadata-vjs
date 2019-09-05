@@ -203,8 +203,6 @@ export default {
         delete e.detail.end
       } 
       this.mapParameters(e)
-      
-      console.log('maxRecords dans requete = ', e.detail.maxRecords)
       this.parameters = Object.assign(this.parameters, e.detail)   
 
     },
@@ -449,6 +447,13 @@ export default {
             }
           })
       }
+      var self = this
+      // constraints
+      this.$store.state.constraintList.forEach (function (constraint) {
+        if (meta[constraint] && typeof meta[constraint] === 'string') {
+          meta[constraint] = [meta[constraint]]
+        }
+      }) 
       
       // contacts
       var contacts = {metadata: {}, resource: {}}
@@ -478,7 +483,7 @@ export default {
       }
       // links
       var links = this.$gn.strToArray(meta.link)
-      var self = this
+
       links.forEach(function (link, index) {
         switch (link[3]) {
         case 'OpenSearch':

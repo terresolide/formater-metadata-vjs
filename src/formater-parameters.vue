@@ -20,7 +20,7 @@
            <dd>{{item}}</dd>
          </dl>
          <div class="mtdt-block-parameters">
-          <dl class="mtdt-content mtdt-parameter-title" style="padding-bottom:5px;" v-if="type === 'metadata'"><dt :style="{color:primary}">{{$t('parameters')}}</dt><dd></dd></dl>
+          <dl class="mtdt-content mtdt-parameter-title" style="padding-bottom:5px;" v-if="type === 'metadata' & countParameters > 0"><dt :style="{color:primary}">{{$t('parameters')}}</dt><dd></dd></dl>
          <dl v-for="(item, key) in metadata" :key="key" v-if="$store.state.osFields[type].acquisition.indexOf(key) >=0" class="mtdt-simple-parameter">
            <dt style="text-transform:capitalize;" :style="{color:primary}">{{key}}</dt> <dd>{{item}}</dd>
          </dl>
@@ -59,19 +59,24 @@ export default{
   data () {
     return {
       uuid: null,
-      metaType: 'opensearch'
+      metaType: 'opensearch',
+      countParameters: 0
     }
   },
   computed: {
     primary() {
       return this.$store.state.style.primary
     }
+  },
+  mounted () {
+    var nodeParameters = this.$el.querySelectorAll('.mtdt-simple-parameter')
+    this.countParameters = nodeParameters.length
   }
 }
 </script>
 <style>
 .mtdt-parameters-metadata .mtdt-block-parameters{
-  display: none;
+  display: block;
 }
 dl.mtdt-simple-parameter:parent{
   display:block;
