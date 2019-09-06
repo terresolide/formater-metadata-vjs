@@ -19,7 +19,7 @@
 <template>
  <div class="mtdt-metadata mtdt-capsule">
     
-   <span class="mtdt-metadata-close fa fa-close" @click="close"></span>
+   <span v-if="metadata && !metadata.appRoot" class="mtdt-metadata-close fa fa-close" @click="close"></span>
    <div v-if="meta">
       <h1 class="mtdt-metadata-header" :style="{color:$store.state.style.primary}">
            <a v-if="meta.groupWebsite" :href="meta.groupWebsite" :title="$gn.t('group-'+ meta.groupOwner)" starget="_blank" class="mtdt-group-logo">
@@ -137,6 +137,7 @@ export default {
     }
   },
   created () {
+    
     moment.locale(this.$i18n.locale)
     if (this.metadata['geonet:info']) {
        this.uuid = this.metadata['geonet:info'].uuid
@@ -146,6 +147,7 @@ export default {
        this.uuid = this.metadata.id
        this.type = 'opensearch'
     }
+    console.log('IS ROOT = ', this.metadata.root)
     this.popstateListener = this.close.bind(this)
     document.addEventListener('popstate', this.popstateListener)
     this.keydownListener = this.checkEscape.bind(this)

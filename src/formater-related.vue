@@ -341,7 +341,7 @@ max-width:90%;
     text-overflow: clip;
     margin:0;
     padding:0;
-    width: calc(100% - 28px);
+    width: calc(100% - 32px);
     overflow: hidden;
     word-break: break-all;
     vertical-align: top;

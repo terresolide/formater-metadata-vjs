@@ -21,22 +21,7 @@ L.Control.Fullscreen = require('./leaflet.control.fullscreen.js')
 // import L from 'leaflet'
 export default {
   name: 'FormaterMap',
-  components: {
-  },
-  props: {
-    lang: {
-      type: String,
-      default: 'en'
-    }
-  },
-  watch: {
-    lang (newvalue) {
-    	this.$i18n.locale = newvalue 
-    	this.resetControl.setLang(newvalue)
-    }
-  },
   created: function() {
-    this.$i18n.locale = this.lang
     this.metadataListListener = this.receiveMetadatas.bind(this)
     document.addEventListener('fmt:metadataListEvent', this.metadataListListener);
     this.metadataListener = this.receiveMetadata.bind(this)
@@ -140,12 +125,12 @@ export default {
    	 
 //     this.layers = L.layerGroup()
 //     this.layers.addTo(this.map)
-    this.resetControl = new L.Control.Reset(this.bounds[0], this.lang)
+    this.resetControl = new L.Control.Reset(this.bounds[0], this.$i18n.locale)
     this.resetControl.addTo(this.map)
-     this.controlLayer = new L.Control.Fmtlayer()
+    this.controlLayer = new L.Control.Fmtlayer()
     this.controlLayer.tiles.arcgisTopo.layer.addTo(this.map)
-     this.controlLayer.addTo(this.map)
-    var fullscreen = new L.Control.Fullscreen('fmtLargeMap', this.lang)
+    this.controlLayer.addTo(this.map)
+    var fullscreen = new L.Control.Fullscreen('fmtLargeMap', this.$i18n.locale)
     fullscreen.addTo(this.map)
 //      var wmsLayer = L.tileLayer.wms('https://muscatemaj-pp.theia-land.fr/atdistrib/resto2/collections/GRENADE/e3514f6a-ce72-5d15-b5f5-94c5c6d72137/wms/CLASSIFICATION?', {
 //         opacity: 0.8,
@@ -219,7 +204,17 @@ export default {
 //       return this.type
 //    },
    receiveMetadata(event) {
-     var bounds = this.selectBbox(event)
+     if (event.detail && event.detail.meta && event.detail.meta.appRoot && event.detail.meta.geoBox) {
+       console.log('is root')
+       console.log(event.detail.meta.geoBox)
+       var box = event.detail.meta.geoBox.split('|')
+       console.log(box)
+       var spatialExtent = [[parseFloat(box[1]), parseFloat(box[0])] , [parseFloat(box[3]), parseFloat(box[2])]]
+       this.$store.commit('setDefaultSpatialExtent', spatialExtent)
+       
+     } else {
+        var bounds = this.selectBbox(event)
+     }
      this.$store.commit('searchAreaChange', bounds)
    },
    receiveMetadatas (event) {
@@ -250,7 +245,7 @@ export default {
     
      this.bboxLayer[this.depth].addTo(this.map);
      if (this.bboxLayer[this.depth]) {
-       this.controlLayer.addOverlay(this.bboxLayer[this.depth], this.$t('all_box'))
+       this.controlLayer.addOverlay(this.bboxLayer[this.depth], this.$i18n.t('all_box'))
      }
 
      if (this.bounds[this.depth]) {
@@ -352,18 +347,20 @@ export default {
    selectBboxById (id, temporaly) {
      var self = this
      var bounds = null
-     this.bboxLayer[this.depth].eachLayer(function(layer) {
-       if (layer.options.id === id || (layer.feature && layer.feature.id === id)) {
-         self.setSelected(layer)
-         var bds = layer.getBounds()
-         if (!bounds) {
-           bounds = bds
-         } else  {
-           bounds.extend(bds)
-         }
-        
-       }
-     })
+     if (this.bboxLayer[this.depth]) {
+	     this.bboxLayer[this.depth].eachLayer(function(layer) {
+	       if (layer.options.id === id || (layer.feature && layer.feature.id === id)) {
+	         self.setSelected(layer)
+	         var bds = layer.getBounds()
+	         if (!bounds) {
+	           bounds = bds
+	         } else  {
+	           bounds.extend(bds)
+	         }
+	        
+	       }
+	     })
+     }
      if (bounds) {
       self.map.fitBounds(bounds, {animate: true, duration:100, padding: [50,50]})
      }

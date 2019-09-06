@@ -47,8 +47,15 @@ const FormaterMetadata = () => import('./formater-metadata.vue')
 import FormaterPaging from './formater-paging.vue';
 import FormaterDrawBbox from './formater-draw-bbox.vue';
 import AerisTheme from 'aeris-commons-components-vjs/src/aeris-theme/aeris-theme.vue'
-import FormaterRequester from './formater-requester.vue';
+import FormaterRequester from './formater-requester.vue'
 
+// prevent previous and next page for browser
+function disableBack() { window.history.forward() }
+window.onload = function () {
+  disableBack();
+}
+  window.onpageshow = function(evt) { if (evt.persisted) disableBack() }
+  window.onbeforeunload = function() { return "Your work will be lost."; };
 export default {
   name: 'FormaterCatalogue',
   components: {
@@ -133,6 +140,9 @@ export default {
       this.$store.commit('temporalChange', temp)
     },
     resetMetadata (event) {
+      if (this.metadatas.length === 1 && this.metadatas[0].appRoot) {
+        return
+      }
       this.metadatas.pop()
       if (this.metadatas.length > 0) {
         var metadata = this.metadatas[this.metadatas.length -1]

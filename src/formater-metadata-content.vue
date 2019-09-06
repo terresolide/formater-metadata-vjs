@@ -136,6 +136,7 @@ export default {
           n ++
         }
       })
+      console.log("countData = ", n)
       return n;
     },
     countContactResource () {
@@ -214,6 +215,13 @@ background-image: linear-gradient(to right, #ccc, #333, #ccc);
 }
 .mtdt-metadata .mtdt-content dl.mtdt-main-parameter dd{
   width: calc(100% - 180px);
+}
+
+.mtdt-metadata .mtdt-content .mtdt-description span.mtdt-quicklooks + span > ul,
+.mtdt-metadata .mtdt-content .mtdt-description span.mtdt-quicklooks + span > div{
+   max-width: calc(100% - 400px);
+   float:left;
+   display: block;
 }
 /*.mtdt-metadata .mtdt-content dd div,
 .mtdt-metadata .mtdt-content dd span{

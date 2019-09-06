@@ -56,7 +56,7 @@ export default function makeStore( config ) {
       // default date & constraint list
       dateList: ['createDate', 'publicationDate', 'revisionDate'],
       constraintList: ['legalConstraints', 'securityConstraints', 'resourceConstraints'],
-      // default map bounds
+      // default map bounds  [latS, lngW], [latN, lngE]
       spatialExtent: [[-60,-120],[75,130]],
       // search area 
       // when a record is selected searchArea is its bbox
@@ -92,6 +92,9 @@ export default function makeStore( config ) {
   return new Vuex.Store( {
     state: finalConfig,
     mutations: {
+      setDefaultSpatialExtent(state, spatialExtent) {
+        state.spatialExtent = spatialExtent
+      },
       temporalChange(state, newTemporal) {
         state.temporalExtent = newTemporal
       },

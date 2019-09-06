@@ -83,7 +83,17 @@ export default {
        var self = this
        for(var key in this.metadatas){
          if (related[key]) {
-           this.$set(this.metadatas[key],'related', related[key])
+           var count = 0
+           for(var name in related[key]) {
+             if (related[key][name] === null) {
+                 delete related[key][name]
+             } else {
+               count++
+             }
+           }
+           if (count > 0) {
+             this.$set(this.metadatas[key],'related', related[key])
+           }
          }
        }
      }

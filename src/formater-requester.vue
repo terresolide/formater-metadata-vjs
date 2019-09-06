@@ -21,7 +21,6 @@ export default {
   },
   data() {
     return {
-      flatsimLayerList: ['CLASSIFICATION', 'CONFIDENCE', 'PIXELS_VALIDITY'],
       srv: null,
       api: null,
       headers: {
@@ -217,6 +216,7 @@ export default {
             var data = response.body
             var uuid = data['geonet:info'].uuid
             var meta = this.treatmentSingleGeonetwork(data, uuid);
+            meta.appRoot = true
             var event = new CustomEvent('fmt:metadataEvent', {detail: {meta:meta, depth: 0 } })
             document.dispatchEvent(event)
          }
@@ -457,7 +457,9 @@ export default {
       if (meta.defaultAbstract) {
         meta.defaultAbstract = meta.defaultAbstract.replace(/(?:\\[rn]|[\r\n])/g, '<br />');
       }
+      
       meta.description = meta.abstract ? meta.abstract: meta.defaultAbstract
+      
       meta.osParameters = []
       meta.mapping = []
       if (meta.image) {
@@ -479,22 +481,25 @@ export default {
       // contacts
       var contacts = {metadata: {}, resource: {}}
       if (meta.responsibleParty) {
-	       meta.responsibleParty.forEach( function (contact)  {
-	          var fields = contact.split('|');
-	          if (fields[1] === 'metadata' || fields[1] === 'metadonnées') {
-	           if (contacts.metadata[fields[0]]){
-	             contacts.metadata[fields[0]].push(fields)
-	           } else {
-	             contacts.metadata[fields[0]] = [fields]
-	           }
-	          }else{
-	            if (contacts.resource[fields[0]]){
-	               contacts.resource[fields[0]].push(fields)
-	            } else {
-	               contacts.resource[fields[0]] = [fields]
-	            }
-	          }
-	      })
+            if (typeof meta.responsibleParty === 'string') {
+              meta.responsibleParty = [meta.responsibleParty]
+            }
+           meta.responsibleParty.forEach( function (contact)  {
+              var fields = contact.split('|');
+              if (fields[1] === 'metadata' || fields[1] === 'metadonnées') {
+               if (contacts.metadata[fields[0]]){
+                 contacts.metadata[fields[0]].push(fields)
+               } else {
+                 contacts.metadata[fields[0]] = [fields]
+               }
+              }else{
+                if (contacts.resource[fields[0]]){
+                   contacts.resource[fields[0]].push(fields)
+                } else {
+                   contacts.resource[fields[0]] = [fields]
+                }
+              }
+          })
       }
       delete meta.responsibleParty
       meta.contacts = contacts
