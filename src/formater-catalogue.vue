@@ -207,6 +207,19 @@ export default {
   height:auto;
   width:100%;
   }
+  
+  .mtdt-catalogue h1,
+    .mtdt-catalogue h2,
+      .mtdt-catalogue h3  {
+    border:none;
+    font-family: "Times New Roman", Times, serif;
+    font-weight:700;
+    color: inherit;
+
+  }
+  .mtdt-catalogue dd{
+    margin:0;
+  }
  .mtdt-catalogue .formater-search-box .box-title h4 {
     margin: 0;
     font-size: 18px;
@@ -231,6 +244,9 @@ export default {
   margin-bottom:120px;
 }
 .mtdt-catalogue .formater-select select {
+  font-family: inherit;
   font-size: 13px;
+  padding:0 32px 6.5px 6.5px;
 }
+
 </style>

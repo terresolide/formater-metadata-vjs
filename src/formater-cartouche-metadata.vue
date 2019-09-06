@@ -208,7 +208,7 @@ export default {
   font-weight:600;
   font-size: 1.1em;
   min-height:34px;
-  max-height:34px;
+  max-height:36px;
   padding: 5px;
   cursor: pointer;
   overflow: hidden;

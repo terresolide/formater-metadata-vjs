@@ -147,7 +147,7 @@ export default {
        this.uuid = this.metadata.id
        this.type = 'opensearch'
     }
-    console.log('IS ROOT = ', this.metadata.root)
+
     this.popstateListener = this.close.bind(this)
     document.addEventListener('popstate', this.popstateListener)
     this.keydownListener = this.checkEscape.bind(this)
@@ -316,6 +316,7 @@ export default {
 .mtdt-metadata h4{
   max-width: 100%;
   color:#754a15;
+  border:none;
 }
 .mtdt-metadata h2 {
 
