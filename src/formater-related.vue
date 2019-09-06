@@ -14,7 +14,7 @@
 <template>
   <span class="mtdt-related" :class="'mtdt-related-' + type">
     <div v-if="download && download.length === 1 && type === 'cartouche'">
-    <a :href="download[0].url" download>
+    <a :href="download[0].url" target="_blank">
        <div class="mtdt-related-type fa fa-download"  :style="{backgroundColor: primary}" :title="$t('download_data')">
          
       </div>
