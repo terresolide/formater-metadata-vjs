@@ -179,11 +179,15 @@ export default {
       this.$store.commit('sizeChange')
    },
     handleReset (event) {
+     if (this.metadatas[0] && this.metadatas[0].appRoot) {
+       this.resetMetadata()
+     } else {
       this.metadatas = []
       this.metadatas.length = 0
       this.currentUuid = null
       this.$store.commit('currentUuidChange', this.currentUuid)
       this.$store.commit('parametersChange', {parameters: [], mapping: [], type: 'geonetwork'})
+     }
     },
     handleSearch (event) {
       if (this.metadatas.length > 0) {

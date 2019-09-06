@@ -430,6 +430,17 @@ export default {
           }
         }
       }
+     /* if (properties.keywords) {
+        properties.keywordGroup = {}
+        properties.keywords.forEach(function (keyword) {
+          if (!properties.keywordGroup[keyword.type]) {
+            properties.keywordGroup[keyword.type] = [{value: keyword.name}]
+          } else {
+            properties.keywordGroup[keyword.type].push({value: keyword.name})
+          }
+        })
+        delete properties.keywords
+      }*/
       if (properties.keywords) {
         properties.keyword = []
         properties.keywords.forEach(function (keyword) {

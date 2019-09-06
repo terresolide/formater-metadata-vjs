@@ -45,7 +45,7 @@
           
        </div> 
    </div>
-         <div v-if="type === 'metadata'"></div>
+   <div v-if="type === 'metadata'"></div>
     <div v-if="layers && (layers.length > 1 || (type === 'metadata' && layers.length > 0))">
       <div class="mtdt-related-type fa fa-globe" :style="{backgroundColor: layerAdded ? '#8c0209' : primary}" :title="$t('display_layer')">
           <span class="fa fa-caret-down" v-if="type === 'cartouche'"></span>
@@ -119,6 +119,10 @@
         default: null
       },
       links: {
+        type: Array,
+        default: null
+      },
+      related: {
         type: Array,
         default: null
       }

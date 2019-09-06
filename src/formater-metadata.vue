@@ -287,7 +287,6 @@ export default {
 .mtdt-metadata .mtdt-column-right{
   width: 300px;
   background: #eee;
-  min-height:500px;
   margin:0 10px 0 0;
  }
 .mtdt-metadata span.mtdt-metadata-close{

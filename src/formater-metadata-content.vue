@@ -1,7 +1,7 @@
 <i18n>{
    "en":{
      "date": "Date | Dates",
-     "creationDate": "create",
+     "createDate": "create",
      "publicationDate": "publication",
      "revisionDate": "revision",
      "contact_resource": "Resource contact | Resource contacts",
@@ -20,8 +20,8 @@
 
    },
    "fr":{
-      "date": "Date | Dates",
-     "creationDate": "création",
+     "date": "Date | Dates",
+     "createDate": "création",
      "publicationDate": "publication",
      "revisionDate": "mise à jour",
      "contact_resource": "Contact pour les données | Contacts pour les données",
@@ -58,7 +58,7 @@
 <dl v-if="countDate > 0" class="mtdt-main-parameter">
    <dt :style="dtStyle()">{{$tc('date', countDate)}} </dt>
    <dd>
-      <div v-for="key in $store.state.dataList" v-if="metadata[key]">
+      <div v-for="key in $store.state.dateList" v-if="metadata[key]">
            {{date2str(metadata[key])}} ({{$t(key)}})
       </div>
    </dd>
@@ -96,6 +96,14 @@
  <dl>         <hr /> </dl>
  <h1>{{$t('about_metadata')}}</h1>
  <dl><dt :style="dtStyle()">{{$t('identifier')}}</dt><dd>{{metadata.id}}</dd></dl>
+ <dl v-if="countMetadataDate > 0" class="mtdt-main-parameter">
+   <dt :style="dtStyle()">{{$tc('date', countDate)}} </dt>
+   <dd>
+      <div v-for="key in $store.state.dateList" v-if="metadata['geonet:info'][key]">
+           {{date2str(metadata['geonet:info'][key])}} ({{$t(key)}})
+      </div>
+   </dd>
+</dl>
  <dl v-if="Object.keys(metadata.contacts.metadata).length > 0">
    <dt :style="dtStyle()">Contacts métadonnées</dt>
    <dd>
@@ -133,6 +141,20 @@ export default {
       var _this = this
       this.$store.state.dateList.forEach(function (key){
         if (_this.metadata.hasOwnProperty(key)) {
+          n ++
+        }
+      })
+      console.log("countData = ", n)
+      return n;
+    },
+    countMetadataDate() {
+      if (!this.metadata['geonet:info']) {
+        return
+      }
+      var n = 0
+      var _this = this
+      this.$store.state.dateList.forEach(function (key){
+        if (_this.metadata['geonet:info'].hasOwnProperty(key)) {
           n ++
         }
       })
