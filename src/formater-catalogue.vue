@@ -50,12 +50,12 @@ import AerisTheme from 'aeris-commons-components-vjs/src/aeris-theme/aeris-theme
 import FormaterRequester from './formater-requester.vue'
 
 // prevent previous and next page for browser
-function disableBack() { window.history.forward() }
-window.onload = function () {
-  disableBack();
-}
-  window.onpageshow = function(evt) { if (evt.persisted) disableBack() }
-  window.onbeforeunload = function() { return "Your work will be lost."; };
+// function disableBack() { window.history.forward() }
+// window.onload = function () {
+//   disableBack();
+// }
+//   window.onpageshow = function(evt) { if (evt.persisted) disableBack() }
+//   window.onbeforeunload = function() { return "Your work will be lost."; };
 export default {
   name: 'FormaterCatalogue',
   components: {
@@ -223,6 +223,9 @@ export default {
  .mtdt-catalogue .formater-search-box .box-title h4 {
     margin: 0;
     font-size: 18px;
+    color: inherit;
+    font-family: inherit;
+    font-weight: 600;
 }
  .mtdt-catalogue .fa{
   font-size: inherit;

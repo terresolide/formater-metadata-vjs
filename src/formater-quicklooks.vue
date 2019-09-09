@@ -85,6 +85,7 @@ export default {
   top: 110px;
   z-index:1;
   opacity:0;
+  cursor: pointer;
 }
  .mtdt-quicklooks:hover .fa {
    opacity:0.3

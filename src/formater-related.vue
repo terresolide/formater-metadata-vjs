@@ -14,11 +14,11 @@
 <template>
   <span class="mtdt-related" :class="'mtdt-related-' + type">
     <div v-if="download && download.length === 1 && type === 'cartouche'">
-    <a :href="download[0].url" target="_blank">
+    <a :href="download[0].url" >
        <div class="mtdt-related-type fa fa-download"  :style="{backgroundColor: primary}" :title="$t('download_data')">
          
-      </div>
-    </a> 
+      </div> 
+    </a>
     </div>
     <div v-if="download && (download.length >1 || (type === 'metadata' && download.length > 0))">
        <div class="mtdt-related-type fa fa-download"  :style="{backgroundColor: primary}" :title="$t('download_data')">
@@ -28,7 +28,7 @@
       <div class="mtdt-expand mtdt-links" >
            <ul >
            <li v-for="(download, index) in download" :key="index" @click="triggerDownload(index);" >
-            <a :href="download.url"  :title="download.description" target="_blank">{{download.name? download.name: $t('download_data')}}</a>
+              <a :href="download.url"  :title="download.description" >{{download.name? download.name: $t('download_data')}}</a>
           </li>
           </ul>    
       </div> 
@@ -164,20 +164,32 @@
          }
          // this.updateClass()
        },
+       triggerDownload (index) {
+          this.$http.get(this.download[index].url )
+             .then( response => {
+               console.log(response)
+               const url = window.URL.createObjectURL(new Blob([response.data]));
+               const link = document.createElement('a')
+               link.href = url
+              
+               document.body.appendChild(link)
+               link.click()
+             })
+       },
        handleOver (e) {
          e.target.style.color = this.$store.state.style.over
        },
        handleOut (e) {
          e.target.style.color = this.$store.state.style.link
        },
-       triggerDownload (index) {
-         var url = this.download[index].url
-         // var url = 'SENTINEL1.zip'
-         headers = { "Upgrade-Insecure-Requests": 1}
-         this.$http.get(url, {credentials: true}).then(
-           response => {console.log(response);}
-         )
-       },
+//        triggerDownload (index) {
+//          var url = this.download[index].url
+//          // var url = 'SENTINEL1.zip'
+//          headers = { "Upgrade-Insecure-Requests": 1}
+//          this.$http.get(url, {credentials: true}).then(
+//            response => {console.log(response);}
+//          )
+//        },
        fixBbox (e) {
          e.target.fixed = true
          e.target.style.backgroundColor = '#8c0209'
@@ -228,6 +240,7 @@
 .mtdt-related-cartouche{
  float: right;
  margin-right:3px;
+ margin-top:3px;
  max-height: 25px;
  max-width: 50%;
 }

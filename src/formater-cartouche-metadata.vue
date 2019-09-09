@@ -4,14 +4,16 @@
      "children": "Children",
      "localize": "Localize on the map",
      "display_layer": "Display the layer on the map",
-     "download_data": "Download data"
+     "download_data": "Download data",
+     "now": "Now"
    },
    "fr":{
      "contact": "Contact | Contacts",
      "children": "Fiches Enfants",
      "localize": "Localiser sur la carte, cliquer pour garder la position",
      "display_layer": "Afficher sur la carte",
-     "download_data": "Télécharger les données"
+     "download_data": "Télécharger les données",
+     "now": "Maintenant"
    }
 }
 </i18n>
@@ -23,11 +25,7 @@
      </div>
      <div class="mtdt-description">
         <img :src="meta.thumbnail" v-if="meta.thumbnail"/>
-        <div v-if="meta.tempExtentBegin || meta.tempExtentEnd" class="mtdt-cartouche-elt">
-                <span v-if="meta.tempExtentBegin">{{date2str(meta.tempExtentBegin)}}</span>
-                <i class="fa fa-long-arrow-right" :style="{color:primary}" ></i>
-                <span v-if="meta.tempExtentEnd">{{date2str(meta.tempExtentEnd)}}</span>
-        </div>
+        <formater-temporal-extent :start="meta.tempExtentBegin" :end="meta.tempExtentEnd"></formater-temporal-extent>
          <span v-html="meta.description"></span>
           <formater-parameters type="cartouche" :metadata="meta"></formater-parameters>
      </div>
@@ -51,13 +49,15 @@
 <script>
 import FormaterOnline from './formater-online.vue'
 import FormaterRelated from './formater-related.vue'
+import FormaterTemporalExtent from './formater-temporal-extent.vue'
 const FormaterParameters = () => import('./formater-parameters.vue')
 export default {
   name: 'FormaterCartoucheMetadata',
   components: {
     FormaterOnline,
     FormaterRelated,
-    FormaterParameters
+    FormaterParameters,
+    FormaterTemporalExtent
   },
   props: {
 
@@ -111,11 +111,7 @@ export default {
     displayMetadata () {
       var event = new CustomEvent('fmt:metadataEvent', {detail: {meta:this.meta, depth: this.depth } })
       document.dispatchEvent(event)
-    },
-    date2str (date) {
-      //return 'hello';
-      return moment(date, 'YYYY-MM-DD').format('ll')
-    },
+    }
   /*  changeLayer (layer) {
      // console.log(index)
       // this.$set(this.meta.layers[index], 'checked', !this.meta.layers[index].checked)
@@ -249,7 +245,7 @@ export default {
 .mtdt-cartouche-metadata div.mtdt-description img {
   position: relative;
    float:left;
-   max-width: 150px;
+   max-width: 110px;
    max-height:80px;
    background: #ddd;
    margin: 0px 15px 10px 0;

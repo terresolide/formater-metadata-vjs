@@ -74,9 +74,7 @@
 <dl  v-if="metadata.tempExtentBegin" class="mtdt-main-parameter">
   <dt :style="dtStyle()">{{$t('temporal_extent')}}</dt>
   <dd>
-      {{date2str(metadata.tempExtentBegin)}}
-      <i class="fa fa-long-arrow-right" ></i>
-      {{date2str(metadata.tempExtentEnd)}}
+     <formater-temporal-extent :start="metadata.tempExtentBegin"  :end="metadata.tempExtentEnd" />
   </dd>
 </dl>
 <dl v-if="metadata.lineage" class="mtdt-main-parameter">
@@ -117,13 +115,15 @@ import FormaterQuicklooks from './formater-quicklooks.vue'
 import FormaterParameters from './formater-parameters.vue'
 import FormaterListContact from './formater-list-contact.vue'
 import FormaterKeywords from './formater-keywords.vue'
+import FormaterTemporalExtent from './formater-temporal-extent.vue'
 export default {
   name: 'FormaterMetadataContent',
   components: {
     FormaterQuicklooks,
     FormaterParameters,
     FormaterListContact,
-    FormaterKeywords
+    FormaterKeywords,
+    FormaterTemporalExtent
   },
   props:{
     metadata: {
@@ -144,7 +144,6 @@ export default {
           n ++
         }
       })
-      console.log("countData = ", n)
       return n;
     },
     countMetadataDate() {
@@ -158,7 +157,6 @@ export default {
           n ++
         }
       })
-      console.log("countData = ", n)
       return n;
     },
     countContactResource () {
@@ -243,7 +241,11 @@ background-image: linear-gradient(to right, #ccc, #333, #ccc);
 .mtdt-metadata .mtdt-content .mtdt-description span.mtdt-quicklooks + span > div{
    max-width: calc(100% - 400px);
    float:left;
+   margin-left: 0px;
    display: block;
+}
+.mtdt-metadata .mtdt-content .mtdt-description ul {
+  padding-left:12px;
 }
 /*.mtdt-metadata .mtdt-content dd div,
 .mtdt-metadata .mtdt-content dd span{

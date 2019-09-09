@@ -305,7 +305,7 @@ export default {
 }
 .formater-spatial-search .box-toolbar button{
   margin-left: 3px;
-  min-width: 25px;
+  min-width: 38px;
   padding: 1px 6px;
 }
 </style>
