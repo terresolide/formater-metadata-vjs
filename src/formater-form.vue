@@ -3,7 +3,7 @@
      "search": "Search ...",
      "reset": "Reset search",
      "time_slot": "Time slot",
-     "spatial_extend": "Spatial extend",
+     "spatial_extent": "Spatial extent",
      "groupOwners": "Data center",
      "gemetKeywords": "Inspire Gemet Keywords",
      "formaterVariable": "Variables",
@@ -13,7 +13,7 @@
       "search": "Rechercher ...",
       "reset": "Initialiser",
       "time_slot": "Intervalle temporel",
-      "spatial_extend": "Zone géographique",
+      "spatial_extent": "Zone géographique",
       "groupOwners": "Centre de données",
       "gemetKeywords": "Inspire Gemet Keywords",
       "formaterVariable": "Variables",
@@ -28,7 +28,7 @@
      <input id="any" name="any" v-model="fulltextSearch" :placeholder="$t('search')" @change="changeText" @keypress="changeTextOnEnter"  /><i class="fa fa-search"></i>
  </div>
  <formater-map></formater-map>
- <formater-search-box header-icon-class="fa fa-globe" open-icon-class="fa fa-caret-right" :title="$t('spatial_extend')" :deployed="false" type="empty" :disable-level="+ $store.state.disable.spatial">
+ <formater-search-box header-icon-class="fa fa-globe" open-icon-class="fa fa-caret-right" :title="$t('spatial_extent')" :deployed="false" type="empty" :disable-level="+ $store.state.disable.spatial">
  <formater-spatial-search :disable="$store.state.disable.spatial"></formater-spatial-search>
  </formater-search-box>
  
