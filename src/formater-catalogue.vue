@@ -209,13 +209,28 @@ export default {
   }
   
   .mtdt-catalogue h1,
-    .mtdt-catalogue h2,
-      .mtdt-catalogue h3  {
+  .mtdt-catalogue h2,
+  .mtdt-catalogue h3  {
     border:none;
     font-family: "Times New Roman", Times, serif;
     font-weight:700;
     color: inherit;
+  }
+  .mtdt-catalogue h4,
+  .mtdt-catalogue h5 {
+    font-family: inherit;
+    color: inherit;
+  } 
+  .mtdt-catalogue input,
+  .mtdt-catalogue select, 
+  .mtdt-catalogue textarea{
+         font-family: Roboto,Arial,sans-serif;
+     font-size: 15px;
+  }
+  .mtdt-catalogue button,
+  .mtdt-catalogue input[type="button"]{
 
+    letter-spacing: .5px;
   }
   .mtdt-catalogue dd{
     margin:0;
@@ -249,7 +264,7 @@ export default {
 .mtdt-catalogue .formater-select select {
   font-family: inherit;
   font-size: 13px;
-  padding:0 32px 6.5px 6.5px;
+  padding:0 32px 3.5px 6.5px;
 }
 
 </style>

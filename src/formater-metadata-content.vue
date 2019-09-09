@@ -4,7 +4,7 @@
      "createDate": "create",
      "publicationDate": "publication",
      "revisionDate": "revision",
-     "contact_resource": "Resource contact | Resource contacts",
+     "contact": "Contact | Contacts",
      "keyword": "Keyword | Keywords",
      "lineage": "Lineage",
      "constraint": "Constraints",
@@ -24,7 +24,7 @@
      "createDate": "création",
      "publicationDate": "publication",
      "revisionDate": "mise à jour",
-     "contact_resource": "Contact pour les données | Contacts pour les données",
+     "contact": "Contact | Contacts",
      "keyword": "Mot-clé | Mots-clés",
       "lineage": "Généalogie",
       "constraint": "Contraintes",
@@ -64,7 +64,7 @@
    </dd>
 </dl>
 <dl v-if="countContactResource > 0 " class="mtdt-main-parameter">
-  <dt :style="dtStyle()">{{$tc('contact_resource', countContactResource)}}</dt>
+  <dt :style="dtStyle()">{{$tc('contact', countContactResource)}}</dt>
   <dd> <formater-list-contact   :contacts="metadata.contacts.resource" type="resource" ></formater-list-contact></dd>
 </dl>
 <dl v-if="metadata.keyword.length > 0" class="mtdt-main-parameter">
@@ -103,7 +103,7 @@
    </dd>
 </dl>
  <dl v-if="Object.keys(metadata.contacts.metadata).length > 0">
-   <dt :style="dtStyle()">Contacts métadonnées</dt>
+   <dt :style="dtStyle()">Contacts</dt>
    <dd>
            <formater-list-contact   :contacts="metadata.contacts.metadata" type="metadata" ></formater-list-contact>
    </dd>

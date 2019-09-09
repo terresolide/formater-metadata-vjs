@@ -289,6 +289,9 @@ export default {
         features.push({type: feature.type, id: feature.id, geometry: feature.geometry})
        
       })
+      if (data.features.length === 0) {
+        metadatas = null
+      }
       this.fill({ type: 'opensearch', properties: data.properties, features: features, metadata:metadatas}, depth)
     },
     treatmentGeonetwork (data, depth) {

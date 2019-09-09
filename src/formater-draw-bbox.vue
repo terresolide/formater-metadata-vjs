@@ -64,7 +64,7 @@ export default {
            south: bounds.getSouth()
          }
       }
-      this.selectAreaChange({detail: bbox})
+     // this.selectAreaChange({detail: bbox})
     }
   },
   
@@ -195,7 +195,7 @@ export default {
         let layer = e.layer
         let bounds = e.layer.getBounds()
         self.bbox = self.drawValidBbox(bounds)
-        self.drawIntersection()
+      //  self.drawIntersection()
         // trigger event fmt:selectAreaChange
         let event = new CustomEvent('fmt:selectAreaChange', {detail: self.bbox})
         document.dispatchEvent(event)
@@ -207,7 +207,7 @@ export default {
           bounds = layer.getBounds()
         })
          self.bbox = self.drawValidBbox(bounds)
-         self.drawIntersection()
+        // self.drawIntersection()
         // trigger event fmt:selectAreaChange
         let event = new CustomEvent('fmt:selectAreaChange', {detail: self.bbox})
         document.dispatchEvent(event)
@@ -222,7 +222,7 @@ export default {
         }
         // self.bbox is null
         self.bbox = self.drawValidBbox(null)
-        self.drawIntersection()
+       // self.drawIntersection()
         // trigger event fmt:selectAreaChange
         let event = new CustomEvent('fmt:selectAreaChange', {detail: returnedBbox})
         document.dispatchEvent(event)
@@ -279,7 +279,7 @@ export default {
         this.bbox = this.drawValidBbox(L.latLngBounds(bounds))
         this.drawIntersection()
     
-        let e = new CustomEvent('fmt:selectAreaChange', {detail: bbox})
+        let e = new CustomEvent('fmt:selectAreaChange', {detail: this.bbox})
         document.dispatchEvent(e)
       } else {
         this.drawLayers.clearLayers()
@@ -358,27 +358,30 @@ export default {
       if (!this.bbox) {
         return;
       }
-      var bbox = Object.create(this.bbox)
+      var bbox = Object.assign({}, this.bbox)
       if (this.searchArea) {
         if (bbox.west < this.searchArea.getWest()) {
           bbox.west = this.searchArea.getWest()
         } else if (bbox.west > this.searchArea.getEast()) {
           bbox.west = this.searchArea.getEast()
-        }
+        } 
         if (bbox.east > this.searchArea.getEast()) {
           bbox.east = this.searchArea.getEast()
         } else if (bbox.east < this.searchArea.getWest()) {
           bbox.east = this.searchArea.getWest()
-        }
+        } 
         if (bbox.north > this.searchArea.getNorth()) {
           bbox.north = this.searchArea.getNorth()
         } else if (bbox.north < this.searchArea.getSouth()) {
           bbox.north = this.searchArea.getSouth()
-        }
+        } 
         if (bbox.south < this.searchArea.getSouth()) {
           bbox.south = this.searchArea.getSouth()
         } else if (bbox.south > this.searchArea.getNorth()) {
           bbox.south = this.searchArea.getNorth()
+        } 
+        if (bbox.north <= bbox.south || bbox.west >= bbox.east) {
+          return
         }
         var bounds = [[bbox.south, bbox.west], [bbox.north, bbox.east]]
         this.intersection = L.rectangle(bounds, {color: '#ff0000'})
