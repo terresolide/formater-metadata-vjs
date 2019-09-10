@@ -26,8 +26,8 @@
      <div class="mtdt-description">
         <img :src="meta.thumbnail" v-if="meta.thumbnail"/>
         <formater-temporal-extent :start="meta.tempExtentBegin" :end="meta.tempExtentEnd"></formater-temporal-extent>
-         <span v-html="meta.description"></span>
-          <formater-parameters type="cartouche" :metadata="meta"></formater-parameters>
+         <div v-if="meta.description" v-html="meta.description" style="padding:5px 0"></div>
+         <formater-parameters type="cartouche" :metadata="meta"></formater-parameters>
      </div>
       
      <div class="mtdt-resource" v-if="depth > 0 && meta.related && meta.related.onlines">
@@ -251,7 +251,7 @@ export default {
    margin: 0px 15px 10px 0;
 }
 .mtdt-cartouche-metadata .mtdt-cartouche-elt{
-   margin-bottom: 5px;
+   margin-bottom: 0px;
 }
 .mtdt-cartouche-metadata .mtdt-footer{
   position: absolute;

@@ -48,8 +48,6 @@ export default{
   },
   methods: {
     date2str (date) {
-      //return 'hello';
-      console.log(date)
       var myDate = moment(date, 'YYYY-MM-DD')
       if (myDate.isValid()) {
         return myDate.format('ll')

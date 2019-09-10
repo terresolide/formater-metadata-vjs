@@ -97,7 +97,9 @@ export default {
       })
     },
     handleReset (event) {
-      
+      this.parameters.forEach( function (parameter) {
+        parameter.value = null
+      })
     }
   }
 }

@@ -248,7 +248,8 @@ export default {
        this.controlLayer.addOverlay(this.bboxLayer[this.depth], this.$i18n.t('all_box'))
      }
 
-     if (this.bounds[this.depth]) {
+     if (this.bounds[this.depth] && this.bounds[this.depth]._southWest) {
+      console.log(this.bounds[this.depth])
       this.map.fitBounds(this.bounds[this.depth])
       this.resetControl.setBounds(this.bounds[this.depth])
      }

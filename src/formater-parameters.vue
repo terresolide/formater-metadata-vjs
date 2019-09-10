@@ -101,7 +101,7 @@ dl.mtdt-simple-parameter:parent{
   float: none;
   width: auto;
    word-break: break-all;
-  line-height: 1.3em;
+  line-height: 1em;
   vertical-align: bottom;
   margin:0;
 }

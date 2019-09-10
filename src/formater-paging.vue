@@ -129,6 +129,11 @@ export default {
      if (event.detail.depth !=  this.depth ){
        return;
      }
+     if (!event.detail.metadata) {
+       this.count = 0
+       this.from = 1
+       this.to = 0
+     }
      switch (this.type) {
        case 'geonetwork':
          this.count = parseInt(event.detail.summary['@count'])
