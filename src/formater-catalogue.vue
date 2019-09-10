@@ -266,7 +266,7 @@ export default {
 .mtdt-catalogue .formater-select select {
   font-family: inherit;
   font-size: 13px;
-  padding:0 32px 3.5px 6.5px;
+  padding:0 32px 0px 6.5px;
 }
 
 </style>
