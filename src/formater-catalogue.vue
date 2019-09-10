@@ -206,6 +206,8 @@ export default {
   line-height: 16px;
   height:auto;
   width:100%;
+  -webkit-box-sizing: content-box;
+  box-sizing: content-box;
   }
   
   .mtdt-catalogue h1,

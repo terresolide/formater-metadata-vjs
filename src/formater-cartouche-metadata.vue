@@ -259,6 +259,8 @@ export default {
   bottom:0;
   width:100%;
   min-height: 28px;
+  -webkit-box-sizing: content-box;
+  box-sizing: content-box;
 }
 .mtdt-cartouche-metadata .mtdt-footer > div{
   display: inline-block;
