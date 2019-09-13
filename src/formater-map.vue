@@ -205,10 +205,7 @@ export default {
 //    },
    receiveMetadata(event) {
      if (event.detail && event.detail.meta && event.detail.meta.appRoot && event.detail.meta.geoBox) {
-       console.log('is root')
-       console.log(event.detail.meta.geoBox)
        var box = event.detail.meta.geoBox.split('|')
-       console.log(box)
        var spatialExtent = [[parseFloat(box[1]), parseFloat(box[0])] , [parseFloat(box[3]), parseFloat(box[2])]]
        this.$store.commit('setDefaultSpatialExtent', spatialExtent)
        
@@ -249,7 +246,6 @@ export default {
      }
 
      if (this.bounds[this.depth] && this.bounds[this.depth]._southWest) {
-      console.log(this.bounds[this.depth])
       this.map.fitBounds(this.bounds[this.depth])
       this.resetControl.setBounds(this.bounds[this.depth])
      }

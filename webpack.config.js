@@ -10,6 +10,7 @@ const VueLoaderPlugin = require('vue-loader/lib/plugin')
 // var vueLoaderConfig = require('./vue-loader.conf')
 var preUrl = PACKAGE.preproduction.url + "/webcomponents/";
 var prodUrl = PACKAGE.production.url + '/' + buildName + '@' + buildVersion +  '/dist/' ;
+var FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin');
 //if (process.env.NODE_ENV === 'production') {
 //  var appURL = prodUrl;
 //} else {
@@ -117,6 +118,11 @@ module.exports.plugins = (module.exports.plugins || []).concat([
 if (process.env.NODE_ENV === 'development') {
   module.exports.mode = 'development'
 	module.exports.output.filename='build.js'
+	  module.exports.plugins = (module.exports.plugins || []).concat([
+
+	    new FriendlyErrorsWebpackPlugin()
+	  ])
+
 
 }
 if (process.env.NODE_ENV === 'production') {

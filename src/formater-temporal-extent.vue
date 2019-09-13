@@ -4,7 +4,7 @@
     "now": "Now"
   },
   "fr": {
-    "now": "Maintenant"
+    "now": "Aujourd'hui"
   }
 }
 </i18n>

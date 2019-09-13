@@ -263,7 +263,11 @@ export default {
   margin-left:10px;
   margin-bottom:120px;
 }
-.mtdt-catalogue .formater-select select {
+.mtdt-catalogue .mtdt-paging .formater-select select {
+  font-family: inherit;
+  padding:6.5 32px 6.5px 6.5px;
+}
+.mtdt-catalogue .mtdt-paging .formater-select select {
   font-family: inherit;
   font-size: 13px;
   padding:0 32px 0px 6.5px;
