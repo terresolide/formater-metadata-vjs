@@ -118,7 +118,8 @@ export default {
     background-color: transparent;
     padding: 0 10px;
     outline: none;
-    padding: .5em; 
+   /* padding: .5em; */
+    line-height: 35px;
 }
 .fmt-parameters-form label{
 	display: block;
