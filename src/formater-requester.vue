@@ -456,7 +456,7 @@ export default {
     treatmentSingleGeonetwork (meta, uuid) {
       meta.id = uuid
       if (this.$store.state.geonetwork) {
-          meta.logo = this.$store.state.geonetwork + meta.logo
+          meta.logo = this.$store.state.geonetwork + meta.logo.replace(/^\//, '')
           meta.exportLinks = {
               xml: this.$store.state.geonetwork + 'srv/api/records/'+ uuid + '/formatters/xml?attachment=true',
               pdf: this.$store.state.geonetwork + 'srv/api/records/'+ uuid + '/formatters/xsl-view?root=div&output=pdf'

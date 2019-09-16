@@ -12,7 +12,7 @@
 }
 </i18n>
 <template>
-  <span class="mtdt-related" :class="'mtdt-related-' + type">
+  <span class="mtdt-related" :class="'mtdt-related-' + type" v-if="!empty || type === 'cartouche'">
     <div v-if="download && download.length === 1 && type === 'cartouche'">
     <a :href="download[0].url" >
        <div class="mtdt-related-type fa fa-download"  :style="{backgroundColor: primary}" :title="$t('download_data')">
@@ -127,6 +127,9 @@
         default: null
       }
     },
+    created () {
+      this.checkEmpty()
+    },
     computed: {
       primary() {
         return this.$store.state.style.primary
@@ -142,8 +145,22 @@
         return layerAdded
       }
     },
+    data () {
+      return {
+        empty: true
+      }
+    },
 
     methods: {
+      checkEmpty () {
+        if (this.download && this.download.length > 0) {
+          this.empty = false
+        } else if (this.layers && this.layers.length > 0){
+          this.empty = false
+        } else if (this.links &&  this.links.length >0) {
+          this.empty = false
+        }
+      },
       changeLayer (layer) {
         // console.log(index)
          // this.$set(this.meta.layers[index], 'checked', !this.meta.layers[index].checked)
@@ -216,6 +233,7 @@
   }
   </script>
   <style>
+  
   .mtdt-link {
     text-decoration: underline;
     cursor: pointer;
@@ -223,6 +241,7 @@
  .mtdt-related-metadata{
    margin: 10px;
    padding:10px;
+   height:auto;
    text-align: center;
 }
 .mtdt-related-metadata > div{

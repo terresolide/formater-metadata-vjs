@@ -1,6 +1,6 @@
 {
   "name": "formater-metadata-vjs",
-  "version": "0.10.6",
+  "version": "0.10.7",
   "description": "Component to display metadata from Object ISO19139",
   "preproduction": {
     "url": "http://localhost:8080"
