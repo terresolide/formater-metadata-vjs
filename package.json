@@ -30,6 +30,7 @@
     "formater-geotiff-visualizer-vjs": "github:terresolide/formater-geotiff-visualizer-vjs",
     "leaflet": "^1.5.1",
     "leaflet-draw": "^1.0.4",
+    "leaflet-kml": "git+https://github.com/windycom/leaflet-kml.git",
     "moment": "^2.22.2",
     "vue": "^2.6.8",
     "vue-custom-element": "^1.4.4",

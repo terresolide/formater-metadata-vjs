@@ -112,7 +112,7 @@ export default {
           //  resultType: 'subtemplate',
           // resultType: 'details',
           sortBy: 'title',
-          sortOrder: 'reverse',
+          sortOrder: 'ordering',
           type:'dataset+or+series+or+publication'
          }
         break;
@@ -163,7 +163,7 @@ export default {
     prepareRequestGeonetwork(e) {
       
       this.initParameters()
-      delete this.parameters.lang
+      delete e.detail.lang
       if (!e.detail.startDefault) {
         e.detail.renameProperty('start', 'extFrom')
       } else {
@@ -266,7 +266,12 @@ export default {
        }
 
       var self = this
-      this.parameters.sortOrder =  this.parameters.sortBy === 'title' ? 'ordering': 'reverse';
+      if (this.parameters.sortBy !== 'title') {
+        delete this.parameters.sortOrder
+      } else {
+        this.parameters.sortOrder = 'reverse'
+      }
+      // this.parameters.sortOrder =  this.parameters.sortBy === 'title' ? 'ordering': 'reverse';
       var url = this.srv + 'q?' + Object.keys(this.parameters).map(function (prop) {
         return prop + '=' + self.parameters[prop]
       }).join('&');
@@ -526,8 +531,8 @@ export default {
       }
       // links
       var links = this.$gn.strToArray(meta.link)
-
       links.forEach(function (link, index) {
+        console.log(link[3])
         switch (link[3]) {
         case 'OpenSearch':
           meta.api = {}
@@ -535,6 +540,11 @@ export default {
           meta.api.name = link[0].length > 0 ? link[0] : link[1]
           break;
         case 'OGC:WMS': 
+        case 'OGC:WFS':
+        case 'OGC:WFS-G':
+        case 'OGC:KML':
+        case 'OGC:OWS':
+        case 'OGC:OWS-C':
           if (!meta.layers) {
             meta.layers = []
           }

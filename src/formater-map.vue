@@ -14,6 +14,7 @@
 </template>
 <script>
 var L = require("leaflet");
+require("leaflet-kml")
 L.Control.Fmtlayer = require('./leaflet.control.fmtlayer.js')
 L.Control.Reset = require('./leaflet.control.reset.js')
 L.Control.Fullscreen = require('./leaflet.control.fullscreen.js')
@@ -170,6 +171,29 @@ export default {
          this.map.fitBounds(bounds, {animate: true,  padding: [30,30]})
        }
        break;
+     case 'OGC:WFS':
+     case 'OGC:WFS-G':
+       var extract = layer.href.match(/^(.*\?).*$/)
+       for(var key in layer) {
+         console.log(key, layer[key])
+       }
+       break;
+     case 'OGC:KML':
+     case 'OGC:OWS':
+     case 'OGC:OWS-C':
+       this.$http.get(layer.href).then(
+           response => {
+             const parser = new DOMParser();
+             const kml = parser.parseFromString(response, 'text/xml');
+             var kmlLayer = new L.KML(kml)
+             kmlLayer.addTo(this.map)
+           }
+       )
+       break;
+
+     
+      // var kmlLayer = new L.KML(layer.href, {async: true});
+      // kmlLayer.addTo(this.map)
      }
    },
    removeLayer (event) {
