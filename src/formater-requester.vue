@@ -163,6 +163,7 @@ export default {
     prepareRequestGeonetwork(e) {
       
       this.initParameters()
+      delete this.parameters.lang
       if (!e.detail.startDefault) {
         e.detail.renameProperty('start', 'extFrom')
       } else {
@@ -225,18 +226,23 @@ export default {
     mapParameters(e) {
       // transform the name of parameter from this application to the opensearch api for the predefined parameter
       // or test if it is an opensearch parameter
+      // paramaters specific to api opensearch
       var specificParameters = this.$store.state.parameters.others
+      // parameters mapping with our app parameters
       var mappingParameters = this.$store.state.parameters.mapping
       for(var name in e.detail){
-        var isSpecific = specificParameters.find(function (obj) {
-          if (obj.name === name) {
-            return true
-          }
-        })
+        
         if (typeof mappingParameters[name] !== 'undefined') {
           e.detail.renameProperty(name, mappingParameters[name])
-        } else if (!isSpecific) {
-          delete e.detail[name]
+        } else  {
+          var isSpecific = specificParameters.find(function (obj) {
+            if (obj.name === name) {
+              return true
+            }
+          })
+          if (!isSpecific) {
+            delete e.detail[name]
+          }
         } 
       }
     },

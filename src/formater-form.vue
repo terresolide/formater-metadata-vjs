@@ -219,6 +219,7 @@ export default {
 
     },
     handleSearch (e) {
+      e.detail.lang = this.$i18n.locale
       if (this.fulltextSearch.length > 0) {
       	e.detail.any = this.fulltextSearch
       } 

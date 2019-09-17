@@ -64,8 +64,7 @@ export default function makeStore( config ) {
       // current opensearch api parameters
       parameters: {
         // regex of parameter (value attribute) which are exclued to use in request
-        excluedRegex: ["\{geo:(uid|geometry|name|lon|lat|radius)\}",
-          "\{language\}", "\{eo:parentIdentifier\}",
+        excluedRegex: ["\{geo:(uid|geometry|name|lon|lat|radius)\}", "\{eo:parentIdentifier\}",
           "\{(fs|eo):(first|second|creation|modification|processing){0,1}Date(Min|Max){0,1}\}", 
           "\{resto:[a-zA-Z]+\}"],
         // list of predefined parameters (temporalExtent, spatialExtent and page information)
@@ -74,6 +73,7 @@ export default function makeStore( config ) {
           any: "{searchTerms}",
           start: "{time:start}",
           end: "{time:end}",
+          lang: "{language}",
           box: "{geo:box}",
           maxRecords: "{count}",
           index: "{startIndex}",
@@ -84,7 +84,7 @@ export default function makeStore( config ) {
         // for the predefined parameters like box, temporalExtent, and paging (common for all api)
         mapping:[],
         // list of others specific opensearch api parameters 
-        // { name, title, pattern, min, max, options}
+        // add in formater-parameters-form
         others: []
       }
   }
