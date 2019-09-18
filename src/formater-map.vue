@@ -150,6 +150,7 @@ export default {
    addLayer (event) {
      var layer = event.detail.layer
      var bounds = this.searchBboxById(event.detail.id)
+     var newLayer = null
      switch (layer.type) {
      case 'OGC:WMS':
        var extract = layer.href.match(/^(.*\?).*$/)
@@ -160,23 +161,20 @@ export default {
          opacity: 0.5
         }
        var url = extract[1]
-       var wmsLayer = L.tileLayer.wms(url, options).addTo(this.map);
-       wmsLayer.bringToFront()
-       if (!this.layers[this.depth]) {
-         this.layers[this.depth] = new Map()
-       }
-       this.layers[this.depth].set(layer.id, wmsLayer)
-       var bounds = this.searchBboxById(event.detail.id)
-       if (bounds) {
-         this.map.fitBounds(bounds, {animate: true,  padding: [30,30]})
-       }
+       var newLayer = L.tileLayer.wms(url, options);
+       this.addLayerToMap(layer.id, event.detail.id, newLayer)
        break;
      case 'OGC:WFS':
      case 'OGC:WFS-G':
        var extract = layer.href.match(/^(.*\?).*$/)
-       for(var key in layer) {
-         console.log(key, layer[key])
-       }
+       this.$http.get(extract).then(
+           response => {
+             const parser = new DOMParser();
+             const kml = parser.parseFromString(response.body, 'text/xml');
+             var newLayer = new L.KML(kml)
+             this.addLayerToMap(layer.id, event.detail.id, newLayer)
+           }
+       )
        break;
      case 'OGC:KML':
      case 'OGC:OWS':
@@ -184,9 +182,9 @@ export default {
        this.$http.get(layer.href).then(
            response => {
              const parser = new DOMParser();
-             const kml = parser.parseFromString(response, 'text/xml');
-             var kmlLayer = new L.KML(kml)
-             kmlLayer.addTo(this.map)
+             const kml = parser.parseFromString(response.body, 'text/xml');
+             var newLayer = new L.KML(kml)
+             this.addLayerToMap(layer.id, event.detail.id, newLayer)
            }
        )
        break;
@@ -194,6 +192,21 @@ export default {
      
       // var kmlLayer = new L.KML(layer.href, {async: true});
       // kmlLayer.addTo(this.map)
+     }
+     
+   },
+   addLayerToMap(id, groupId, newLayer) {
+     if (newLayer) {
+       newLayer.addTo(this.map)
+       newLayer.bringToFront()
+       if (!this.layers[this.depth]) {
+         this.layers[this.depth] = new Map()
+       }
+       this.layers[this.depth].set(id, newLayer)
+       var bounds = this.searchBboxById(groupId)
+       if (bounds) {
+         this.map.fitBounds(bounds, {animate: true,  padding: [30,30]})
+       }
      }
    },
    removeLayer (event) {

@@ -473,6 +473,9 @@ export default {
               pdf: this.$store.state.geonetwork + 'srv/api/records/'+ uuid + '/formatters/xsl-view?root=div&output=pdf'
           }
       }
+      if (typeof meta.abstract === 'object') {
+        meta.abstract = meta.abstract[0]
+      }
       if (meta.abstract) {
         meta.abstract = meta.abstract.replace(/(?:\\[rn]|[\r\n])/g, '<br />');
       }
