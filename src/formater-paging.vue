@@ -31,7 +31,7 @@
 	   <span class="fa fa-angle-double-right" @click="goToLast()"></span>
   </span>
   <div style="float:right;display:inline-block;" v-if="orders.length > 0">
-    {{$t('sortBy')}} <formater-select :options="options" name="sortBy" type="associative" defaut="title" @input="sortChange" color="#ffffff"></formater-select>
+    {{$t('sortBy')}} <formater-select :options="options" name="sortBy" type="associative" :defaut="$store.state.orderBy" @input="sortChange" color="#ffffff"></formater-select>
   </div>
    </div>
  </span>

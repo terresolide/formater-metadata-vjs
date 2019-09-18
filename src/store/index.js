@@ -33,6 +33,8 @@ export default function makeStore( config ) {
         min: "1920-12-01",
         max: "now"
       },
+      // default order
+      orderBy: 'changeDate',
       disable: {
         temporal: false,
         spatial: false,

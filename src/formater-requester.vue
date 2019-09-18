@@ -111,7 +111,7 @@ export default {
           to: this.$store.state.size.nbRecord,
           //  resultType: 'subtemplate',
           // resultType: 'details',
-          sortBy: 'title',
+          sortBy: 'changeDate',
           sortOrder: 'ordering',
           type:'dataset+or+series+or+publication'
          }
