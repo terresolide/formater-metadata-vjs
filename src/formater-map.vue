@@ -104,7 +104,7 @@ export default {
   methods: {
    init () {
      var container = this.$el.querySelector('#fmtMap');
-     this.map = L.map( container).setView([51.505, -0.09], 1);
+     this.map = L.map( container, {scrollWheelZoom: false}).setView([51.505, -0.09], 1);
      this.bounds[0] = this.map.getBounds()
  		
 //    L.tileLayer('//server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
