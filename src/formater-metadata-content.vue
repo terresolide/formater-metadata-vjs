@@ -43,7 +43,7 @@
 <div class="mtdt-content">
 <h1>{{$t('about_resource')}}</h1>
  <div class="mtdt-description" style="display:block;">
-       <formater-quicklooks :quicklooks="metadata.images" :legend="metadata.legend"></formater-quicklooks>
+       <formater-quicklooks :quicklooks="metadata.images"></formater-quicklooks>
        <dl class="mtdt-identifier" v-if="metadata.identifier && !metadata.description">
              <dt :style="dtStyle()">{{$t('identifier')}}</dt>
               <dd >{{metadata.identifier}}</dd>

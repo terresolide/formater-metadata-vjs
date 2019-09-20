@@ -44,7 +44,7 @@ export default function makeStore( config ) {
         cartouche: {
           identifier: ['productType'],
           quality: ['resolution'],
-          acquisition:  [ 'sensorMode', 'polarisation',  'relativeOrbitNumber', 'orbitDirection', 'subswath'],
+          acquisition:  [ 'platform', 'instrument', 'sensorMode', 'polarisation',  'relativeOrbitNumber', 'orbitDirection', 'subswath'],
           process:  ['processingLevel', 'processingMode',  'correction', 'version']
         },
         metadata: {

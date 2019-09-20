@@ -1,4 +1,13 @@
-<i18n>{
+/**
+ * use geonetwork q-search service 
+ * @see https://geonetwork-opensource.org/manuals/trunk/eng/users/api/q-search.html
+ * 
+ * use opensearch api with extension geo, time, and eo
+ * @see http://www.opensearch.org/Home
+ * 
+ */
+ 
+ <i18n>{
    "en":{
      "search": "Search ..."
    },
@@ -104,7 +113,7 @@ export default {
       case 'geonetwork':
         this.parameters = {
           _content_type: 'json',
-           fast: 'index',
+           fast: 'index', // more quick
         //  'facet.q': '',
           bucket: '26041996',
           from: 1,
@@ -303,7 +312,7 @@ export default {
       if (data.features.length === 0) {
         metadatas = null
       }
-      this.fill({ type: 'opensearch', properties: data.properties, features: features, metadata:metadatas}, depth)
+      this.fill({ type: 'opensearch', properties: data.properties | data.description, features: features, metadata:metadatas}, depth)
     },
     treatmentGeonetwork (data, depth) {
       var metadatas = {}
@@ -548,6 +557,7 @@ export default {
         case 'OGC:KML':
         case 'OGC:OWS':
         case 'OGC:OWS-C':
+        case 'GLG:KML-2.0-http-get-map':
           if (!meta.layers) {
             meta.layers = []
           }

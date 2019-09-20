@@ -18,6 +18,7 @@ require("leaflet-kml")
 L.Control.Fmtlayer = require('./leaflet.control.fmtlayer.js')
 L.Control.Reset = require('./leaflet.control.reset.js')
 L.Control.Fullscreen = require('./leaflet.control.fullscreen.js')
+L.Control.Legend = require('./leaflet.control.legend.js')
 // import {Map, Control, LatLng, tileLayer, TileLayer} from 'leaflet'
 // import L from 'leaflet'
 export default {
@@ -95,7 +96,8 @@ export default {
      },
      colors: ['orange', 'purple', 'green'],
      controlLayer: null,
-     resetControl: null
+     resetControl: null,
+     legendControl: null
     }
   },
   
@@ -131,8 +133,11 @@ export default {
     this.controlLayer = new L.Control.Fmtlayer()
     this.controlLayer.tiles.arcgisTopo.layer.addTo(this.map)
     this.controlLayer.addTo(this.map)
+    this.legendControl = new L.Control.Legend(this.$i18n.locale)
+
     var fullscreen = new L.Control.Fullscreen('fmtLargeMap', this.$i18n.locale)
     fullscreen.addTo(this.map)
+    this.legendControl.addTo(this.map)
 //      var wmsLayer = L.tileLayer.wms('https://muscatemaj-pp.theia-land.fr/atdistrib/resto2/collections/GRENADE/e3514f6a-ce72-5d15-b5f5-94c5c6d72137/wms/CLASSIFICATION?', {
 //         opacity: 0.8,
 //         format: 'image/png'
@@ -149,7 +154,8 @@ export default {
    },
    addLayer (event) {
      var layer = event.detail.layer
-     var bounds = this.searchBboxById(event.detail.id)
+     var metaId = event.detail.id
+     var bounds = this.searchBboxById(metaId)
      var newLayer = null
      switch (layer.type) {
      case 'OGC:WMS':
@@ -162,7 +168,7 @@ export default {
         }
        var url = extract[1]
        var newLayer = L.tileLayer.wms(url, options);
-       this.addLayerToMap(layer.id, event.detail.id, newLayer)
+       this.addLayerToMap(layer.id, metaId, newLayer)
        break;
      case 'OGC:WFS':
      case 'OGC:WFS-G':
@@ -172,19 +178,20 @@ export default {
              const parser = new DOMParser();
              const kml = parser.parseFromString(response.body, 'text/xml');
              var newLayer = new L.KML(kml)
-             this.addLayerToMap(layer.id, event.detail.id, newLayer)
+             this.addLayerToMap(layer.id, metaId, newLayer)
            }
        )
        break;
      case 'OGC:KML':
      case 'OGC:OWS':
      case 'OGC:OWS-C':
+     case 'GLG:KML-2.0-http-get-map':
        this.$http.get(layer.href).then(
            response => {
              const parser = new DOMParser();
              const kml = parser.parseFromString(response.body, 'text/xml');
              var newLayer = new L.KML(kml)
-             this.addLayerToMap(layer.id, event.detail.id, newLayer)
+             this.addLayerToMap(layer.id, metaId, newLayer)
            }
        )
        break;
@@ -215,6 +222,27 @@ export default {
        layer.remove()
      }
      this.layers[this.depth].delete(event.detail.id)
+   },
+   seeOnlyCurrent(currentId) {
+     var depth = this.depth
+     if (!this.layers[depth]) {
+       return
+     }
+     var begin = currentId + '_'
+     this.layers[depth].forEach(function (layer, id) {
+       if (id.indexOf(begin) !== 0) {
+         layer.remove()
+       }
+     })
+   },
+   seeAllLayers() {
+     var _this = this
+     if (!this.layers[this.depth]) {
+       return
+     }
+     this.layers[_this.depth].forEach(function (layer) {
+       layer.addTo(_this.map)
+     })
    },
    hideLayers () {
      for (var depth in this.layers) {
@@ -250,6 +278,10 @@ export default {
         var bounds = this.selectBbox(event)
      }
      this.$store.commit('searchAreaChange', bounds)
+     if (event.detail && event.detail.meta && event.detail.meta.legend) {
+       this.legendControl.setLegend(event.detail.id, event.detail.meta.legend)
+     }
+     this.seeOnlyCurrent(event.detail.meta.id)
    },
    receiveMetadatas (event) {
      if (this.bboxLayer[this.depth]) {
@@ -260,6 +292,7 @@ export default {
          layer.remove()
        })
      }
+     this.legendControl.removeLegend()
      if (this.depth === event.detail.depth   && this.bboxLayer[this.depth]) {
           this.bboxLayer[this.depth].clearLayers();
           this.layers[this.depth] = new Map()
@@ -337,7 +370,7 @@ export default {
         
      }
      this.$store.commit('searchAreaChange', bounds)
-
+     this.legendControl.back()
      this.unselectBbox()
      if (this.depth > event.detail.depth) {
         if (this.bboxLayer[this.depth]) {
@@ -351,6 +384,7 @@ export default {
         
         this.depth = event.detail.depth
         this.resetControl.setBounds(this.bounds[this.depth])
+
         var self = this
         this.bboxLayer[this.depth].eachLayer(function (layer) {
           layer.setStyle({fillColor: self.colors[self.depth], color: self.colors[self.depth]})
@@ -358,6 +392,7 @@ export default {
         this.bboxLayer[this.depth].addTo(this.map)
         this.controlLayer.addOverlay(this.bboxLayer[this.depth], this.$t('all_box'))
       } 
+     this.seeAllLayers()
        if (this.bounds[this.depth]) {
          this.map.fitBounds(this.bounds[this.depth])
        }
@@ -453,6 +488,29 @@ div[id="fmtMap"].mtdt-small .leaflet-control a{
  width: 15px;
  height:15px;
  line-height:15px;
+ }
+  div[id="fmtMap"] .lfh-control-legend {
+   cursor: pointer;
+ }
+  div[id="fmtMap"] .lfh-control-legend img{
+    max-height:250px;
+  }
+ 
+ div[id="fmtMap"].mtdt-small .lfh-control-legend img{
+   max-width:120px;
+   max-height:100px;
+ }
+  div[id="fmtMap"] .lfh-control-legend img{
+    display: none;
+  }
+  div[id="fmtMap"] .lfh-control-legend a{
+   display:block;
+ }
+  div[id="fmtMap"] .lfh-control-legend.expand img{;
+   display:block;
+ }
+  div[id="fmtMap"] .lfh-control-legend.expand a{
+   display:none;
  }
  
  div[id="fmtMap"] a.leaflet-control-layers-toggle{

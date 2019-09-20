@@ -1,13 +1,3 @@
-<i18n>
-{
-  "en": {
-    "legend": "Legend"
-   },
-   "fr": {
-     "legend": "Légende"
-   }
-}
-</i18n>
 <template>
  <span class="mtdt-quicklooks" v-if="images">
     <i class="fa fa-chevron-circle-left" v-if="selected > 0" @click="selected -= 1"></i>
@@ -18,11 +8,6 @@
       <img :src="image[1]" :alt="image[2]" />
       <div style="max-height:34px; padding:3px;margin:0;line-height:1">{{image[2]}}</div>
     </div>
-	</div>
-	<div v-if="legend" style="padding:20px;text-align:center">
-
-	<img :src="legend" style="max-width:260px;padding:3px"/>
-		<div>{{$t('legend')}}</div>
 	</div>
  </span>
 </template>
@@ -35,10 +20,6 @@ export default {
   props: {
     quicklooks: {
       type: String | Array,
-      default: null
-    },
-    legend: {
-      type: String,
       default: null
     }
   },
