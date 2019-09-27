@@ -179,15 +179,15 @@ export default {
     document.removeEventListener('popstate', this.popstateListener)
     this.popstateListener = null
     document.removeEventListener('keydown', this.keydownListener)
-    this.keydownListener = this.checkEscape.bind(this)
+    this.keydownListener = null
   },
   methods: {
 
-      checkEscape (event) {
-        var event = event || window.event
+      checkEscape (e) {
+        var event = e || window.event
         var isEscape = false;
-        if ("key" in event) {
-          isEscape = (event.key === "Escape" || event.key === "Esc");
+        if (event.key) {
+          isEscape = (event.key === 'Escape' || event.key === 'Esc');
         } else {
           isEscape = (event.keyCode === 27);
         }
