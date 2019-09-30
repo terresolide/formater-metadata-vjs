@@ -6,6 +6,7 @@
    options: {
      position: 'topleft',
    },
+   bbox: null,
    tiles: {
      osm: {
        name: 'OSM',
@@ -35,6 +36,24 @@
        var layer = L.tileLayer(this.tiles[key].url, {attribution: this.tiles[key].attribution})
        this.tiles[key].layer = layer
        this.addBaseLayer(layer, this.tiles[key].name)
+     }
+   },
+   addBboxLayer () {
+     this.bbox = L.layerGroup()
+     this.bbox.addTo(this._map)
+     this.addOverlay(this.bbox, 'bbox', true)
+   },
+   setBboxLayer (bboxLayer) {
+     if (this.bbox) {
+        this.bbox.clearLayers()
+     } else {
+        this.addBboxLayer()
+     }
+     this.bbox.addLayer(bboxLayer)
+   },
+   removeBboxLayer () {
+     if (this.bbox) {
+       this.bbox.clearLayers()
      }
    }
  })

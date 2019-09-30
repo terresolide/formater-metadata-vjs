@@ -92,7 +92,9 @@ export default {
      selectedOptions: {
        color: 'red',
        fillColor: 'red',
-       fillOpacity: 0.4
+       fillOpacity: 0.05,
+       strokeWidth:1,
+       weight:1
      },
      colors: ['orange', 'purple', 'green'],
      controlLayer: null,
@@ -138,6 +140,7 @@ export default {
     var fullscreen = new L.Control.Fullscreen('fmtLargeMap', this.$i18n.locale)
     fullscreen.addTo(this.map)
     this.legendControl.addTo(this.map)
+//    this.legendControl.addBboxLayer()
 //      var wmsLayer = L.tileLayer.wms('https://muscatemaj-pp.theia-land.fr/atdistrib/resto2/collections/GRENADE/e3514f6a-ce72-5d15-b5f5-94c5c6d72137/wms/CLASSIFICATION?', {
 //         opacity: 0.8,
 //         format: 'image/png'
@@ -155,7 +158,7 @@ export default {
    addLayer (event) {
      var layer = event.detail.layer
      var metaId = event.detail.id
-     var bounds = this.searchBboxById(metaId)
+     var bounds = this.searchBboxBoundsById(metaId)
      var newLayer = null
      switch (layer.type) {
      case 'OGC:WMS':
@@ -210,7 +213,7 @@ export default {
          this.layers[this.depth] = new Map()
        }
        this.layers[this.depth].set(id, newLayer)
-       var bounds = this.searchBboxById(groupId)
+       var bounds = this.searchBboxBoundsById(groupId)
        if (bounds) {
          this.map.fitBounds(bounds, {animate: true,  padding: [30,30]})
        }
@@ -225,6 +228,8 @@ export default {
    },
    seeOnlyCurrent(currentId) {
      var depth = this.depth
+     var bounds = this.selectBboxById(currentId)
+     this.controlLayer.setBboxLayer(L.rectangle(bounds, this.selectedOptions))
      if (!this.layers[depth]) {
        return
      }
@@ -256,6 +261,11 @@ export default {
        this.bboxLayer[i].remove()
      }
    },
+   showBboxLayers () {
+     for (var i in this.bboxLayer){
+       this.bboxLayer[i].addTo(this.map)
+     }
+   },
    getOptionsLayer () {
      var options = Object.assign(this.defaultRectangleOptions, {fillColor: this.colors[this.depth], color: this.colors[this.depth]})
      return options
@@ -284,9 +294,9 @@ export default {
      this.seeOnlyCurrent(event.detail.meta.id)
    },
    receiveMetadatas (event) {
-     if (this.bboxLayer[this.depth]) {
-       this.controlLayer.removeLayer(this.bboxLayer[this.depth])
-     }
+//      if (this.bboxLayer[this.depth]) {
+//        this.controlLayer.removeLayer(this.bboxLayer[this.depth])
+//      }
      if (this.layers[this.depth]) {
        this.layers[this.depth].forEach(function (layer) {
          layer.remove()
@@ -310,10 +320,11 @@ export default {
      
      this.bounds[this.depth] = this.bboxLayer[this.depth].getBounds()
     
-     this.bboxLayer[this.depth].addTo(this.map);
-     if (this.bboxLayer[this.depth]) {
-       this.controlLayer.addOverlay(this.bboxLayer[this.depth], this.$i18n.t('all_box'))
-     }
+//      this.bboxLayer[this.depth].addTo(this.map);
+//      if (this.bboxLayer[this.depth]) {
+//        this.controlLayer.addOverlay(this.bboxLayer[this.depth], this.$i18n.t('all_box'))
+//      }
+      this.controlLayer.setBboxLayer(this.bboxLayer[this.depth])
 
      if (this.bounds[this.depth] && this.bounds[this.depth]._southWest) {
       this.map.fitBounds(this.bounds[this.depth])
@@ -343,14 +354,21 @@ export default {
      var self = this
      var options = this.getOptionsLayer()
      for(var i in this.selected) {
-       this.selected[i].setStyle(
-           {
-             color: options.color, 
-             fillColor: options.fillColor,
-             fillOpacity: options.fillOpacity
-           })
+       this.selected[i].eachLayer(function (lr) {
+         lr.setStyle({
+           color: options.color, 
+           fillColor: options.fillColor,
+           fillOpacity: options.fillOpacity
+         })
+       })
+//        this.selected[i].setStyle(
+//            {
+//              color: options.color, 
+//              fillColor: options.fillColor,
+//              fillOpacity: options.fillOpacity
+//            })
       
-     }
+      }
       this.selected = []
    },
    clearLayers (depth) {
@@ -373,10 +391,10 @@ export default {
      this.legendControl.back()
      this.unselectBbox()
      if (this.depth > event.detail.depth) {
-        if (this.bboxLayer[this.depth]) {
-          this.controlLayer.removeLayer(this.bboxLayer[this.depth])
-          this.bboxLayer[this.depth].remove()
-        }
+//         if (this.bboxLayer[this.depth]) {
+//           this.controlLayer.removeLayer(this.bboxLayer[this.depth])
+//           // this.bboxLayer[this.depth].remove()
+//         }
 
         this.bboxLayer.pop()
         this.bounds.pop()
@@ -389,15 +407,14 @@ export default {
         this.bboxLayer[this.depth].eachLayer(function (layer) {
           layer.setStyle({fillColor: self.colors[self.depth], color: self.colors[self.depth]})
         })
-        this.bboxLayer[this.depth].addTo(this.map)
-        this.controlLayer.addOverlay(this.bboxLayer[this.depth], this.$t('all_box'))
       } 
+     this.controlLayer.setBboxLayer(this.bboxLayer[this.depth])
      this.seeAllLayers()
        if (this.bounds[this.depth]) {
          this.map.fitBounds(this.bounds[this.depth])
        }
    },
-   searchBboxById (id) {
+   searchBboxBoundsById (id) {
      var self = this
      var bounds = null
      this.bboxLayer[this.depth].eachLayer(function(layer) {
@@ -413,23 +430,53 @@ export default {
      })
      return bounds
    },
-   selectBboxById (id, temporaly) {
-     var self = this
-     var bounds = null
+   findBboxById (id) {
+     var bboxLayer = L.layerGroup()
      if (this.bboxLayer[this.depth]) {
 	     this.bboxLayer[this.depth].eachLayer(function(layer) {
 	       if (layer.options.id === id || (layer.feature && layer.feature.id === id)) {
-	         self.setSelected(layer)
-	         var bds = layer.getBounds()
-	         if (!bounds) {
-	           bounds = bds
-	         } else  {
-	           bounds.extend(bds)
-	         }
+	         bboxLayer.addLayer(layer)
+	         // self.setSelected(layer)
+// 	         var bds = layer.getBounds()
+// 	         if (!bounds) {
+// 	           bounds = bds
+// 	         } else  {
+// 	           bounds.extend(bds)
+// 	         }
 	        
 	       }
 	     })
      }
+     return bboxLayer
+   },
+   selectBboxById (id, temporaly) {
+     var self = this
+     var bounds = null
+     var bboxLayer = this.findBboxById(id)
+//      if (this.bboxLayer[this.depth]) {
+// 	     this.bboxLayer[this.depth].eachLayer(function(layer) {
+// 	       if (layer.options.id === id || (layer.feature && layer.feature.id === id)) {
+// 	         self.setSelected(layer)
+// 	         var bds = layer.getBounds()
+// 	         if (!bounds) {
+// 	           bounds = bds
+// 	         } else  {
+// 	           bounds.extend(bds)
+// 	         }
+	        
+// 	       }
+// 	     })
+//      }
+     this.setSelected(bboxLayer)
+     var bounds = null
+     bboxLayer.eachLayer(function (layer) {
+       var bds = layer.getBounds()
+       if (!bounds) {
+         bounds = bds
+       } else {
+         bounds.extend(bds)
+       }
+     })
      if (bounds) {
       self.map.fitBounds(bounds, {animate: true, duration:100, padding: [50,50]})
      }
@@ -445,7 +492,11 @@ export default {
    },
    setSelected (layer) {
      this.selected.push(layer)
-     layer.setStyle(this.selectedOptions)
+     var selectedOptions = this.selectedOptions
+     layer.eachLayer(function (lr) {
+       lr.setStyle(selectedOptions)
+     })
+     // layer.setStyle(this.selectedOptions)
    },
    handleReset (event) {
      this.unselectBbox()
@@ -461,7 +512,7 @@ export default {
 }
 </script>
 <style>
-/* @import "../node_modules/leaflet/dist/leaflet.css";*/
+ @import "./assets/css/fontello.css";
 div[id="fmtMap"]{
   width:100%;
   margin:0;

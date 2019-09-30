@@ -50,7 +50,7 @@
     onAdd : function(map){
         
         var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control lfh-control-legend');
-        var a = L.DomUtil.create('a', 'fa fa-sticky-note')
+        var a = L.DomUtil.create('a', 'icon-palette')
         a.setAttribute('title', this._translate[this._lang]['legend'])
         container.appendChild(a)
         this._imgNode = document.createElement('img')

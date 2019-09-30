@@ -310,9 +310,15 @@ export default {
        
       })
       if (data.features.length === 0) {
-        metadatas = null
+        metadatas = {}
       }
-      this.fill({ type: 'opensearch', properties: data.properties | data.description, features: features, metadata:metadatas}, depth)
+      if (data.properties) {
+        var properties = data.properties
+      } else {
+        var properties = data.description
+      }
+
+      this.fill({ type: 'opensearch', properties: data.properties, features: features, metadata:metadatas}, depth)
     },
     treatmentGeonetwork (data, depth) {
       var metadatas = {}
