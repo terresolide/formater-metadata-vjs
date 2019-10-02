@@ -518,6 +518,7 @@ div[id="fmtMap"]{
   margin:0;
   padding:0;
   height:200px;
+  z-index: 0;
 }
 div[id="fmtMap"].mtdt-small{
   max-height: 200px;
@@ -535,7 +536,6 @@ div[id="fmtMap"].mtdt-small .leaflet-control .leaflet-control-zoom-out{
 }
 div[id="fmtMap"].mtdt-small .leaflet-bar a,
 div[id="fmtMap"].mtdt-small .leaflet-control a{
-
  width: 15px;
  height:15px;
  line-height:15px;

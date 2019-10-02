@@ -209,7 +209,7 @@ export default {
   -webkit-box-sizing: content-box;
   box-sizing: content-box;
   }
-  
+
   .mtdt-catalogue h1,
   .mtdt-catalogue h2,
   .mtdt-catalogue h3  {
