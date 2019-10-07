@@ -100,9 +100,9 @@ export default function makeStore( config ) {
       temporalChange(state, newTemporal) {
         state.temporalExtent = newTemporal
       },
-      parametersChange(state, newParameters) {
+     /* parametersChange(state, newParameters) {
         state.parameters = newParameters
-      },
+      },*/
       searchAreaChange(state, newBounds) {
         state.searchArea = newBounds
       },
@@ -131,6 +131,14 @@ export default function makeStore( config ) {
         default:
           state.disable = {temporal: false, spatial: false, searchTerm: false}
         }
+      },
+      addValueToParameters (state, obj) {
+        // @todo useless ? 
+        state.parameters.others.forEach(function (parameter) {
+          if (obj[parameter.name]) {
+            parameter.value = obj[parameter.name]
+          }
+        })
       },
       sizeChange(state) {
         var width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;

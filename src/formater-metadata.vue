@@ -75,7 +75,6 @@
  </div>
 </template>
 <script>
-
 // import FormaterQuicklooks from './formater-quicklooks.vue'
 import FormaterExportLinks from './formater-export-links.vue'
 const FormaterPaging = () => import('./formater-paging.vue')
@@ -116,7 +115,8 @@ export default {
       handler (newvalue) {
         this.computeHasChild(newvalue)
       }
-    } 
+    }
+    
   },
   data() {
     return {
@@ -133,7 +133,8 @@ export default {
      popstateListener: null,
      keydownListener: null,
      describe: null,
-     type: 'geonetwork'
+     type: 'geonetwork',
+     aerisSearchListener: null
     }
   },
   created () {
@@ -148,6 +149,8 @@ export default {
        this.type = 'opensearch'
     }
 
+    this.aerisSearchListener = this.handleSearch.bind(this)
+    document.addEventListener('aerisSearchEvent', this.aerisSearchListener)
     this.popstateListener = this.close.bind(this)
     document.addEventListener('popstate', this.popstateListener)
     this.keydownListener = this.checkEscape.bind(this)
@@ -217,7 +220,7 @@ export default {
       setParameters(osParameters) {
         this.metadata.osParameters = osParameters.parameters
         this.metadata.mapping = osParameters.mapping
-         this.setHasChild(true)
+        this.setHasChild(true)
       },
       setHasChild(value) {
         this.hasChild = value
@@ -265,6 +268,16 @@ export default {
          // var event = new CustomEvent('fmt:metadataWithChildEvent', {detail: {uuid: this.uuid, depth: this.depth}})
          // document.dispatchEvent(event)
       },
+      handleSearch(event) {
+        // register search value parameter
+        if (event.detail.depth === this.depth) {
+          this.metadata.osParameters.forEach(function (parameter) {
+            if (event.detail[parameter.name]) {
+              parameter.value = event.detail[parameter.name]
+            }
+          })
+        }
+      }
      
   }
 }

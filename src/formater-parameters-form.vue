@@ -9,7 +9,7 @@
 <div class="fmt-parameters-form">
 <div v-for="(item, index) in parameters" class="fmt-input-block fmt-input-group" >
 	<label :style="{color: textColor}">{{item.name}}</label>
-	<formater-select v-if="item.options && item.options.length > 0" :name="item.name" width="260px" :options="item.options" @input="selectChange"></formater-select>
+	<formater-select v-if="item.options && item.options.length > 0" :name="item.name" width="260px" :options="item.options" @input="selectChange" :defaut="item.value"></formater-select>
 	<div class="fmt-input disable" v-if="item.options && item.options.length === 1" :style="{backgroundColor: inputColor}">
 	 <span>{{item.options[0]}}</span>
 	</div>
@@ -89,7 +89,6 @@ export default {
       document.dispatchEvent(evt)
     },
     handleSearch (event) {
-      console.log(this.parameters)
       this.parameters.forEach(function (parameter) {
         if (!parameter.options && parameter.value) {
           event.detail[parameter.name] = parameter.value

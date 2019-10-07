@@ -34,7 +34,6 @@
     back () {
       this._legends.pop()
       this._legend = this._legends[this._legends.length -1]
-      console.log(this._legend)
       if (this._legend != null) {
         this._container.style.display = 'block'
       } else {

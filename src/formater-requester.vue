@@ -292,9 +292,11 @@ export default {
       var depth = (typeof this.parameters.depth != 'undefined') ? this.parameters.depth : this.depth
       var self = this
       var url = this.api + (this.api.indexOf('?') > 0 ? '&' :'?');
+      // register parameters value
       url += Object.keys(this.parameters).map(function (prop) {
         return prop + '=' + self.parameters[prop]
       }).join('&');
+      this.$store.commit('addValueToParameters', this.parameters)
       this.$http.get(url).then(
           response => {   this.treatmentGeojson(response.body, depth);}
        )
@@ -550,7 +552,6 @@ export default {
       // links
       var links = this.$gn.strToArray(meta.link)
       links.forEach(function (link, index) {
-        console.log(link[3])
         switch (link[3]) {
         case 'OpenSearch':
           meta.api = {}
