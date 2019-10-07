@@ -134,7 +134,8 @@ export default {
      keydownListener: null,
      describe: null,
      type: 'geonetwork',
-     aerisSearchListener: null
+     aerisSearchListener: null,
+     aerisResetListener: null
     }
   },
   created () {
@@ -151,6 +152,8 @@ export default {
 
     this.aerisSearchListener = this.handleSearch.bind(this)
     document.addEventListener('aerisSearchEvent', this.aerisSearchListener)
+    this.aerisResetListener = this.handleReset.bind(this)
+    document.addEventListener('aerisResetEvent', this.aerisResetListener)
     this.popstateListener = this.close.bind(this)
     document.addEventListener('popstate', this.popstateListener)
     this.keydownListener = this.checkEscape.bind(this)
@@ -179,6 +182,10 @@ export default {
    }
   },
   destroyed () {
+    document.removeEventListener('aerisSearchEvent', this.aerisSearchListener)
+    this.aerisSearchListener = null
+    document.removeEventListener('aerisResetEvent', this.aerisResetListener)
+    this.aerisResetListener = null
     document.removeEventListener('popstate', this.popstateListener)
     this.popstateListener = null
     document.removeEventListener('keydown', this.keydownListener)
@@ -268,7 +275,7 @@ export default {
          // var event = new CustomEvent('fmt:metadataWithChildEvent', {detail: {uuid: this.uuid, depth: this.depth}})
          // document.dispatchEvent(event)
       },
-      handleSearch(event) {
+      handleSearch (event) {
         // register search value parameter
         if (event.detail.depth === this.depth) {
           this.metadata.osParameters.forEach(function (parameter) {
@@ -277,6 +284,11 @@ export default {
             }
           })
         }
+      },
+      handleReset (event) {
+        this.metadata.osParameters.forEach(function (parameter) {
+          delete parameter.value
+        })
       }
      
   }
