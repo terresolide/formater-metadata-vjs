@@ -1,6 +1,6 @@
 <i18n>{
    "en":{
-     "main": "Decription",
+     "main": "Description",
      "complement": "Others informations",
      "temporal_extent": "Temporal extent",
      "search": "Search",
