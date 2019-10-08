@@ -136,13 +136,12 @@ export default {
     }, 
     getRecords (event) {
       // trigger search event like breadcrumb
-      
+      console.log('depth dans getRecords', event.detail)
       if (event.detail && typeof event.detail.depth == 'number') {
         var depth = event.detail.depth
       } else {
         var depth = this.depth
       }
-      
       var e = new CustomEvent("aerisSearchEvent", { detail: {depth: depth}});
       document.dispatchEvent(e);
       
@@ -157,7 +156,7 @@ export default {
       }
 
       this.prepareRequest(e)
-      this.requestApi()
+      this.requestApi(depth)
     },
     prepareRequest (e) {
       switch (this.type) {
@@ -196,7 +195,7 @@ export default {
         this.parameters.isChild = false
         this.parameters.resultType = this.$store.state.summaryType.step1
       }
-      if (this.depth > 0) {
+      if (e.detail.depth > 0) {
         // voir plutôt les key à éliminer centre de données, variable, instruments, gemet, types?
         for(var key in e.detail) {
           if (['any', 'geometry', 'extTo', 'extFrom', 'from', 'to', 'parentUuid', 'type'].indexOf(key) >=0){
@@ -255,18 +254,19 @@ export default {
         } 
       }
     },
-    requestApi ()  {
+    requestApi (depth)  {
         switch (this.type) {
         case 'geonetwork':
-          this.requestApiGeonetwork()
+          this.requestApiGeonetwork(depth)
           break;
         case 'opensearch':
-          this.requestApiOpensearch()
+          this.requestApiOpensearch(depth)
           break;
         }
     },
-    requestApiGeonetwork () {
-      var depth = (typeof this.parameters.depth != 'undefined') ? this.parameters.depth : this.depth
+    requestApiGeonetwork (depth) {
+      
+      // var depth = (typeof this.parameters.depth != 'undefined') ? this.parameters.depth : this.depth
 
       delete this.parameters.depth
       var headers =  {
@@ -288,8 +288,8 @@ export default {
         response => {  this.treatmentGeonetwork(response.body, depth);}
       )
     },
-    requestApiOpensearch () {
-      var depth = (typeof this.parameters.depth != 'undefined') ? this.parameters.depth : this.depth
+    requestApiOpensearch (depth) {
+      // var depth = (typeof this.parameters.depth != 'undefined') ? this.parameters.depth : this.depth
       var self = this
       var url = this.api + (this.api.indexOf('?') > 0 ? '&' :'?');
       // register parameters value
@@ -660,9 +660,9 @@ export default {
       document.dispatchEvent(event)
     },
     handleReset () {
-      var event = new CustomEvent('aerisResetEvent')
+      var event = new CustomEvent('aerisResetEvent', {detail: {}})
       document.dispatchEvent(event)
-      this.getRecords({detail: {depth:0}})
+      this.getRecords({detail: {depth:event.detail.depth}})
     },
     changePage (event) {
       this.getRecords(event)

@@ -297,6 +297,7 @@ export default {
 //      if (this.bboxLayer[this.depth]) {
 //        this.controlLayer.removeLayer(this.bboxLayer[this.depth])
 //      }
+     console.log(this.depth, event.detail.depth)
      if (this.layers[this.depth]) {
        this.layers[this.depth].forEach(function (layer) {
          layer.remove()
@@ -499,14 +500,15 @@ export default {
      // layer.setStyle(this.selectedOptions)
    },
    handleReset (event) {
-     this.unselectBbox()
+     this.depth = event.detail.depth
+     // this.unselectBbox()
      for (var i in this.bboxLayer){
        this.bboxLayer[i].remove()
-       this.controlLayer.removeLayer(this.bboxLayer[i])
+      // this.controlLayer.removeLayer(this.bboxLayer[i])
      }
      this.bboxLayer = []
      this.bounds = []
-     this.depth = 0
+     this.$store.commit('searchAreaChange', null)
    }
   }
 }

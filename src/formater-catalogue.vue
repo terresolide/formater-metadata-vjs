@@ -180,8 +180,45 @@ export default {
    },
     handleReset (event) {
      if (this.metadatas[0] && this.metadatas[0].appRoot) {
-       this.resetMetadata()
+//        for(var i=1; i < this.metadatas.length; i++) {
+//          var event = new CustomEvent('fmt:closeMetadataEvent', {detail:  {depth: i + 1 }})
+//          document.dispatchEvent(event)
+//        }
+       if (this.metadatas.length > 1) {
+         var e = new CustomEvent('fmt:closeMetadataEvent', {detail:  {depth: this.metadatas.length }})
+         document.dispatchEvent(e)
+       }
+       event.detail.depth = 1
+       var metadata = this.metadatas[0]
+       this.metadatas = this.metadatas.slice(0, 1)
+       console.log(this.metadatas)
+       this.currentUuid = metadata.id
+       var type = metadata.disableType
+      
+       metadata.osParameters.forEach(function (prm) {
+         prm.value = null
+       })
+       var parameters = metadata.osParameters
+       var mapping = metadata.mapping
+       var min = null
+       var max = null
+       if (metadata.tempExtentBegin) {
+         min = metadata.tempExtentBegin.substring(0, 10)
+       }
+       if (metadata.tempExtentEnd) {
+         max = metadata.tempExtentEnd.substring(0, 10)
+       }
+       var temp = {
+           min: min ? min : this.temporalExtent.min,
+           max: max ? max : this.temporalExtent.max
+       }
+       this.$store.commit('temporalChange', temp)
+   
+       this.$store.commit('currentUuidChange', this.currentUuid)
+       this.$store.commit('parametersChange', {parameters: parameters, mapping: mapping, type: type})
+
      } else {
+      event.detail.depth = 0
       this.metadatas = []
       this.metadatas.length = 0
       this.currentUuid = null

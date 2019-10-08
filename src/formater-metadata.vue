@@ -83,7 +83,7 @@ const FormaterListMetadata = () => import('./formater-list-metadata.vue')
 const FormaterOpensearch = () => import('./formater-opensearch.vue')
 const FormaterFullMetadata = () => import('./formater-full-metadata.vue')
 import FormaterRelated from './formater-related.vue';
- import FormaterMetadataContent from './formater-metadata-content.vue'
+import FormaterMetadataContent from './formater-metadata-content.vue'
 // const FormaterParameters = () => import('./formater-parameters.vue')
 
 export default {
@@ -287,7 +287,7 @@ export default {
       },
       handleReset (event) {
         this.metadata.osParameters.forEach(function (parameter) {
-          delete parameter.value
+          parameter.value = null
         })
       }
      

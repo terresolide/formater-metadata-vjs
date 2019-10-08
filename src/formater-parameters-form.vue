@@ -99,6 +99,7 @@ export default {
       this.parameters.forEach( function (parameter) {
         parameter.value = null
       })
+     // this.selectChange('')
     }
   }
 }
