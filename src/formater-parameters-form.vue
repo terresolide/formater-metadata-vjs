@@ -94,13 +94,13 @@ export default {
           event.detail[parameter.name] = parameter.value
         }
       })
-    },
-    handleReset (event) {
-      this.parameters.forEach( function (parameter) {
-        parameter.value = null
-      })
-     // this.selectChange('')
-    }
+    } // ,
+//     handleReset (event) {
+//       this.parameters.forEach( function (parameter) {
+//         parameter.value = null
+//       })
+//      // this.selectChange('')
+//     }
   }
 }
 </script>

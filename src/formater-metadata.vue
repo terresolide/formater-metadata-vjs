@@ -289,6 +289,7 @@ export default {
         this.metadata.osParameters.forEach(function (parameter) {
           parameter.value = null
         })
+        // this.$store.commit('parametersChange', {parameters:this.metadata.osParameters, mapping: this.metadata.mapping, type: type})
       }
      
   }

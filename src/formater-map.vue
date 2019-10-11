@@ -92,9 +92,16 @@ export default {
      selectedOptions: {
        color: 'red',
        fillColor: 'red',
-       fillOpacity: 0.05,
+       fillOpacity: 0.3,
        strokeWidth:1,
        weight:1
+     },
+     currentOptions: {
+         color: 'red',
+         fillColor: 'red',
+         fillOpacity: 0.05,
+         strokeWidth:1,
+         weight:1
      },
      colors: ['orange', 'purple', 'green'],
      controlLayer: null,
@@ -229,7 +236,9 @@ export default {
    seeOnlyCurrent(currentId) {
      var depth = this.depth
      var bounds = this.selectBboxById(currentId)
-     this.controlLayer.setBboxLayer(L.rectangle(bounds, this.selectedOptions))
+     if (bounds) {
+       this.controlLayer.setBboxLayer(L.rectangle(bounds, this.currentOptions))
+     }
      if (!this.layers[depth]) {
        return
      }
