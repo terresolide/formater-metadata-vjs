@@ -52,8 +52,8 @@ export default {
     this.handleTheme(this.$store.state.style.emphasis)
   	this.aerisSearchListener = this.handleSearch.bind(this)
     document.addEventListener('aerisSearchEvent', this.aerisSearchListener)
-    this.aerisResetListener = this.handleReset.bind(this)
-    document.addEventListener('aerisResetEvent', this.aerisResetListener)
+//     this.aerisResetListener = this.handleReset.bind(this)
+//     document.addEventListener('aerisResetEvent', this.aerisResetListener)
   	
   },
   destroyed () {

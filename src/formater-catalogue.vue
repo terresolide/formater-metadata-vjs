@@ -179,6 +179,7 @@ export default {
       this.$store.commit('sizeChange')
    },
     handleReset (event) {
+	  console.log('handle reset dans catalogue')
      if (this.metadatas[0] && this.metadatas[0].appRoot) {
 //        for(var i=1; i < this.metadatas.length; i++) {
 //          var event = new CustomEvent('fmt:closeMetadataEvent', {detail:  {depth: i + 1 }})
@@ -194,11 +195,23 @@ export default {
        console.log(this.metadatas)
        this.currentUuid = metadata.id
        var type = metadata.disableType
-      
-       metadata.osParameters.forEach(function (prm) {
-         prm.value = null
+       this.metadatas[0].osParameters.forEach(function (prm) {
+    	   console.log(prm)
+    	   console.log(prm.value)
+    	   prm.value = null
+    	   console.log(prm.value)
+    	   console.log(prm)
+        // delete prm.value
        })
+       console.log(this.metadatas[0].osParameters)
        var parameters = metadata.osParameters
+       parameters.forEach(function (prm) {
+    	   if (prm.value) {
+    		   delete prm.value
+    	   }
+       })
+       this.metadatas[0].osParameters = parameters
+       console.log(parameters)
        var mapping = metadata.mapping
        var min = null
        var max = null
@@ -208,6 +221,7 @@ export default {
        if (metadata.tempExtentEnd) {
          max = metadata.tempExtentEnd.substring(0, 10)
        }
+       console.log(metadata.osParameters)
        var temp = {
            min: min ? min : this.temporalExtent.min,
            max: max ? max : this.temporalExtent.max

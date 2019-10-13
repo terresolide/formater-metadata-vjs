@@ -54,6 +54,7 @@
     _enlarge : function () {
       this._nodeLarge.appendChild(this._map._container)
       var height = window.innerHeight - 400 
+      this._container.querySelector('a').setAttribute('title', this._translate[this._lang]['reduce'])
       this._map._container.style.height = height + 'px'
       this._map._container.className = this._map._container.className.replace('mtdt-small', 'mtdt-fullscreen')
             this._map.setMinZoom(2)

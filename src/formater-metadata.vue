@@ -225,8 +225,12 @@ export default {
          }
       },
       setParameters(osParameters) {
-        this.metadata.osParameters = osParameters.parameters
-        this.metadata.mapping = osParameters.mapping
+    	  console.log(osParameters)
+//         this.metadata.osParameters = osParameters.parameters
+//         this.metadata.mapping = osParameters.mapping
+        this.osParameters = osParameters.parameters
+        this.mapping = osParameters.mapping
+        this.disableType =  this.describe ? 'opensearch' : 'geonetwork'
         this.setHasChild(true)
       },
       setHasChild(value) {
@@ -234,13 +238,13 @@ export default {
         this.$set(this.tabs, 'search', value)
         if (value) {
           this.currentTab = 'search'
-          var type = this.describe ? 'opensearch' : 'geonetwork'
-          this.metadata.disableType = type
-          this.$store.commit('parametersChange', {parameters:this.metadata.osParameters, mapping: this.metadata.mapping, type: type})
+//           var type = this.describe ? 'opensearch' : 'geonetwork'
+//           this.metadata.disableType = type
+          this.$store.commit('parametersChange', {parameters:this.osParameters, mapping: this.mapping, type: this.disableType})
             
           this.getRecords()
         } else {
-          this.metadata.disableType = 'noChild'
+          this.disableType = 'noChild'
           this.$store.commit('parametersChange', {parameters: [], mapping:[], type: 'noChild'})
         }
       },
@@ -286,10 +290,11 @@ export default {
         }
       },
       handleReset (event) {
+    	  console.log('handle reset dans metadata')
         this.metadata.osParameters.forEach(function (parameter) {
           parameter.value = null
         })
-        // this.$store.commit('parametersChange', {parameters:this.metadata.osParameters, mapping: this.metadata.mapping, type: type})
+        this.$store.commit('parametersChange', {parameters:this.metadata.osParameters, mapping: this.metadata.mapping,  type: this.metadata.disableType})
       }
      
   }
