@@ -13,27 +13,7 @@
 </i18n>
 <template>
   <span class="mtdt-related" :class="'mtdt-related-' + type" v-if="!empty || type === 'cartouche'">
-    <div v-if="download && download.length === 1 && type === 'cartouche'">
-    <a :href="download[0].url" >
-       <div class="mtdt-related-type fa fa-download"  :style="{backgroundColor: primary}" :title="$t('download_data')">
-         
-      </div> 
-    </a>
-    </div>
-    <div v-if="download && (download.length >1 || (type === 'metadata' && download.length > 0))">
-       <div class="mtdt-related-type fa fa-download"  :style="{backgroundColor: primary}" :title="$t('download_data')">
-         <span v-if="type === 'cartouche'" class="fa fa-caret-down"></span>
-      </div> 
-      <div v-if="type === 'metadata'"></div>
-      <div class="mtdt-expand mtdt-links" >
-           <ul >
-           <li v-for="(download, index) in download" :key="index" @click="triggerDownload(index);" >
-              <a :href="download.url"  :title="download.description" >{{download.name? download.name: $t('download_data')}}</a>
-          </li>
-          </ul>    
-      </div> 
-        <hr v-if="type === 'metadata'" /> 
-    </div>
+    
     <div v-if="type === 'cartouche' && hasBboxLayer" style="display:inline-block;" >
       <div class="mtdt-related-type fa fa-dot-circle-o" :style="{backgroundColor:primary}" 
      :title="$t('localize')"   @click="fixBbox">
@@ -74,6 +54,27 @@
        </div> 
          <hr v-if="type === 'metadata'" /> 
    </div>
+   <div v-if="download && download.length === 1 && type === 'cartouche'">
+    <a :href="download[0].url" >
+       <div class="mtdt-related-type fa fa-download"  :style="{backgroundColor: primary}" :title="$t('download_data')">
+         
+      </div> 
+    </a>
+    </div>
+    <div v-if="download && (download.length >1 || (type === 'metadata' && download.length > 0))">
+       <div class="mtdt-related-type fa fa-download"  :style="{backgroundColor: primary}" :title="$t('download_data')">
+         <span v-if="type === 'cartouche'" class="fa fa-caret-down"></span>
+      </div> 
+      <div v-if="type === 'metadata'"></div>
+      <div class="mtdt-expand mtdt-links" >
+           <ul >
+           <li v-for="(download, index) in download" :key="index" @click="triggerDownload(index);" >
+              <a :href="download.url"  :title="download.description" >{{download.name? download.name: $t('download_data')}}</a>
+          </li>
+          </ul>    
+      </div> 
+        <hr v-if="type === 'metadata'" /> 
+    </div>
   <!--  <div v-if="related && (related.children || related.parent)" style="position:relative;">
    <div class="mtdt-related-type fa fa-code-fork" :style="{backgroundColor:primary}">
       <span class="fa fa-caret-down"></span>
