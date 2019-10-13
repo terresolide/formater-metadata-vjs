@@ -20,25 +20,25 @@
  <div class="mtdt-metadata mtdt-capsule">
     
    <span v-if="metadata && !metadata.appRoot" class="mtdt-metadata-close fa fa-close" @click="close"></span>
-   <div v-if="meta">
+   <div v-if="metadata">
       <h1 class="mtdt-metadata-header" :style="{color:$store.state.style.primary}">
-           <a v-if="meta.groupWebsite" :href="meta.groupWebsite" :title="$gn.t('group-'+ meta.groupOwner)" starget="_blank" class="mtdt-group-logo">
-             <img :src="meta.logo"/>
+           <a v-if="metadata.groupWebsite" :href="metadata.groupWebsite" :title="$gn.t('group-'+ metadata.groupOwner)" starget="_blank" class="mtdt-group-logo">
+             <img :src="metadata.logo"/>
           </a>
-          <a v-else href="#" :alt="$gn.t('group-'+ meta.groupOwner)" :title="$gn.t('group-'+ meta.groupOwner)" class="mtdt-group-logo">
-              <img :src="meta.logo"  />
+          <a v-else href="#" :alt="$gn.t('group-'+ metadata.groupOwner)" :title="$gn.t('group-'+ metadata.groupOwner)" class="mtdt-group-logo">
+              <img :src="metadata.logo"  />
           </a>
-          <i  class="fa" :class="meta.type === 'series' ? 'fa-files-o' : 'fa-file'"  v-if="['dataset','series'].indexOf(meta.type) >= 0"></i>
+          <i  class="fa" :class="metadata.type === 'series' ? 'fa-files-o' : 'fa-file'"  v-if="['dataset','series'].indexOf(metadata.type) >= 0"></i>
           <div>
           
-          {{meta.title ? meta.title: meta.defaultTitle}}
+          {{metadata.title ? metadata.title: metadata.defaultTitle}}
           </div>
         
       </h1> 
       <hr style="border:1px solid grey;margin-bottom:0px;clear:both;"/>
       <div class="mtdt-tabs">
          <div v-for="(tab,index) in tabs" v-if="tab === true" class="mtdt-tab" :class="{'selected': currentTab === index}" @click="currentTab = index">{{$t(index)}}</div>
-        <formater-export-links v-if="meta.exportLinks" :export-links="meta.exportLinks"></formater-export-links> 
+        <formater-export-links v-if="metadata.exportLinks" :export-links="metadata.exportLinks"></formater-export-links> 
       </div>
       <!--  tab search if have child -->
       <formater-opensearch v-if="describe"  :describe="describe" :uuid="uuid" :depth="depth" @parametersChange="setParameters"></formater-opensearch>
@@ -56,13 +56,13 @@
              <span v-html="meta.description"></span>
             <formater-parameters type="metadata" :metadata="meta"></formater-parameters>
           </div> -->
-          <formater-metadata-content :metadata="meta" :type="type"></formater-metadata-content>
+          <formater-metadata-content :metadata="metadata" :type="type"></formater-metadata-content>
 
 
         </div>
               <div class="mtdt-column-right">
-        <formater-related type="metadata" :download="meta.download" :id="meta.id"
-         :layers="meta.layers"  :links="meta.links" :related="meta.related"></formater-related>
+        <formater-related type="metadata" :download="metadata.download" :id="metadata.id"
+         :layers="metadata.layers"  :links="metadata.links" :related="metadata.related"></formater-related>
       </div>
       </div>
 
@@ -127,7 +127,7 @@ export default {
      },
      uuid: null,
      currentTab: 'main',
-     meta: null,
+     // meta: null,
      hasChild: false,
      metaLang2: {},
      popstateListener: null,
@@ -150,10 +150,6 @@ export default {
        this.type = 'opensearch'
     }
 
-    this.aerisSearchListener = this.handleSearch.bind(this)
-    document.addEventListener('aerisSearchEvent', this.aerisSearchListener)
-    this.aerisResetListener = this.handleReset.bind(this)
-    document.addEventListener('aerisResetEvent', this.aerisResetListener)
     this.popstateListener = this.close.bind(this)
     document.addEventListener('popstate', this.popstateListener)
     this.keydownListener = this.checkEscape.bind(this)
@@ -176,16 +172,12 @@ export default {
   },
   mounted () {
    if (this.metadata) {
-     this.meta = this.metadata
+     // this.meta = this.metadata
      this.computeHasChild(this.metadata)
      this.fillMetadata()
    }
   },
   destroyed () {
-    document.removeEventListener('aerisSearchEvent', this.aerisSearchListener)
-    this.aerisSearchListener = null
-    document.removeEventListener('aerisResetEvent', this.aerisResetListener)
-    this.aerisResetListener = null
     document.removeEventListener('popstate', this.popstateListener)
     this.popstateListener = null
     document.removeEventListener('keydown', this.keydownListener)
@@ -225,12 +217,13 @@ export default {
          }
       },
       setParameters(osParameters) {
-    	  console.log(osParameters)
-//         this.metadata.osParameters = osParameters.parameters
+    	  //         this.metadata.osParameters = osParameters.parameters
 //         this.metadata.mapping = osParameters.mapping
         this.osParameters = osParameters.parameters
         this.mapping = osParameters.mapping
         this.disableType =  this.describe ? 'opensearch' : 'geonetwork'
+        this.$emit('parametersChange', {osParameters: this.osParameters, mapping: this.mapping, type: this.disableType, depth: this.depth})
+
         this.setHasChild(true)
       },
       setHasChild(value) {
@@ -240,28 +233,30 @@ export default {
           this.currentTab = 'search'
 //           var type = this.describe ? 'opensearch' : 'geonetwork'
 //           this.metadata.disableType = type
-          this.$store.commit('parametersChange', {parameters:this.osParameters, mapping: this.mapping, type: this.disableType})
+         // this.$store.commit('parametersChange', {parameters:this.osParameters, mapping: this.mapping, type: this.disableType})
             
-          this.getRecords()
+          // this.getRecords()
         } else {
           this.disableType = 'noChild'
-          this.$store.commit('parametersChange', {parameters: [], mapping:[], type: 'noChild'})
+        	  this.$emit('parametersChange', {osParameters: [], mapping: [], type: 'noChild', depth: this.depth})
+
+        //  this.$store.commit('parametersChange', {parameters: [], mapping:[], type: 'noChild'})
         }
       },
       fillMetadata () {
          //get meta from other language if meta._locale != meta.docLocale
-         if (this.meta['geonet:info']) {
-           this.uuid = this.meta['geonet:info'].uuid;
+         if (this.metadata['geonet:info']) {
+           this.uuid = this.metadata['geonet:info'].uuid;
          } else {
-           this.uuid = this.meta.id
+           this.uuid = this.metadata.id
          }
          return
-         if (this.meta._locale ===  this.meta.docLocale) {
+         if (this.metadata._locale ===  this.metadata.docLocale) {
            
            return
          }
          
-         var url = this.$store.state.geonetwork + 'srv/'+this.meta.docLocale+'/q?_content_type=json&fast=index&uuid=' + this.uuid;
+         var url = this.$store.state.geonetwork + 'srv/'+this.metadata.docLocale+'/q?_content_type=json&fast=index&uuid=' + this.uuid;
          var _this = this
          this.$http.get(url).then(
                response => {
@@ -269,7 +264,7 @@ export default {
                  _this.metaLang2 = response.body.metadata
                } 
             )
-            if (this.meta.related && this.meta.related.children) {
+            if (this.metadata.related && this.metadata.related.children) {
               this.hasChild = true
               this.getRecords()
             } 
@@ -278,25 +273,7 @@ export default {
           // useless, it's trigger when load formater-page-changed
          // var event = new CustomEvent('fmt:metadataWithChildEvent', {detail: {uuid: this.uuid, depth: this.depth}})
          // document.dispatchEvent(event)
-      },
-      handleSearch (event) {
-        // register search value parameter
-        if (event.detail.depth === this.depth) {
-          this.metadata.osParameters.forEach(function (parameter) {
-            if (event.detail[parameter.name]) {
-              parameter.value = event.detail[parameter.name]
-            }
-          })
-        }
-      },
-      handleReset (event) {
-    	  console.log('handle reset dans metadata')
-        this.metadata.osParameters.forEach(function (parameter) {
-          parameter.value = null
-        })
-        this.$store.commit('parametersChange', {parameters:this.metadata.osParameters, mapping: this.metadata.mapping,  type: this.metadata.disableType})
       }
-     
   }
 }
 </script>

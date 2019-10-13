@@ -12,7 +12,7 @@
  <div class="mtdt-catalogue">
   <!-- components not visible  -->
   <aeris-theme :primary="$store.state.style.primary" :active="true" :emphasis="$store.state.style.emphasis"></aeris-theme>
-  <formater-requester  :depth="metadatas.length"></formater-requester>
+  <formater-requester  :depth="metadatas.length"  @registerValues="registerValues"></formater-requester>
   <!-- component to draw bbox -->
   <formater-draw-bbox ></formater-draw-bbox>
 
@@ -31,7 +31,8 @@
         </div>
         <!-- view of one record -->
         <div  v-if="metadatas.length > 0" >
-            <formater-metadata v-for="(meta, index) in metadatas" :key="index" v-show="index === metadatas.length-1" :depth="index + 1" :metadata="meta" 
+            <formater-metadata v-for="(meta, index) in metadatas" :key="index" v-show="index === metadatas.length-1"
+             :depth="index + 1" :metadata="meta" @parametersChange="setParameters"
              @close="resetMetadata" ></formater-metadata>
         </div>
      </div>
@@ -71,7 +72,7 @@ export default {
     return {
       currentUuid: null,
       // bbox: null,
-      depth: null,
+      // depth: null,
       // array breadcrumb of records
       metadatas: [],
       metadataListener: null,
@@ -175,44 +176,47 @@ export default {
       var event = new CustomEvent('fmt:closeMetadataEvent', {detail:  {depth: this.metadatas.length }})
       document.dispatchEvent(event)
     },
+    setParameters (obj) {
+
+    	if (obj.depth) {
+    		this.metadatas[obj.depth - 1].osParameters = obj.osParameters
+    		this.metadatas[obj.depth - 1].mapping = obj.mapping
+    		this.metadatas[obj.depth - 1].disableType = obj.disableType
+    	}
+    	if (obj.depth === this.metadatas.length) {
+    		this.$store.commit('parametersChange', {parameters: obj.osParameters, mapping: obj.mapping, type: obj.disableType})
+    	}
+    },
+    registerValues (detail) {
+    	if (detail.depth) {
+    		this.metadatas[detail.depth - 1].osParameters.forEach( function (parameter) {
+    			if (detail.parameters[parameter.name]) {
+    				parameter.value = detail.parameters[parameter.name]
+    			} else {
+    				parameter.value = null
+    			}
+    		})
+    	}
+    },
    resize () {
       this.$store.commit('sizeChange')
    },
     handleReset (event) {
-	  console.log('handle reset dans catalogue')
      if (this.metadatas[0] && this.metadatas[0].appRoot) {
-//        for(var i=1; i < this.metadatas.length; i++) {
-//          var event = new CustomEvent('fmt:closeMetadataEvent', {detail:  {depth: i + 1 }})
-//          document.dispatchEvent(event)
-//        }
-       if (this.metadatas.length > 1) {
-         var e = new CustomEvent('fmt:closeMetadataEvent', {detail:  {depth: this.metadatas.length }})
-         document.dispatchEvent(e)
-       }
+
        event.detail.depth = 1
        var metadata = this.metadatas[0]
        this.metadatas = this.metadatas.slice(0, 1)
-       console.log(this.metadatas)
-       this.currentUuid = metadata.id
-       var type = metadata.disableType
-       this.metadatas[0].osParameters.forEach(function (prm) {
-    	   console.log(prm)
-    	   console.log(prm.value)
-    	   prm.value = null
-    	   console.log(prm.value)
-    	   console.log(prm)
-        // delete prm.value
-       })
-       console.log(this.metadatas[0].osParameters)
-       var parameters = metadata.osParameters
-       parameters.forEach(function (prm) {
-    	   if (prm.value) {
-    		   delete prm.value
+       this.currentUuid = this.metadatas[0].id
+       this.metadatas.length = 1
+       this.metadatas[0].osParameters.forEach(function (parameter) {
+    	   if (parameter.value) {
+    		   parameter.value = null
     	   }
        })
-       this.metadatas[0].osParameters = parameters
-       console.log(parameters)
-       var mapping = metadata.mapping
+       var parameters = this.metadatas[0].osParameters
+       var mapping = this.metadatas[0].mapping
+       var type = this.metadatas[0].disableType
        var min = null
        var max = null
        if (metadata.tempExtentBegin) {
@@ -221,13 +225,11 @@ export default {
        if (metadata.tempExtentEnd) {
          max = metadata.tempExtentEnd.substring(0, 10)
        }
-       console.log(metadata.osParameters)
        var temp = {
            min: min ? min : this.temporalExtent.min,
            max: max ? max : this.temporalExtent.max
        }
        this.$store.commit('temporalChange', temp)
-   
        this.$store.commit('currentUuidChange', this.currentUuid)
        this.$store.commit('parametersChange', {parameters: parameters, mapping: mapping, type: type})
 
@@ -241,6 +243,7 @@ export default {
      }
     },
     handleSearch (event) {
+    	// mettre plutôt dans formater-metadata ??
       if (this.metadatas.length > 0) {
         event.detail.parentUuid = this.currentUuid
       }

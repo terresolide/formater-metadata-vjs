@@ -54,7 +54,6 @@ export default {
   methods: {
 
      receiveMetadatas (event) {
-       console.log(this.depth, event.detail.depth)
        if (event.detail.depth != this.depth) {
          return;
        }

@@ -136,7 +136,6 @@ export default {
     }, 
     getRecords (event) {
       // trigger search event like breadcrumb
-      console.log('depth dans getRecords', event.detail)
       if (event.detail && typeof event.detail.depth == 'number') {
         var depth = event.detail.depth
       } else {
@@ -296,7 +295,8 @@ export default {
       url += Object.keys(this.parameters).map(function (prop) {
         return prop + '=' + self.parameters[prop]
       }).join('&');
-      this.$store.commit('addValueToParameters', this.parameters)
+      this.$emit('registerValues', {depth: depth, parameters: this.parameters})
+     // this.$store.commit('addValueToParameters', this.parameters)
       this.$http.get(url).then(
           response => {   this.treatmentGeojson(response.body, depth);}
        )

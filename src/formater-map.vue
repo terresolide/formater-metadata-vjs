@@ -303,10 +303,7 @@ export default {
      this.seeOnlyCurrent(event.detail.meta.id)
    },
    receiveMetadatas (event) {
-//      if (this.bboxLayer[this.depth]) {
-//        this.controlLayer.removeLayer(this.bboxLayer[this.depth])
-//      }
-     console.log(this.depth, event.detail.depth)
+
      if (this.layers[this.depth]) {
        this.layers[this.depth].forEach(function (layer) {
          layer.remove()
@@ -324,10 +321,7 @@ export default {
        this.depth = event.detail.depth;
      }
      this.type = event.detail.type
-     //this.type = this.getType(event.detail)
-    // console.log('TYPE = ' + this.type)
-     this.bboxLayer[this.depth] = L.geoJSON(event.detail.features, {style:this.getOptionsLayer()})
-     
+     this.bboxLayer[this.depth] = L.geoJSON(event.detail.features, {style:this.getOptionsLayer()})    
      this.bounds[this.depth] = this.bboxLayer[this.depth].getBounds()
     
 //      this.bboxLayer[this.depth].addTo(this.map);
