@@ -210,9 +210,7 @@ export default {
        this.currentUuid = this.metadatas[0].id
        this.metadatas.length = 1
        this.metadatas[0].osParameters.forEach(function (parameter) {
-    	   if (parameter.value) {
     		   parameter.value = null
-    	   }
        })
        var parameters = this.metadatas[0].osParameters
        var mapping = this.metadatas[0].mapping

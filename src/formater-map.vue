@@ -321,8 +321,9 @@ export default {
        this.depth = event.detail.depth;
      }
      this.type = event.detail.type
-     this.bboxLayer[this.depth] = L.geoJSON(event.detail.features, {style:this.getOptionsLayer()})    
+     this.bboxLayer[this.depth] = L.geoJSON(event.detail.features, {style:this.getOptionsLayer()})  
      this.bounds[this.depth] = this.bboxLayer[this.depth].getBounds()
+     console.log(this.bounds[this.depth])
     
 //      this.bboxLayer[this.depth].addTo(this.map);
 //      if (this.bboxLayer[this.depth]) {

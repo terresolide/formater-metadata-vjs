@@ -14,7 +14,7 @@
 	 <span>{{item.options[0]}}</span>
 	</div>
 	<div class="fmt-input" v-if="!item.options" :style="{backgroundColor: inputColor}">
-		<input type="text" :name="item.name"  v-model="item.value" :pattern="item.pattern" :title="item.title" :placeholder="item.title"  @change="changeText" @keypress="changeTextOnEnter"></input>
+		<input type="text" :name="item.name"  v-model="inputs[item.name]"  :defaultValue="item.value" :pattern="item.pattern" :title="item.title" :placeholder="item.title"  @change="changeText" @keypress="changeTextOnEnter"></input>
 	</div>
 </div>
 </div>
@@ -43,17 +43,36 @@ export default {
       inputColor: null,
       textColor: null,
       aerisSearchListener: null,
-      aerisResetListener: null
-      
+      aerisResetListener: null,
+      inputs: {}
     }
   },
+  computed: {
+//     inputs () {
+//       console.log('passe dans inputs')
+//       var _this = this
+//       var inputs = {}
+//       this.parameters.forEach(function (parameter) {
+//         if(!parameter.options) {
+//           inputs[parameter.name] = parameter.value ? parameter.value : null
+//         }
+//       })
+//       return inputs
+//     }
+  },
   created () {
+    var _this = this
+    this.parameters.forEach(function (parameter) {
+      if(!parameter.options) {
+        _this.inputs[parameter.name] = parameter.value ? parameter.value : null
+      }
+    })
     this.textColor = this.$store.state.style.primary
     this.handleTheme(this.$store.state.style.emphasis)
   	this.aerisSearchListener = this.handleSearch.bind(this)
     document.addEventListener('aerisSearchEvent', this.aerisSearchListener)
-//     this.aerisResetListener = this.handleReset.bind(this)
-//     document.addEventListener('aerisResetEvent', this.aerisResetListener)
+    this.aerisResetListener = this.handleReset.bind(this)
+    document.addEventListener('aerisResetEvent', this.aerisResetListener)
   	
   },
   destroyed () {
@@ -89,18 +108,23 @@ export default {
       document.dispatchEvent(evt)
     },
     handleSearch (event) {
-      this.parameters.forEach(function (parameter) {
-        if (!parameter.options && parameter.value) {
-          event.detail[parameter.name] = parameter.value
+      for(var name in this.inputs) { 
+        if (this.inputs[name] !== null) {
+          event.detail[name] = this.inputs[name]
         }
-      })
-    } // ,
-//     handleReset (event) {
-//       this.parameters.forEach( function (parameter) {
-//         parameter.value = null
+      }
+//       this.parameters.forEach(function (parameter) {
+//         if (!parameter.options && parameter.value) {
+//           event.detail[parameter.name] = parameter.value
+//         }
 //       })
-//      // this.selectChange('')
-//     }
+    },
+     handleReset (event) {
+      for(var name in this.inputs) { 
+        this.inputs[name] = null
+      }
+      this.$forceUpdate()
+     }
   }
 }
 </script>
