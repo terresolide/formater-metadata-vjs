@@ -128,11 +128,17 @@ export default {
       this.$store.commit('currentUuidChange', this.currentUuid)
       var min = null
       var max = null
+      console.log(typeof event.detail.meta.tempExtentBegin)
+      
       if (typeof event.detail.meta.tempExtentBegin === 'string') {
         min = event.detail.meta.tempExtentBegin.substring(0, 10)
-      }
+      } else if (typeof event.detail.meta.tempExtentBegin === 'object') {
+        min = event.detail.meta.tempExtentBegin[0].substring(0, 10)
+      } 
       if (typeof event.detail.meta.tempExtentEnd === 'string') {
         max = event.detail.meta.tempExtentEnd.substring(0, 10)
+      } else if (typeof event.detail.meta.tempExtentEnd === 'object') {
+        min = event.detail.meta.tempExtentEnd[event.detail.meta.tempExtentEnd.length - 1].substring(0, 10)
       }
       var temp = {
           min: min ? min : this.temporalExtent.min,
@@ -153,10 +159,10 @@ export default {
         var mapping = metadata.mapping
         var min = null
         var max = null
-        if (metadata.tempExtentBegin) {
+        if (metadata.tempExtentBegin && metadata.tempExtentBegin.substring) {
           min = metadata.tempExtentBegin.substring(0, 10)
         }
-        if (metadata.tempExtentEnd) {
+        if (metadata.tempExtentEnd && metadata.tempExtentEnd.substring) {
           max = metadata.tempExtentEnd.substring(0, 10)
         }
         var temp = {

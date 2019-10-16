@@ -19,6 +19,8 @@ L.Control.Fmtlayer = require('./leaflet.control.fmtlayer.js')
 L.Control.Reset = require('./leaflet.control.reset.js')
 L.Control.Fullscreen = require('./leaflet.control.fullscreen.js')
 L.Control.Legend = require('./leaflet.control.legend.js')
+
+const getReader = () => import('./capabilities-reader.js')
 // import {Map, Control, LatLng, tileLayer, TileLayer} from 'leaflet'
 // import L from 'leaflet'
 export default {
@@ -106,7 +108,8 @@ export default {
      colors: ['orange', 'purple', 'green'],
      controlLayer: null,
      resetControl: null,
-     legendControl: null
+     legendControl: null,
+
     }
   },
   
@@ -115,6 +118,9 @@ export default {
      var container = this.$el.querySelector('#fmtMap');
      this.map = L.map( container, {scrollWheelZoom: false}).setView([51.505, -0.09], 1);
      this.bounds[0] = this.map.getBounds()
+     getReader().then( reader => {  
+       this.reader = reader; 
+       this.reader.init(this.$http, this.$store.state.proxy)})
  		
 //    L.tileLayer('//server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
 // 			{
@@ -173,18 +179,16 @@ export default {
      var newLayer = null
      switch (layer.type) {
      case 'WMS':
-       var extract = layer.href.match(/^(.*\?).*$/)
-       var options = {
-         service: 'WMS',
-         layers: layer.name,
-         format: 'image/png',
-         opacity: 0.5
-        }
-       var url = extract[1]
-       var newLayer = L.tileLayer.wms(url, options);
-       this.addLayerToMap(layer.id, metaId, newLayer)
-       break;
      case 'OGC:WMS':
+       var regex = new RegExp(/GetCapabilities/i)
+       console.log(layer.href)
+       if (regex.test(layer.href)) {
+         this.beforeAddWMS(layer, metaId)
+         return
+       }
+       this.addWMSLayer(layer, metaId)
+       break;
+     case 'XXX':
        var extract = layer.href.match(/^(.*\?).*$/)
        var url = extract[1]
        var options = {
@@ -235,8 +239,20 @@ export default {
      }
      
    },
-   addWMSLayer() {
-     
+   beforeAddWMS (layer, metaId) {
+     this.reader.loadInfo(layer.href, layer.name)
+   },
+   addWMSLayer(layer, metaId) {
+     var extract = layer.href.match(/^(.*\?).*$/)
+     var options = {
+       service: 'WMS',
+       layers: layer.name,
+       format: 'image/png',
+       opacity: 0.5
+      }
+     var url = extract[1]
+     var newLayer = L.tileLayer.wms(url, options)
+     this.addLayerToMap(layer.id, metaId, newLayer)
    },
    addLayerToMap(id, groupId, newLayer) {
      if (newLayer) {

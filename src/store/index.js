@@ -55,6 +55,10 @@ export default function makeStore( config ) {
           process: ['processingLevel', 'processingMode', 'processingContext', 'correction', 'version']
         }
       },
+      proxy: {
+        url: 'http://api.formater/interface-services/',
+        regex: 'data\.shom'
+      },
       // default date & constraint list
       dateList: ['createDate', 'publicationDate', 'revisionDate'],
       constraintList: ['legalConstraints', 'securityConstraints', 'resourceConstraints'],
