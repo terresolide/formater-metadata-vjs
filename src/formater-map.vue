@@ -163,12 +163,16 @@ export default {
 // 	wmsLayer.bringToFront()
    },
    addLayer (event) {
+     // test get capabilities
+//      this.$http.get('http://api.formater/interface-services/index.php?x=8').then(
+//          response => { console.log(response.body)}
+//      )
      var layer = event.detail.layer
      var metaId = event.detail.id
      var bounds = this.searchBboxBoundsById(metaId)
      var newLayer = null
      switch (layer.type) {
-     case 'OGC:WMS':
+     case 'WMS':
        var extract = layer.href.match(/^(.*\?).*$/)
        var options = {
          service: 'WMS',
@@ -179,6 +183,25 @@ export default {
        var url = extract[1]
        var newLayer = L.tileLayer.wms(url, options);
        this.addLayerToMap(layer.id, metaId, newLayer)
+       break;
+     case 'OGC:WMS':
+       var extract = layer.href.match(/^(.*\?).*$/)
+       var url = extract[1]
+       var options = {
+         service: 'WMS',
+         layers: layer.name,
+         url: layer.href//,
+       //  format: 'image/png',
+        // opacity: 0.5
+        }
+
+       //GET CAPABILITIES
+//        var param = 'service=WMS&layer=' + encodeURIComponent(layer.name) + '&url=' + encodeURIComponent(url)
+//        this.$http.get('http://api.formater/interface-services/index.php?' + param).then(
+//          response => { console.log(response.body)}
+//         )
+//        var newLayer = L.tileLayer.wms(url, options);
+//        this.addLayerToMap(layer.id, metaId, newLayer)
        break;
      case 'OGC:WFS':
      case 'OGC:WFS-G':
@@ -210,6 +233,9 @@ export default {
       // var kmlLayer = new L.KML(layer.href, {async: true});
       // kmlLayer.addTo(this.map)
      }
+     
+   },
+   addWMSLayer() {
      
    },
    addLayerToMap(id, groupId, newLayer) {
@@ -323,8 +349,6 @@ export default {
      this.type = event.detail.type
      this.bboxLayer[this.depth] = L.geoJSON(event.detail.features, {style:this.getOptionsLayer()})  
      this.bounds[this.depth] = this.bboxLayer[this.depth].getBounds()
-     console.log(this.bounds[this.depth])
-    
 //      this.bboxLayer[this.depth].addTo(this.map);
 //      if (this.bboxLayer[this.depth]) {
 //        this.controlLayer.addOverlay(this.bboxLayer[this.depth], this.$i18n.t('all_box'))

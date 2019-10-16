@@ -280,10 +280,9 @@ export default {
 <style>
 .mtdt-metadata{
   position:relative;
-  padding: 0px 5px 300px 5px;
+  padding: 0px 5px 50px 5px;
   max-width: 100%;
   margin: auto;
-  padding-bottom: 600px;
   height: auto;
   overflow: hidden;
  

@@ -409,13 +409,13 @@ export default {
         if(properties.services.browse && properties.services.browse.layers) {
           properties.layers = []
           properties.services.browse.layers.forEach(function (flatsimLayer, index) {
-            var type = 'OGC:' + flatsimLayer.type
+            var type =  flatsimLayer.type
             var layer = {
                 id: properties.id + '_' + index,
                 name: flatsimLayer.name,
                 description:  flatsimLayer.name,
                 href: flatsimLayer.url,
-                type: 'OGC:WMS',
+                type: flatsimLayer.type,
                 checked: false
             }
             properties.layers.push(layer)
