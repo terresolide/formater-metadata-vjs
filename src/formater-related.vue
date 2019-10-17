@@ -2,18 +2,20 @@
    "en":{
      "localize": "Localize on the map",
      "display_layer": "Display the layer on the map",
-     "download_data": "Download data"
+     "download_data": "Download data",
+     "download_forbidden": "Forbidden download"
    },
    "fr":{
      "localize": "Localiser sur la carte, cliquer pour garder la position",
      "display_layer": "Afficher sur la carte",
-     "download_data": "Télécharger les données"
+     "download_data": "Télécharger les données",
+     "download_forbidden": "Téléchargement interdit"
    }
 }
 </i18n>
 <template>
   <span class="mtdt-related" :class="'mtdt-related-' + type" v-if="!empty || type === 'cartouche'">
-    
+       <div class="formater-message" v-if="message" @click="message = ''">{{message}}</div>
     <div v-if="type === 'cartouche' && hasBboxLayer" style="display:inline-block;" >
       <div class="mtdt-related-type fa fa-dot-circle-o" :style="{backgroundColor:primary}" 
      :title="$t('localize')"   @click="fixBbox">
@@ -54,12 +56,11 @@
        </div> 
          <hr v-if="type === 'metadata'" /> 
    </div>
+
    <div v-if="download && download.length === 1 && type === 'cartouche'">
-    <a :href="download[0].url" >
-       <div class="mtdt-related-type fa fa-download"  :style="{backgroundColor: primary}" :title="$t('download_data')">
+       <div class="mtdt-related-type fa fa-download" :class="{disabled:download[0].disabled}" :style="{backgroundColor: primary}" :title="$t('download_data')" @click="triggerDownload(0)">
          
       </div> 
-    </a>
     </div>
     <div v-if="download && (download.length >1 || (type === 'metadata' && download.length > 0))">
        <div class="mtdt-related-type fa fa-download"  :style="{backgroundColor: primary}" :title="$t('download_data')">
@@ -68,8 +69,8 @@
       <div v-if="type === 'metadata'"></div>
       <div class="mtdt-expand mtdt-links" >
            <ul >
-           <li v-for="(download, index) in download" :key="index" @click="triggerDownload(index);" >
-              <a :href="download.url"  :title="download.description" >{{download.name? download.name: $t('download_data')}}</a>
+           <li v-for="(file, index) in download" :key="index" @click="triggerDownload(index);" :class="{disabled: file.disabled}">
+              <a  :title="file.description" >{{file.name? file.name: $t('download_data')}}</a>
           </li>
           </ul>    
       </div> 
@@ -148,7 +149,8 @@
     },
     data () {
       return {
-        empty: true
+        empty: true,
+        message: ''
       }
     },
 
@@ -183,16 +185,30 @@
          // this.updateClass()
        },
        triggerDownload (index) {
+         console.log('trigger download')
+         if (this.download[index].disabled) {
+           return
+         }
+         var _this = this
           this.$http.get(this.download[index].url )
+         //this.$http.get('http://api.formater/interface-services/' )
              .then( response => {
                console.log(response)
                const url = window.URL.createObjectURL(new Blob([response.data]));
                const link = document.createElement('a')
                link.href = url
-              
+               link.target = '_blank'
                document.body.appendChild(link)
                link.click()
-             })
+             }).catch(function (response) {
+                 switch(response.status) {
+                 case 403:
+                   console.log('forbidden')
+                   this.message = this.$i18n.t('download_forbidden')
+                   this.download[index].disabled = true
+                   break
+                 }
+            })
        },
        handleOver (e) {
          e.target.style.color = this.$store.state.style.over
@@ -267,6 +283,25 @@
 .mtdt-related-cartouche > div {
   display:inline-block;
 }
+.mtdt-related-cartouche > div.formater-message,
+.mtdt-related-metadata > div.formater-message {
+    display: block;
+	position: absolute;
+	top: -40px;
+	right: 0px;
+	padding: 10px;
+	color: darkred;
+	border: 1px solid darkred;
+	border-radius: 5px;
+	background-color: white;
+	box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.5);
+	z-index: 1;
+}
+.mtdt-related-metadata > div.formater-message {
+   position: relative;
+   top: 0;
+   right:0;
+}
  .mtdt-related .mtdt-related-type{
  text-align:center;
  min-width:20px;
@@ -283,6 +318,10 @@
 .mtdt-related-cartouche .mtdt-related-type{
    cursor:pointer;
    opacity:0.9
+}
+.mtdt-related-cartouche .mtdt-related-type.disabled{
+  pointer-events:none;
+  opacity:0.5;
 }
  .mtdt-related-cartouche .mtdt-related-type:hover{
   opacity:1;
@@ -338,8 +377,13 @@
  word-break: break-word;
   padding: 2px;
   margin:  0;
+  cursor:pointer;
  
 }
+ .mtdt-related-metadata .mtdt-expand ul li.disabled {
+   pointer-events: none;
+   opacity:0.5
+   }
 .mtdt-related-metadata .mtdt-expand ul:not(.mtdt-layers)  li:before{
 content: "\2192";
 padding: 0 5px;
@@ -348,10 +392,11 @@ font-size: 1.1em;
 }
 
 .mtdt-related-metadata .mtdt-expand ul:not(.mtdt-layers)  li a,
+.mtdt-related-metadata .mtdt-expand ul:not(.mtdt-layers)  li span,
 .mtdt-related-metadata .mtdt-expand ul:not(.mtdt-layers)  li div{
 
 display: table-cell;
-max-width:90%;
+max-width:92%;
 }
  .mtdt-related ul.mtdt-layers{
   list-style-type: none;
