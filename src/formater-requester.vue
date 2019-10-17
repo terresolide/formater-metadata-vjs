@@ -49,7 +49,8 @@ export default {
       // listen a global reset event
       resetListener: null,
       facet: [],
-       type: 'geonetwork'
+       type: 'geonetwork',
+      credentials: {}
      }
   },
   created () {
@@ -115,7 +116,7 @@ export default {
           _content_type: 'json',
            fast: 'index', // more quick
         //  'facet.q': '',
-          bucket: '26041996',
+          bucket: 's101',
           from: 1,
           to: this.$store.state.size.nbRecord,
           //  resultType: 'subtemplate',
@@ -266,12 +267,21 @@ export default {
     requestApiGeonetwork (depth) {
       
       // var depth = (typeof this.parameters.depth != 'undefined') ? this.parameters.depth : this.depth
-
+     
       delete this.parameters.depth
       var headers =  {
           'Accept': 'application/json, text/plain, */*',
           'Accept-Language': this.$i18n.locale === 'fr' ? 'fre': 'eng'
        }
+      
+      //first requête to type=me to record session and token
+      this.$http.get('http://demo.formater/geonetwork/srv/fre/info?type=me', {credentials:true, headers: headers}).then(
+          response => {console.log(response.headers)}
+      )
+//       this.$http.get('http://demo.formater/geonetwork/srv/fre/info?type=me', {credentials:true, headers: headers}).then(
+//           response => {console.log(response.headers)}
+//       )
+      
 
       var self = this
       if (this.parameters.sortBy !== 'title') {
@@ -569,6 +579,7 @@ export default {
             meta.layers = []
           }
           var id = meta.id + '_' + index
+          var layer = self.$gn.linkToLayer(link, id)
           meta.layers.push(self.$gn.linkToLayer(link, id))
           break;
         case 'WWW:DOWNLOAD-1.0-link--download':

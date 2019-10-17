@@ -37,10 +37,16 @@ const reader = {
       }
       var result = null
       console.log(layername)
-      var resultType = root.evaluate('//ns:Layer[ns:Name="' + layername + '"]', root, nsResolver, XPathResult.ANY_TYPE, result)
-      console.log(resultType)
-      var fragment = resultType.iterateNext();
-      console.log(fragment.textContent)
+      var result = root.evaluate('//ns:Layer[ns:Name="' + layername + '"]', root, nsResolver, XPathResult.ANY_TYPE, result)
+      if (result.resultType !== XPathResult.UNORDERED_NODE_ITERATOR_TYPE && result.resultType !== XPathResult.ORDERED_NODE_ITERATOR_TYPE) {
+        return null
+      }
+      var layerXml = result.iterateNext();
+      if (layerXml === null) {
+        return null
+      }
+      console.log(layerXml)
+      
       return root
     }
 }
