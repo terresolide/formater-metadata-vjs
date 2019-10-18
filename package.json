@@ -1,6 +1,6 @@
 {
   "name": "formater-metadata-vjs",
-  "version": "0.15.2",
+  "version": "0.15.3",
   "description": "Component to display metadata from Geonetwork Object ISO19139",
   "preproduction": {
     "url": "http://localhost:8080"
@@ -36,6 +36,7 @@
     "vue-custom-element": "^1.4.4",
     "vue-i18n": "7.0.5",
     "vue-resource": "^1.5.0",
+    "vuejs-progress-bar": "^1.1.1",
     "vuex": "^3.1.1"
   },
   "devDependencies": {
