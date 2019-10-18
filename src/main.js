@@ -11,6 +11,7 @@ import Vue from 'vue'
 
 import Vuex from 'vuex'
 Vue.use(Vuex)
+
 //pour la traduction 
 import VueI18n from 'vue-i18n'
 Vue.use(VueI18n);

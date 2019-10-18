@@ -16,6 +16,7 @@
 <template>
   <span class="mtdt-related" :class="'mtdt-related-' + type" v-if="!empty || type === 'cartouche'">
        <div class="formater-message" v-if="message" @click="message = ''">{{message}}</div>
+       <progress-bar :value="progress" v-if="progress!==null && progress < 100" :options="progressBarOptions"></progress-bar>
     <div v-if="type === 'cartouche' && hasBboxLayer" style="display:inline-block;" >
       <div class="mtdt-related-type fa fa-dot-circle-o" :style="{backgroundColor:primary}" 
      :title="$t('localize')"   @click="fixBbox">
@@ -96,9 +97,14 @@
          </div>
      </div> -->
   </span>
-  </template>>
+  </template>
   <script>
+  import ProgressBar from 'vuejs-progress-bar'
   export default {
+    name: 'FormaterRelated',
+    components: {
+      ProgressBar
+    },
     props: {
       id: {
         type: String,
@@ -150,7 +156,33 @@
     data () {
       return {
         empty: true,
-        message: ''
+        message: '',
+        progress: null,
+        progressBarOptions: {
+          text: {
+            color: '#000000',
+            shadowEnable: true,
+            shadowColor: '#000000',
+            fontSize: 14,
+            fontFamily: 'Helvetica',
+            dynamicPosition: false,
+            hideText: false
+          },
+          progress: {
+            color: '#2dbd2d',
+            backgroundColor: '#C0C0C0'
+          },
+          layout: {
+            height: 70,
+            width: 70,
+            verticalTextAlign: 35,
+            horizontalTextAlign: 28,
+            zeroOffset: 10,
+            strokeWidth: 10,
+            progressPadding: 0,
+            type: 'circle'
+          }
+        }
       }
     },
 
@@ -190,23 +222,49 @@
            return
          }
          var _this = this
-          this.$http.get(this.download[index].url )
-         //this.$http.get('http://api.formater/interface-services/' )
+         this.progress = 0
+   
+         
+         var filename = 'download'
+         var downloadProgress = function (e) {
+           if (e.total) {
+             _this.progress = Math.round(100 * e.loaded / e.total)
+           }
+         }
+         
+         var _this = this
+
+      // this.$http.get(this.download[index].url )
+            this.$http.get('http://api.formater/interface-services/' , {responseType: 'blob', downloadProgress: downloadProgress})
              .then( response => {
                console.log(response)
-               const url = window.URL.createObjectURL(new Blob([response.data]));
+               var headerDisposition = response.headers.get('Content-Disposition')
+               if (headerDisposition) {
+                 console.log(headerDisposition)
+                 var match = headerDisposition.match(/filename[^;\n=]*=(\\?\"|'){0,1}([^\\?\"']*)(\\?\"|'){0,1}/i)
+                 if (match) {
+                   var filename = match[2]
+                 }
+                //  res = re.search("filename[^;\n=]*=(['\"])*(.*)(?(1)\1|)", string) res.group(2)
+               }
+               const url = window.URL.createObjectURL(response.bodyBlob);
                const link = document.createElement('a')
+               // link.setAttribute('download', )
                link.href = url
-               link.target = '_blank'
+               link.setAttribute('download', filename)
                document.body.appendChild(link)
                link.click()
+               _this.progress = null
              }).catch(function (response) {
+                 _this.progress = null
                  switch(response.status) {
                  case 403:
                    console.log('forbidden')
                    this.message = this.$i18n.t('download_forbidden')
                    this.download[index].disabled = true
                    break
+                   default:
+                     console.log(response);
                  }
             })
        },
@@ -255,6 +313,18 @@
     text-decoration: underline;
     cursor: pointer;
   }
+  .mtdt-related .progress-bar{
+    display: block;
+    position: absolute;
+    top: -100px;
+    right: 2px;
+    background: rgba(255,255, 255, 0.9);
+    z-index: 2;
+    padding:10px;
+}
+ .mtdt-related .progress-bar > div {
+   position: absolute !important;
+ }
  .mtdt-related-metadata{
    margin: 10px;
    padding:10px;
