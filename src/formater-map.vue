@@ -66,6 +66,7 @@ export default {
   },
   data() {
     return {
+     currentId: null,
      fullscreen: false,
      map: null,
      type: null,
@@ -186,6 +187,16 @@ export default {
          this.beforeAddWMS(layer, metaId)
          return
        }
+       var extract = layer.href.match(/^(.*\?).*$/)
+       var url = extract[1]
+       layer.href = url
+       layer.options = {
+         id: layer.id,
+         service: 'WMS',
+         layers: layer.name,
+         format: 'image/png',
+         opacity: 0.5
+        }
        this.addWMSLayer(layer, metaId)
        break;
      case 'XXX':
@@ -240,19 +251,26 @@ export default {
      
    },
    beforeAddWMS (layer, metaId) {
-     this.reader.loadInfo(layer.href, layer.name)
+     this.reader.loadInfo(layer, {opacity:0.5} , metaId, this.addWMSLayer)
    },
-   addWMSLayer(layer, metaId) {
-     var extract = layer.href.match(/^(.*\?).*$/)
-     var options = {
-       service: 'WMS',
-       layers: layer.name,
-       format: 'image/png',
-       opacity: 0.5
-      }
-     var url = extract[1]
-     var newLayer = L.tileLayer.wms(url, options)
-     this.addLayerToMap(layer.id, metaId, newLayer)
+   addWMSLayer(layerObj, metaId) {
+     console.log(layerObj)
+     
+//      var options = {
+//        service: 'WMS',
+//        layers: layer.name,
+//        format: 'image/png',
+//        opacity: 0.5
+//       }
+//      var url = extract[1]
+     var newLayer = L.tileLayer.wms(layerObj.href, layerObj.options)
+     this.addLayerToMap(layerObj.options.id, metaId, newLayer)
+     // if others infos about layer
+     console.log(layerObj.id)
+     console.log('currentId = ', this.currentId)
+     if (layerObj.options.legend && layerObj.id.indexOf(this.currentId) >= 0) {
+       this.legendControl.setLegend(this.currentId, layerObj.id, layerObj.options.legend.src)
+     }
    },
    addLayerToMap(id, groupId, newLayer) {
      if (newLayer) {
@@ -272,6 +290,9 @@ export default {
      var layer = this.layers[this.depth].get(event.detail.id)
      if (layer) {
        layer.remove()
+       if (layer.options.legend) {
+         this.legendControl.deleteLegend(event.detail.id)
+       }
      }
      this.layers[this.depth].delete(event.detail.id)
    },
@@ -330,6 +351,9 @@ export default {
 //       return this.type
 //    },
    receiveMetadata(event) {
+     console.log(event.detail.meta.id)
+     this.currentId = event.detail.meta.id
+     console.log(this.currentId)
      if (event.detail && event.detail.meta && event.detail.meta.appRoot && event.detail.meta.geoBox) {
        var box = event.detail.meta.geoBox.split('|')
        var spatialExtent = [[parseFloat(box[1]), parseFloat(box[0])] , [parseFloat(box[3]), parseFloat(box[2])]]
@@ -341,17 +365,28 @@ export default {
      this.$store.commit('searchAreaChange', bounds)
      if (event.detail && event.detail.meta && event.detail.meta.legend) {
        this.legendControl.setLegend(event.detail.id, event.detail.meta.legend)
+     } else if (this.layers[this.depth]) {
+      var _this = this
+      this.layers[this.depth].forEach( function (layer, index) {
+         console.log(index)
+         console.log(layer)
+         console.log(event.detail.meta.id)
+         if (index.indexOf(event.detail.meta.id) >= 0 && layer.options.legend) {
+           _this.legendControl.setLegend(event.detail.meta.id, index, layer.options.legend.src)
+         }
+       })
      }
      this.seeOnlyCurrent(event.detail.meta.id)
+
    },
    receiveMetadatas (event) {
-
+     this.currentId = null
      if (this.layers[this.depth]) {
        this.layers[this.depth].forEach(function (layer) {
          layer.remove()
        })
      }
-     this.legendControl.removeLegend()
+     this.legendControl.removeAll()
      if (this.depth === event.detail.depth   && this.bboxLayer[this.depth]) {
           this.bboxLayer[this.depth].clearLayers();
           this.layers[this.depth] = new Map()
@@ -426,6 +461,7 @@ export default {
      this.layers[depth].clear()
    },
    back (event) {
+     this.currentId = null
      var bounds = null
      if (this.metadataBoundsList.length > 0) {
         this.metadataBoundsList.pop()

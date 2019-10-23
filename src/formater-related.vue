@@ -131,7 +131,7 @@
         default: null
       },
       related: {
-        type: Array,
+        type: Array|Object,
         default: null
       }
     },
