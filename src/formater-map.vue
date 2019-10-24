@@ -3,7 +3,7 @@
       "all_box": "All bbox"
    },
    "fr":{
-	  "all_box": "Les bbox"
+     "all_box": "Les bbox"
    }
 }
 </i18n>
@@ -66,7 +66,6 @@ export default {
   },
   data() {
     return {
-     currentId: null,
      fullscreen: false,
      map: null,
      type: null,
@@ -125,23 +124,23 @@ export default {
  		
 //    L.tileLayer('//server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
 // 			{
-// 			  attribution: 'Tiles © <a href="https://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer">ArcGIS</a>',
-// 		      maxZoom: 18,
-// 		      minZoom:2
-		      
-// 		    }).addTo( this.map );
+// 		     attribution: 'Tiles © <a href="https://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer">ArcGIS</a>',
+// 	         maxZoom: 18,
+// 	         minZoom:2
+	         
+// 	       }).addTo( this.map );
    /*  L.tileLayer('//www.thegraceplotter.com/data/maps/CNES.RL03.monthly.NONE/trend/{z}/{x}/{y}.png',
    			{
-   			  attribution: 'Tiles © <a href="https://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer">ArcGIS</a>',
-   		      maxZoom: 18,
-   		      minZoom:1,
-   		      opacity: 0.3,
-   		      tms: false
-   		      
-   		    }).addTo( this.map );*/
-   		    
+   		     attribution: 'Tiles © <a href="https://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer">ArcGIS</a>',
+   	         maxZoom: 18,
+   	         minZoom:1,
+   	         opacity: 0.3,
+   	         tms: false
+   	         
+   	       }).addTo( this.map );*/
+   	       
    		//   https://muscatemaj-pp.theia-land.fr/atdistrib/resto2/collections/GRENADE/e3514f6a-ce72-5d15-b5f5-94c5c6d72137/wms?map=/nfs/muscate_data/maja//muscate.map&idProduit=SENTINEL1_20180628-180704-000_L2D_GRND-VV-IW2-2018_D&versionProduit=0-0&idProjet=GRENADE&anneeProduit=ANNEEPRODUIT&moisProduit=MOISPRODUIT&jourProduit=JOURPRODUIT&LAYERS=oso&typeOSO=TYPEOSO&FORMAT=image%2Fpng&TRANSITIONEFFECT=resize&TRANSPARENT=true&VERSION=1.1.1&SERVICE=WMS&REQUEST=GetMap&STYLES=&SRS=EPSG%3A3857&BBOX={:bbox3857:}&WIDTH=256&HEIGHT=256
-   	 
+       
 //     this.layers = L.layerGroup()
 //     this.layers.addTo(this.map)
     this.resetControl = new L.Control.Reset(this.bounds[0], this.$i18n.locale)
@@ -149,7 +148,7 @@ export default {
     this.controlLayer = new L.Control.Fmtlayer()
     this.controlLayer.tiles.arcgisTopo.layer.addTo(this.map)
     this.controlLayer.addTo(this.map)
-    this.legendControl = new L.Control.Legend(this.$i18n.locale)
+    this.legendControl = new L.Control.Legend(this.$i18n.locale, this.$gn.uuidToDomId)
 
     var fullscreen = new L.Control.Fullscreen('fmtLargeMap', this.$i18n.locale)
     fullscreen.addTo(this.map)
@@ -158,15 +157,15 @@ export default {
 //      var wmsLayer = L.tileLayer.wms('https://muscatemaj-pp.theia-land.fr/atdistrib/resto2/collections/GRENADE/e3514f6a-ce72-5d15-b5f5-94c5c6d72137/wms/CLASSIFICATION?', {
 //         opacity: 0.8,
 //         format: 'image/png'
-//    	 }).addTo(this.map);
+//        }).addTo(this.map);
 // 	wmsLayer.bringToFront()
-// 	 var wmsLayer = L.tileLayer.wms('https://services.data.shom.fr/INSPIRE/wms/r?', {
+//     var wmsLayer = L.tileLayer.wms('https://services.data.shom.fr/INSPIRE/wms/r?', {
 //         service: 'WMS',
 //         layers: 'MNT_ATL100m_HOMONIM_PBMA_3857_WMSR',
 //         format: 'image/png',
 //         ESPG: 4326,
 //         opacity: 0.5
-//    	 }).addTo(this.map);
+//        }).addTo(this.map);
 // 	wmsLayer.bringToFront()
    },
    addLayer (event) {
@@ -182,21 +181,22 @@ export default {
      case 'WMS':
      case 'OGC:WMS':
        var regex = new RegExp(/GetCapabilities/i)
-       console.log(layer.href)
        if (regex.test(layer.href)) {
          this.beforeAddWMS(layer, metaId)
          return
        }
-       var extract = layer.href.match(/^(.*\?).*$/)
-       var url = extract[1]
-       layer.href = url
-       layer.options = {
-         id: layer.id,
-         service: 'WMS',
-         layers: layer.name,
-         format: 'image/png',
-         opacity: 0.5
-        }
+       if (!layer.options) {
+         var extract = layer.href.match(/^(.*\?).*$/)
+         var url = extract[1]
+         layer.href = url
+         layer.options = {
+           id: layer.id,
+           service: 'WMS',
+           layers: layer.name,
+           format: 'image/png',
+           opacity: 0.5
+         }
+       }
        this.addWMSLayer(layer, metaId)
        break;
      case 'XXX':
@@ -254,22 +254,11 @@ export default {
      this.reader.loadInfo(layer, {opacity:0.5} , metaId, this.addWMSLayer)
    },
    addWMSLayer(layerObj, metaId) {
-     console.log(layerObj)
-     
-//      var options = {
-//        service: 'WMS',
-//        layers: layer.name,
-//        format: 'image/png',
-//        opacity: 0.5
-//       }
-//      var url = extract[1]
      var newLayer = L.tileLayer.wms(layerObj.href, layerObj.options)
      this.addLayerToMap(layerObj.options.id, metaId, newLayer)
-     // if others infos about layer
-     console.log(layerObj.id)
-     console.log('currentId = ', this.currentId)
-     if (layerObj.options.legend && layerObj.id.indexOf(this.currentId) >= 0) {
-       this.legendControl.setLegend(this.currentId, layerObj.id, layerObj.options.legend.src)
+     // Add legend if there is specific legend with the layer
+     if (layerObj.options.legend && layerObj.id.indexOf(this.$store.state.currentUuid) >= 0) {
+       this.legendControl.addLegend(this.$store.state.currentUuid, layerObj.id, layerObj.options.legend.src)
      }
    },
    addLayerToMap(id, groupId, newLayer) {
@@ -291,7 +280,8 @@ export default {
      if (layer) {
        layer.remove()
        if (layer.options.legend) {
-         this.legendControl.deleteLegend(event.detail.id)
+         // remove legend attached to one layer (not legend attached to metadata)
+         this.legendControl.removeLegend(event.detail.id)
        }
      }
      this.layers[this.depth].delete(event.detail.id)
@@ -351,9 +341,6 @@ export default {
 //       return this.type
 //    },
    receiveMetadata(event) {
-     console.log(event.detail.meta.id)
-     this.currentId = event.detail.meta.id
-     console.log(this.currentId)
      if (event.detail && event.detail.meta && event.detail.meta.appRoot && event.detail.meta.geoBox) {
        var box = event.detail.meta.geoBox.split('|')
        var spatialExtent = [[parseFloat(box[1]), parseFloat(box[0])] , [parseFloat(box[3]), parseFloat(box[2])]]
@@ -364,15 +351,15 @@ export default {
      }
      this.$store.commit('searchAreaChange', bounds)
      if (event.detail && event.detail.meta && event.detail.meta.legend) {
-       this.legendControl.setLegend(event.detail.id, event.detail.meta.legend)
+       // case global legend in meta (the same for all layers attached to metadata) 
+       // case flatsim
+       this.legendControl.addLegend(event.detail.meta.id, '0', event.detail.meta.legend)
      } else if (this.layers[this.depth]) {
       var _this = this
       this.layers[this.depth].forEach( function (layer, index) {
-         console.log(index)
-         console.log(layer)
-         console.log(event.detail.meta.id)
+         // case one legend for each layer 
          if (index.indexOf(event.detail.meta.id) >= 0 && layer.options.legend) {
-           _this.legendControl.setLegend(event.detail.meta.id, index, layer.options.legend.src)
+           _this.legendControl.addLegend(event.detail.meta.id, index, layer.options.legend.src)
          }
        })
      }
@@ -380,7 +367,6 @@ export default {
 
    },
    receiveMetadatas (event) {
-     this.currentId = null
      if (this.layers[this.depth]) {
        this.layers[this.depth].forEach(function (layer) {
          layer.remove()
@@ -461,7 +447,6 @@ export default {
      this.layers[depth].clear()
    },
    back (event) {
-     this.currentId = null
      var bounds = null
      if (this.metadataBoundsList.length > 0) {
         this.metadataBoundsList.pop()
@@ -469,7 +454,7 @@ export default {
         
      }
      this.$store.commit('searchAreaChange', bounds)
-     this.legendControl.back()
+     this.legendControl.back(this.$store.state.currentUuid)
      this.unselectBbox()
      if (this.depth > event.detail.depth) {
 //         if (this.bboxLayer[this.depth]) {
@@ -491,9 +476,9 @@ export default {
       } 
      this.controlLayer.setBboxLayer(this.bboxLayer[this.depth])
      this.seeAllLayers()
-       if (this.bounds[this.depth]) {
-         this.map.fitBounds(this.bounds[this.depth])
-       }
+     if (this.bounds[this.depth]) {
+       this.map.fitBounds(this.bounds[this.depth])
+     }
    },
    searchBboxBoundsById (id) {
      var self = this
@@ -514,19 +499,19 @@ export default {
    findBboxById (id) {
      var bboxLayer = L.layerGroup()
      if (this.bboxLayer[this.depth]) {
-	     this.bboxLayer[this.depth].eachLayer(function(layer) {
-	       if (layer.options.id === id || (layer.feature && layer.feature.id === id)) {
-	         bboxLayer.addLayer(layer)
-	         // self.setSelected(layer)
-// 	         var bds = layer.getBounds()
-// 	         if (!bounds) {
-// 	           bounds = bds
-// 	         } else  {
-// 	           bounds.extend(bds)
-// 	         }
-	        
-	       }
-	     })
+        this.bboxLayer[this.depth].eachLayer(function(layer) {
+          if (layer.options.id === id || (layer.feature && layer.feature.id === id)) {
+            bboxLayer.addLayer(layer)
+            // self.setSelected(layer)
+//             var bds = layer.getBounds()
+//             if (!bounds) {
+//               bounds = bds
+//             } else  {
+//               bounds.extend(bds)
+//             }
+           
+          }
+        })
      }
      return bboxLayer
    },
@@ -535,18 +520,18 @@ export default {
      var bounds = null
      var bboxLayer = this.findBboxById(id)
 //      if (this.bboxLayer[this.depth]) {
-// 	     this.bboxLayer[this.depth].eachLayer(function(layer) {
-// 	       if (layer.options.id === id || (layer.feature && layer.feature.id === id)) {
-// 	         self.setSelected(layer)
-// 	         var bds = layer.getBounds()
-// 	         if (!bounds) {
-// 	           bounds = bds
-// 	         } else  {
-// 	           bounds.extend(bds)
-// 	         }
-	        
-// 	       }
-// 	     })
+//         this.bboxLayer[this.depth].eachLayer(function(layer) {
+//           if (layer.options.id === id || (layer.feature && layer.feature.id === id)) {
+//             self.setSelected(layer)
+//             var bds = layer.getBounds()
+//             if (!bounds) {
+//               bounds = bds
+//             } else  {
+//               bounds.extend(bds)
+//             }
+           
+//           }
+//         })
 //      }
      this.setSelected(bboxLayer)
      var bounds = null
@@ -563,8 +548,8 @@ export default {
      }
      if (temporaly) {
          setTimeout(() => {
-	        self.unselectBbox()
-	     }, 2000);
+           self.unselectBbox()
+        }, 2000);
        return null
      } else {
        return bounds
@@ -624,26 +609,40 @@ div[id="fmtMap"].mtdt-small .leaflet-control a{
  }
   div[id="fmtMap"] .lfh-control-legend {
    cursor: pointer;
+   background: white;
+   display:none;
  }
   div[id="fmtMap"] .lfh-control-legend img{
     max-height:250px;
+  }
+   div[id="fmtMap"]  div.lfh-control-legend{
+    display:block;
+  }
+    div[id="fmtMap"]  div.lfh-control-legend.hidden{
+    display:none;
   }
  
  div[id="fmtMap"].mtdt-small .lfh-control-legend img{
    max-width:120px;
    max-height:100px;
  }
-  div[id="fmtMap"] .lfh-control-legend img{
+ div[id="fmtMap"] .lfh-control-legend img{
     display: none;
   }
-  div[id="fmtMap"] .lfh-control-legend a{
+/*  div[id="fmtMap"] .lfh-control-legend a{
    display:block;
- }
+ } */
   div[id="fmtMap"] .lfh-control-legend.expand img{;
    display:block;
+   float:left;
+   margin-left:5px;
  }
+   div[id="fmtMap"] .lfh-control-legend.expand img:first-child{
+    margin-left:0px;
+   }
   div[id="fmtMap"] .lfh-control-legend.expand a{
    display:none;
+ 
  }
  
  div[id="fmtMap"] a.leaflet-control-layers-toggle{

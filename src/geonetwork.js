@@ -49,6 +49,10 @@ const GeonetworkPlugin = {
                }
              }
            },
+           uuidToDomId (uuid) {
+             // first character must be letter and character other than "_" and "-" are forbidden
+             return 'i' + uuid.toLowerCase().replace(/[^a-z0-9\-_]+/, '')
+           },
            strToArray(tabs) {
              var myArray = []
              if (typeof tabs === 'string') {
