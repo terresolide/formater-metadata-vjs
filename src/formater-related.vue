@@ -282,12 +282,12 @@
 
        if (platform.checked) {
          console.log('add layer')
-//          var event = new CustomEvent('fmt:addLayerEvent', {detail: {layer: layer, id: this.id}})
-//          document.dispatchEvent(event)
+          var event = new CustomEvent('fmt:addLayerEvent', {detail: {layer: platform.layers[0], id: platform.id}})
+          document.dispatchEvent(event)
        } else {
          console.log('remove layer')
-//          var event = new CustomEvent('fmt:removeLayerEvent', {detail: {id: layer.id}})
-//          document.dispatchEvent(event)
+         var event = new CustomEvent('fmt:removeLayerEvent', {detail: {id: platform.layers[0].id}})
+         document.dispatchEvent(event)
        }
        },
        triggerDownload (index) {
@@ -387,6 +387,9 @@
              return platform.id === meta['geonet:info'].uuid
            })
            platformSelected = Object.assign(platformSelected, meta)
+           var links = _this.$gn.treatmentLinks(platformSelected.id, platformSelected.link)
+           delete platformSelected.link
+           platformSelected = Object.assign(platformSelected, links)
            platformSelected.completed = true
          })
        }

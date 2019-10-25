@@ -53,6 +53,51 @@ const GeonetworkPlugin = {
              // first character must be letter and character other than "_" and "-" are forbidden
              return 'i' + uuid.toLowerCase().replace(/[^a-z0-9\-_]+/, '')
            },
+           treatmentLinks (metaId, linkArr) {
+             var links = this.strToArray(linkArr)
+             var self = this
+             var response = {}
+             links.forEach(function (link, index) {
+               // length === 7 for the translation
+               if (link.length < 7) {
+                 switch (link[3]) {
+                 case 'OpenSearch':
+                   response.api = {}
+                   response.api.http = link[2]
+                   response.api.name = link[0].length > 0 ? link[0] : link[1]
+                   break;
+                 case 'OGC:WMS': 
+                 case 'OGC:WFS':
+                 case 'OGC:WFS-G':
+                 case 'OGC:KML':
+                 case 'OGC:OWS':
+                 case 'OGC:OWS-C':
+                 case 'GLG:KML-2.0-http-get-map':
+                   if (!response.layers) {
+                     response.layers = []
+                   }
+                   var id = metaId + '_' + index
+                   response.layers.push(self.linkToLayer(link, id))
+                   break;
+                 case 'WWW:DOWNLOAD-1.0-link--download':
+                 case 'telechargement':
+                   if (!response.download) {
+                     response.download = []
+                   }
+                   response.download.push(self.linkToDownload(link))
+                   break;
+                 case 'WWW:LINK-1.0-http--link':
+                 default:
+                   if (!response.links) {
+                     response.links = []
+                   }
+                   response.links.push(self.linkToLink(link))
+                   break;
+                 }
+               }
+             })
+             return response
+           },
            strToArray(tabs) {
              var myArray = []
              if (typeof tabs === 'string') {
