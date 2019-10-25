@@ -97,9 +97,6 @@ export default {
     this.resizeListener = this.resize.bind(this)
     window.addEventListener('resize', this.resizeListener);
     this.resize()
-    this.$http.interceptor.getResponseHeader = function (request) {
-       return request.getResponseHeader()
-     }
   },
   mounted () {
 //     var evt = new CustomEvent('fmt:pageChangedEvent')

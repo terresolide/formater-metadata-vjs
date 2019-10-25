@@ -42,7 +42,7 @@
               <img :src="meta.logo"  />
           </a>
        </div>
-       <formater-related type="cartouche" :id="meta.id" :download="meta.download" :has-bbox-layer="hasBboxLayer" :layers="meta.layers"  :links="meta.links"></formater-related>
+       <formater-related type="cartouche" :id="meta.id" :download="meta.download" :has-bbox-layer="hasBboxLayer" :layers="meta.layers"  :links="meta.links" :related="meta.related"></formater-related>
      </div>
  </div>
 </template>

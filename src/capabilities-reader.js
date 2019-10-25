@@ -18,17 +18,13 @@ const reader = {
       if (regex.test(url)) {
         search = proxy + '?url=' + encodeURIComponent(url)
       }
-      console.log(search)
       $http.get(search)
       .then(response => this.extract(response.body, layer, options, metaId, callback))
     },
     extract (str, layer, options, metaId, callback) {
-      console.log(str)
       var root = parser.parseFromString(str, 'text/xml')
-      console.log(root.children[0])
       var ns = root.children[0].getAttribute('xmlns')
       var xlink = root.children[0].getAttribute('xmlns:xlink')
-      console.log(xlink)
       var nsResolver = function (prefix) {
         switch(prefix) {
           case 'xlink':

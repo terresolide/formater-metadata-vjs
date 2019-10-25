@@ -73,7 +73,7 @@ export default {
           'Accept': 'application/json, text/plain, */*',
           'Accept-Language': this.$i18n.locale === 'fr' ? 'fre': 'eng'
         }
-        var url = this.$store.state.geonetwork + 'srv/api/related?type=children&type=parent'
+        var url = this.$store.state.geonetwork + 'srv/api/related?type=children&type=parent&type=associated&type=siblings'
         url += '&uuid=' + Object.keys(this.metadatas).join('&uuid=')
         var self = this
         this.$http.get(url, {

@@ -562,40 +562,43 @@ export default {
       // links
       var links = this.$gn.strToArray(meta.link)
       links.forEach(function (link, index) {
-        switch (link[3]) {
-        case 'OpenSearch':
-          meta.api = {}
-          meta.api.http = link[2]
-          meta.api.name = link[0].length > 0 ? link[0] : link[1]
-          break;
-        case 'OGC:WMS': 
-        case 'OGC:WFS':
-        case 'OGC:WFS-G':
-        case 'OGC:KML':
-        case 'OGC:OWS':
-        case 'OGC:OWS-C':
-        case 'GLG:KML-2.0-http-get-map':
-          if (!meta.layers) {
-            meta.layers = []
+        // length === 7 for the translation
+        if (link.length < 7) {
+          switch (link[3]) {
+          case 'OpenSearch':
+            meta.api = {}
+            meta.api.http = link[2]
+            meta.api.name = link[0].length > 0 ? link[0] : link[1]
+            break;
+          case 'OGC:WMS': 
+          case 'OGC:WFS':
+          case 'OGC:WFS-G':
+          case 'OGC:KML':
+          case 'OGC:OWS':
+          case 'OGC:OWS-C':
+          case 'GLG:KML-2.0-http-get-map':
+            if (!meta.layers) {
+              meta.layers = []
+            }
+            var id = meta.id + '_' + index
+            var layer = self.$gn.linkToLayer(link, id)
+            meta.layers.push(self.$gn.linkToLayer(link, id))
+            break;
+          case 'WWW:DOWNLOAD-1.0-link--download':
+          case 'telechargement':
+            if (!meta.download) {
+              meta.download = []
+            }
+            meta.download.push(self.$gn.linkToDownload(link))
+            break;
+          case 'WWW:LINK-1.0-http--link':
+          default:
+            if (!meta.links) {
+              meta.links = []
+            }
+            meta.links.push(self.$gn.linkToLink(link))
+            break;
           }
-          var id = meta.id + '_' + index
-          var layer = self.$gn.linkToLayer(link, id)
-          meta.layers.push(self.$gn.linkToLayer(link, id))
-          break;
-        case 'WWW:DOWNLOAD-1.0-link--download':
-        case 'telechargement':
-          if (!meta.download) {
-            meta.download = []
-          }
-          meta.download.push(self.$gn.linkToDownload(link))
-          break;
-        case 'WWW:LINK-1.0-http--link':
-        default:
-          if (!meta.links) {
-            meta.links = []
-          }
-          meta.links.push(self.$gn.linkToLink(link))
-          break;
         }
       })
       return meta;

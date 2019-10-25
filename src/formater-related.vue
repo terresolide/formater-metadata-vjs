@@ -77,6 +77,27 @@
       </div> 
         <hr v-if="type === 'metadata'" /> 
     </div>
+    <!--  siblings -->
+    <div v-if="siblings && siblings.length === 1 && type === 'cartouche'">
+       <div class="mtdt-related-type fa fa-map-marker" :style="{backgroundColor: platformAdded ? '#8c0209' : primary}" :title="siblings[0].title[lang].toUpperCase() +'\n\r' + siblings[0].description[lang]" >
+         
+      </div> 
+    </div>
+     <div v-if="siblings && (siblings.length >1 || (type === 'metadata' && siblings.length > 0))">
+       <div class="mtdt-related-type fa fa-map-marker"  :style="{backgroundColor: platformAdded ? '#8c0209' : primary}" :title="$t('platform')">
+         <span v-if="type === 'cartouche'" class="fa fa-caret-down"></span>
+      </div> 
+      <div v-if="type === 'metadata'"></div>
+      <div class="mtdt-expand" >
+           <ul class="mtdt-layers">
+           <li v-for="(platform, index) in siblings" :key="index" @click="changePlatform(platform)" >
+              <i class="fa" :class="{'fa-square-o': !platform.checked,'fa-check-square-o': platform.checked}"  :data-platform="index"></i>
+              <div  :title="platform.description[lang] || platform.description" >{{platform.title[lang] || platform.title}}</div>
+          </li>
+          </ul>    
+      </div> 
+        <hr v-if="type === 'metadata'" /> 
+    </div>
   <!--  <div v-if="related && (related.children || related.parent)" style="position:relative;">
    <div class="mtdt-related-type fa fa-code-fork" :style="{backgroundColor:primary}">
       <span class="fa fa-caret-down"></span>
@@ -136,6 +157,7 @@
       }
     },
     created () {
+      this.lang = this.$i18n.locale === 'fr' ? 'fre' : 'eng'
       this.checkEmpty()
     },
     computed: {
@@ -151,10 +173,46 @@
           layerAdded = layerAdded || layer.checked
         })
         return layerAdded
+      },
+      platformAdded () {
+        var platformAdded = false
+        this.siblings.forEach(function (platform) {
+          platformAdded = platformAdded || platform.checked
+        })
+        return platformAdded
+      },
+      siblings () {
+        if (this.related && this.related.siblings) {
+          console.log(this.related.siblings[0])
+          //search more information
+          var headers =  {
+          'Accept': 'application/json, text/plain, */*',
+          'Accept-Language': this.$i18n.locale === 'fr' ? 'fre': 'eng'
+          }
+          var url = this.$store.state.geonetwork +  'srv/eng'
+          url += '/q?_content_type=json&buildSummary=false&fast=index'
+          var count = 0
+          url += '&uuid='
+          this.related.siblings.forEach(function (plateform) {
+            if (!plateform.completed) {
+               count++
+               url +=  plateform.id + '+or+'
+            }
+          })
+          if (count > 0) {
+            url = url.substr(0, url.length - 4)
+            this.$http.get(url, {headers: headers})
+            .then( response => { this.fillSiblings(response.body) })
+          }
+          return this.related.siblings
+        } else {
+          return null
+        }
       }
     },
     data () {
       return {
+        lang: 'eng',
         empty: true,
         message: '',
         progress: null,
@@ -194,6 +252,8 @@
           this.empty = false
         } else if (this.links &&  this.links.length >0) {
           this.empty = false
+        } else if (this.siblings && this.siblings.length > 0) {
+          this.empty = false
         }
       },
       changeLayer (layer) {
@@ -216,6 +276,20 @@
          }
          // this.updateClass()
        },
+       changePlatform(platform) {
+         this.$set(platform, 'checked', !platform.checked)
+         //   this.meta.layers[index].checked = !this.meta.layers[index].checked
+
+       if (platform.checked) {
+         console.log('add layer')
+//          var event = new CustomEvent('fmt:addLayerEvent', {detail: {layer: layer, id: this.id}})
+//          document.dispatchEvent(event)
+       } else {
+         console.log('remove layer')
+//          var event = new CustomEvent('fmt:removeLayerEvent', {detail: {id: layer.id}})
+//          document.dispatchEvent(event)
+       }
+       },
        triggerDownload (index) {
          console.log('trigger download')
          if (this.download[index].disabled) {
@@ -234,8 +308,8 @@
          
          var _this = this
 
-      // this.$http.get(this.download[index].url )
-            this.$http.get('http://api.formater/interface-services/' , {responseType: 'blob', downloadProgress: downloadProgress})
+         this.$http.get(this.download[index].url )
+            // this.$http.get('http://api.formater/interface-services/' , {responseType: 'blob', downloadProgress: downloadProgress})
              .then( response => {
                console.log(response)
                var headerDisposition = response.headers.get('Content-Disposition')
@@ -302,6 +376,19 @@
          }
          var event = new CustomEvent('fmt:unselectBboxEvent', {detail: {id: this.id}})
          document.dispatchEvent(event)
+       },
+       fillSiblings (resp) {
+         if (resp.metadata && typeof resp.metadata.length === 'undefined') {
+           resp.metadata = [resp.metadata]
+         }
+         var _this = this
+         resp.metadata.forEach(function (meta) {
+           var platformSelected = _this.siblings.find(function (platform) {
+             return platform.id === meta['geonet:info'].uuid
+           })
+           platformSelected = Object.assign(platformSelected, meta)
+           platformSelected.completed = true
+         })
        }
     }
     
