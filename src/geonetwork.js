@@ -59,8 +59,8 @@ const GeonetworkPlugin = {
              var response = {}
              links.forEach(function (link, index) {
                // length === 7 for the translation
-               if (link.length < 7) {
-                 switch (link[3]) {
+
+               switch (link[3]) {
                  case 'OpenSearch':
                    response.api = {}
                    response.api.http = link[2]
@@ -73,11 +73,13 @@ const GeonetworkPlugin = {
                  case 'OGC:OWS':
                  case 'OGC:OWS-C':
                  case 'GLG:KML-2.0-http-get-map':
-                   if (!response.layers) {
-                     response.layers = []
+                   if (link.length < 7) {
+                     if (!response.layers) {
+                       response.layers = []
+                     }
+                     var id = metaId + '_' + index
+                     response.layers.push(self.linkToLayer(link, id))
                    }
-                   var id = metaId + '_' + index
-                   response.layers.push(self.linkToLayer(link, id))
                    break;
                  case 'WWW:DOWNLOAD-1.0-link--download':
                  case 'telechargement':
@@ -86,6 +88,13 @@ const GeonetworkPlugin = {
                    }
                    response.download.push(self.linkToDownload(link))
                    break;
+                 case 'UKST':
+                   if (link[6].toLowerCase() === 'opensearch') {
+                     response.api = {}
+                     response.api.http = link[2]
+                     response.api.name = link[0].length > 0 ? link[0] : link[1]
+                     break;
+                   }
                  case 'WWW:LINK-1.0-http--link':
                  default:
                    if (!response.links) {
@@ -93,8 +102,8 @@ const GeonetworkPlugin = {
                    }
                    response.links.push(self.linkToLink(link))
                    break;
-                 }
                }
+
              })
              return response
            },

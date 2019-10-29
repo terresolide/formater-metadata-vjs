@@ -21,6 +21,8 @@ L.Control.Fullscreen = require('./leaflet.control.fullscreen.js')
 L.Control.Legend = require('./leaflet.control.legend.js')
 
 const getReader = () => import('./capabilities-reader.js')
+
+
 // import {Map, Control, LatLng, tileLayer, TileLayer} from 'leaflet'
 // import L from 'leaflet'
 export default {
@@ -221,12 +223,18 @@ export default {
      case 'OGC:WFS':
      case 'OGC:WFS-G':
        var extract = layer.href.match(/^(.*\?).*$/)
-       this.$http.get(extract).then(
+       url = layer.href + 'r?'
+       url += 'version=1.0.0&request=GetFeature&typeName=' + layer.name
+       url += '&service=WFS'
+       url += '&outputFormat=application/json'
+       // pas de GetCapabilities pour le moment
+       this.$http.jsonp(url).then(
            response => {
-             const parser = new DOMParser();
-             const kml = parser.parseFromString(response.body, 'text/xml');
-             var newLayer = new L.KML(kml)
-             this.addLayerToMap(layer.id, metaId, newLayer)
+                console.log(response)
+//              const parser = new DOMParser();
+//              const kml = parser.parseFromString(response.body, 'text/xml');
+//              var newLayer = new L.KML(kml)
+//              this.addLayerToMap(layer.id, metaId, newLayer)
            }
        )
        break;
