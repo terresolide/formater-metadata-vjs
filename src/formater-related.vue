@@ -577,6 +577,7 @@ max-width:92%;
    display: inline-block;
    max-width:85%;
    vertical-align:top;
+   word-break: break-all;
 }
  .mtdt-related-cartouche ul.mtdt-layers li div{
 
