@@ -128,17 +128,23 @@ export default {
       this.$store.commit('currentUuidChange', this.currentUuid)
       var min = null
       var max = null
-      console.log(typeof event.detail.meta.tempExtentBegin)
+      var numBegins = 0
       
       if (typeof event.detail.meta.tempExtentBegin === 'string') {
         min = event.detail.meta.tempExtentBegin.substring(0, 10)
+        numBegins = 1
       } else if (typeof event.detail.meta.tempExtentBegin === 'object') {
-        min = event.detail.meta.tempExtentBegin[0].substring(0, 10)
+        var begins = event.detail.meta.tempExtentBegin.map(function (begin) { return begin.substring(0, 10)})
+        begins.sort()
+        min = begins[0]
+        numBegins = begins.length
       } 
-      if (typeof event.detail.meta.tempExtentEnd === 'string') {
+      if (typeof event.detail.meta.tempExtentEnd === 'string' && numBegins === 1) {
         max = event.detail.meta.tempExtentEnd.substring(0, 10)
-      } else if (typeof event.detail.meta.tempExtentEnd === 'object') {
-        min = event.detail.meta.tempExtentEnd[event.detail.meta.tempExtentEnd.length - 1].substring(0, 10)
+      } else if (typeof event.detail.meta.tempExtentEnd === 'object' && event.detail.meta.tempExtentEnd.length === numBegins) {
+        var ended = event.detail.meta.tempExtentEnd.map(function(end) { return end.substring(0, 10)})
+        ended.sort()
+        max = ended[ended.length - 1]
       }
       var temp = {
           min: min ? min : this.temporalExtent.min,

@@ -22,6 +22,9 @@ L.Control.Legend = require('./leaflet.control.legend.js')
 
 const getReader = () => import('./capabilities-reader.js')
 
+window['callback'] = function (obj) {
+  console.log(obj)
+}
 
 // import {Map, Control, LatLng, tileLayer, TileLayer} from 'leaflet'
 // import L from 'leaflet'
@@ -228,7 +231,17 @@ export default {
        url += '&service=WFS'
        url += '&outputFormat=application/json'
        // pas de GetCapabilities pour le moment
-       this.$http.jsonp(url).then(
+//        var s = document.createElement("script")
+//        s.setAttribute('id', 'machinTruc')
+//        s.setAttribute('type', 'application/json')
+//        s.src = url
+
+//        s.onload = function (event) {
+//          console.log(event)
+//        }
+//        s.addEventListener('load', function(event) {console.log(event)})
+//        document.body.appendChild(s)
+       this.$http.jsonp(url, {dataType: 'jsonp', contentType: 'application/json'}).then(
            response => {
                 console.log(response)
 //              const parser = new DOMParser();

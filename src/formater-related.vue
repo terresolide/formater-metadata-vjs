@@ -279,15 +279,19 @@
        changePlatform(platform) {
          this.$set(platform, 'checked', !platform.checked)
          //   this.meta.layers[index].checked = !this.meta.layers[index].checked
-
+       console.log(platform)
        if (platform.checked) {
          console.log('add layer')
-          var event = new CustomEvent('fmt:addLayerEvent', {detail: {layer: platform.layers[0], id: platform.id}})
-          document.dispatchEvent(event)
+         if (platform.layers && platform.layers[0]) {
+           var event = new CustomEvent('fmt:addLayerEvent', {detail: {layer: platform.layers[0], id: platform.id}})
+           document.dispatchEvent(event)
+         }
        } else {
          console.log('remove layer')
-         var event = new CustomEvent('fmt:removeLayerEvent', {detail: {id: platform.layers[0].id}})
-         document.dispatchEvent(event)
+         if (platform.layers && platform.layers[0]) {
+           var event = new CustomEvent('fmt:removeLayerEvent', {detail: {id: platform.layers[0].id}})
+           document.dispatchEvent(event)
+         }
        }
        },
        triggerDownload (index) {
@@ -388,6 +392,7 @@
            })
            platformSelected = Object.assign(platformSelected, meta)
            var links = _this.$gn.treatmentLinks(platformSelected.id, platformSelected.link)
+           console.log(links)
            delete platformSelected.link
            platformSelected = Object.assign(platformSelected, links)
            platformSelected.completed = true

@@ -89,7 +89,7 @@ const GeonetworkPlugin = {
                    response.download.push(self.linkToDownload(link))
                    break;
                  case 'UKST':
-                   if (link[6].toLowerCase() === 'opensearch') {
+                   if (link[6] && link[6].toLowerCase() === 'opensearch') {
                      response.api = {}
                      response.api.http = link[2]
                      response.api.name = link[0].length > 0 ? link[0] : link[1]
@@ -106,6 +106,79 @@ const GeonetworkPlugin = {
 
              })
              return response
+           },
+           treatmentSingleGeonetwork (meta, uuid) {
+             meta.id = uuid
+             if (this.$store.state.geonetwork) {
+                 meta.logo = this.$store.state.geonetwork + meta.logo.replace(/^\//, '')
+                 meta.exportLinks = {
+                     xml: this.$store.state.geonetwork + 'srv/api/records/'+ uuid + '/formatters/xml?attachment=true',
+                     pdf: this.$store.state.geonetwork + 'srv/api/records/'+ uuid + '/formatters/xsl-view?root=div&output=pdf'
+                 }
+             }
+             if (typeof meta.abstract === 'object') {
+               meta.abstract = meta.abstract[0]
+             }
+             if (meta.abstract) {
+               meta.abstract = meta.abstract.replace(/(?:\\[rn]|[\r\n])/g, '<br />');
+             }
+             if (meta.defaultAbstract) {
+               meta.defaultAbstract = meta.defaultAbstract.replace(/(?:\\[rn]|[\r\n])/g, '<br />');
+             }
+             
+             meta.description = meta.abstract ? meta.abstract: meta.defaultAbstract
+             
+             meta.osParameters = []
+             meta.mapping = []
+             if (meta.image) {
+                 meta.images =  this.$gn.strToArray(meta.image)
+                 meta.images.forEach( function (image, index) {
+                   if(image[0] === 'thumbnail') {
+                     meta.thumbnail = image[1]
+                   }
+                 })
+             }
+             var self = this
+             // constraints
+             this.$store.state.constraintList.forEach (function (constraint) {
+               if (meta[constraint] && typeof meta[constraint] === 'string') {
+                 meta[constraint] = [meta[constraint]]
+               }
+             }) 
+             
+             // contacts
+             var contacts = {metadata: {}, resource: {}}
+             if (meta.responsibleParty) {
+                   if (typeof meta.responsibleParty === 'string') {
+                     meta.responsibleParty = [meta.responsibleParty]
+                   }
+                  meta.responsibleParty.forEach( function (contact)  {
+                     var fields = contact.split('|');
+                     if (fields[1] === 'metadata' || fields[1] === 'metadonnées') {
+                      if (contacts.metadata[fields[0]]){
+                        contacts.metadata[fields[0]].push(fields)
+                      } else {
+                        contacts.metadata[fields[0]] = [fields]
+                      }
+                     }else{
+                       if (contacts.resource[fields[0]]){
+                          contacts.resource[fields[0]].push(fields)
+                       } else {
+                          contacts.resource[fields[0]] = [fields]
+                       }
+                     }
+                 })
+             }
+             delete meta.responsibleParty
+             meta.contacts = contacts
+             
+             if (!meta.link) {
+               return meta;
+             }
+             // links
+             var links = this.$gn.treatmentLinks(meta.id, meta.link)
+             delete meta.link
+             return meta
            },
            strToArray(tabs) {
              var myArray = []
