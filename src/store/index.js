@@ -67,6 +67,8 @@ export default function makeStore( config ) {
       // search area 
       // when a record is selected searchArea is its bbox
       searchArea: null,
+      // the bounding box of research
+      selectArea: null,
       // current opensearch api parameters
       parameters: {
         // regex of parameter (value attribute) which are exclued to use in request
@@ -109,6 +111,9 @@ export default function makeStore( config ) {
       },*/
       searchAreaChange(state, newBounds) {
         state.searchArea = newBounds
+      },
+      selectAreaChange(state, bbox) {
+        state.selectArea = bbox
       },
       parametersChange(state, newParameters) {
         state.parameters.others = newParameters.parameters

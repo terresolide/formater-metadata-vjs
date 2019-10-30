@@ -186,6 +186,7 @@ export default {
       this.south = e.detail.south;
       this.east = e.detail.east;
       this.west = e.detail.west;
+      this.$store.commit('selectAreaChange', e.detail)
       var event = new CustomEvent('fmt:spatialChangeEvent')
       document.dispatchEvent(event)
     },

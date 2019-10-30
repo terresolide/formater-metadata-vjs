@@ -82,7 +82,7 @@ export default {
      removeLayerListener: null,
      bboxLayer: [],
      layers: [],
-     selected: [],
+     selected: [], // selected bbox
      depth: 0,
      // bounds of all records display for a depth
      bounds: [],
@@ -117,7 +117,17 @@ export default {
 
     }
   },
-  
+  computed: {
+    // L.latlngBounds, the selected Area of research (different of searchArea which is the limitation from bbox of metadata)
+    selectedBounds () {
+      if (!this.$store.state.selectArea) {
+        return null
+      }
+      return L.latLngBounds(
+          [this.$store.state.selectArea.south, this.$store.state.selectArea.west],
+          [this.$store.state.selectArea.north, this.$store.state.selectArea.east])
+    }
+  },
   methods: {
    init () {
      var container = this.$el.querySelector('#fmtMap');
@@ -405,7 +415,8 @@ export default {
        this.depth = event.detail.depth;
      }
      this.type = event.detail.type
-     this.bboxLayer[this.depth] = L.geoJSON(event.detail.features, {style:this.getOptionsLayer()})  
+     console.log('add bbox layer')
+     this.bboxLayer[this.depth] = L.geoJSON(event.detail.features, {style:this.getOptionsLayer(), filter: this.inSelectArea})  
      this.bounds[this.depth] = this.bboxLayer[this.depth].getBounds()
 //      this.bboxLayer[this.depth].addTo(this.map);
 //      if (this.bboxLayer[this.depth]) {
@@ -419,7 +430,26 @@ export default {
      }
      // this.bboxLayer[this.depth].addTo(this.map)
    },
-  
+   inSelectArea (feature) {
+     console.log(this.selectedBounds)
+     if (!this.selectedBounds) {
+       return true
+     }
+     console.log(this.$store.state.searchArea)
+     switch(feature.geometry.type) {
+     case 'Polygon':
+       console.log(feature.geometry.coordinates)
+       console.log(L.GeoJSON.coordsToLatLngs(feature.geometry.coordinates, 1))
+       break;
+     case 'MultiPolygon':
+       console.log(feature.geometry.coordinates)
+       
+       break;
+     }
+   },
+   toBounds (coordinates) {
+     
+   },
    selectBbox (event) {
      this.unselectBbox()
      var bounds = null

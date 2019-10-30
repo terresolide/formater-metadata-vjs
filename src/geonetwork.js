@@ -2,8 +2,10 @@ const GeonetworkPlugin = {
     install(Vue, options) {
        Vue.prototype.$gn = {
            $http: null,
-           init: function (locale, server, http) {
+           $store: null,
+           init: function (locale, server, http, store) {
              this.$http = http
+             this.$store = store
              this.geonetwork = server
              this.setLocale(locale)
              this.getTranslation()
@@ -65,6 +67,7 @@ const GeonetworkPlugin = {
                    response.api = {}
                    response.api.http = link[2]
                    response.api.name = link[0].length > 0 ? link[0] : link[1]
+                   console.log(response.api)
                    break;
                  case 'OGC:WMS': 
                  case 'OGC:WFS':
@@ -89,12 +92,15 @@ const GeonetworkPlugin = {
                    response.download.push(self.linkToDownload(link))
                    break;
                  case 'UKST':
+                  
                    if (link[6] && link[6].toLowerCase() === 'opensearch') {
                      response.api = {}
                      response.api.http = link[2]
                      response.api.name = link[0].length > 0 ? link[0] : link[1]
-                     break;
                    }
+                   console.log(response.api)
+                     break;
+
                  case 'WWW:LINK-1.0-http--link':
                  default:
                    if (!response.links) {
@@ -107,7 +113,7 @@ const GeonetworkPlugin = {
              })
              return response
            },
-           treatmentSingleGeonetwork (meta, uuid) {
+           treatmentMetadata (meta, uuid) {
              meta.id = uuid
              if (this.$store.state.geonetwork) {
                  meta.logo = this.$store.state.geonetwork + meta.logo.replace(/^\//, '')
@@ -131,7 +137,7 @@ const GeonetworkPlugin = {
              meta.osParameters = []
              meta.mapping = []
              if (meta.image) {
-                 meta.images =  this.$gn.strToArray(meta.image)
+                 meta.images =  this.strToArray(meta.image)
                  meta.images.forEach( function (image, index) {
                    if(image[0] === 'thumbnail') {
                      meta.thumbnail = image[1]
@@ -176,9 +182,56 @@ const GeonetworkPlugin = {
                return meta;
              }
              // links
-             var links = this.$gn.treatmentLinks(meta.id, meta.link)
+             var links = this.treatmentLinks(meta.id, meta.link)
+             meta = Object.assign(meta, links)
              delete meta.link
              return meta
+           },
+           extractBbox(bbox, id) {
+             if (!bbox) {
+               return null
+             }
+             switch (typeof bbox) {
+             case 'string':
+               var geometryType = 'Polygon'
+               var path = this.bboxString2Array(bbox)
+               break;
+             case 'object':
+               var geometryType = 'MultiPolygon'
+               var self = this
+               var path = []
+               bbox.forEach(function(box) {
+                 path.push(self.bboxString2Array(box))
+               })
+               break;
+             }
+             
+             if (path) {
+              var feature = {
+                     type: 'Feature',
+                     id: id,
+                     geometry: {
+                       type: geometryType,
+                       coordinates:path
+                     }
+                   }
+             }
+             return feature
+           },
+           bboxString2Array (bbox) {
+             var bboxList = this.strToArray(bbox)
+             var path = []
+             //trouble with rectangle ??? add polygon!
+             bboxList.forEach(function (tab){
+               tab = tab.map(x => parseFloat(x))
+               var latmin = Math.min(tab[3], tab[1])
+               var latmax = Math.max(tab[3], tab[1])
+               var lngmin = Math.min(tab[0], tab[2])
+               var lngmax = Math.max(tab[0], tab[2])
+               path.push([[lngmin, latmin], [lngmin, latmax], [lngmax, latmax], [lngmax, latmin], [lngmin, latmin]])
+               
+             })
+             return path
            },
            strToArray(tabs) {
              var myArray = []

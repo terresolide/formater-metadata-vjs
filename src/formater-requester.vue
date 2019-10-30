@@ -224,7 +224,7 @@ export default {
           response => {  
             var data = response.body
             var uuid = data['geonet:info'].uuid
-            var meta = this.treatmentSingleGeonetwork(data, uuid);
+            var meta = this.$gn.treatmentMetadata(data, uuid);
             meta.appRoot = true
             var event = new CustomEvent('fmt:metadataEvent', {detail: {meta:meta, depth: 0 } })
             document.dispatchEvent(event)
@@ -340,16 +340,16 @@ export default {
         var metadatas = null
       } else if (data.metadata && !data.metadata.forEach) {
         var uuid = data.metadata['geonet:info'].uuid
-        metadatas[uuid] = self.treatmentSingleGeonetwork(data.metadata ,uuid)
-        var feature = self.extractBboxGeonetwork(data.metadata.geoBox, uuid)
+        metadatas[uuid] = self.$gn.treatmentMetadata(data.metadata ,uuid)
+        var feature = self.$gn.extractBbox(data.metadata.geoBox, uuid)
         if (feature) {
             features.push(feature)
         }
       } else {
            data.metadata.forEach( function (meta, index) {
              var uuid = meta['geonet:info'].uuid
-             metadatas[uuid] = self.treatmentSingleGeonetwork(meta ,uuid)
-              var feature = self.extractBboxGeonetwork(meta.geoBox, uuid)
+             metadatas[uuid] = self.$gn.treatmentMetadata(meta ,uuid)
+              var feature = self.$gn.extractBbox(meta.geoBox, uuid)
               if (feature) {
                     features.push(feature)
               }
@@ -361,25 +361,25 @@ export default {
       this.fill(data, depth);
       // this.searchRelated()
     },
-    updateGeonetworkContacts (data) {
-      data.responsibleParty.forEach( function (contact)  {
-          var fields = contact.split('|');
-          if (fields[1] === 'metadata' || fields[1] === 'metadonnées') {
-           if (_this.contacts.metadata[fields[0]]){
-             _this.contacts.metadata[fields[0]].push(fields)
-           } else {
-             _this.contacts.metadata[fields[0]] = [fields]
-           }
-          }else{
-            if (_this.contacts.resource[fields[0]]){
-               _this.contacts.resource[fields[0]].push(fields)
-            } else {
-               _this.contacts.resource[fields[0]] = [fields]
-            }
-          }
+//     updateGeonetworkContacts (data) {
+//       data.responsibleParty.forEach( function (contact)  {
+//           var fields = contact.split('|');
+//           if (fields[1] === 'metadata' || fields[1] === 'metadonnées') {
+//            if (_this.contacts.metadata[fields[0]]){
+//              _this.contacts.metadata[fields[0]].push(fields)
+//            } else {
+//              _this.contacts.metadata[fields[0]] = [fields]
+//            }
+//           }else{
+//             if (_this.contacts.resource[fields[0]]){
+//                _this.contacts.resource[fields[0]].push(fields)
+//             } else {
+//                _this.contacts.resource[fields[0]] = [fields]
+//             }
+//           }
                 
-      })
-    },
+//       })
+//     },
     mapToGeonetwork (properties) {
       var properties = Object.assign({}, properties)
       properties.fromOs = true
@@ -490,167 +490,6 @@ export default {
         delete properties.keywords
       }
       return properties
-    },
-    treatmentSingleGeonetwork (meta, uuid) {
-      meta.id = uuid
-      if (this.$store.state.geonetwork) {
-          meta.logo = this.$store.state.geonetwork + meta.logo.replace(/^\//, '')
-          meta.exportLinks = {
-              xml: this.$store.state.geonetwork + 'srv/api/records/'+ uuid + '/formatters/xml?attachment=true',
-              pdf: this.$store.state.geonetwork + 'srv/api/records/'+ uuid + '/formatters/xsl-view?root=div&output=pdf'
-          }
-      }
-      if (typeof meta.abstract === 'object') {
-        meta.abstract = meta.abstract[0]
-      }
-      if (meta.abstract) {
-        meta.abstract = meta.abstract.replace(/(?:\\[rn]|[\r\n])/g, '<br />');
-      }
-      if (meta.defaultAbstract) {
-        meta.defaultAbstract = meta.defaultAbstract.replace(/(?:\\[rn]|[\r\n])/g, '<br />');
-      }
-      
-      meta.description = meta.abstract ? meta.abstract: meta.defaultAbstract
-      
-      meta.osParameters = []
-      meta.mapping = []
-      if (meta.image) {
-          meta.images =  this.$gn.strToArray(meta.image)
-          meta.images.forEach( function (image, index) {
-            if(image[0] === 'thumbnail') {
-              meta.thumbnail = image[1]
-            }
-          })
-      }
-      var self = this
-      // constraints
-      this.$store.state.constraintList.forEach (function (constraint) {
-        if (meta[constraint] && typeof meta[constraint] === 'string') {
-          meta[constraint] = [meta[constraint]]
-        }
-      }) 
-      
-      // contacts
-      var contacts = {metadata: {}, resource: {}}
-      if (meta.responsibleParty) {
-            if (typeof meta.responsibleParty === 'string') {
-              meta.responsibleParty = [meta.responsibleParty]
-            }
-           meta.responsibleParty.forEach( function (contact)  {
-              var fields = contact.split('|');
-              if (fields[1] === 'metadata' || fields[1] === 'metadonnées') {
-               if (contacts.metadata[fields[0]]){
-                 contacts.metadata[fields[0]].push(fields)
-               } else {
-                 contacts.metadata[fields[0]] = [fields]
-               }
-              }else{
-                if (contacts.resource[fields[0]]){
-                   contacts.resource[fields[0]].push(fields)
-                } else {
-                   contacts.resource[fields[0]] = [fields]
-                }
-              }
-          })
-      }
-      delete meta.responsibleParty
-      meta.contacts = contacts
-      
-      if (!meta.link) {
-        return meta;
-      }
-      // links
-      var links = this.$gn.treatmentLinks(meta.id, meta.link)
-      delete meta.link
-//       var links = this.$gn.strToArray(meta.link)
-//       links.forEach(function (link, index) {
-//         // length === 7 for the translation
-//         if (link.length < 7) {
-//           switch (link[3]) {
-//           case 'OpenSearch':
-//             meta.api = {}
-//             meta.api.http = link[2]
-//             meta.api.name = link[0].length > 0 ? link[0] : link[1]
-//             break;
-//           case 'OGC:WMS': 
-//           case 'OGC:WFS':
-//           case 'OGC:WFS-G':
-//           case 'OGC:KML':
-//           case 'OGC:OWS':
-//           case 'OGC:OWS-C':
-//           case 'GLG:KML-2.0-http-get-map':
-//             if (!meta.layers) {
-//               meta.layers = []
-//             }
-//             var id = meta.id + '_' + index
-//             var layer = self.$gn.linkToLayer(link, id)
-//             meta.layers.push(self.$gn.linkToLayer(link, id))
-//             break;
-//           case 'WWW:DOWNLOAD-1.0-link--download':
-//           case 'telechargement':
-//             if (!meta.download) {
-//               meta.download = []
-//             }
-//             meta.download.push(self.$gn.linkToDownload(link))
-//             break;
-//           case 'WWW:LINK-1.0-http--link':
-//           default:
-//             if (!meta.links) {
-//               meta.links = []
-//             }
-//             meta.links.push(self.$gn.linkToLink(link))
-//             break;
-//           }
-//         }
-//       })
-      meta = Object.assign(meta, links)
-      return meta;
-    },
-    extractBboxGeonetwork(bbox, id) {
-      if (!bbox) {
-        return null
-      }
-      switch (typeof bbox) {
-      case 'string':
-        var geometryType = 'Polygon'
-        var path = this.bboxString2Array(bbox)
-        break;
-      case 'object':
-        var geometryType = 'MultiPolygon'
-        var self = this
-        var path = []
-        bbox.forEach(function(box) {
-          path.push(self.bboxString2Array(box))
-        })
-        break;
-      }
-      
-      if (path) {
-       var feature = {
-              type: 'Feature',
-              id: id,
-              geometry: {
-                type: geometryType,
-                coordinates:path
-              }
-            }
-      }
-      return feature
-    },
-    bboxString2Array (bbox) {
-      var bboxList = this.$gn.strToArray(bbox)
-      var path = []
-      //trouble with rectangle ??? add polygon!
-      bboxList.forEach(function (tab){
-        tab = tab.map(x => parseFloat(x))
-        var latmin = Math.min(tab[3], tab[1])
-        var latmax = Math.max(tab[3], tab[1])
-        var lngmin = Math.min(tab[0], tab[2])
-        var lngmax = Math.max(tab[0], tab[2])
-        path.push([[lngmin, latmin], [lngmin, latmax], [lngmax, latmax], [lngmax, latmin], [lngmin, latmin]])
-        
-      })
-      return path
     },
     // @todo DEPLACER DANS FORM VOIR MÊME DANS formater-dimension-block/ formater-facet-block!!
     prepareFacet (e) {
