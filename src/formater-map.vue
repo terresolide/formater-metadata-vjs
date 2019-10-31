@@ -189,7 +189,7 @@ export default {
       console.log(proj4)
       this.$proj4 = proj4.default
       this.crs.dest = new this.$proj4.Proj('EPSG:4326')
-      this.crs.ESPG3857 = new this.$proj4.Proj('EPSG:3857')
+      this.crs.EPSG3857 = new this.$proj4.Proj('EPSG:3857')
     })
    },
    addLayer (event) {
@@ -263,9 +263,26 @@ export default {
        this.$http.get('http://api.formater/interface-services/jsonFeature.php?url=' + encodeURIComponent(url)).then(
       // this.$http.jsonp(url, {dataType: 'jsonp', contentType: 'application/json'}).then(
            response => {
-                var features = response.body
-                console.log(features)
-                var newLayer = L.geoJSON(features, {style: {color: '#ff0000', weight: 5, opacity:1}})
+                var dataLayer = response.body
+                // @todo conditions à voir
+                if (dataLayer.crs && dataLayer.crs.properties.name) {
+                  var _this = this
+                  dataLayer.features.forEach(function (feature) {
+                    switch (feature.geometry.type) {
+                    case 'MultiLineString':
+                      feature.geometry.coordinates.forEach( function (coords) {
+                        coords.forEach(function (coord) {
+                         // console.log(coord)
+                          coord = _this.$proj4(_this.crs.EPSG3857, _this.crs.dest, coord)
+                         // console.log(coord)
+                        })
+                        
+                      })
+                      break
+                    }
+                  })
+                }
+                var newLayer = L.geoJSON(dataLayer, {style: {color: '#ff0000', weight: 5, opacity:1}})
                 
 //              const parser = new DOMParser();
 //              const kml = parser.parseFromString(response.body, 'text/xml');
