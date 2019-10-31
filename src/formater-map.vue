@@ -22,9 +22,7 @@ L.Control.Legend = require('./leaflet.control.legend.js')
 
 const getReader = () => import('./capabilities-reader.js')
 
-window['callback'] = function (obj) {
-  console.log(obj)
-}
+
 
 // import {Map, Control, LatLng, tileLayer, TileLayer} from 'leaflet'
 // import L from 'leaflet'
@@ -251,13 +249,16 @@ export default {
 //        }
 //        s.addEventListener('load', function(event) {console.log(event)})
 //        document.body.appendChild(s)
-       this.$http.jsonp(url, {dataType: 'jsonp', contentType: 'application/json'}).then(
+       this.$http.get('http://api.formater/interface-services/jsonFeature.php?url=' + encodeURIComponent(url)).then(
+      // this.$http.jsonp(url, {dataType: 'jsonp', contentType: 'application/json'}).then(
            response => {
                 console.log(response)
+                var newLayer = L.geoJSON(response.body, {style: {color: '#ff0000', weight: 5, opacity:1}, onEachFeature: function (feature, layer) {console.log('feature')}})
+                
 //              const parser = new DOMParser();
 //              const kml = parser.parseFromString(response.body, 'text/xml');
 //              var newLayer = new L.KML(kml)
-//              this.addLayerToMap(layer.id, metaId, newLayer)
+               this.addLayerToMap(layer.id, metaId, newLayer)
            }
        )
        break;
@@ -295,12 +296,14 @@ export default {
    addLayerToMap(id, groupId, newLayer) {
      if (newLayer) {
        newLayer.addTo(this.map)
+       console.log('addToMap')
        newLayer.bringToFront()
        if (!this.layers[this.depth]) {
          this.layers[this.depth] = new Map()
        }
        this.layers[this.depth].set(id, newLayer)
        var bounds = this.searchBboxBoundsById(groupId)
+       var bounds = newLayer.getBounds()
        if (bounds) {
          this.map.fitBounds(bounds, {animate: true,  padding: [30,30]})
        }
@@ -415,8 +418,8 @@ export default {
        this.depth = event.detail.depth;
      }
      this.type = event.detail.type
-     console.log('add bbox layer')
-     this.bboxLayer[this.depth] = L.geoJSON(event.detail.features, {style:this.getOptionsLayer(), filter: this.inSelectArea})  
+     this.filterBboxWithSelectedBounds(event.detail.features)
+     this.bboxLayer[this.depth] = L.geoJSON(event.detail.features, {style:this.getOptionsLayer()})  
      this.bounds[this.depth] = this.bboxLayer[this.depth].getBounds()
 //      this.bboxLayer[this.depth].addTo(this.map);
 //      if (this.bboxLayer[this.depth]) {
@@ -430,25 +433,33 @@ export default {
      }
      // this.bboxLayer[this.depth].addTo(this.map)
    },
-   inSelectArea (feature) {
-     console.log(this.selectedBounds)
-     if (!this.selectedBounds) {
-       return true
-     }
-     console.log(this.$store.state.searchArea)
-     switch(feature.geometry.type) {
-     case 'Polygon':
-       console.log(feature.geometry.coordinates)
-       console.log(L.GeoJSON.coordsToLatLngs(feature.geometry.coordinates, 1))
-       break;
-     case 'MultiPolygon':
-       console.log(feature.geometry.coordinates)
-       
-       break;
-     }
+   filterBboxWithSelectedBounds (features) {
+     var _this = this
+     features.forEach(function (feature) {
+       feature = _this.inSelectedBounds(feature)
+     })
    },
-   toBounds (coordinates) {
-     
+   inSelectedBounds (feature) {
+     if (!this.selectedBounds) {
+       return feature
+     }
+     var selectedBounds = this.selectedBounds
+     switch(feature.geometry.type) {
+    
+     case 'MultiPolygon':
+       //remove bbox which is out of selectedBounds
+       for (var i=feature.geometry.coordinates.length - 1; i >= 0; i--) {
+         var latlngs = L.GeoJSON.coordsToLatLngs(feature.geometry.coordinates[i], 1)
+         var bounds = L.latLngBounds(latlngs)
+         if (!bounds.intersects(selectedBounds)) {
+           feature.geometry.coordinates.splice(i,1)
+         }
+       }
+       return feature
+     case 'Polygon':
+     default:
+         return feature
+     }
    },
    selectBbox (event) {
      this.unselectBbox()
