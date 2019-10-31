@@ -21,7 +21,7 @@ L.Control.Fullscreen = require('./leaflet.control.fullscreen.js')
 L.Control.Legend = require('./leaflet.control.legend.js')
 
 const getReader = () => import('./capabilities-reader.js')
-
+const getProj4 = () => import('proj4')
 
 
 // import {Map, Control, LatLng, tileLayer, TileLayer} from 'leaflet'
@@ -69,6 +69,11 @@ export default {
   },
   data() {
     return {
+     $proj4: null,
+     crs: {
+       dest: null,
+       espg3857: null
+     },
      fullscreen: false,
      map: null,
      type: null,
@@ -180,6 +185,12 @@ export default {
 //         opacity: 0.5
 //        }).addTo(this.map);
 // 	wmsLayer.bringToFront()
+    getProj4().then(proj4 => {
+      console.log(proj4)
+      this.$proj4 = proj4.default
+      this.crs.dest = new this.$proj4.Proj('EPSG:4326')
+      this.crs.ESPG3857 = new this.$proj4.Proj('EPSG:3857')
+    })
    },
    addLayer (event) {
      // test get capabilities
@@ -252,8 +263,9 @@ export default {
        this.$http.get('http://api.formater/interface-services/jsonFeature.php?url=' + encodeURIComponent(url)).then(
       // this.$http.jsonp(url, {dataType: 'jsonp', contentType: 'application/json'}).then(
            response => {
-                console.log(response)
-                var newLayer = L.geoJSON(response.body, {style: {color: '#ff0000', weight: 5, opacity:1}, onEachFeature: function (feature, layer) {console.log('feature')}})
+                var features = response.body
+                console.log(features)
+                var newLayer = L.geoJSON(features, {style: {color: '#ff0000', weight: 5, opacity:1}})
                 
 //              const parser = new DOMParser();
 //              const kml = parser.parseFromString(response.body, 'text/xml');

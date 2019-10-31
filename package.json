@@ -32,6 +32,7 @@
     "leaflet-draw": "^1.0.4",
     "leaflet-kml": "git+https://github.com/windycom/leaflet-kml.git",
     "moment": "^2.22.2",
+    "proj4": "^2.5.0",
     "vue": "^2.6.8",
     "vue-custom-element": "^1.4.4",
     "vue-i18n": "7.0.5",
