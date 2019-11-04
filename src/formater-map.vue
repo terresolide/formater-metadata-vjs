@@ -288,8 +288,8 @@ export default {
        }
        this.layers[this.depth].set(id, newLayer)
        var bounds = this.searchBboxBoundsById(groupId)
-       var bounds = newLayer.getBounds()
-       if (bounds) {
+       
+       if( bounds ) {
          this.map.fitBounds(bounds, {animate: true,  padding: [30,30]})
        }
      }
