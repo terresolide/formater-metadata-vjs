@@ -67,7 +67,6 @@ const GeonetworkPlugin = {
                    response.api = {}
                    response.api.http = link[2]
                    response.api.name = link[0].length > 0 ? link[0] : link[1]
-                   console.log(response.api)
                    break;
                  case 'OGC:WMS': 
                  case 'OGC:WFS':
@@ -98,9 +97,7 @@ const GeonetworkPlugin = {
                      response.api.http = link[2]
                      response.api.name = link[0].length > 0 ? link[0] : link[1]
                    }
-                   console.log(response.api)
-                     break;
-
+                   break;
                  case 'WWW:LINK-1.0-http--link':
                  default:
                    if (!response.links) {

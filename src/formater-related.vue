@@ -183,7 +183,6 @@
       },
       siblings () {
         if (this.related && this.related.siblings) {
-          console.log(this.related.siblings[0])
           //search more information
           var headers =  {
           'Accept': 'application/json, text/plain, */*',
@@ -392,7 +391,6 @@
            })
            platformSelected = Object.assign(platformSelected, meta)
            var links = _this.$gn.treatmentLinks(platformSelected.id, platformSelected.link)
-           console.log(links)
            delete platformSelected.link
            platformSelected = Object.assign(platformSelected, links)
            platformSelected.completed = true

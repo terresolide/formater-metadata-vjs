@@ -281,15 +281,16 @@ export default {
    addLayerToMap(id, groupId, newLayer) {
      if (newLayer) {
        newLayer.addTo(this.map)
-       console.log('addToMap')
        newLayer.bringToFront()
        if (!this.layers[this.depth]) {
          this.layers[this.depth] = new Map()
        }
        this.layers[this.depth].set(id, newLayer)
        var bounds = this.searchBboxBoundsById(groupId)
-       
-       if( bounds ) {
+       if (newLayer._kml) {
+         bounds = newLayer.getBounds()
+       }
+       if( bounds ) { 
          this.map.fitBounds(bounds, {animate: true,  padding: [30,30]})
        }
      }
