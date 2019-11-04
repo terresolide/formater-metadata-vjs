@@ -171,26 +171,13 @@ export default {
     var fullscreen = new L.Control.Fullscreen('fmtLargeMap', this.$i18n.locale)
     fullscreen.addTo(this.map)
     this.legendControl.addTo(this.map)
-//    this.legendControl.addBboxLayer()
-//      var wmsLayer = L.tileLayer.wms('https://muscatemaj-pp.theia-land.fr/atdistrib/resto2/collections/GRENADE/e3514f6a-ce72-5d15-b5f5-94c5c6d72137/wms/CLASSIFICATION?', {
-//         opacity: 0.8,
-//         format: 'image/png'
-//        }).addTo(this.map);
-// 	wmsLayer.bringToFront()
-//     var wmsLayer = L.tileLayer.wms('https://services.data.shom.fr/INSPIRE/wms/r?', {
-//         service: 'WMS',
-//         layers: 'MNT_ATL100m_HOMONIM_PBMA_3857_WMSR',
-//         format: 'image/png',
-//         ESPG: 4326,
-//         opacity: 0.5
-//        }).addTo(this.map);
-// 	wmsLayer.bringToFront()
-    getProj4().then(proj4 => {
-      console.log(proj4)
-      this.$proj4 = proj4.default
-      this.crs.dest = new this.$proj4.Proj('EPSG:4326')
-      this.crs.EPSG3857 = new this.$proj4.Proj('EPSG:3857')
-    })
+
+//     getProj4().then(proj4 => {
+//       console.log(proj4)
+//       this.$proj4 = proj4.default
+//       this.crs.dest = new this.$proj4.Proj('EPSG:4326')
+//       this.crs.EPSG3857 = new this.$proj4.Proj('EPSG:3857')
+//     })
    },
    addLayer (event) {
      // test get capabilities
@@ -248,46 +235,15 @@ export default {
        url = layer.href + 'r?'
        url += 'version=1.0.0&request=GetFeature&typeName=' + layer.name
        url += '&service=WFS'
-       url += '&outputFormat=application/json'
-       // pas de GetCapabilities pour le moment
-//        var s = document.createElement("script")
-//        s.setAttribute('id', 'machinTruc')
-//        s.setAttribute('type', 'application/json')
-//        s.src = url
+       url += '&outputFormat=' +encodeURIComponent('application/vnd.google-earth.kml+xml')
 
-//        s.onload = function (event) {
-//          console.log(event)
-//        }
-//        s.addEventListener('load', function(event) {console.log(event)})
-//        document.body.appendChild(s)
-       this.$http.get('http://api.formater/interface-services/jsonFeature.php?url=' + encodeURIComponent(url)).then(
-      // this.$http.jsonp(url, {dataType: 'jsonp', contentType: 'application/json'}).then(
+
+       this.$http.get('http://api.formater/interface-services/kmlFeature.php?url=' + encodeURIComponent(url)).then(
            response => {
-                var dataLayer = response.body
-                // @todo conditions à voir
-                if (dataLayer.crs && dataLayer.crs.properties.name) {
-                  var _this = this
-                  dataLayer.features.forEach(function (feature) {
-                    switch (feature.geometry.type) {
-                    case 'MultiLineString':
-                      feature.geometry.coordinates.forEach( function (coords) {
-                        coords.forEach(function (coord) {
-                         // console.log(coord)
-                          coord = _this.$proj4(_this.crs.EPSG3857, _this.crs.dest, coord)
-                         // console.log(coord)
-                        })
-                        
-                      })
-                      break
-                    }
-                  })
-                }
-                var newLayer = L.geoJSON(dataLayer, {style: {color: '#ff0000', weight: 5, opacity:1}})
-                
-//              const parser = new DOMParser();
-//              const kml = parser.parseFromString(response.body, 'text/xml');
-//              var newLayer = new L.KML(kml)
-               this.addLayerToMap(layer.id, metaId, newLayer)
+             const parser = new DOMParser();
+             const kml = parser.parseFromString(response.body, 'text/xml');
+             var newLayer = new L.KML(kml)
+             this.addLayerToMap(layer.id, metaId, newLayer)
            }
        )
        break;
