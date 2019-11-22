@@ -56,7 +56,7 @@ export default function makeStore( config ) {
         }
       },
       proxy: {
-        url: 'http://api.formater/interface-services/',
+        url: 'http://gravi165.step.univ-paris-diderot.fr/geonetwork/proxy',
         regex: 'data\.shom'
       },
       // default date & constraint list

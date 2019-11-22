@@ -275,9 +275,9 @@ export default {
        }
       
       //first requête to type=me to record session and token
-      this.$http.get('http://demo.formater/geonetwork/srv/fre/info?type=me', {credentials:true, headers: headers}).then(
-          response => {console.log(response.headers)}
-      )
+//       this.$http.get('http://demo.formater/geonetwork/srv/fre/info?type=me', {credentials:true, headers: headers}).then(
+//           response => {console.log(response.headers)}
+//       )
 //       this.$http.get('http://demo.formater/geonetwork/srv/fre/info?type=me', {credentials:true, headers: headers}).then(
 //           response => {console.log(response.headers)}
 //       )
