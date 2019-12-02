@@ -25,7 +25,7 @@
  <div class="mtdt-form">
   <div style="text-align:center;margin: 10px 0 30px 0;"><input id="globalReset" type="button" @click="reset" :value="$t('reset')"/></div>
   <div class="formater-input-group" :class="{disable: $store.state.disable.searchTerm}" style="margin:10px; width:calc(100% - 20px);">
-     <input id="any" name="any" v-model="fulltextSearch" :placeholder="$t('search')" @change="changeText" @keypress="changeTextOnEnter"  /><i class="fa fa-search"></i>
+     <input id="any" name="any" v-model="fulltextSearch" :placeholder="$t('search')" @keypress="changeTextOnEnter"  /><i class="fa fa-search"></i>
  </div>
  <formater-map></formater-map>
  <formater-search-box header-icon-class="fa fa-globe" open-icon-class="fa fa-caret-right" :title="$t('spatial_extent')" :deployed="false" type="empty" :disable-level="+ $store.state.disable.spatial">

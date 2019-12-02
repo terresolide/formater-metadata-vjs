@@ -52,7 +52,9 @@ export default {
        this.$http.get(this.describe)
        .then(
            response => { this.extractDescribeParameters(response.body);}
-        )
+        ).catch(function (data, status, request) {
+        console.log('erreur requete PEPS')
+        })
     },
     extractParameter (parameterNode, specName) {
       var listPredefined = this.$store.state.parameters.predefined
