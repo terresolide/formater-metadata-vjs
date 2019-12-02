@@ -52,9 +52,17 @@ export default {
        this.$http.get(this.describe)
        .then(
            response => { this.extractDescribeParameters(response.body);}
-        ).catch(function (data, status, request) {
-        console.log('erreur requete PEPS')
+        ).catch(function (response) {
+           // use proxy if core trouble
+           this.loadWithProxy()
         })
+    },
+    loadWithProxy() {
+      var url = this.$store.state.proxy.url + '?url=' + encodeURIComponent(this.describe)
+      this.$http.get(url)
+      .then(
+          response => { this.extractDescribeParameters(response.body);}
+       )
     },
     extractParameter (parameterNode, specName) {
       var listPredefined = this.$store.state.parameters.predefined

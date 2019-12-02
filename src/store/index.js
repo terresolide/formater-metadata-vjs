@@ -33,6 +33,10 @@ export default function makeStore( config ) {
         min: "1920-12-01",
         max: "now"
       },
+      proxy: {
+        url: 'http://gravi165.step.univ-paris-diderot.fr/geonetwork/proxy',
+        regex: 'data\.shom'
+      },
       // default order
       orderBy: 'changeDate',
       disable: {
@@ -54,10 +58,6 @@ export default function makeStore( config ) {
             'orbitNumber', 'relativeOrbitNumber', 'orbitDirection', 'subswath'],
           process: ['processingLevel', 'processingMode', 'processingContext', 'correction', 'version']
         }
-      },
-      proxy: {
-        url: 'http://gravi165.step.univ-paris-diderot.fr/geonetwork/proxy',
-        regex: 'data\.shom'
       },
       // default date & constraint list
       dateList: ['createDate', 'publicationDate', 'revisionDate'],
