@@ -34,7 +34,7 @@ export default function makeStore( config ) {
         max: "now"
       },
       proxy: {
-        url: 'http://gravi165.step.univ-paris-diderot.fr/geonetwork/proxy',
+        url: config.geonetwork + 'proxy',
         regex: 'data\.shom'
       },
       // default order
