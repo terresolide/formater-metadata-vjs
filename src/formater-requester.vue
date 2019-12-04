@@ -284,8 +284,9 @@ export default {
       
 
       var self = this
-      if (this.parameters.sortBy !== 'title') {
-        delete this.parameters.sortOrder
+      console.log(this.parameters.sortBy)
+      if (this.parameters.sortBy === 'title') {
+        this.parameters.sortOrder = 'ordering'
       } else {
         this.parameters.sortOrder = 'reverse'
       }
