@@ -284,11 +284,11 @@ export default {
       
 
       var self = this
-      console.log(this.parameters.sortBy)
       if (this.parameters.sortBy === 'title') {
         this.parameters.sortOrder = 'ordering'
       } else {
-        this.parameters.sortOrder = 'reverse'
+        delete this.parameters.sortOrder
+        // this.parameters.sortOrder = 'reverse'
       }
       // this.parameters.sortOrder =  this.parameters.sortBy === 'title' ? 'ordering': 'reverse';
       var url = this.srv + 'q?' + Object.keys(this.parameters).map(function (prop) {

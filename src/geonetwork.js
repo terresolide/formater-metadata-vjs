@@ -55,13 +55,14 @@ const GeonetworkPlugin = {
              // first character must be letter and character other than "_" and "-" are forbidden
              return 'i' + uuid.toLowerCase().replace(/[^a-z0-9\-_]+/, '')
            },
-           treatmentLinks (metaId, linkArr) {
+           treatmentLinks (metaId, linkArr, local) {
              var links = this.strToArray(linkArr)
              var self = this
              var response = {}
+             // keep length 7 if 
              links.forEach(function (link, index) {
                // length === 7 for the translation
-
+               if (!local || (link.length === 6 && local )) {
                switch (link[3]) {
                  case 'OpenSearch':
                    response.api = {}
@@ -105,6 +106,7 @@ const GeonetworkPlugin = {
                    }
                    response.links.push(self.linkToLink(link))
                    break;
+               }
                }
 
              })
@@ -157,17 +159,20 @@ const GeonetworkPlugin = {
                    }
                   meta.responsibleParty.forEach( function (contact)  {
                      var fields = contact.split('|');
-                     if (fields[1] === 'metadata' || fields[1] === 'metadonnées') {
-                      if (contacts.metadata[fields[0]]){
-                        contacts.metadata[fields[0]].push(fields)
-                      } else {
-                        contacts.metadata[fields[0]] = [fields]
-                      }
-                     }else{
-                       if (contacts.resource[fields[0]]){
-                          contacts.resource[fields[0]].push(fields)
-                       } else {
-                          contacts.resource[fields[0]] = [fields]
+                     if(fields.length < 11) {
+                     // keep only main contact not the translation
+                       if (fields[1] === 'metadata' || fields[1] === 'metadonnées') {
+                        if (contacts.metadata[fields[0]]){
+                          contacts.metadata[fields[0]].push(fields)
+                        } else {
+                          contacts.metadata[fields[0]] = [fields]
+                        }
+                       }else{
+                         if (contacts.resource[fields[0]]){
+                            contacts.resource[fields[0]].push(fields)
+                         } else {
+                            contacts.resource[fields[0]] = [fields]
+                         }
                        }
                      }
                  })
@@ -179,7 +184,7 @@ const GeonetworkPlugin = {
                return meta;
              }
              // links
-             var links = this.treatmentLinks(meta.id, meta.link)
+             var links = this.treatmentLinks(meta.id, meta.link, meta._locale === meta.docLocale)
              meta = Object.assign(meta, links)
              delete meta.link
              return meta
