@@ -5,6 +5,19 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 
 export default function makeStore( config ) {
+  if (config.proxyUrl) {
+    var proxy = {
+        url: config.proxyUrl,
+        regex: 'data\.shom'
+    }
+    delete config.proxyUrl
+  } else {
+    var proxy = {
+          url: config.geonetwork + 'proxy',
+          regex: 'data\.shom'
+    }
+  }
+  
   var defaultConfig = {
       currentUuid: null,
       geonetwork: null,
@@ -33,10 +46,7 @@ export default function makeStore( config ) {
         min: "1920-12-01",
         max: "now"
       },
-      proxy: {
-        url: config.geonetwork + 'proxy',
-        regex: 'data\.shom'
-      },
+      proxy: proxy,
       // default order
       orderBy: 'changeDate',
       disable: {
