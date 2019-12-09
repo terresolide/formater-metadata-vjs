@@ -39,10 +39,11 @@
 <formater-search-box header-icon-class="fa fa-thermometer-3" v-if="$store.state.parameters.others.length > 0" open-icon-class="fa fa-caret-right" :title="$t('parameters')" :deployed="true" type="empty">
  <formater-parameters-form :parameters="$store.state.parameters.others" ></formater-parameters-form>
  </formater-search-box>
-<div v-for="(dim, depth0) in dimensions" :key="depth0">
-<formater-search-box v-if="dimension.category" :header-icon-class="facetToIcon(index)" open-icon-class="fa fa-caret-right" :disable-level="disableLevel" :title="titleDimension(depth0, index)" type="empty" v-for="(dimension, index) in dim" :key="index">
-  <formater-dimension-block v-if="!isFacet(depth0, index)"   :dimension="dimension.category" :name="dimensions[depth0][index]['@name']" :disable="disableLevel > 0"></formater-dimension-block>
-  <formater-facet-block v-if="isFacet(depth0, index)"   :dimension="dimension.category" :name="dimensions[depth0][index]['@name']" :disable="disableLevel > 0"></formater-facet-block>
+
+<div v-for="(dim, k) in dimensions" v-if="k <= depth">
+<formater-search-box v-if="dimension.category" :header-icon-class="facetToIcon(k, index)" open-icon-class="fa fa-caret-right" :disable-level="disableLevel" :title="titleDimension(k, index)" type="empty" v-for="(dimension, index) in dim" :key="index">
+  <formater-dimension-block v-if="!isFacet(k, index)"   :dimension="dimension.category" :name="dimensions[k][index]['@name']" :disable="disableLevel > 0"></formater-dimension-block>
+  <formater-facet-block v-if="isFacet(k, index)"   :dimension="dimension.category" :name="dimensions[k][index]['@name']" :disable="disableLevel > 0"></formater-facet-block>
  </formater-search-box>
 </div>
  </div>
@@ -87,6 +88,10 @@ export default {
       type: Number,
       default: 0
     },
+    depth: {
+    	type: Number,
+    	default: null
+    }
   },
   data() {
     return {
@@ -102,7 +107,6 @@ export default {
   },
 
   created () {
-	  console.log(this.$store.state.facets)
 	  // add new facet in geonetwork facets
 	  this.addNewFacets()
     this.aerisSearchListener = this.handleSearch.bind(this)
@@ -162,20 +166,18 @@ export default {
     },
 
     fill (e) {
-    	console.log(e.detail)
       if (!e.detail.summary) {
         this.first = false
         return
       }
-    	this.depth = e.detail.depth
-      console.log('depth=', e.detail.depth)
+      
       if (this.first ) {
-        this.dimensions[e.detail.depth] = this.initializeDimensions(e.detail.summary.dimension)
-        console.log(this.dimensions)
+        var newDimension = this.initializeDimensions(e.detail.summary.dimension)
+        this.$set(this.dimensions, e.detail.depth, newDimension)
         this.first = false
       } else {
          var  newdimensions = this.initializeDimensions(e.detail.summary.dimension)
-         this.dimensions[e.detail.depth] = this.updateDimensions(this.dimensions[e.detail.depth], newdimensions)
+         this.dimensions[e.detail.depth] = this.updateDimensions(this.dimensions[e.detail.depth], newdimensions, e.detail.depth)
       }
 
     },
@@ -195,12 +197,14 @@ export default {
       return dimension
     },
 
-    updateDimensions (dimensions, newdimensions) {
+    updateDimensions (dimensions, newdimensions, depth) {
       if (!dimensions) {
         return null
       }
      
       var _this = this
+      
+      // search newdimensions in dimensions[0], then dimensions[1]
       dimensions.forEach(function(dimension, index){
     	  console.log(dimension)
         var found = newdimensions.find( function (obj) {
