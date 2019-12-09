@@ -39,12 +39,12 @@
 <formater-search-box header-icon-class="fa fa-thermometer-3" v-if="$store.state.parameters.others.length > 0" open-icon-class="fa fa-caret-right" :title="$t('parameters')" :deployed="true" type="empty">
  <formater-parameters-form :parameters="$store.state.parameters.others" ></formater-parameters-form>
  </formater-search-box>
- 
-<formater-search-box v-if="dimension.category" :header-icon-class="facetToIcon(index)" open-icon-class="fa fa-caret-right" :disable-level="disableLevel" :title="titleDimension(index)" type="empty" v-for="(dimension, index) in dimensions" :key="index">
-  <formater-dimension-block v-if="!isFacet(index)"   :dimension="dimension.category" :name="dimensions[index]['@name']" :disable="disableLevel > 0"></formater-dimension-block>
-  <formater-facet-block v-if="isFacet(index)"   :dimension="dimension.category" :name="dimensions[index]['@name']" :disable="disableLevel > 0"></formater-facet-block>
+<div v-for="(dim, depth0) in dimensions" :key="depth0">
+<formater-search-box v-if="dimension.category" :header-icon-class="facetToIcon(index)" open-icon-class="fa fa-caret-right" :disable-level="disableLevel" :title="titleDimension(depth0, index)" type="empty" v-for="(dimension, index) in dim" :key="index">
+  <formater-dimension-block v-if="!isFacet(depth0, index)"   :dimension="dimension.category" :name="dimensions[depth0][index]['@name']" :disable="disableLevel > 0"></formater-dimension-block>
+  <formater-facet-block v-if="isFacet(depth0, index)"   :dimension="dimension.category" :name="dimensions[depth0][index]['@name']" :disable="disableLevel > 0"></formater-facet-block>
  </formater-search-box>
-
+</div>
  </div>
 
 </template>
@@ -102,6 +102,9 @@ export default {
   },
 
   created () {
+	  console.log(this.$store.state.facets)
+	  // add new facet in geonetwork facets
+	  this.addNewFacets()
     this.aerisSearchListener = this.handleSearch.bind(this)
     document.addEventListener('aerisSearchEvent', this.aerisSearchListener)
     this.aerisResetListener = this.handleReset.bind(this)
@@ -122,25 +125,31 @@ export default {
   },
  
   methods: {
-    facetToIcon (index) {
-      return iconClass[this.dimensions[index]['@name']]
+	  addNewFacets () {
+		  var self = this
+		  this.$store.state.facets.forEach(function (facet) {
+			  self.$gn.addFacet(facet)
+		  })
+	  },
+    facetToIcon (depth, index) {
+      return iconClass[this.dimensions[depth][index]['@name']]
     },
-    titleDimension (index) {
-      return this.$i18n.t(this.dimensions[index]['@label'])
+    titleDimension (depth, index) {
+      return this.$i18n.t(this.dimensions[depth][index]['@label'])
     },
-    isFacet (index) {
-      if (this.dimensions[index]['@name'].indexOf('facet') >=0 
-    		  || this.$gn.facets.indexOf(this.dimensions[index]['@name']) >= 0) {
+    isFacet (depth, index) {
+      if (this.dimensions[depth][index]['@name'].indexOf('facet') >=0 
+    		  || this.$gn.facets.indexOf(this.dimensions[depth][index]['@name']) >= 0) {
         return true;
       } else {
         return false;
       }
     },
-    isInCurrentLang (index) {
-      if (!this.isFacet(index)) {
+    isInCurrentLang (depth, index) {
+      if (!this.isFacet(depth, index)) {
         return true;
       }
-      var name = this.dimensions[index]['@name'];
+      var name = this.dimensions[depth][index]['@name'];
       var lang = name.substring(name.length -3, name.length)
       if (this.$i18n.locale === 'fr' && lang === 'Fre') {
         return true;
@@ -153,16 +162,20 @@ export default {
     },
 
     fill (e) {
+    	console.log(e.detail)
       if (!e.detail.summary) {
         this.first = false
         return
       }
+    	this.depth = e.detail.depth
+      console.log('depth=', e.detail.depth)
       if (this.first ) {
-        this.dimensions = this.initializeDimensions(e.detail.summary.dimension)
+        this.dimensions[e.detail.depth] = this.initializeDimensions(e.detail.summary.dimension)
+        console.log(this.dimensions)
         this.first = false
-      } else if( this.depth === 0 ){
+      } else {
          var  newdimensions = this.initializeDimensions(e.detail.summary.dimension)
-         this.dimensions = this.updateDimensions(this.dimensions, newdimensions)
+         this.dimensions[e.detail.depth] = this.updateDimensions(this.dimensions[e.detail.depth], newdimensions)
       }
 
     },
@@ -189,6 +202,7 @@ export default {
      
       var _this = this
       dimensions.forEach(function(dimension, index){
+    	  console.log(dimension)
         var found = newdimensions.find( function (obj) {
           if (obj['@name']) {
             return obj['@name'] === dimension['@name'] 
@@ -196,6 +210,7 @@ export default {
             return obj['@value'] === dimension['@value'] 
           } 
         })
+        console.log(found)
         if (typeof found === 'undefined') {
           _this.$set(dimensions[index], '@count', 0)
         } else {

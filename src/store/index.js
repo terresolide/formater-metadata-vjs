@@ -19,6 +19,7 @@ export default function makeStore( config ) {
   }
   
   var defaultConfig = {
+      lang: 'en',
       currentUuid: null,
       geonetwork: null,
       metadata: null,
@@ -40,6 +41,7 @@ export default function makeStore( config ) {
         nbLine: 4,
         nbRecord: 16
       },
+      facets: [],
       // default temporalExtent
       temporalExtent: 
       {
