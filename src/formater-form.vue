@@ -97,7 +97,7 @@ export default {
       aerisSearchListener: null,
       aerisResetListener: null,
       metadataListListener: null,
-      closeMetadataListener: null,
+      closeMetadataListener: null
     }
   },
 
@@ -129,7 +129,8 @@ export default {
       return this.$i18n.t(this.dimensions[index]['@label'])
     },
     isFacet (index) {
-      if (this.dimensions[index]['@name'].indexOf('facet') >=0) {
+      if (this.dimensions[index]['@name'].indexOf('facet') >=0 
+    		  || this.$gn.facets.indexOf(this.dimensions[index]['@name']) >= 0) {
         return true;
       } else {
         return false;

@@ -14,6 +14,12 @@ const GeonetworkPlugin = {
            lang: {},
            locale: null,
            done: false,
+           facets: ['inspireThemeURI', 'sourceCatalog', 'spatialRepresentationType', 'maintenanceAndUpdateFrequency', 'status'],
+           addFacet (facet) {
+        	   if (this.facets.indexOf(facet) < 0) {
+        	     this.facets.push(facet)
+        	   }
+           },
            getTranslation () {
              if (!this.geonetwork) {
                return
