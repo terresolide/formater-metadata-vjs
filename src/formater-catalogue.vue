@@ -319,13 +319,13 @@ export default {
 }
 .mtdt-catalogue .mtdt-column-left{
   width:300px;
+  margin-left:5px;
   float:left;
 }
 .mtdt-catalogue .mtdt-column-right{
-  width:calc(100% - 340px);
+  width:calc(100% - 325px);
   float:left;
   margin-left:10px;
-  margin-bottom:120px;
 }
 .mtdt-catalogue  .formater-select select {
   font-family: inherit;

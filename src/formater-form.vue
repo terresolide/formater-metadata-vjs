@@ -41,9 +41,9 @@
  </formater-search-box>
 
 <div v-for="(dim, k) in dimensions" v-if="k <= depth">
-<formater-search-box v-if="dimension.category" :header-icon-class="facetToIcon(k, index)" open-icon-class="fa fa-caret-right" :disable-level="disableLevel" :title="titleDimension(k, index)" type="empty" v-for="(dimension, index) in dim" :key="index">
-  <formater-dimension-block v-if="!isFacet(k, index)"   :dimension="dimension.category" :name="dimensions[k][index]['@name']" :disable="disableLevel > 0"></formater-dimension-block>
-  <formater-facet-block v-if="isFacet(k, index)"   :dimension="dimension.category" :name="dimensions[k][index]['@name']" :disable="disableLevel > 0"></formater-facet-block>
+<formater-search-box v-if="dimension.category" :header-icon-class="facetToIcon(k, index)" open-icon-class="fa fa-caret-right" :disable-level="dimension.disableLevel" :title="titleDimension(k, index)" type="empty" v-for="(dimension, index) in dim" :key="index">
+  <formater-dimension-block v-if="!isFacet(k, index)"  :summary-type="dimension.step" :dimension="dimension.category" :name="dimensions[k][index]['@name']" :disable="dimension.disableLevel > 0"></formater-dimension-block>
+  <formater-facet-block v-if="isFacet(k, index)"  :summary-type="dimension.step"  :dimension="dimension.category" :name="dimensions[k][index]['@name']" :disable="dimension.disableLevel > 0"></formater-facet-block>
  </formater-search-box>
 </div>
  </div>
@@ -171,17 +171,19 @@ export default {
         return
       }
       
-      if (this.first ) {
-        var newDimension = this.initializeDimensions(e.detail.summary.dimension)
+      if (this.first && e.detail.depth === 0) {
+        var newDimension = this.initializeDimensions(e.detail.summary.dimension, true)
         this.$set(this.dimensions, e.detail.depth, newDimension)
         this.first = false
       } else {
          var  newdimensions = this.initializeDimensions(e.detail.summary.dimension)
-         this.dimensions[e.detail.depth] = this.updateDimensions(this.dimensions[e.detail.depth], newdimensions, e.detail.depth)
+         this.updateAllDimensions(newdimensions, e.detail.depth) 
+        // this.dimensions[e.detail.depth] = this.updateDimensions(this.dimensions[e.detail.depth], newdimensions, true)
+         //this.addDimensions(newdimensions, e.detail.depth)
       }
 
     },
-    initializeDimensions(dimensions){
+    initializeDimensions(dimensions, root){
       var dimension = null
       if (dimensions.length > 0) {
         dimension = dimensions
@@ -191,22 +193,48 @@ export default {
       var _this = this
       dimension.forEach( function (obj, index){
         if (obj.category){
-          dimension[index].category = _this.initializeDimensions(obj.category)
+        	if (root) {
+        		dimension[index].disableLevel = 0
+        	}
+          dimension[index].category = _this.initializeDimensions(obj.category, false)
         }
       })
       return dimension
     },
-
-    updateDimensions (dimensions, newdimensions, depth) {
+    updateAllDimensions(newDimension, depth) {
+    	// remove all dimensions upper than depth
+    	for(var k = this.dimensions.length - 1; k > depth; k--) {
+    		delete this.dimensions[k]
+    	}
+    	var dimensionUsed = []
+    	// update all dimensions, beginning by the lower
+    	for(var k = 0; k <= depth; k++) {
+    		if (this.dimensions[k]) {
+    		  this.dimensions[k] = this.updateDimensions(this.dimensions[k], newDimension, true, dimensionUsed)
+    		}
+    	}
+    	var toAdd = []
+    	newDimension.forEach(function (dimension) {
+    		if (dimensionUsed.indexOf(dimension['@name']) < 0) {
+    			toAdd.push(dimension)
+    		}
+    	})
+    	if (toAdd.length > 0) {
+    	 var dimension = this.initializeDimensions(toAdd, true)
+        this.$set(this.dimensions, depth, dimension)
+    	}
+    },
+    updateDimensions (dimensions, newdimensions, root, dimensionUsed) {
       if (!dimensions) {
         return null
       }
-     
+      if (root) {
+      console.log(newdimensions)
+      }
       var _this = this
       
       // search newdimensions in dimensions[0], then dimensions[1]
       dimensions.forEach(function(dimension, index){
-    	  console.log(dimension)
         var found = newdimensions.find( function (obj) {
           if (obj['@name']) {
             return obj['@name'] === dimension['@name'] 
@@ -214,18 +242,26 @@ export default {
             return obj['@value'] === dimension['@value'] 
           } 
         })
-        console.log(found)
         if (typeof found === 'undefined') {
           _this.$set(dimensions[index], '@count', 0)
+          if (root) {
+        	  _this.$set(dimensions[index], 'disableLevel', 1)
+          }
         } else {
           _this.$set(dimensions[index], '@count', found['@count'])
+          if (root) {
+        	  _this.$set(dimensions[index], 'disableLevel', 0)
+          }
         }
         if (dimensions[index].category) {
 	        var subDimension = []
 	        if ( typeof found !== 'undefined' && found.category) {
 	          subDimension = found.category
 	        }
-	        dimensions[index].category = _this.updateDimensions(dimensions[index].category, subDimension)
+	        dimensions[index].category = _this.updateDimensions(dimensions[index].category, subDimension, false)
+        }
+        if (found && root) {
+        	dimensionUsed.push(found['@name'])
         }
       })
       return dimensions

@@ -76,8 +76,8 @@ export default {
     document.addEventListener('fmt:selectChangeEvent', this.selectChangedListener)
      this.metadataWithChildListener = this.getRecords.bind(this)
     document.addEventListener('fmt:metadataWithChildEvent', this.metadataWithChildListener)
-//     this.closeMetadataListener = this.getRecords.bind(this)
-//     document.addEventListener('fmt:closeMetadataEvent', this.closeMetadataListener)
+    this.closeMetadataListener = this.getRecords.bind(this)
+     document.addEventListener('fmt:closeMetadataEvent', this.closeMetadataListener)
     this.resetListener = this.handleReset.bind(this);
      document.addEventListener('fmt:resetEvent', this.resetListener);
   },
@@ -96,8 +96,8 @@ export default {
     this.selectChangedListener = null
     document.removeEventListener('fmt:metadataWithChildEvent', this.metadataWithChildListener)
     this.metadataWithChildListener = null
-//     document.addEventListener('fmt:closeMetadataEvent', this.closeMetadataListener)
-//     this.closeMetadataListener = null
+     document.addEventListener('fmt:closeMetadataEvent', this.closeMetadataListener)
+     this.closeMetadataListener = null
     document.addEventListener('fmt:resetEvent', this.resetListener);
     this.resetListener = null
   },
@@ -171,6 +171,7 @@ export default {
     prepareRequestGeonetwork(e) {
       
       this.initParameters()
+      console.log('event', e.detail)
       delete e.detail.lang
       if (!e.detail.startDefault) {
         e.detail.renameProperty('start', 'extFrom')
@@ -195,17 +196,17 @@ export default {
         this.parameters.isChild = false
         this.parameters.resultType = this.$store.state.summaryType.step1
       }
-      if (e.detail.depth > 0) {
-        // voir plutôt les key à éliminer centre de données, variable, instruments, gemet, types?
-        for(var key in e.detail) {
-          if (['any', 'geometry', 'extTo', 'extFrom', 'from', 'to', 'parentUuid', 'type'].indexOf(key) >=0){
-            this.parameters[key] = e.detail[key]
-          }
-        }
-      } else {
+//       if (e.detail.depth > 0) {
+//         // voir plutôt les key à éliminer centre de données, variable, instruments, gemet, types?
+//         for(var key in e.detail) {
+//           if (['any', 'geometry', 'extTo', 'extFrom', 'from', 'to', 'parentUuid', 'type'].indexOf(key) >=0){
+//             this.parameters[key] = e.detail[key]
+//           }
+//         }
+//       } else {
         this.prepareFacet(e)
         this.parameters = Object.assign(this.parameters, e.detail)
-      }
+ //     }
     },
     prepareRequestOpensearch(e) {
       this.initParameters()

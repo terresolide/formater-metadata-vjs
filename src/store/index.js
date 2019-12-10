@@ -17,6 +17,12 @@ export default function makeStore( config ) {
           regex: 'data\.shom'
     }
   }
+  var isSameStep = true
+  if (config.summaryType) {
+	if (config.summaryType.step1 !== config.summaryType.step2) {
+		isSameStep = false
+	}
+  }
   
   var defaultConfig = {
       lang: 'en',
@@ -27,6 +33,7 @@ export default function makeStore( config ) {
         step1: 'details',
         step2: 'details'
       },
+      isSameStep: isSameStep,
       apiVersion: '0.1',
       style: 
       {
