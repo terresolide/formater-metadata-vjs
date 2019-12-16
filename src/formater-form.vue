@@ -35,11 +35,11 @@
 <formater-search-box header-icon-class="fa fa-calendar" open-icon-class="fa fa-caret-right" :title="$t('time_slot')" :deployed="true" type="empty" :disable-level="+ $store.state.disable.temporal">
   <formater-temporal-search :lang="$i18n.locale" :daymin="$store.state.temporalExtent.min" :daymax="$store.state.temporalExtent.max" :disable="$store.state.disable.temporal"></formater-temporal-search>
 </formater-search-box>
-
+<!--  opensearch parameters -->
 <formater-search-box header-icon-class="fa fa-thermometer-3" v-if="$store.state.parameters.others.length > 0" open-icon-class="fa fa-caret-right" :title="$t('parameters')" :deployed="true" type="empty">
  <formater-parameters-form :parameters="$store.state.parameters.others" ></formater-parameters-form>
  </formater-search-box>
-
+<!--  end opensearch -->
 <div v-for="(dim, k) in dimensions" v-if="k <= depth">
 <formater-search-box v-if="dimension.category" :header-icon-class="facetToIcon(k, index)" open-icon-class="fa fa-caret-right" :disable-level="dimension.disableLevel" :title="titleDimension(k, index)" type="empty" v-for="(dimension, index) in dim" :key="index">
   <formater-dimension-block v-if="!isFacet(k, index)"  :summary-type="dimension.step" :dimension="dimension.category" :name="dimensions[k][index]['@name']" :disable="dimension.disableLevel > 0"></formater-dimension-block>
