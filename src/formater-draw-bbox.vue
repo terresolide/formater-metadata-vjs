@@ -53,7 +53,6 @@ export default {
   },
   watch: {
     searchArea (newvalue) {
-      console.log('searchArea new = ', newvalue)
       this.initBoundsLayer()
       var bounds = this.getBounds()
       var bbox = null
@@ -167,8 +166,6 @@ export default {
         } else {
            this.map.fitBounds(this.boundsLayer.getBounds(), {padding: [20, 20]})
         }
-        // this.drawIntersection()
-    
       }
     },
     initDrawControl() {
@@ -270,7 +267,7 @@ export default {
     },
     selectAreaChange (event) {
       var bbox = event.detail
-      var bounds = this.$store.state.spatialExtent
+     // var bounds = L.latLngBounds(this.$store.state.spatialExtent)
       if (bbox && bbox.north !== "" && bbox.south !== "" && bbox.east !== "" && bbox.west !== "") {
         for(var key in bbox){
           bbox[key] = parseFloat(bbox[key]);
@@ -280,9 +277,10 @@ export default {
         bbox2.north = Math.max(bbox.north, bbox.south)
         bbox2.west = Math.min(bbox.east, bbox.west)
         bbox2.east = Math.max(bbox.east, bbox.west)
-        bounds = [[bbox2.south, bbox2.west], [bbox2.north, bbox2.east]]
+        var bounds = L.latLngBounds([[bbox2.south, bbox2.west], [bbox2.north, bbox2.east]])
+        
         // trigger event fmt:selectAreaChange
-        this.bbox = this.drawValidBbox(L.latLngBounds(bounds))
+        this.bbox = this.drawValidBbox(bounds)
         // this.drawIntersection()
     
         let e = new CustomEvent('fmt:selectAreaChange', {detail: this.bbox})
@@ -291,9 +289,14 @@ export default {
         this.drawLayers.clearLayers()
         this.bbox = null
       }
-
-      if (this.searchArea) {
-          bounds.extend(this.boundsLayer.getBounds())
+      if (!bounds) {
+      	if (this.searchArea) {
+      	  var bounds = this.boundsLayer.getBounds()
+      	} else {
+      	  var bounds = L.latLngBounds(this.$store.state.spatialExtent)
+      	}
+      } else if (this.searchArea) {
+        bounds.extend(this.boundsLayer.getBounds())
       }
       this.map.fitBounds(bounds, {padding: [20, 20]})
 //       if (this.intersection) {
@@ -358,6 +361,7 @@ export default {
       var bounds = [[bbox.south, bbox.west], [bbox.north, bbox.east]]
       var rectangle = L.rectangle(bounds, {color: '#ff0000'})
       this.drawLayers.addLayer(rectangle)
+      bounds = this.drawLayers.getBounds()
       if (this.searchArea) {
         bounds.extend(this.boundsLayer.getBounds())
       }
