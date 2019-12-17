@@ -160,11 +160,14 @@ export default {
     initBoundsLayer () {
       this.removeBoundsLayer()
       if (this.searchArea) {
-        console.log('init bounds layer')
         this.boundsLayer = L.rectangle(this.searchArea, {color:'#cccccc', fillOpacity: 0.2, weight: 1})
         this.boundsLayer.addTo(this.map)
-        this.map.fitBounds(this.boundsLayer.getBounds())
-        this.drawIntersection()
+        if (this.drawLayers.getLayers().length > 0) {
+          this.map.fitBounds(this.drawLayers.getBounds(), {padding: [20, 20]})
+        } else {
+           this.map.fitBounds(this.boundsLayer.getBounds(), {padding: [20, 20]})
+        }
+        // this.drawIntersection()
     
       }
     },
@@ -267,6 +270,7 @@ export default {
     },
     selectAreaChange (event) {
       var bbox = event.detail
+      var bounds = this.$store.state.spatialExtent
       if (bbox && bbox.north !== "" && bbox.south !== "" && bbox.east !== "" && bbox.west !== "") {
         for(var key in bbox){
           bbox[key] = parseFloat(bbox[key]);
@@ -276,10 +280,10 @@ export default {
         bbox2.north = Math.max(bbox.north, bbox.south)
         bbox2.west = Math.min(bbox.east, bbox.west)
         bbox2.east = Math.max(bbox.east, bbox.west)
-        var bounds = [[bbox2.south, bbox2.west], [bbox2.north, bbox2.east]]
+        bounds = [[bbox2.south, bbox2.west], [bbox2.north, bbox2.east]]
         // trigger event fmt:selectAreaChange
         this.bbox = this.drawValidBbox(L.latLngBounds(bounds))
-        this.drawIntersection()
+        // this.drawIntersection()
     
         let e = new CustomEvent('fmt:selectAreaChange', {detail: this.bbox})
         document.dispatchEvent(e)
@@ -287,15 +291,20 @@ export default {
         this.drawLayers.clearLayers()
         this.bbox = null
       }
-      if (this.intersection) {
-        this.map.fitBounds(this.intersection.getBounds(), {padding: [30,30]})
-      } else if( this.drawLayers.getLayers().length > 0 && !this.searchArea) {
-        this.map.fitBounds(this.drawLayers.getBounds(), {padding: [20,20]})
-      } else if (this.searchArea) {
-        this.map.fitBounds(this.boundsLayer.getBounds(), {padding: [10, 10]})
-      } else {
-        this.map.fitBounds(this.$store.state.spatialExtent)
+
+      if (this.searchArea) {
+          bounds.extend(this.boundsLayer.getBounds())
       }
+      this.map.fitBounds(bounds, {padding: [20, 20]})
+//       if (this.intersection) {
+//         this.map.fitBounds(this.intersection.getBounds(), {padding: [30,30]})
+//       } else if( this.drawLayers.getLayers().length > 0 && !this.searchArea) {
+//         this.map.fitBounds(this.drawLayers.getBounds(), {padding: [20,20]})
+//       } else if (this.searchArea) {
+//         this.map.fitBounds(this.boundsLayer.getBounds(), {padding: [10, 10]})
+//       } else {
+//         this.map.fitBounds(this.$store.state.spatialExtent)
+//       }
       
     },
     close (event) {
@@ -349,7 +358,10 @@ export default {
       var bounds = [[bbox.south, bbox.west], [bbox.north, bbox.east]]
       var rectangle = L.rectangle(bounds, {color: '#ff0000'})
       this.drawLayers.addLayer(rectangle)
-      
+      if (this.searchArea) {
+        bounds.extend(this.boundsLayer.getBounds())
+      }
+      this.map.fitBounds(bounds, {padding: [20, 20]})
       return bbox;
     },
     drawIntersection () {
