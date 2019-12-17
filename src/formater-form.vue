@@ -40,12 +40,34 @@
  <formater-parameters-form :parameters="$store.state.parameters.others" ></formater-parameters-form>
  </formater-search-box>
 <!--  end opensearch -->
-<div v-for="(dim, k) in dimensions" v-if="k <= depth">
+<!-- step1 only dimension -->
+<div v-for="(key, index) in $store.state.gnParameters.step1" :disable="depth > 0">
+<formater-search-box v-if="dimensions[nameToIndex[key]] && dimensions[nameToIndex[key]].category" :header-icon-class="facetToIcon(key)" open-icon-class="fa fa-caret-right" :title="titleDimension(key)" type="empty">
+  <formater-dimension-block v-if="!isFacet(key)"   :dimension="dimensions[nameToIndex[key]].category" :name="key" ></formater-dimension-block>
+  <formater-facet-block v-if="isFacet(key)"   :dimension="dimensions[nameToIndex[key]].category" :name="key" ></formater-facet-block>
+ </formater-search-box>
+</div>
+
+<!-- step 1 and step 2 -->
+<div v-for="(key, index) in $store.state.gnParameters.step1step2" >
+<formater-search-box v-if="dimensions[nameToIndex[key]] && dimensions[nameToIndex[key]].category" :header-icon-class="facetToIcon(key)" open-icon-class="fa fa-caret-right" :title="titleDimension(key)" type="empty">
+  <formater-dimension-block v-if="!isFacet(key)"   :dimension="dimensions[nameToIndex[key]].category" :name="key" ></formater-dimension-block>
+  <formater-facet-block v-if="isFacet(key)"   :dimension="dimensions[nameToIndex[key]].category" :name="key" ></formater-facet-block>
+ </formater-search-box>
+</div>
+
+<div v-for="(key, index) in $store.state.gnParameters.step2" v-if="depth > 0" >
+<formater-search-box v-if="dimensions[nameToIndex[key]] && dimensions[nameToIndex[key]].category" :header-icon-class="facetToIcon(key)" open-icon-class="fa fa-caret-right" :title="titleDimension(key)" type="empty">
+  <formater-dimension-block v-if="!isFacet(key)"   :dimension="dimensions[nameToIndex[key]].category" :name="key" ></formater-dimension-block>
+  <formater-facet-block v-if="isFacet(key)"   :dimension="dimensions[nameToIndex[key]].category" :name="key" ></formater-facet-block>
+ </formater-search-box>
+</div>
+<!--  <div v-for="(dim, k) in dimensions" v-if="k <= depth">
 <formater-search-box v-if="dimension.category" :header-icon-class="facetToIcon(k, index)" open-icon-class="fa fa-caret-right" :disable-level="dimension.disableLevel" :title="titleDimension(k, index)" type="empty" v-for="(dimension, index) in dim" :key="index">
   <formater-dimension-block v-if="!isFacet(k, index)"  :summary-type="dimension.step" :dimension="dimension.category" :name="dimensions[k][index]['@name']" :disable="dimension.disableLevel > 0"></formater-dimension-block>
   <formater-facet-block v-if="isFacet(k, index)"  :summary-type="dimension.step"  :dimension="dimension.category" :name="dimensions[k][index]['@name']" :disable="dimension.disableLevel > 0"></formater-facet-block>
  </formater-search-box>
-</div>
+</div> -->
  </div>
 
 </template>
@@ -99,6 +121,7 @@ export default {
       first: true,
       parameters: [],
       dimensions: [],
+      nameToIndex: [],
       aerisSearchListener: null,
       aerisResetListener: null,
       metadataListListener: null,
@@ -135,26 +158,25 @@ export default {
 			  self.$gn.addFacet(facet)
 		  })
 	  },
-    facetToIcon (depth, index) {
-      return iconClass[this.dimensions[depth][index]['@name']]
+    facetToIcon (key) {
+      return iconClass[key]
     },
-    titleDimension (depth, index) {
-      return this.$i18n.t(this.dimensions[depth][index]['@label'])
+    titleDimension (key) {
+      return this.$i18n.t(this.dimensions[this.nameToIndex[key]]['@label'])
     },
-    isFacet (depth, index) {
-      if (this.dimensions[depth][index]['@name'].indexOf('facet') >=0 
-    		  || this.$gn.facets.indexOf(this.dimensions[depth][index]['@name']) >= 0) {
+    isFacet (key) {
+      if (key.indexOf('facet') >=0 
+    		  || this.$gn.facets.indexOf(key) >= 0) {
         return true;
       } else {
         return false;
       }
     },
-    isInCurrentLang (depth, index) {
-      if (!this.isFacet(depth, index)) {
+    isInCurrentLang (key) {
+      if (!this.isFacet(key)) {
         return true;
       }
-      var name = this.dimensions[depth][index]['@name'];
-      var lang = name.substring(name.length -3, name.length)
+      var lang = name.substring(key.length -3, key.length)
       if (this.$i18n.locale === 'fr' && lang === 'Fre') {
         return true;
       } else if (this.$i18n.locale != 'fr' && lang != 'Fre') {
@@ -173,16 +195,33 @@ export default {
       
       if (this.first && e.detail.depth === 0) {
         var newDimension = this.initializeDimensions(e.detail.summary.dimension, true)
-        this.$set(this.dimensions, e.detail.depth, newDimension)
+        this.dimensions = newDimension
+
+       // this.$set(this.dimensions, e.detail.depth, newDimension)
         this.first = false
       } else {
          var  newdimensions = this.initializeDimensions(e.detail.summary.dimension)
-         this.updateAllDimensions(newdimensions, e.detail.depth) 
+         this.updateDimensions(this.dimensions, e.detail.summary.dimension)
+         this.addDimensions(newdimensions) 
+         console.log(this.dimensions)
         // this.dimensions[e.detail.depth] = this.updateDimensions(this.dimensions[e.detail.depth], newdimensions, true)
          //this.addDimensions(newdimensions, e.detail.depth)
       }
-
+      this.reverseKeyDimensions()
     },
+    reverseKeyDimensions() {
+      var self = this
+      this.dimensions.forEach(function (dim, index) {
+        self.nameToIndex[dim['@name']] = index
+      })
+    },
+/*    getIndexDimension(name) {
+      var index = this.dimensions.findIndex(function (dim) {
+        return dim['@name'] === name
+      })
+      console.log(index)
+      return index
+    }*/
     initializeDimensions(dimensions, root){
       var dimension = null
       if (dimensions.length > 0) {
@@ -201,40 +240,22 @@ export default {
       })
       return dimension
     },
-    updateAllDimensions(newDimension, depth) {
-    	// remove all dimensions upper than depth
-    	for(var k = this.dimensions.length - 1; k > depth; k--) {
-    		delete this.dimensions[k]
-    	}
-    	var dimensionUsed = []
-    	// update all dimensions, beginning by the lower
-    	for(var k = 0; k <= depth; k++) {
-    		if (this.dimensions[k]) {
-    		  this.dimensions[k] = this.updateDimensions(this.dimensions[k], newDimension, true, dimensionUsed)
-    		}
-    	}
+    addDimensions(newDimension) {
     	var toAdd = []
+    	var self = this
     	newDimension.forEach(function (dimension) {
-    		if (dimensionUsed.indexOf(dimension['@name']) < 0) {
-    			toAdd.push(dimension)
+    		if (!self.nameToIndex[dimension['@name']]) {
+    			self.dimensions.push( self.initializeDimensions(dimension, true)[0])
     		}
-    	})
-    	if (toAdd.length > 0) {
-    	 var dimension = this.initializeDimensions(toAdd, true)
-        this.$set(this.dimensions, depth, dimension)
-    	}
+    	} )
     },
-    updateDimensions (dimensions, newdimensions, root, dimensionUsed) {
+    updateDimensions (dimensions, newdimensions) {
       if (!dimensions) {
         return null
       }
-      if (root) {
-      console.log(newdimensions)
-      }
       var _this = this
       
-      // search newdimensions in dimensions[0], then dimensions[1]
-      dimensions.forEach(function(dimension, index){
+      dimensions.forEach(function (dimension, index) {
         var found = newdimensions.find( function (obj) {
           if (obj['@name']) {
             return obj['@name'] === dimension['@name'] 
@@ -244,14 +265,8 @@ export default {
         })
         if (typeof found === 'undefined') {
           _this.$set(dimensions[index], '@count', 0)
-          if (root) {
-        	  _this.$set(dimensions[index], 'disableLevel', 1)
-          }
         } else {
           _this.$set(dimensions[index], '@count', found['@count'])
-          if (root) {
-        	  _this.$set(dimensions[index], 'disableLevel', 0)
-          }
         }
         if (dimensions[index].category) {
 	        var subDimension = []
@@ -259,9 +274,6 @@ export default {
 	          subDimension = found.category
 	        }
 	        dimensions[index].category = _this.updateDimensions(dimensions[index].category, subDimension, false)
-        }
-        if (found && root) {
-        	dimensionUsed.push(found['@name'])
         }
       })
       return dimensions

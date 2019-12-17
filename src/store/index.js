@@ -88,6 +88,10 @@ export default function makeStore( config ) {
       searchArea: null,
       // the bounding box of research
       selectArea: null,
+      gnParameters: {
+        step1step2: [],
+        step1: [],
+        step2: []},
       // current opensearch api parameters
       parameters: {
         // regex of parameter (value attribute) which are exclued to use in request
@@ -133,6 +137,37 @@ export default function makeStore( config ) {
       },
       selectAreaChange(state, bbox) {
         state.selectArea = bbox
+      },
+      gnParametersChange(state, obj) {
+        if (obj.step === 1) {
+          var key = 'step1'
+          if (state.summaryType.step1 === state.summaryType.step2) {
+            var key = 'step1step2'
+          } 
+          obj.dimension.forEach(function (dim) {
+            state.gnParameters[key].push(dim['@name'])
+          })
+        }
+        if (obj.step === 2) {
+          if (state.summaryType.step1 !== state.summaryType.step2) {
+            obj.dimension.forEach(function (dim) {
+              // search in step1
+              var found = state.gnParameters.step1.indexOf( dim['@name'])
+              if (found >= 0) {
+                // in step1step2
+                state.gnParameters.step1step2.push(dim['@name'])
+                state.gnParameters.step1.splice(found, 1)
+              } else {
+                state.gnParameters.step2.push(dim['@name'])
+              }
+            })
+          } else {
+            // all step1step2
+            state.gnParameters.step1step2 = state.gnParameters.step1
+            state.gnParameters.step1 = []
+          }
+        }
+        console.log(state.gnParameters)
       },
       parametersChange(state, newParameters) {
         state.parameters.others = newParameters.parameters

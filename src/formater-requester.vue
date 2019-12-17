@@ -282,9 +282,18 @@ export default {
 //       this.$http.get('http://demo.formater/geonetwork/srv/fre/info?type=me', {credentials:true, headers: headers}).then(
 //           response => {console.log(response.headers)}
 //       )
-      
-
       var self = this
+      // parameters according to depth
+      if (depth === 0) {
+        this.$store.state.gnParameters.step2.forEach(function (key) {
+          delete self.parameters[key]
+        })
+      }
+      if (depth > 0) {
+        this.$store.state.gnParameters.step1.forEach(function (key) {
+          delete self.parameters[key]
+        })
+      }
       if (this.parameters.sortBy === 'title') {
         this.parameters.sortOrder = 'ordering'
       } else {
@@ -361,7 +370,40 @@ export default {
       data.type = 'geonetwork'
       data.features = features
       this.fill(data, depth);
+      this.searchGnStep2Parameters(data.summary.dimension);
       // this.searchRelated()
+    },
+    searchGnStep2Parameters (dimension) {
+      if (this.first) {
+        // register dimension in store
+        this.$store.commit('gnParametersChange', {step:1, dimension: dimension})
+        // search summary for all record (including child dataset) for step 2
+        if (this.$store.state.summaryType.step1 !== this.$store.state.summaryType.step2) {
+          
+          // var depth = (typeof this.parameters.depth != 'undefined') ? this.parameters.depth : this.depth
+          var headers =  {
+              'Accept': 'application/json, text/plain, */*',
+              'Accept-Language': this.$i18n.locale === 'fr' ? 'fre': 'eng'
+           }
+          var parameters = {
+              _content_type: 'json',
+              from:1,
+              to: 9,
+              type: 'dataset+or+series+or+publications',
+              resultType: this.$store.state.summaryType.step2
+          }
+          var url = this.srv + 'q?' + Object.keys(parameters).map(function (prop) {
+            return prop + '=' + parameters[prop]
+          }).join('&');
+          this.$http.get(url, {headers: headers}).then(
+            response => {  this.addGnParameters(response.body);}
+          )
+          this.first = false
+        }
+      }
+    },
+    addGnParameters(data) {
+      this.$store.commit('gnParametersChange', {step:2, dimension:data.summary.dimension})
     },
 //     updateGeonetworkContacts (data) {
 //       data.responsibleParty.forEach( function (contact)  {
