@@ -171,7 +171,6 @@ export default {
     prepareRequestGeonetwork(e) {
       
       this.initParameters()
-      console.log('event', e.detail)
       delete e.detail.lang
       if (!e.detail.startDefault) {
         e.detail.renameProperty('start', 'extFrom')
@@ -285,11 +284,13 @@ export default {
       var self = this
       // parameters according to depth
       if (depth === 0) {
+        // remove all parameters coming from step2 (normally there is not)
         this.$store.state.gnParameters.step2.forEach(function (key) {
           delete self.parameters[key]
         })
       }
       if (depth > 0) {
+        // remove all parameters exlusivy reserve to step1
         this.$store.state.gnParameters.step1.forEach(function (key) {
           delete self.parameters[key]
         })

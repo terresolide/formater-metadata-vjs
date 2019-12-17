@@ -167,7 +167,6 @@ export default function makeStore( config ) {
             state.gnParameters.step1 = []
           }
         }
-        console.log(state.gnParameters)
       },
       parametersChange(state, newParameters) {
         state.parameters.others = newParameters.parameters

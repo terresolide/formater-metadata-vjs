@@ -53,6 +53,7 @@ export default {
   },
   watch: {
     searchArea (newvalue) {
+      console.log('searchArea new = ', newvalue)
       this.initBoundsLayer()
       var bounds = this.getBounds()
       var bbox = null
@@ -159,6 +160,7 @@ export default {
     initBoundsLayer () {
       this.removeBoundsLayer()
       if (this.searchArea) {
+        console.log('init bounds layer')
         this.boundsLayer = L.rectangle(this.searchArea, {color:'#cccccc', fillOpacity: 0.2, weight: 1})
         this.boundsLayer.addTo(this.map)
         this.map.fitBounds(this.boundsLayer.getBounds())
@@ -241,7 +243,7 @@ export default {
           maxZoom: 18,
           minZoom:1
         }).addTo( this.map );
-      // this.initBoundsLayer(this.searchArea)
+     // this.initBoundsLayer()
       this.initDrawControl()
     },
     open (event) {

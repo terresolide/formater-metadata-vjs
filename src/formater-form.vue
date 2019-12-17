@@ -192,37 +192,32 @@ export default {
         this.first = false
         return
       }
-      
-      if (this.first && e.detail.depth === 0) {
-        var newDimension = this.initializeDimensions(e.detail.summary.dimension, true)
-        this.dimensions = newDimension
-
-       // this.$set(this.dimensions, e.detail.depth, newDimension)
-        this.first = false
-      } else {
-         var  newdimensions = this.initializeDimensions(e.detail.summary.dimension)
-         this.updateDimensions(this.dimensions, e.detail.summary.dimension)
-         this.addDimensions(newdimensions) 
-         console.log(this.dimensions)
-        // this.dimensions[e.detail.depth] = this.updateDimensions(this.dimensions[e.detail.depth], newdimensions, true)
-         //this.addDimensions(newdimensions, e.detail.depth)
+      var  newdimensions = this.initializeDimensions(e.detail.summary.dimension)
+      this.updateDimensions(this.dimensions, e.detail.summary.dimension)
+      this.addDimensions(newdimensions) 
+      if (e.detail.depth === 0) {
+        // remove all step2 dimension
+        this.removeStep2Dimensions()
       }
       this.reverseKeyDimensions()
     },
+    removeStep2Dimensions() {
+      for(var i=this.dimensions.length - 1; i >= 0; i--) {
+        if (this.$store.state.gnParameters.step2.indexOf(this.dimensions[i]['@name']) >= 0) {
+          delete this.nameToIndex[this.dimensions[i]['@name']]
+          this.dimensions.splice(i,1)
+        }
+      }
+    },
+    // fill the array nameToIndex which associated dimension name to index in array dimensions
     reverseKeyDimensions() {
       var self = this
       this.dimensions.forEach(function (dim, index) {
         self.nameToIndex[dim['@name']] = index
       })
     },
-/*    getIndexDimension(name) {
-      var index = this.dimensions.findIndex(function (dim) {
-        return dim['@name'] === name
-      })
-      console.log(index)
-      return index
-    }*/
-    initializeDimensions(dimensions, root){
+
+    initializeDimensions(dimensions){
       var dimension = null
       if (dimensions.length > 0) {
         dimension = dimensions
@@ -232,9 +227,9 @@ export default {
       var _this = this
       dimension.forEach( function (obj, index){
         if (obj.category){
-        	if (root) {
-        		dimension[index].disableLevel = 0
-        	}
+//         	if (root) {
+//         		dimension[index].disableLevel = 0
+//         	}
           dimension[index].category = _this.initializeDimensions(obj.category, false)
         }
       })
@@ -244,7 +239,7 @@ export default {
     	var toAdd = []
     	var self = this
     	newDimension.forEach(function (dimension) {
-    		if (!self.nameToIndex[dimension['@name']]) {
+    		if (typeof self.nameToIndex[dimension['@name']] !== 'number') {
     			self.dimensions.push( self.initializeDimensions(dimension, true)[0])
     		}
     	} )
