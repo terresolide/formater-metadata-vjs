@@ -279,6 +279,8 @@ export default {
     },
     handleReset () {
       this.fulltextSearch = ''  
+      // INIT SELECT AREA
+      this.$store.commit('selectAreaChange', null)
 
     },
     handleSearch (e) {

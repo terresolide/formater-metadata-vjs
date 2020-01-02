@@ -136,6 +136,7 @@ export default function makeStore( config ) {
         state.searchArea = newBounds
       },
       selectAreaChange(state, bbox) {
+        console.log('selectAreaChange')
         state.selectArea = bbox
       },
       gnParametersChange(state, obj) {

@@ -173,8 +173,9 @@ export default {
       this.east = "";
       this.west = "";
       this.south = "";
-      var event = new CustomEvent( 'fmt:bboxChange', { detail: this.bbox()});
-      document.dispatchEvent( event);
+      this.$store.commit('selectAreaChange', null)
+//       var event = new CustomEvent( 'fmt:bboxChange', { detail: this.bbox()});
+//       document.dispatchEvent( event);
     },
     handleResetLocal: function () {
       this.handleReset()
@@ -187,8 +188,8 @@ export default {
       this.east = e.detail.east;
       this.west = e.detail.west;
       this.$store.commit('selectAreaChange', e.detail)
-      var event = new CustomEvent('fmt:spatialChangeEvent')
-      document.dispatchEvent(event)
+       var event = new CustomEvent('fmt:spatialChangeEvent')
+       document.dispatchEvent(event)
     },
     handleSearch: function(e) {
       // add bbox if valid 
