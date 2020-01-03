@@ -117,7 +117,9 @@ export default function makeStore( config ) {
         // list of others specific opensearch api parameters 
         // add in formater-parameters-form
         others: []
-      }
+      },
+      searching: false,
+      error: null
   }
   var finalConfig = Object.assign(defaultConfig, config)
   return new Vuex.Store( {
@@ -213,6 +215,15 @@ export default function makeStore( config ) {
       },
       currentUuidChange(state, id) {
         state.currentUuid = id
+      },
+      searchingChange (state, value) {
+        state.searching = value
+      },
+      setError (state, msg) {
+        state.error = msg
+      },
+      removeError (state) {
+        state.error = null
       }
     },
     getters: {

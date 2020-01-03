@@ -3,8 +3,10 @@
  */
 <i18n>{
    "en":{
+     "searching": "Searching"
    },
    "fr":{
+     "searching": "Recherche en cours"
    }
 }
 </i18n>
@@ -24,6 +26,12 @@
    <div class="mtdt-column-right" >
         <!-- div where append map when enlarge it -->
         <div id="fmtLargeMap"></div>
+        <!-- icon search -->
+        <div class="fmt-waiting" v-if="$store.state.searching"><div>{{$t('searching')}}<br /><span class="fa fa-spinner animated"></span></div></div>
+        
+        <!--error msg -->
+        <div class="fmt-error" v-if="$store.state.error"><div><span class="fa fa-close fmt-close" @click="closeError"></span>{{$store.state.error}}</div></div>
+        
         <!-- list of all records with page navigation -->
         <div v-if="!$store.state.metadata" v-show="metadatas.length === 0">
             <formater-paging   :depth="0" :orders="['title','changeDate']" order-by="title"></formater-paging>
@@ -38,8 +46,6 @@
      </div>
     </div>
   </div>
-  
- </div>
 </template>
 <script>
 import FormaterForm from './formater-form.vue';
@@ -173,7 +179,7 @@ export default {
         }
         var temp = {
             min: min ? min : this.temporalExtent.min,
-            max: max ? max : this.temporalExtent.max
+            max: max ? max : this.temporalExtent.madivx
         }
         this.$store.commit('temporalChange', temp)
       } else {
@@ -257,6 +263,9 @@ export default {
       if (this.metadatas.length > 0) {
         event.detail.parentUuid = this.currentUuid
       }
+    },
+    closeError () {
+      this.$store.commit('removeError')
     }
   }
 }
@@ -337,5 +346,58 @@ export default {
   font-size: 13px;
   padding:0 32px 0px 6.5px;
 }
+.mtdt-catalogue .fmt-waiting,
+.mtdt-catalogue .fmt-error {
+   text-align: center;
+   display:inline-block;
+   position: absolute;
+   width:calc(100% - 325px);
+   height: 100%;
+   z-index:1;
+   background: rgba(255, 255, 255, 0.8);
+}
+.mtdt-catalogue .fmt-error {
+  font-size: 1.5rem;
+  color: darkred;
+  line-height: 1.5rem;
+}
+.mtdt-catalogue .fmt-error div {
+  position:relative;
+  padding: 15px;
+  border: 1px solid darkred;
+  background: rgba(0,0,0,0.05);
+  border-radius: 5px;
+  box-shadow: 1px 2px 5px -5pxrgb(0, 0, 0);
+  margin: 150px 5px 0 5px;
+}
+.mtdt-catalogue .fmt-error div span.fa-close{
+  position: absolute;
+  top:1px;
+  right: 4px;
+  cursor: pointer;
+}
+.mtdt-catalogue .fmt-waiting div {
+  padding-top:150px;
+
+  opacity:0.7;
+}
+
+.mtdt-catalogue .fmt-waiting div span{
+    font-size:3rem;
+}
+@keyframes spin { 
+  from { 
+      transform: rotate(0deg); 
+  } to { 
+      transform: rotate(360deg); 
+  }
+}
+.fa-refresh.animated,
+.fa-circle-o-notch.animated,
+.fa-spinner.animated{
+  -webkit-animation: spin 1.5s linear infinite;
+  animation: spin 1.5s linear infinite;
+}
+
 
 </style>

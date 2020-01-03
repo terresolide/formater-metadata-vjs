@@ -7,15 +7,6 @@
  * 
  */
  
- <i18n>{
-   "en":{
-     "search": "Search ..."
-   },
-   "fr":{
-      "search": "Rechercher ..."
-   }
-}
-</i18n>
 <template></template>
 <script>
 
@@ -34,7 +25,7 @@ export default {
       api: null,
       headers: {
         'Accept': 'application/json, text/plain, */*',
-        'Accept-Language': this.lang === 'fr' ? 'fre': 'eng'
+        'Accept-Language': this.$store.state.lang === 'fr' ? 'fre': 'eng'
       },
       first: true,
       dimensions: [],
@@ -136,6 +127,7 @@ export default {
       }
     }, 
     getRecords (event) {
+      this.$store.commit('searchingChange', true)
       // trigger search event like breadcrumb
       if (event.detail && typeof event.detail.depth == 'number') {
         var depth = event.detail.depth
@@ -306,8 +298,8 @@ export default {
         return prop + '=' + self.parameters[prop]
       }).join('&');
       this.$http.get(url, {headers: headers}).then(
-        response => {  this.treatmentGeonetwork(response.body, depth);}
-      )
+        response => { console.log(response); this.treatmentGeonetwork(response.body, depth);},
+        response => {this.treatmentError(response, url)})
     },
     requestApiOpensearch (depth) {
       // var depth = (typeof this.parameters.depth != 'undefined') ? this.parameters.depth : this.depth
@@ -321,7 +313,25 @@ export default {
      // this.$store.commit('addValueToParameters', this.parameters)
       this.$http.get(url).then(
           response => {   this.treatmentGeojson(response.body, depth);}
-       )
+       ).catch(function (response) {
+         this.treatmentError(response, url)
+       })
+    },
+    treatmentError (response, url) {
+      switch(response.status) {
+      case 0:
+        this.$store.commit('setError', 'Maybe CORS ERROR, try with proxy')
+        break;
+      case 403:
+        this.$store.commit('setError', 'SERVER RESPONSE FOR ' + url + ' : ACCESS DENIED')
+        break;
+      case 404:
+        this.$store.commit('setError', 'SERVER RESPONSE FOR ' + url + ' : PAGE NOT FOUND')
+        break;
+      default:
+        this.$store.commit('setError', 'UNKNOWN ERROR FOR ' + url)
+      }
+      this.$store.commit('searchingChange', false)
     },
     treatmentGeojson (data, depth) {
       var metadatas = {}
@@ -343,6 +353,7 @@ export default {
       }
 
       this.fill({ type: 'opensearch', properties: data.properties, features: features, metadata:metadatas}, depth)
+      this.$store.commit('searchingChange', false)
     },
     treatmentGeonetwork (data, depth) {
       var metadatas = {}
@@ -370,8 +381,9 @@ export default {
       data.metadata = metadatas
       data.type = 'geonetwork'
       data.features = features
-      this.fill(data, depth);
-      this.searchGnStep2Parameters(data.summary.dimension);
+      this.fill(data, depth)
+      this.$store.commit('searchingChange', false)
+      this.searchGnStep2Parameters(data.summary.dimension)
       // this.searchRelated()
     },
     searchGnStep2Parameters (dimension) {
