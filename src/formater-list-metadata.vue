@@ -21,10 +21,10 @@ export default {
     FormaterCartoucheMetadata
   },
   props: {
-    list: {
-      type: Array,
-      default: null
-    },
+//     list: {
+//       type: Array,
+//       default: null
+//     },
     depth: {
       type: Number,
       default: 0
@@ -48,6 +48,7 @@ export default {
     document.addEventListener('fmt:metadataListEvent', this.metadataListListener)
   },
   destroyed () {
+    console.log('destroyed depth =' + this.depth)
     document.removeEventListener('fmt:metadataListEvent', this.metadataListListener);
     this.metadataListListener = null;
   },

@@ -172,20 +172,20 @@ export default {
         return false;
       }
     },
-    isInCurrentLang (key) {
-      if (!this.isFacet(key)) {
-        return true;
-      }
-      var lang = name.substring(key.length -3, key.length)
-      if (this.$i18n.locale === 'fr' && lang === 'Fre') {
-        return true;
-      } else if (this.$i18n.locale != 'fr' && lang != 'Fre') {
-        return true;
-      } else {
-        return false;
-      }
+//     isInCurrentLang (key) {
+//       if (!this.isFacet(key)) {
+//         return true;
+//       }
+//       var lang = name.substring(key.length -3, key.length)
+//       if (this.$i18n.locale === 'fr' && lang === 'Fre') {
+//         return true;
+//       } else if (this.$i18n.locale != 'fr' && lang != 'Fre') {
+//         return true;
+//       } else {
+//         return false;
+//       }
 
-    },
+//     },
 
     fill (e) {
       if (!e.detail.summary) {

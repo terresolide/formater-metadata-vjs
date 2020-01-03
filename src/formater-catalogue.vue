@@ -33,7 +33,7 @@
         <div class="fmt-error" v-if="$store.state.error"><div><span class="fa fa-close fmt-close" @click="closeError"></span>{{$store.state.error}}</div></div>
         
         <!-- list of all records with page navigation -->
-        <div v-if="!$store.state.metadata" v-show="metadatas.length === 0">
+        <div  v-show="metadatas.length === 0">
             <formater-paging   :depth="0" :orders="['title','changeDate']" order-by="title"></formater-paging>
             <formater-list-metadata  :depth="0"></formater-list-metadata>
         </div>

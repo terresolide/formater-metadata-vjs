@@ -69,14 +69,15 @@ export default {
   },
   computed: {
     recordByLine () {
+     // this.updateRecordsPerPage(this.$store.state.size.recordByLine)
       return this.$store.state.size.recordByLine
     }
   },
-  watch: {
-    recordByLine (newvalue) {
-      this.updateRecordsPerPage(newvalue)
-    }
-  },
+//   watch: {
+//     recordByLine (newvalue) {
+//       this.updateRecordsPerPage(newvalue)
+//     }
+//   },
   created: function() {
     this.recordPerPage = this.$store.state.size.nbRecord
     this.metadataListListener = this.receiveTotalRecord.bind(this)
@@ -90,9 +91,15 @@ export default {
       self.options[order] = self.$i18n.t(order)
     })
     this.updateRecordsPerPage(this.recordByLine)
-    this.emitChange()
+        console.log('Créating PAGING !!!')
+    if (this.initialize) {
+      this.emitChange()
+      this.initialize = false
+    }
   },
   mounted () {
+
+
     this.handleTheme()
   },
   destroyed () {
@@ -182,11 +189,13 @@ export default {
    goToFirst () {
      this.from = 1
      this.currentPage = 1
+     console.log('GOT TO FIRST')
      this.emitChange()
    },
    goToLast () {
      this.from = (this.nbPage -1) * this.recordPerPage + 1
      this.currentPage = this.nbPage
+     console.log('GOT TO LAST')
      this.emitChange()
    },
    handleReset(event) {
@@ -224,10 +233,12 @@ export default {
      }
      this.currentPage += sens
      this.from = (this.currentPage - 1) * this.recordPerPage +1
+     console.log('CHANGE PAGE')
      this.emitChange()
    },
    nbRecordChange (value) {
      this.recordPerPage = parseInt(value)
+      console.log('NBRECORD CHANGE')
      this.emitChange()
    },
    sortChange (event) {
