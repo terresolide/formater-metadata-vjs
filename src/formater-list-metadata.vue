@@ -9,6 +9,7 @@
 </i18n>
 <template>
  <div class="mtdt-list" >
+    <div>depth = {{depth}}</div>
     <div v-if="!metadatas" style="width:calc(100% - 150px);">{{$t('no_result')}}</div>
     <formater-cartouche-metadata  :depth="depth" :type="type" v-for="(meta, index) in metadatas" :key="index" :metadata="meta" v-if="meta" ></formater-cartouche-metadata>
   </div>
@@ -41,14 +42,13 @@ export default {
       flatsimLayerList: ['CLASSIFICATION', 'CONFIDENCE', 'PIXELS_VALIDITY'],
     }
   },
-  created: function() {
+  created () {
     //this.$i18n.locale = this.lang
    // this.$setGnLocale(this.lang)
     this.metadataListListener = this.receiveMetadatas.bind(this)
     document.addEventListener('fmt:metadataListEvent', this.metadataListListener)
   },
   destroyed () {
-    console.log('destroyed depth =' + this.depth)
     document.removeEventListener('fmt:metadataListEvent', this.metadataListListener);
     this.metadataListListener = null;
   },

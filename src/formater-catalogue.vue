@@ -35,14 +35,15 @@
         <!-- list of all records with page navigation -->
         <div  v-show="metadatas.length === 0">
             <formater-paging   :depth="0" :orders="['title','changeDate']" order-by="title"></formater-paging>
-            <formater-list-metadata  :depth="0"></formater-list-metadata>
+            <formater-list-metadata :depth="0"></formater-list-metadata>
         </div>
         <!-- view of one record -->
-        <div  v-if="metadatas.length > 0" >
-            <formater-metadata v-for="(meta, index) in metadatas" :key="index" v-show="index === metadatas.length-1"
-             :depth="index + 1" :metadata="meta" @parametersChange="setParameters"
-             @close="resetMetadata" ></formater-metadata>
+        <div>
+        <formater-metadata v-for="(meta, index) in metadatas" :key="index" v-show="index === metadatas.length-1"
+         :depth="index + 1" :metadata="meta" @parametersChange="setParameters"
+         @close="resetMetadata" ></formater-metadata>
         </div>
+
      </div>
     </div>
   </div>
@@ -159,11 +160,15 @@ export default {
       this.$store.commit('temporalChange', temp)
     },
     resetMetadata (event) {
+      console.log('dans resetMetadata avec depth = ' + this.metadatas.length)
       if (this.metadatas.length === 1 && this.metadatas[0].appRoot) {
         return
       }
-      this.metadatas.pop()
       if (this.metadatas.length > 0) {
+        this.metadatas.pop()
+      }
+      if (this.metadatas.length > 0) {
+
         var metadata = this.metadatas[this.metadatas.length -1]
         this.currentUuid = metadata.id
         var type = metadata.disableType
