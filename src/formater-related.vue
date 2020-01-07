@@ -3,13 +3,15 @@
      "localize": "Localize on the map",
      "display_layer": "Display the layer on the map",
      "download_data": "Download data",
-     "download_forbidden": "Forbidden download"
+     "download_forbidden": "Forbidden download",
+     "platform": "Platform | Platforms"
    },
    "fr":{
      "localize": "Localiser sur la carte, cliquer pour garder la position",
      "display_layer": "Afficher sur la carte",
      "download_data": "Télécharger les données",
-     "download_forbidden": "Téléchargement interdit"
+     "download_forbidden": "Téléchargement interdit",
+     "platform": "Plateforme | Plateformes"
    }
 }
 </i18n>
@@ -79,17 +81,20 @@
     </div>
     <!--  siblings -->
     <div v-if="siblings && siblings.length === 1 && type === 'cartouche'">
-       <div class="mtdt-related-type fa fa-map-marker" :style="{backgroundColor: platformAdded ? '#8c0209' : primary}" :title="siblings[0].title[lang].toUpperCase() +'\n\r' + siblings[0].description[lang]" >
+       <div class="mtdt-related-type fa fa-map-marker" :style="{backgroundColor: platformAdded ? '#8c0209' : primary}" :title="$tc('platform', 1)" >
          
       </div> 
     </div>
      <div v-if="siblings && (siblings.length >1 || (type === 'metadata' && siblings.length > 0))">
-       <div class="mtdt-related-type fa fa-map-marker"  :style="{backgroundColor: platformAdded ? '#8c0209' : primary}" :title="$t('platform')">
+       <div class="mtdt-related-type fa fa-map-marker"  :style="{backgroundColor: platformAdded ? '#8c0209' : primary}" :title="$tc('platform', 2)">
          <span v-if="type === 'cartouche'" class="fa fa-caret-down"></span>
       </div> 
       <div v-if="type === 'metadata'"></div>
       <div class="mtdt-expand" >
+           <formater-platform-list :siblings="siblings"></formater-platform-list>
+           <h4>{{$tc('platform', 2)}}</h4>
            <ul class="mtdt-layers">
+
            <li v-for="(platform, index) in siblings" :key="index" @click="changePlatform(platform)" >
               <i class="fa" :class="{'fa-square-o': !platform.checked,'fa-check-square-o': platform.checked}"  :data-platform="index"></i>
               <div  :title="platform.description[lang] || platform.description" >{{platform.title[lang] || platform.title}}</div>
@@ -121,10 +126,12 @@
   </template>
   <script>
   import ProgressBar from 'vuejs-progress-bar'
+  import FormaterPlatformList from './formater-platform-list.vue'
   export default {
     name: 'FormaterRelated',
     components: {
-      ProgressBar
+      ProgressBar,
+      FormaterPlatformList
     },
     props: {
       id: {
@@ -593,4 +600,7 @@ max-width:92%;
     vertical-align: top;
     max-height:26px;
 }
+ .mtdt-related-cartouche .mtdt-expand h4 {
+   margin: 5px -2px;
+ }
   </style>

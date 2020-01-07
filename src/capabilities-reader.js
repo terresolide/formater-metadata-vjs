@@ -30,7 +30,6 @@ const reader = {
           case 'xlink':
             return xlink
           default:
-            console.log(prefix)
             return ns
         }
       }
@@ -82,7 +81,6 @@ const reader = {
        return '3857'
      }
       var result = root.evaluate('count(./ns:CRS[text()="EPSG:4326"])', layerXml, resolver, XPathResult.NUMBER_TYPE, null)
-      console.log(result)
       if (result.numberValue > 0) {
         return '4326'
       }
@@ -120,7 +118,6 @@ const reader = {
       var src = result.stringValue
       var result = root.evaluate('./ns:Style/ns:Title', layerXml, resolver, XPathResult.STRING_TYPE, null)
       var title = result.stringValue
-      console.log(src)
       if (src !== '') {
         return {src: src, title: title}
       } else {

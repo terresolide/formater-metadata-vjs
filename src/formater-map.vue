@@ -184,6 +184,7 @@ export default {
 //      this.$http.get('http://api.formater/interface-services/index.php?x=8').then(
 //          response => { console.log(response.body)}
 //      )
+     console.log(event)
      var layer = event.detail.layer
      var metaId = event.detail.id
      var bounds = this.searchBboxBoundsById(metaId)
@@ -196,6 +197,7 @@ export default {
          this.beforeAddWMS(layer, metaId)
          return
        }
+     console.log('pas de before')
        if (!layer.options) {
          var extract = layer.href.match(/^(.*\?).*$/)
          var url = extract[1]
@@ -268,9 +270,11 @@ export default {
      
    },
    beforeAddWMS (layer, metaId) {
+     console.log('with a before')
      this.reader.loadInfo(layer, {opacity:0.5} , metaId, this.addWMSLayer)
    },
    addWMSLayer(layerObj, metaId) {
+     console.log('add wms layer = ' + metaId)
      var newLayer = L.tileLayer.wms(layerObj.href, layerObj.options)
      this.addLayerToMap(layerObj.options.id, metaId, newLayer)
      // Add legend if there is specific legend with the layer
