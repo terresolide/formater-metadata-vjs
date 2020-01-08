@@ -190,6 +190,7 @@
       },
       siblings () {
         if (this.related && this.related.siblings) {
+        	return this.related.siblings
           //search more information
           var headers =  {
           'Accept': 'application/json, text/plain, */*',

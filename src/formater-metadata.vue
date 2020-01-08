@@ -17,7 +17,7 @@
 }
 </i18n>
 <template>
- <div class="mtdt-metadata mtdt-capsule">
+ <div class="mtdt-metadata mtdt-capsule" :class="{'fmt-free': depth === -1}">
     
    <span v-if="metadata && !metadata.appRoot" class="mtdt-metadata-close fa fa-close" @click="close"></span>
    <div v-if="metadata">
@@ -139,7 +139,7 @@ export default {
     }
   },
   created () {
-    
+    console.log(this.metadata.logo)
     moment.locale(this.$i18n.locale)
     if (this.metadata['geonet:info']) {
        this.uuid = this.metadata['geonet:info'].uuid
@@ -152,8 +152,8 @@ export default {
 
     this.popstateListener = this.close.bind(this)
     document.addEventListener('popstate', this.popstateListener)
-    this.keydownListener = this.checkEscape.bind(this)
-    document.addEventListener('keydown', this.keydownListener)
+//     this.keydownListener = this.checkEscape.bind(this)
+//     document.addEventListener('keydown', this.keydownListener)
 //     var post = {
 //         "clientId":"lJ9NjcIZLGYkgRzvRlBDQS_LeVoa",
 //         "code":"62d32c7eb43e579b82713f8d04cfe7",
@@ -180,23 +180,23 @@ export default {
   destroyed () {
     document.removeEventListener('popstate', this.popstateListener)
     this.popstateListener = null
-    document.removeEventListener('keydown', this.keydownListener)
-    this.keydownListener = null
+//     document.removeEventListener('keydown', this.keydownListener)
+//     this.keydownListener = null
   },
   methods: {
 
-      checkEscape (e) {
-        var event = e || window.event
-        var isEscape = false;
-        if (event.key) {
-          isEscape = (event.key === 'Escape' || event.key === 'Esc');
-        } else {
-          isEscape = (event.keyCode === 27);
-        }
-        if (isEscape) {
-          this.close(event);
-        }
-      },
+//       checkEscape (e) {
+//         var event = e || window.event
+//         var isEscape = false;
+//         if (event.key) {
+//           isEscape = (event.key === 'Escape' || event.key === 'Esc');
+//         } else {
+//           isEscape = (event.keyCode === 27);
+//         }
+//         if (isEscape) {
+//           this.close(event);
+//         }
+//       },
       close (event) {
         event.preventDefault();
         this.$emit('close');
@@ -284,8 +284,12 @@ export default {
   max-width: 100%;
   margin: auto;
   height: auto;
+  background: #fff;
   overflow: hidden;
  
+}
+.mtdt-metadata.fmt-free{
+  background: #f6f6f6;
 }
 .mtdt-metadata .mtdt-column-left{
   width:calc(100% - 330px);

@@ -119,7 +119,8 @@ export default function makeStore( config ) {
         others: []
       },
       searching: false,
-      error: null
+      error: null,
+      selectedMetadata: null
   }
   var finalConfig = Object.assign(defaultConfig, config)
   return new Vuex.Store( {
@@ -224,6 +225,12 @@ export default function makeStore( config ) {
       },
       removeError (state) {
         state.error = null
+      },
+      selectMetadata (state, metadata) {
+    	state.selectedMetadata = metadata
+      },
+      resetSelectedMetadata (state) {
+    	state.selectedMetadata = null
       }
     },
     getters: {

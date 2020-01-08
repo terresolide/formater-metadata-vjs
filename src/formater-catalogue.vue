@@ -37,6 +37,10 @@
             <formater-paging   :depth="0" :orders="['title','changeDate']" order-by="title"></formater-paging>
             <formater-list-metadata :depth="0"></formater-list-metadata>
         </div>
+        <!-- independant metadata -->
+        <div v-if="$store.state.selectedMetadata" style="position:absolute;z-index:101;">
+        <formater-metadata :metadata="$store.state.selectedMetadata" :depth="-1" @close="$store.commit('resetSelectedMetadata')"></formater-metadata>
+        </div>
         <!-- view of one record -->
         <div>
         <formater-metadata v-for="(meta, index) in metadatas" :key="index" v-show="index === metadatas.length-1"
@@ -101,6 +105,8 @@ export default {
     document.addEventListener('aerisSearchEvent', this.aerisSearchListener)
     this.aerisResetListener = this.handleReset.bind(this)
     document.addEventListener('aerisResetEvent', this.aerisResetListener)
+    this.keydownListener = this.checkEscape.bind(this)
+    document.addEventListener('keydown', this.keydownListener)
     this.resizeListener = this.resize.bind(this)
     window.addEventListener('resize', this.resizeListener);
     this.resize()
@@ -159,6 +165,22 @@ export default {
       }
       this.$store.commit('temporalChange', temp)
     },
+    checkEscape (e) {
+        var event = e || window.event
+        var isEscape = false;
+        if (event.key) {
+          isEscape = (event.key === 'Escape' || event.key === 'Esc');
+        } else {
+          isEscape = (event.keyCode === 27);
+        }
+        if (isEscape) {
+          if (this.$store.state.selectedMetadata) {
+        	  this.$store.commit('resetSelectedMetadata')
+          } else {
+        	  this.resetMetadata(e)
+          }
+        }
+      },
     resetMetadata (event) {
       console.log('dans resetMetadata avec depth = ' + this.metadatas.length)
       if (this.metadatas.length === 1 && this.metadatas[0].appRoot) {
@@ -225,6 +247,7 @@ export default {
       this.$store.commit('sizeChange')
    },
     handleReset (event) {
+	 this.$store.commit('resetSelectedMetadata')
      if (this.metadatas[0] && this.metadatas[0].appRoot) {
 
        event.detail.depth = 1
