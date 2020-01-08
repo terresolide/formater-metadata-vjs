@@ -539,6 +539,6 @@ max-width:92%;
     max-height:26px;
 }
  .mtdt-related-cartouche .mtdt-expand h4 {
-   margin: 5px -2px;
+   margin: 5px 0px;
  }
   </style>

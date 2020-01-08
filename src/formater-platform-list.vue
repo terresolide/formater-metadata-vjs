@@ -13,7 +13,7 @@
            <ul class="mtdt-layers">
 
            <li v-for="(platform, index) in platforms" :key="index"  >
-              <div  :title="platform.abstract" @click="selectPlatform(index)">{{platform.title[lang] || platform.title}}</div>
+              <a class="mtdt-link"  :title="platform.abstract" @click="selectPlatform(index)">{{platform.title[lang] || platform.title}}</a>
            <!--   <i class="fa" :class="{'fa-square-o': !platform.checked,'fa-check-square-o': platform.checked}"  :data-platform="index" @click="changePlatform(platform)"></i>
             -->
               <i v-if="platform.layers && platform.layers.length > 0" class="fa" :class="{'fa-square-o': !platform.checked,'fa-check-square-o': platform.checked}"  :data-platform="index" @click="changePlatform(platform)"></i>
