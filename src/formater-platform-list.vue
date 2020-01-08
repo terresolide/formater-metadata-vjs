@@ -35,14 +35,11 @@ export default {
 
   mounted () {
     this.lang = this.$i18n.locale == 'fr' ? 'fre' : 'eng'
-    console.log(this.siblings)
     this.completePlatforms()
-    console.log(this.platforms)
   },
   data () {
     return {
       lang: 'eng',
-      time: 0,
       platforms: []
     }
   },
@@ -82,15 +79,12 @@ export default {
     changePlatform(platform) {
       this.$set(platform, 'checked', !platform.checked)
       //   this.meta.layers[index].checked = !this.meta.layers[index].checked
-      console.log(platform)
       if (platform.checked) {
-        console.log('add layer')
         if (platform.layers && platform.layers[0]) {
           var event = new CustomEvent('fmt:addLayerEvent', {detail: {layer: platform.layers[0], id: platform.id}})
           document.dispatchEvent(event)
         }
       } else {
-        console.log('remove layer')
         if (platform.layers && platform.layers[0]) {
           var event = new CustomEvent('fmt:removeLayerEvent', {detail: {id: platform.layers[0].id}})
           document.dispatchEvent(event)
@@ -98,7 +92,6 @@ export default {
       }
     },
     fillPlatforms (resp) {
-    	console.log('time = ' + this.time)
     	this.time = this.time +1
     	if (resp.metadata && typeof resp.metadata.length === 'undefined') {
             resp.metadata = [resp.metadata]

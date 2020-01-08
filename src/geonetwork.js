@@ -120,7 +120,6 @@ const GeonetworkPlugin = {
            },
            treatmentMetadata (meta, uuid) {
              meta.id = uuid
-             console.log(uuid)
              if (this.$store.state.geonetwork) {
                  meta.logo = this.$store.state.geonetwork + meta.logo.replace(/^\//, '')
                  meta.exportLinks = {

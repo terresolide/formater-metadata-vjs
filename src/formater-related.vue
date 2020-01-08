@@ -80,26 +80,26 @@
         <hr v-if="type === 'metadata'" /> 
     </div>
     <!--  siblings -->
-    <div v-if="siblings && siblings.length === 1 && type === 'cartouche'">
+  <!--  <div v-if="siblings && siblings.length === 1 && type === 'cartouche'">
        <div class="mtdt-related-type fa fa-map-marker" :style="{backgroundColor: platformAdded ? '#8c0209' : primary}" :title="$tc('platform', 1)" >
          
       </div> 
-    </div>
-     <div v-if="siblings && (siblings.length >1 || (type === 'metadata' && siblings.length > 0))">
-       <div class="mtdt-related-type fa fa-map-marker"  :style="{backgroundColor: platformAdded ? '#8c0209' : primary}" :title="$tc('platform', 2)">
+    </div> --> 
+     <div v-if="related && related.siblings &&  related.siblings.length > 0">
+       <div class="mtdt-related-type fa fa-map-marker"  :style="{backgroundColor: platformAdded ? '#8c0209' : primary}" :title="$tc('platform', related.siblings.length)">
          <span v-if="type === 'cartouche'" class="fa fa-caret-down"></span>
       </div> 
       <div v-if="type === 'metadata'"></div>
       <div class="mtdt-expand" >
-           <formater-platform-list :siblings="siblings"></formater-platform-list>
-           <h4>{{$tc('platform', 2)}}</h4>
+           <formater-platform-list :siblings="related.siblings"></formater-platform-list>
+        <!--    <h4>{{$tc('platform', 2)}}</h4>
            <ul class="mtdt-layers">
 
            <li v-for="(platform, index) in siblings" :key="index" @click="changePlatform(platform)" >
               <i class="fa" :class="{'fa-square-o': !platform.checked,'fa-check-square-o': platform.checked}"  :data-platform="index"></i>
               <div  :title="platform.description[lang] || platform.description" >{{platform.title[lang] || platform.title}}</div>
           </li>
-          </ul>    
+          </ul>    --> 
       </div> 
         <hr v-if="type === 'metadata'" /> 
     </div>
@@ -183,38 +183,10 @@
       },
       platformAdded () {
         var platformAdded = false
-        this.siblings.forEach(function (platform) {
+        this.related.siblings.forEach(function (platform) {
           platformAdded = platformAdded || platform.checked
         })
         return platformAdded
-      },
-      siblings () {
-        if (this.related && this.related.siblings) {
-        	return this.related.siblings
-          //search more information
-          var headers =  {
-          'Accept': 'application/json, text/plain, */*',
-          'Accept-Language': this.$i18n.locale === 'fr' ? 'fre': 'eng'
-          }
-          var url = this.$store.state.geonetwork +  'srv/eng'
-          url += '/q?_content_type=json&buildSummary=false&fast=index'
-          var count = 0
-          url += '&uuid='
-          this.related.siblings.forEach(function (plateform) {
-            if (!plateform.completed) {
-               count++
-               url +=  plateform.id + '+or+'
-            }
-          })
-          if (count > 0) {
-            url = url.substr(0, url.length - 4)
-            this.$http.get(url, {headers: headers})
-            .then( response => { this.fillSiblings(response.body) })
-          }
-          return this.related.siblings
-        } else {
-          return null
-        }
       }
     },
     data () {
@@ -283,7 +255,7 @@
          }
          // this.updateClass()
        },
-       changePlatform(platform) {
+      /* changePlatform(platform) {
          this.$set(platform, 'checked', !platform.checked)
          //   this.meta.layers[index].checked = !this.meta.layers[index].checked
        console.log(platform)
@@ -300,7 +272,7 @@
            document.dispatchEvent(event)
          }
        }
-       },
+       },*/
        triggerDownload (index) {
          console.log('trigger download')
          if (this.download[index].disabled) {
@@ -387,7 +359,7 @@
          }
          var event = new CustomEvent('fmt:unselectBboxEvent', {detail: {id: this.id}})
          document.dispatchEvent(event)
-       },
+       }/*,
        fillSiblings (resp) {
          if (resp.metadata && typeof resp.metadata.length === 'undefined') {
            resp.metadata = [resp.metadata]
@@ -403,7 +375,7 @@
            platformSelected = Object.assign(platformSelected, links)
            platformSelected.completed = true
          })
-       }
+       }*/
     }
     
   }
