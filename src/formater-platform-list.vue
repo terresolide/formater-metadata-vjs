@@ -12,9 +12,10 @@
  <h4>{{$tc('platform', platforms.length)}}</h4>
            <ul class="mtdt-layers">
 
-           <li v-for="(platform, index) in platforms" :key="index"  @click="selectPlatform(index)">
-              <div  :title="platform.description[lang] || platform.description" >{{platform.title[lang] || platform.title}}</div>
-          
+           <li v-for="(platform, index) in platforms" :key="index"  >
+              <div  :title="platform.abstract" @click="selectPlatform(index)">{{platform.title[lang] || platform.title}}</div>
+           <!--   <i class="fa" :class="{'fa-square-o': !platform.checked,'fa-check-square-o': platform.checked}"  :data-platform="index" @click="changePlatform(platform)"></i>
+            -->
               <i v-if="platform.layers && platform.layers.length > 0" class="fa" :class="{'fa-square-o': !platform.checked,'fa-check-square-o': platform.checked}"  :data-platform="index" @click="changePlatform(platform)"></i>
               </li>
           </ul>   
@@ -45,6 +46,7 @@ export default {
   },
   methods: {
 	selectPlatform (index) {
+		console.log(this.platforms[index])
 		this.$store.commit('selectMetadata', this.platforms[index])
 	},
 	completePlatforms ()  {
@@ -69,13 +71,6 @@ export default {
 		            .then( response => { this.fillPlatforms(response.body) })
 		          }
 	},
-	 platformAdded () {
-        var platformAdded = false
-        this.siblings.forEach(function (platform) {
-          platformAdded = platformAdded || platform.checked
-        })
-        return platformAdded
-      },
     changePlatform(platform) {
       this.$set(platform, 'checked', !platform.checked)
       //   this.meta.layers[index].checked = !this.meta.layers[index].checked
@@ -90,6 +85,11 @@ export default {
           document.dispatchEvent(event)
         }
       }
+      var platformAdded = false
+      this.platforms.forEach(function (platform) {
+        platformAdded = platformAdded || platform.checked
+      })
+      this.$emit('platformAdded', platformAdded)
     },
     fillPlatforms (resp) {
     	this.time = this.time +1
@@ -102,12 +102,23 @@ export default {
             var platformSelected = resp.metadata.find(function (meta) {
               return platform.id === meta['geonet:info'].uuid
             })
+            var initiativeType = platform.initiativeType
             // platform = Object.assign({}, _this.$gn.treatmentMetadata(platformSelected, platform.id))
 //             var links = _this.$gn.treatmentLinks(platformSelected.id, platformSelected.link)
 //             delete platformSelected.link
 //             platformSelected = Object.assign(platformSelected, links)
-            _this.platforms[index] = _this.$gn.treatmentMetadata(platformSelected, platform.id)
+              platformSelected = _this.$gn.treatmentMetadata(platformSelected, platform.id)
+              platformSelected.checked = false
+              /*if (platformSelected.title) {
+            	  platformSelected.title = _this.$i18n.tc(initiativeType, 1) + ': '  + platformSelected.title
+              } else {
+            	  platformSelected.defaultTitle = _this.$i18n.tc(initiativeType, 1) + ': '  + platformSelected.defautlTitle
+              }*/
+            platformSelected.initiativeType = initiativeType
+           // _this.platforms[index] = _this.$gn.treatmentMetadata(platformSelected, platform.id)
+            _this.$set(_this.platforms, index, platformSelected)
           })
+          
     }
    
   }

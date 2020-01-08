@@ -80,26 +80,13 @@
         <hr v-if="type === 'metadata'" /> 
     </div>
     <!--  siblings -->
-  <!--  <div v-if="siblings && siblings.length === 1 && type === 'cartouche'">
-       <div class="mtdt-related-type fa fa-map-marker" :style="{backgroundColor: platformAdded ? '#8c0209' : primary}" :title="$tc('platform', 1)" >
-         
-      </div> 
-    </div> --> 
-     <div v-if="related && related.siblings &&  related.siblings.length > 0">
-       <div class="mtdt-related-type fa fa-map-marker"  :style="{backgroundColor: platformAdded ? '#8c0209' : primary}" :title="$tc('platform', related.siblings.length)">
+     <div v-if="platforms && platforms.length > 0">
+       <div class="mtdt-related-type fa fa-map-marker"  :style="{backgroundColor: platformAdded ? '#8c0209' : primary}" :title="$tc('platform', platforms.length)">
          <span v-if="type === 'cartouche'" class="fa fa-caret-down"></span>
       </div> 
       <div v-if="type === 'metadata'"></div>
       <div class="mtdt-expand" >
-           <formater-platform-list :siblings="related.siblings"></formater-platform-list>
-        <!--    <h4>{{$tc('platform', 2)}}</h4>
-           <ul class="mtdt-layers">
-
-           <li v-for="(platform, index) in siblings" :key="index" @click="changePlatform(platform)" >
-              <i class="fa" :class="{'fa-square-o': !platform.checked,'fa-check-square-o': platform.checked}"  :data-platform="index"></i>
-              <div  :title="platform.description[lang] || platform.description" >{{platform.title[lang] || platform.title}}</div>
-          </li>
-          </ul>    --> 
+           <formater-platform-list :siblings="platforms" @platformAdded="changePlatform"></formater-platform-list>
       </div> 
         <hr v-if="type === 'metadata'" /> 
     </div>
@@ -165,6 +152,9 @@
     },
     created () {
       this.lang = this.$i18n.locale === 'fr' ? 'fre' : 'eng'
+//       if (this.related && this.related.siblings) {
+//     	  this.siblings = this.related.siblings
+//       }
       this.checkEmpty()
     },
     computed: {
@@ -181,18 +171,24 @@
         })
         return layerAdded
       },
-      platformAdded () {
-        var platformAdded = false
-        this.related.siblings.forEach(function (platform) {
-          platformAdded = platformAdded || platform.checked
-        })
-        return platformAdded
+      platforms () {
+		  var platforms = []
+    	  if (this.related && this.related.siblings) {
+
+    		  this.related.siblings.forEach(function (platform) {
+    			  if (platform.initiativeType === 'platform') {
+    				  platforms.push(platform)
+    			  }
+    		  })
+    	  }
+		  return platforms
       }
     },
     data () {
       return {
         lang: 'eng',
         empty: true,
+        platformAdded: false,
         message: '',
         progress: null,
         progressBarOptions: {
@@ -231,7 +227,7 @@
           this.empty = false
         } else if (this.links &&  this.links.length >0) {
           this.empty = false
-        } else if (this.siblings && this.siblings.length > 0) {
+        } else if (this.platforms && this.platforms.length > 0) {
           this.empty = false
         }
       },
@@ -255,24 +251,9 @@
          }
          // this.updateClass()
        },
-      /* changePlatform(platform) {
-         this.$set(platform, 'checked', !platform.checked)
-         //   this.meta.layers[index].checked = !this.meta.layers[index].checked
-       console.log(platform)
-       if (platform.checked) {
-         console.log('add layer')
-         if (platform.layers && platform.layers[0]) {
-           var event = new CustomEvent('fmt:addLayerEvent', {detail: {layer: platform.layers[0], id: platform.id}})
-           document.dispatchEvent(event)
-         }
-       } else {
-         console.log('remove layer')
-         if (platform.layers && platform.layers[0]) {
-           var event = new CustomEvent('fmt:removeLayerEvent', {detail: {id: platform.layers[0].id}})
-           document.dispatchEvent(event)
-         }
-       }
-       },*/
+       changePlatform (newvalue) {
+    	   this.platformAdded = newvalue
+       },
        triggerDownload (index) {
          console.log('trigger download')
          if (this.download[index].disabled) {
@@ -359,23 +340,7 @@
          }
          var event = new CustomEvent('fmt:unselectBboxEvent', {detail: {id: this.id}})
          document.dispatchEvent(event)
-       }/*,
-       fillSiblings (resp) {
-         if (resp.metadata && typeof resp.metadata.length === 'undefined') {
-           resp.metadata = [resp.metadata]
-         }
-         var _this = this
-         resp.metadata.forEach(function (meta) {
-           var platformSelected = _this.siblings.find(function (platform) {
-             return platform.id === meta['geonet:info'].uuid
-           })
-           platformSelected = Object.assign(platformSelected, meta)
-           var links = _this.$gn.treatmentLinks(platformSelected.id, platformSelected.link)
-           delete platformSelected.link
-           platformSelected = Object.assign(platformSelected, links)
-           platformSelected.completed = true
-         })
-       }*/
+       }
     }
     
   }

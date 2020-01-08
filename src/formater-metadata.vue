@@ -4,14 +4,16 @@
      "complement": "Others informations",
      "temporal_extent": "Temporal extent",
      "search": "Search",
-     "full": "Complete"
+     "full": "Complete",
+     "platform": "Platform"
    },
    "fr":{
       "main": "Decription",
        "complement": "Informations complémentaires",
       "temporal_extent": "Etendue temporelle",
       "search": "Rechercher",
-      "full": "Complète"
+      "full": "Complète",
+     "platform": "Plateforme"
       
    }
 }
@@ -28,9 +30,9 @@
           <a v-else href="#" :alt="$gn.t('group-'+ metadata.groupOwner)" :title="$gn.t('group-'+ metadata.groupOwner)" class="mtdt-group-logo">
               <img :src="metadata.logo"  />
           </a>
-          <i  class="fa" :class="metadata.type === 'series' ? 'fa-files-o' : 'fa-file'"  v-if="['dataset','series'].indexOf(metadata.type) >= 0"></i>
+          <i  class="fa" :class="{'fa-files-o':metadata.type === 'series', 'fa-file': metadata.type === 'dataset', 'fa-map-marker': metadata.type === 'feature'}"  v-if="['dataset','series', 'feature'].indexOf(metadata.type) >= 0"></i>
           <div>
-          
+          <span v-if="metadata.initiativeType">{{$t(metadata.initiativeType)}}: </span>
           {{metadata.title ? metadata.title: metadata.defaultTitle}}
           </div>
         
@@ -139,7 +141,6 @@ export default {
     }
   },
   created () {
-    console.log(this.metadata.logo)
     moment.locale(this.$i18n.locale)
     if (this.metadata['geonet:info']) {
        this.uuid = this.metadata['geonet:info'].uuid
@@ -251,7 +252,7 @@ export default {
            this.uuid = this.metadata.id
          }
          return
-         if (this.metadata._locale ===  this.metadata.docLocale) {
+        /* if (this.metadata._locale ===  this.metadata.docLocale) {
            
            return
          }
@@ -267,7 +268,7 @@ export default {
             if (this.metadata.related && this.metadata.related.children) {
               this.hasChild = true
               this.getRecords()
-            } 
+            } */
       },
       getRecords () {
           // useless, it's trigger when load formater-page-changed
