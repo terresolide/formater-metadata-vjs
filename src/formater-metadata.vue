@@ -291,6 +291,7 @@ export default {
 .mtdt-metadata.fmt-free{
   background: #f6f6f6;
 }
+
 .mtdt-metadata .mtdt-column-left{
   width:calc(100% - 330px);
   padding-left: 10px;
