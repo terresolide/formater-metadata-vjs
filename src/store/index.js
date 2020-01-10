@@ -143,17 +143,27 @@ export default function makeStore( config ) {
         state.selectArea = bbox
       },
       gnParametersChange(state, obj) {
+        if (!obj.dimension) {
+          obj.dimension = []
+        }
+        if (!Array.isArray(obj.dimension)) {
+          obj.dimension = [obj.dimension]
+        }
+
         if (obj.step === 1) {
           var key = 'step1'
           if (state.summaryType.step1 === state.summaryType.step2) {
             var key = 'step1step2'
           } 
-          obj.dimension.forEach(function (dim) {
-            state.gnParameters[key].push(dim['@name'])
-          })
+          if (obj.dimension) {
+            obj.dimension.forEach(function (dim) {
+              state.gnParameters[key].push(dim['@name'])
+            })
+          }
         }
         if (obj.step === 2) {
           if (state.summaryType.step1 !== state.summaryType.step2) {
+            if (obj.dimension)
             obj.dimension.forEach(function (dim) {
               // search in step1
               var found = state.gnParameters.step1.indexOf( dim['@name'])

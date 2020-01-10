@@ -193,6 +193,7 @@ export default {
         return
       }
       var  newdimensions = this.initializeDimensions(e.detail.summary.dimension)
+      
       this.updateDimensions(this.dimensions, e.detail.summary.dimension)
       this.addDimensions(newdimensions) 
       if (e.detail.depth === 0) {
@@ -248,8 +249,10 @@ export default {
       if (!dimensions) {
         return null
       }
+      if (!Array.isArray(newdimensions)) {
+        newdimensions = [newdimensions]
+      }
       var _this = this
-      
       dimensions.forEach(function (dimension, index) {
         var found = newdimensions.find( function (obj) {
           if (obj['@name']) {

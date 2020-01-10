@@ -4,14 +4,16 @@
      "display_layer": "Display the layer on the map",
      "download_data": "Download data",
      "download_forbidden": "Forbidden download",
-     "platform": "Platform | Platforms"
+     "platform": "Platform | Platforms",
+     "order_data": "Order data"
    },
    "fr":{
      "localize": "Localiser sur la carte, cliquer pour garder la position",
      "display_layer": "Afficher sur la carte",
      "download_data": "Télécharger les données",
      "download_forbidden": "Téléchargement interdit",
-     "platform": "Plateforme | Plateformes"
+     "platform": "Plateforme | Plateformes",
+     "order_data": "Commander les données"
    }
 }
 </i18n>
@@ -60,7 +62,19 @@
          <hr v-if="type === 'metadata'" /> 
    </div>
 
-   <div v-if="download && download.length === 1 && type === 'cartouche'">
+   
+    <!--  siblings -->
+     <div v-if="platforms && platforms.length > 0">
+       <div class="mtdt-related-type fa fa-map-marker"  :style="{backgroundColor: platformAdded ? '#8c0209' : primary}" :title="$tc('platform', platforms.length)">
+         <span v-if="type === 'cartouche'" class="fa fa-caret-down"></span>
+      </div> 
+      <div v-if="type === 'metadata'"></div>
+      <div class="mtdt-expand" >
+           <formater-platform-list :siblings="platforms" @platformAdded="changePlatform"></formater-platform-list>
+      </div> 
+        <hr v-if="type === 'metadata'" /> 
+    </div>
+    <div v-if="download && download.length === 1 && type === 'cartouche'">
        <div class="mtdt-related-type fa fa-download" :class="{disabled:download[0].disabled}" :style="{backgroundColor: primary}" :title="$t('download_data')" @click="triggerDownload(0)">
          
       </div> 
@@ -79,14 +93,23 @@
       </div> 
         <hr v-if="type === 'metadata'" /> 
     </div>
-    <!--  siblings -->
-     <div v-if="platforms && platforms.length > 0">
-       <div class="mtdt-related-type fa fa-map-marker"  :style="{backgroundColor: platformAdded ? '#8c0209' : primary}" :title="$tc('platform', platforms.length)">
+    <!-- order -->
+    <div v-if="order && order.length === 1 && type === 'cartouche'">
+       <a  class="mtdt-related-type fa fa-download" target="_blank" :style="{backgroundColor: primary}" :title="$t('order_data')" :href="order[0].url">
+         
+      </a> 
+    </div>
+    <div v-if="order && (order.length >1 || (type === 'metadata' && order > 0))">
+       <div class="mtdt-related-type fa fa-download"  :style="{backgroundColor: primary}" :title="$t('order_data')">
          <span v-if="type === 'cartouche'" class="fa fa-caret-down"></span>
       </div> 
       <div v-if="type === 'metadata'"></div>
-      <div class="mtdt-expand" >
-           <formater-platform-list :siblings="platforms" @platformAdded="changePlatform"></formater-platform-list>
+      <div class="mtdt-expand mtdt-links" >
+           <ul >
+           <li v-for="(file, index) in download" :key="index" >
+              <a  :title="file.description"  :href="file.url" target="_blank">{{file.name? file.name: $t('order_data')}}</a>
+          </li>
+          </ul>    
       </div> 
         <hr v-if="type === 'metadata'" /> 
     </div>
@@ -130,6 +153,10 @@
         default: 'cartouche'
       },
       download: {
+        type: Array,
+        default: null
+      },
+      order: {
         type: Array,
         default: null
       },

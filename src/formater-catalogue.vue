@@ -32,15 +32,18 @@
         <!--error msg -->
         <div class="fmt-error" v-if="$store.state.error"><div><span class="fa fa-close fmt-close" @click="closeError"></span>{{$store.state.error}}</div></div>
         
+        <!-- independant metadata -->
+        <div class="mtdt-free-capsule" v-if="$store.state.selectedMetadata" >
+          <div >
+            <formater-metadata :metadata="$store.state.selectedMetadata" :depth="-1" @close="$store.commit('resetSelectedMetadata')"></formater-metadata>
+          </div>
+        </div>
         <!-- list of all records with page navigation -->
         <div  v-show="metadatas.length === 0">
             <formater-paging   :depth="0" :orders="['title','changeDate']" order-by="title"></formater-paging>
             <formater-list-metadata :depth="0"></formater-list-metadata>
         </div>
-        <!-- independant metadata -->
-        <div v-if="$store.state.selectedMetadata" style="position:absolute;z-index:101;">
-        <formater-metadata :metadata="$store.state.selectedMetadata" :depth="-1" @close="$store.commit('resetSelectedMetadata')"></formater-metadata>
-        </div>
+        
         <!-- view of one record -->
         <div>
         <formater-metadata v-for="(meta, index) in metadatas" :key="index" v-show="index === metadatas.length-1"
@@ -175,9 +178,9 @@ export default {
         }
         if (isEscape) {
           if (this.$store.state.selectedMetadata) {
-        	  this.$store.commit('resetSelectedMetadata')
+            this.$store.commit('resetSelectedMetadata')
           } else {
-        	  this.resetMetadata(e)
+            this.resetMetadata(e)
           }
         }
       },
@@ -223,31 +226,31 @@ export default {
     },
     setParameters (obj) {
 
-    	if (obj.depth) {
-    		this.metadatas[obj.depth - 1].osParameters = obj.osParameters
-    		this.metadatas[obj.depth - 1].mapping = obj.mapping
-    		this.metadatas[obj.depth - 1].disableType = obj.disableType
-    	}
-    	if (obj.depth === this.metadatas.length) {
-    		this.$store.commit('parametersChange', {parameters: obj.osParameters, mapping: obj.mapping, type: obj.disableType})
-    	}
+      if (obj.depth) {
+        this.metadatas[obj.depth - 1].osParameters = obj.osParameters
+        this.metadatas[obj.depth - 1].mapping = obj.mapping
+        this.metadatas[obj.depth - 1].disableType = obj.disableType
+      }
+      if (obj.depth === this.metadatas.length) {
+        this.$store.commit('parametersChange', {parameters: obj.osParameters, mapping: obj.mapping, type: obj.disableType})
+      }
     },
     registerValues (detail) {
-    	if (detail.depth) {
-    		this.metadatas[detail.depth - 1].osParameters.forEach( function (parameter) {
-    			if (detail.parameters[parameter.name]) {
-    				parameter.value = detail.parameters[parameter.name]
-    			} else {
-    				parameter.value = null
-    			}
-    		})
-    	}
+      if (detail.depth) {
+        this.metadatas[detail.depth - 1].osParameters.forEach( function (parameter) {
+          if (detail.parameters[parameter.name]) {
+            parameter.value = detail.parameters[parameter.name]
+          } else {
+            parameter.value = null
+          }
+        })
+      }
     },
    resize () {
       this.$store.commit('sizeChange')
    },
     handleReset (event) {
-	 this.$store.commit('resetSelectedMetadata')
+   this.$store.commit('resetSelectedMetadata')
      if (this.metadatas[0] && this.metadatas[0].appRoot) {
 
        event.detail.depth = 1
@@ -256,7 +259,7 @@ export default {
        this.currentUuid = this.metadatas[0].id
        this.metadatas.length = 1
        this.metadatas[0].osParameters.forEach(function (parameter) {
-    		   parameter.value = null
+           parameter.value = null
        })
        var parameters = this.metadatas[0].osParameters
        var mapping = this.metadatas[0].mapping
@@ -287,7 +290,7 @@ export default {
      }
     },
     handleSearch (event) {
-    	// mettre plutôt dans formater-metadata ??
+      // mettre plutôt dans formater-metadata ??
       if (this.metadatas.length > 0) {
         event.detail.parentUuid = this.currentUuid
       }
@@ -362,6 +365,7 @@ export default {
 .mtdt-catalogue .mtdt-column-right{
   width:calc(100% - 325px);
   float:left;
+  display:box;
   margin-left:10px;
 }
 .mtdt-catalogue  .formater-select select {
@@ -426,6 +430,18 @@ export default {
   -webkit-animation: spin 1.5s linear infinite;
   animation: spin 1.5s linear infinite;
 }
-
+.mtdt-free-capsule {
+  position:absolute;
+  z-index:101;
+  width:calc(100% - 325px);
+  background: rgba(0,0,0,0.6);
+  min-height:100%;
+}
+.mtdt-free-capsule > div {
+  position:relative;
+  margin: 10px auto;
+  width:calc(100% - 20%);
+  max-width:1000px;
+}
 
 </style>

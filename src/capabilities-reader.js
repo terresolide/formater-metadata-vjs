@@ -22,6 +22,7 @@ const reader = {
       .then(response => this.extract(response.body, layer, options, metaId, callback))
     },
     extract (str, layer, options, metaId, callback) {
+      console.log(layer.name)
       var root = parser.parseFromString(str, 'text/xml')
       var ns = root.children[0].getAttribute('xmlns')
       var xlink = root.children[0].getAttribute('xmlns:xlink')

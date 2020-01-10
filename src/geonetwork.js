@@ -97,6 +97,13 @@ const GeonetworkPlugin = {
                    }
                    response.download.push(self.linkToDownload(link))
                    break;
+                 case 'WWW:DOWNLOAD-1.0-link--order':
+                 case 'order':
+                   if (!response.order) {
+                     response.order = []
+                   }
+                   response.order.push(self.linkToDownload(link))
+                   break;
                  case 'UKST':
                   
                    if (link[6] && link[6].toLowerCase() === 'opensearch') {
@@ -251,6 +258,7 @@ const GeonetworkPlugin = {
              return myArray;
            },
            linkToLayer (arr, id) {
+
              var layer = {
                  id: id,
                  name: arr[0],
