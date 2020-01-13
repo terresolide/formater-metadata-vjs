@@ -33,6 +33,7 @@ export default function makeStore( config ) {
         step1: 'details',
         step2: 'details'
       },
+      group: [],
      // isSameStep: isSameStep,
       apiVersion: '0.1',
       style: 

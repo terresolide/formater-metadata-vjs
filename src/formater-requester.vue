@@ -312,10 +312,8 @@ export default {
       this.$emit('registerValues', {depth: depth, parameters: this.parameters})
      // this.$store.commit('addValueToParameters', this.parameters)
       this.$http.get(url).then(
-          response => {   this.treatmentGeojson(response.body, depth);}
-       ).catch(function (response) {
-         this.treatmentError(response, url)
-       })
+          response => {   this.treatmentGeojson(response.body, depth);},
+          response => { this.treatmentError(response, url); })
     },
     treatmentError (response, url) {
       switch(response.status) {
@@ -357,6 +355,7 @@ export default {
     },
     treatmentGeonetwork (data, depth) {
       var metadatas = {}
+      this.treatmentDimension(data.summary.dimension)
       var features = []
       var self = this
       if (!data.metadata){
@@ -385,6 +384,22 @@ export default {
       this.$store.commit('searchingChange', false)
       this.searchGnStep2Parameters(data.summary.dimension)
       // this.searchRelated()
+    },
+    // remove groupOwner if only one group choose in app parameters
+    treatmentDimension (dimensions) {
+      if (this.$store.state.group.length === 1) {
+        if (!dimensions) {
+          dimensions = []
+        } else if (!Array.isArray(dimensions)) {
+          dimensions = [dimensions]
+        }
+        var find = dimensions.findIndex(function (dimension) {
+          return dimension['@name'] === 'groupOwner'
+        })
+        if (find >= 0) {
+          dimensions.splice(find, 1)
+        }
+      }
     },
     searchGnStep2Parameters (dimension) {
       if (this.first) {

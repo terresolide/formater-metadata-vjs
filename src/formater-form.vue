@@ -292,7 +292,13 @@ export default {
       	e.detail.any = this.fulltextSearch
       } 
       if (this.$store.state.group) {
-        e.detail._groupOwner = this.$store.state.group
+        var groupOwner = ''
+        this.$store.state.group.forEach(function (group) {
+          groupOwner += group + '+or+'
+        })
+        if (groupOwner.length > 4) {
+          e.detail._groupOwner = groupOwner.substr(0, groupOwner.length -4)
+        }
       }
     },
     handleTheme() {

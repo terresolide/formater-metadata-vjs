@@ -14,8 +14,12 @@
   <script id="formaterConfig" type="application/json"  >
     {
      "lang": "en", 
-     "geonetwork": "http://demo.formater/geonetwork/",
-     "group": 112,
+     "geonetwork": "http://localhost:8080/geonetwork/",
+     "summaryType": {
+       "step1": "step1",
+       "step2": "step2"
+     },
+     "group": [722],
      "style": {
          "primary":"#05578e",
          "emphasis": "#07a8d5",
@@ -26,7 +30,8 @@
        {
          "min": "1987-01-01",
          "max": "now"
-       }
+       },
+     "proxyUrl": "https://api.poleterresolide.fr/interface-services/"
     }
     </script> 
 	 <script src="dist/build.js"></script> 
