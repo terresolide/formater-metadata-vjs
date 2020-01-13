@@ -64,7 +64,7 @@
         </div>
               <div class="mtdt-column-right">
         <formater-related type="metadata" :download="metadata.download" :id="metadata.id"
-         :layers="metadata.layers"  :links="metadata.links" :related="metadata.related" :siblings="metadata.siblings"></formater-related>
+         :layers="metadata.layers"  :links="metadata.links" :related="metadata.related" :order="metadata.order" :siblings="metadata.siblings"></formater-related>
       </div>
       </div>
 

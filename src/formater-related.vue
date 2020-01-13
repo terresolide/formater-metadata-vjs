@@ -95,18 +95,18 @@
     </div>
     <!-- order -->
     <div v-if="order && order.length === 1 && type === 'cartouche'">
-       <a  class="mtdt-related-type fa fa-download" target="_blank" :style="{backgroundColor: primary}" :title="$t('order_data')" :href="order[0].url">
+       <a  class="mtdt-related-type fa fa-pencil-square-o" target="_blank" :style="{backgroundColor: primary}" :title="$t('order_data')" :href="order[0].url">
          
       </a> 
     </div>
-    <div v-if="order && (order.length >1 || (type === 'metadata' && order > 0))">
-       <div class="mtdt-related-type fa fa-download"  :style="{backgroundColor: primary}" :title="$t('order_data')">
+    <div v-if="order && (order.length >1 || (type === 'metadata' && order.length > 0))">
+       <div class="mtdt-related-type fa fa-pencil-square-o"  :style="{backgroundColor: primary}" :title="$t('order_data')">
          <span v-if="type === 'cartouche'" class="fa fa-caret-down"></span>
       </div> 
       <div v-if="type === 'metadata'"></div>
       <div class="mtdt-expand mtdt-links" >
            <ul >
-           <li v-for="(file, index) in download" :key="index" >
+           <li v-for="(file, index) in order" :key="index" >
               <a  :title="file.description"  :href="file.url" target="_blank">{{file.name? file.name: $t('order_data')}}</a>
           </li>
           </ul>    
