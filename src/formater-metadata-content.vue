@@ -41,7 +41,7 @@
 </i18n>
 <template>
 <div class="mtdt-content">
-<h1>{{$t('about_resource')}}</h1>
+<h1 :style="{color:$store.state.style.primary}">{{$t('about_resource')}}</h1>
  <div class="mtdt-description" style="display:block;">
        <formater-quicklooks :quicklooks="metadata.images"></formater-quicklooks>
        <dl class="mtdt-identifier" v-if="metadata.identifier && !metadata.description">
@@ -92,7 +92,7 @@
 </dl>
           
  <dl>         <hr /> </dl>
- <h1>{{$t('about_metadata')}}</h1>
+ <h1 :style="{color:$store.state.style.primary}">{{$t('about_metadata')}}</h1>
  <dl><dt :style="dtStyle()">{{$t('identifier')}}</dt><dd>{{metadata.id}}</dd></dl>
  <dl v-if="countMetadataDate > 0" class="mtdt-main-parameter">
    <dt :style="dtStyle()">{{$tc('date', countDate)}} </dt>

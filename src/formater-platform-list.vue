@@ -9,7 +9,7 @@
 </i18n>
 <template>
 <span >
- <h4>{{$tc('platform', platforms.length)}}</h4>
+ <h4 :style="{color:$store.state.style.primary}">{{$tc('platform', platforms.length)}}</h4>
            <ul class="mtdt-layers">
 
            <li v-for="(platform, index) in platforms" :key="index"  >
