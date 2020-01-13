@@ -263,7 +263,7 @@ export default {
       delete this.parameters.depth
       var headers =  {
           'Accept': 'application/json, text/plain, */*',
-          'Accept-Language': this.$i18n.locale === 'fr' ? 'fre': 'eng'
+          'Accept-Language': this.$store.state.lang === 'fr' ? 'fre': 'eng'
        }
       
       //first requête to type=me to record session and token
@@ -287,6 +287,10 @@ export default {
           delete self.parameters[key]
         })
       }
+      
+      ['index', 'maxRecords', 'page'].forEach(function (key) {
+        delete self.parameters[key]
+      })
       if (this.parameters.sortBy === 'title') {
         this.parameters.sortOrder = 'ordering'
       } else {

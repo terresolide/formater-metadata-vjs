@@ -185,7 +185,6 @@ export default {
         }
       },
     resetMetadata (event) {
-      console.log('dans resetMetadata avec depth = ' + this.metadatas.length)
       if (this.metadatas.length === 1 && this.metadatas[0].appRoot) {
         return
       }
@@ -219,6 +218,7 @@ export default {
         var type = null
         this.$store.commit('temporalChange', this.temporalExtent)
       }
+      console.log(this.metadatas.length)
       this.$store.commit('currentUuidChange', this.currentUuid)
       this.$store.commit('parametersChange', {parameters: parameters, mapping: mapping, type: type})
       var event = new CustomEvent('fmt:closeMetadataEvent', {detail:  {depth: this.metadatas.length }})

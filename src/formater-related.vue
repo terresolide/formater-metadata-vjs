@@ -75,9 +75,11 @@
         <hr v-if="type === 'metadata'" /> 
     </div>
     <div v-if="download && download.length === 1 && type === 'cartouche'">
-       <div class="mtdt-related-type fa fa-download" :class="{disabled:download[0].disabled}" :style="{backgroundColor: primary}" :title="$t('download_data')" @click="triggerDownload(0)">
+       <a v-if="download[0].type && download[0].type === 'WWW:DOWNLOAD-1.0-link--download'" :href="download[0].url" target="_blank" :style="{backgroundColor: primary}" class="mtdt-related-type fa fa-download" :title="$t('download_data')">
+       </a>
+       <a v-else class="mtdt-related-type fa fa-download" :class="{disabled:download[0].disabled}" :style="{backgroundColor: primary}" :title="$t('download_data')" @click="triggerDownload(0)">
          
-      </div> 
+      </a> 
     </div>
     <div v-if="download && (download.length >1 || (type === 'metadata' && download.length > 0))">
        <div class="mtdt-related-type fa fa-download"  :style="{backgroundColor: primary}" :title="$t('download_data')">
@@ -86,8 +88,9 @@
       <div v-if="type === 'metadata'"></div>
       <div class="mtdt-expand mtdt-links" >
            <ul >
-           <li v-for="(file, index) in download" :key="index" @click="triggerDownload(index);" :class="{disabled: file.disabled}">
-              <a  :title="file.description" >{{file.name? file.name: $t('download_data')}}</a>
+           <li v-for="(file, index) in download" :key="index"  :class="{disabled: file.disabled}">
+              <a  v-if="file.type && file.type === 'WWW:DOWNLOAD-1.0-link--download'" :href="file.url" :title="file.description" target="_blank">{{file.name? file.name: $t('download_data')}}</a>
+              <a  v-else :title="file.description" @click="triggerDownload(index);">{{file.name? file.name: $t('download_data')}}</a>
           </li>
           </ul>    
       </div> 
