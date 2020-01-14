@@ -62,7 +62,12 @@ const GeonetworkPlugin = {
              return 'i' + uuid.toLowerCase().replace(/[^a-z0-9\-_]+/, '')
            },
            layerId2MetaId (layerId) {
-             return layerId.substr(0, layerId.length - 2)
+             var metaId = layerId.match(/(.*)_[0-9]+$/)
+             if (metaId && metaId.length === 2) {
+               return metaId[1]
+             } else {
+               return null
+             }
            },
            treatmentLinks (metaId, linkArr, local) {
              var links = this.strToArray(linkArr)

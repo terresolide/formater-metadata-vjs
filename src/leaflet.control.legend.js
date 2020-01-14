@@ -74,9 +74,6 @@
         legend.clear()
       })
       this._legends.clear() 
-     // this._legends.pop()
-      // var _this = this
-      console.log(this._container)
       this._container.querySelectorAll('img').forEach(function (img) {
         img.parentNode.removeChild(img)
       })
