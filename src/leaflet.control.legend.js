@@ -75,9 +75,10 @@
       })
       this._legends.clear() 
      // this._legends.pop()
-      var _this = this
+      // var _this = this
+      console.log(this._container)
       this._container.querySelectorAll('img').forEach(function (img) {
-        _this._container.parentNode.removeChild(img)
+        img.parentNode.removeChild(img)
       })
       
     },

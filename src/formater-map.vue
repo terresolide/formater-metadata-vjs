@@ -184,7 +184,6 @@ export default {
 //      this.$http.get('http://api.formater/interface-services/index.php?x=8').then(
 //          response => { console.log(response.body)}
 //      )
-     console.log(event)
      var layer = event.detail.layer
      var metaId = event.detail.id
      var bounds = this.searchBboxBoundsById(metaId)
@@ -197,7 +196,6 @@ export default {
          this.beforeAddWMS(layer, metaId)
          return
        }
-     console.log('pas de before')
        if (!layer.options) {
          var extract = layer.href.match(/^(.*\?).*$/)
          var url = extract[1]
@@ -270,11 +268,9 @@ export default {
      
    },
    beforeAddWMS (layer, metaId) {
-     console.log('with a before')
      this.reader.loadInfo(layer, {opacity:0.5} , metaId, this.addWMSLayer)
    },
    addWMSLayer(layerObj, metaId) {
-     console.log('add wms layer = ' + metaId)
      var newLayer = L.tileLayer.wms(layerObj.href, layerObj.options)
      this.addLayerToMap(layerObj.options.id, metaId, newLayer)
      // Add legend if there is specific legend with the layer
@@ -391,15 +387,16 @@ export default {
 
    },
    receiveMetadatas (event) {
-     if (this.layers[this.depth]) {
-       this.layers[this.depth].forEach(function (layer) {
-         layer.remove()
-       })
-     }
+//      if (this.layers[this.depth]) {
+//        this.layers[this.depth].forEach(function (layer) {
+//          layer.remove()
+//        })
+//      }
      this.legendControl.removeAll()
      if (this.depth === event.detail.depth   && this.bboxLayer[this.depth]) {
           this.bboxLayer[this.depth].clearLayers();
-          this.layers[this.depth] = new Map()
+          this.updateLayers(event.detail.depth, event.detail.metadata)
+         // this.layers[this.depth] = new Map()
           this.bounds[this.depth] = null
           
      } else {
@@ -422,6 +419,23 @@ export default {
       this.resetControl.setBounds(this.bounds[this.depth])
      }
      // this.bboxLayer[this.depth].addTo(this.map)
+   },
+   updateLayers (depth, metadatas) {
+     // keep only layers according to metadata
+     if (this.layers[depth]) {
+       var self = this
+       var toDelete = []
+       this.layers[depth].forEach(function (layer, key) {
+         var metaId = self.$gn.layerId2MetaId(key)
+         if (!metadatas[metaId]) {
+           layer.remove()
+           toDelete.push(key)
+         }
+       })
+       toDelete.forEach(function (key) {
+         self.layers[depth].delete(key)
+       })
+     }
    },
    filterBboxWithSelectedBounds (features) {
      var _this = this

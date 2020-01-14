@@ -61,6 +61,9 @@ const GeonetworkPlugin = {
              // first character must be letter and character other than "_" and "-" are forbidden
              return 'i' + uuid.toLowerCase().replace(/[^a-z0-9\-_]+/, '')
            },
+           layerId2MetaId (layerId) {
+             return layerId.substr(0, layerId.length - 2)
+           },
            treatmentLinks (metaId, linkArr, local) {
              var links = this.strToArray(linkArr)
              var self = this
