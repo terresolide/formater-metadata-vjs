@@ -42,9 +42,9 @@
 <!--  end opensearch -->
 <!-- step1 only dimension -->
 <div v-for="(key, index) in $store.state.gnParameters.step1" :disable="depth > 0">
-<formater-search-box v-if="dimensions[nameToIndex[key]] && dimensions[nameToIndex[key]].category" :header-icon-class="facetToIcon(key)" open-icon-class="fa fa-caret-right" :title="titleDimension(key)" type="empty">
-  <formater-dimension-block v-if="!isFacet(key)"   :dimension="dimensions[nameToIndex[key]].category" :name="key" ></formater-dimension-block>
-  <formater-facet-block v-if="isFacet(key)"   :dimension="dimensions[nameToIndex[key]].category" :name="key" ></formater-facet-block>
+<formater-search-box v-if="dimensions[nameToIndex[key]] && dimensions[nameToIndex[key]].category" :header-icon-class="facetToIcon(key)" open-icon-class="fa fa-caret-right" :title="titleDimension(key)"  :disable-level="depth > 0 ? 1 : 0" type="empty">
+  <formater-dimension-block v-if="!isFacet(key)"   :dimension="dimensions[nameToIndex[key]].category" :name="key" :disable="depth > 0"></formater-dimension-block>
+  <formater-facet-block v-if="isFacet(key)"   :dimension="dimensions[nameToIndex[key]].category" :name="key" :disable="depth > 0"></formater-facet-block>
  </formater-search-box>
 </div>
 

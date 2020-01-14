@@ -188,11 +188,11 @@ export default function makeStore( config ) {
         state.parameters.mapping = newParameters.mapping
         switch(newParameters.type) {
         case 'noChild':
-          state.disable = {temporal: true, spatial: true, searchTerm: true}
+          state.disable = {temporal: true, spatial: true, searchTerm: true, other: true}
           break;
         case 'opensearch':
           // according to mapping element
-          var disable = {temporal: true, spatial: true, searchTerm: true}
+          var disable = {temporal: true, spatial: true, searchTerm: true, other: false}
           if (state.parameters.mapping['any']) {
             disable.searchTerm = false
           }
@@ -206,7 +206,7 @@ export default function makeStore( config ) {
           break;
         case 'geonetwork':
         default:
-          state.disable = {temporal: false, spatial: false, searchTerm: false}
+          state.disable = {temporal: false, spatial: false, searchTerm: false, other: false}
         }
       },
       addValueToParameters (state, obj) {

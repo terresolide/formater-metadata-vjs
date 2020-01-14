@@ -218,7 +218,6 @@ export default {
         var type = null
         this.$store.commit('temporalChange', this.temporalExtent)
       }
-      console.log(this.metadatas.length)
       this.$store.commit('currentUuidChange', this.currentUuid)
       this.$store.commit('parametersChange', {parameters: parameters, mapping: mapping, type: type})
       var event = new CustomEvent('fmt:closeMetadataEvent', {detail:  {depth: this.metadatas.length }})
@@ -232,7 +231,7 @@ export default {
         this.metadatas[obj.depth - 1].disableType = obj.disableType
       }
       if (obj.depth === this.metadatas.length) {
-        this.$store.commit('parametersChange', {parameters: obj.osParameters, mapping: obj.mapping, type: obj.disableType})
+        this.$store.commit('parametersChange', {parameters: obj.osParameters, mapping: obj.mapping, type: obj.type})
       }
     },
     registerValues (detail) {
