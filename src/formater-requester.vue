@@ -179,12 +179,21 @@ export default {
       delete e.detail.startDefault
       delete e.detail.endDefault
       delete e.detail.box
+
      // delete e.detail.depth
       delete e.detail.recordPerPage
       if (e.detail.parentUuid) {
+//   @toDelete test 
+//         var authorizeParameters = this.$store.state.gnParameters.defaut.concat(this.$store.state.gnParameters.step2)
+//         authorizeParameters.concat(this.$store.state.gnParameters.step1step2)
+//         authorizeParameters.push('parentUuid')
         this.parameters.resultType = this.$store.state.summaryType.step2
       } else {
         this.parameters.isChild = false
+//         var authorizeParameters = this.$store.state.gnParameters.defaut.concat(this.$store.state.gnParameters.step1)
+//         authorizeParameters.concat(this.$store.state.gnParameters.step1step2)
+        
+//         authorizeParameters.push('isChild')
         this.parameters.resultType = this.$store.state.summaryType.step1
       }
 //       if (e.detail.depth > 0) {
@@ -197,7 +206,8 @@ export default {
 //       } else {
         this.prepareFacet(e)
         this.parameters = Object.assign(this.parameters, e.detail)
- //     }
+        var _this = this
+
     },
     prepareRequestOpensearch(e) {
       this.initParameters()

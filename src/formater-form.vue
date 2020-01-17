@@ -37,7 +37,7 @@
 </formater-search-box>
 <!--  opensearch parameters -->
 <formater-search-box header-icon-class="fa fa-thermometer-3" v-if="$store.state.parameters.others.length > 0" open-icon-class="fa fa-caret-right" :title="$t('parameters')" :deployed="true" type="empty">
- <formater-parameters-form :parameters="$store.state.parameters.others" ></formater-parameters-form>
+ <formater-parameters-form :parameters="$store.state.parameters.others" :depth="depth"></formater-parameters-form>
  </formater-search-box>
 <!--  end opensearch -->
 <!-- step1 only dimension -->

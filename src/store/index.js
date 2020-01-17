@@ -92,7 +92,10 @@ export default function makeStore( config ) {
       gnParameters: {
         step1step2: [],
         step1: [],
-        step2: []},
+        step2: [],
+        // @toDelete ? pas utilisé pour le moment
+        defaut: ['any', 'geometry', 'extTo', 'extFrom', 'from', 'to', 'resultType', '_content_type', 'bucket', 'fast']
+      },
       // current opensearch api parameters
       parameters: {
         // regex of parameter (value attribute) which are exclued to use in request
@@ -182,6 +185,7 @@ export default function makeStore( config ) {
             state.gnParameters.step1 = []
           }
         }
+        state.gnParameters.defaut = state.gnParameters.defaut.concat(state.gnParameters.step1step2)
       },
       parametersChange(state, newParameters) {
         state.parameters.others = newParameters.parameters

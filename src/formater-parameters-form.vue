@@ -9,7 +9,7 @@
 <div class="fmt-parameters-form">
 <div v-for="(item, index) in parameters" class="fmt-input-block fmt-input-group" >
 	<label :style="{color: textColor}">{{item.name}}</label>
-	<formater-select v-if="item.options && item.options.length > 0" :name="item.name" width="260px" :options="item.options" @input="selectChange" :defaut="null" :set-value="item.value"></formater-select>
+	<formater-select v-if="item.options && item.options.length > 0" :depth="depth" :name="item.name" width="260px" :options="item.options" @input="selectChange" :defaut="null" :set-value="item.value"></formater-select>
 	<div class="fmt-input disable" v-if="item.options && item.options.length === 1" :style="{backgroundColor: inputColor}">
 	 <span>{{item.options[0]}}</span>
 	</div>
@@ -36,6 +36,10 @@ export default {
     parameters: {
       type: Array,
       default: []
+    },
+    depth: {
+      type: Number,
+      default: 0
     }
   },
   data () {
@@ -108,6 +112,9 @@ export default {
       document.dispatchEvent(evt)
     },
     handleSearch (event) {
+      if (this.depth !== event.detail.depth) {
+        return
+      }
       for(var name in this.inputs) { 
         if (this.inputs[name] !== null) {
           event.detail[name] = this.inputs[name]

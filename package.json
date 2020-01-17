@@ -1,6 +1,6 @@
 {
   "name": "formater-metadata-vjs",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Component to display metadata from Geonetwork Object ISO19139",
   "preproduction": {
     "url": "http://localhost:8080"
@@ -26,7 +26,7 @@
   "dependencies": {
     "auth0-js": "^9.12.2",
     "axios": "^0.19.1",
-    "formater-commons-components-vjs": "github:terresolide/formater-commons-components-vjs#0.20.0",
+    "formater-commons-components-vjs": "github:terresolide/formater-commons-components-vjs#0.21.1",
     "formater-geotiff-visualizer-vjs": "github:terresolide/formater-geotiff-visualizer-vjs",
     "leaflet": "^1.6.0",
     "leaflet-draw": "^1.0.4",
