@@ -63,7 +63,11 @@ import FormaterPaging from './formater-paging.vue';
 import FormaterDrawBbox from './formater-draw-bbox.vue';
 import AerisTheme from 'aeris-commons-components-vjs/src/aeris-theme/aeris-theme.vue'
 import FormaterRequester from './formater-requester.vue'
-
+import Keycloak from 'keycloak-js'
+let initOptions = {
+	      url: 'https://sso.aeris-data.fr/auth', realm: 'test', clientId: 'formater-vjs'
+	    }
+let keycloack = new Keycloack(initOptions)
 // prevent previous and next page for browser
 // function disableBack() { window.history.forward() }
 // window.onload = function () {
@@ -100,6 +104,66 @@ export default {
   },
   
   created () {
+	  keycloak.init({
+		  onLoad: 'check-sso',
+		  promiseType: 'native'
+		}).then(function (authenticated) {
+		  if (authenticated) {
+		    // Récupération des informations de l'utilisateur
+		    if (keycloak.tokenParsed) {
+		      var username = keycloak.tokenParsed.preferred_username
+		      console.log(username)
+		     // var name = keycloak.tokenParsed.given_name
+		     // var family_name = keycloak.tokenParsed.family_name
+		      var email = keycloak.tokenParsed.email
+
+		      // Le rôle est porté par le back-end (formater-php)
+		      if (keycloak.tokenParsed.resource_access['formater-php']) {
+		        var resourceRoles = keycloak.tokenParsed.resource_access['formater-php'].roles
+		      }
+
+		      var realmRoles = keycloak.tokenParsed.realm_access.roles
+
+		      var roles = []
+		      if (realmRoles) {
+		        roles = roles.concat(realmRoles)
+		      }
+		      if (resourceRoles) {
+		        roles = roles.concat(resourceRoles)
+		      }
+
+		      // POUR LES APPLICATIONS CATALOGUE AERIS
+		      let user = { token: keycloak.token, email: email, roles: roles, username: username }
+		      store.commit('setUser', user)
+		      console.log('USER AUTHENTICATED')
+		    }
+		  } else {
+		    console.log('USER NOT AUTHENTICATED')
+		  }
+		  Vue.http.interceptors.push(function(request, next) {
+		      if (keycloak.token && !request.simple) {
+		        request.headers.set('Authorization', 'Bearer ' + keycloak.token);
+		        request.headers.set('Accept', 'application/json');
+		      }
+		      next() ;
+		  })
+
+
+		    // Met à jour le token toutes les 3 minutes 30
+		   function updateSSoToken() {
+		        setTimeout(function () {
+		      keycloak.updateToken(200000).then(function(token) {
+		        // POUR LES APPLICATIONS CATALOGUE AERIS :
+		        let user = store.getters.getUser;
+		        user.token = keycloak.token;
+		      }),
+		      updateSSoToken();
+		        }, 200000);
+		    }
+		    updateSSoToken();
+		})
+
+
     this.initTemporalExtent()
     this.$gn.init(this.$i18n.locale, this.$store.state.geonetwork, this.$http, this.$store)
     this.metadataListener = this.receiveMetadata.bind(this)

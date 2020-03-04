@@ -32,6 +32,7 @@ Vue.use(VueTools)
 import GeonetworkPlugin from './geonetwork.js'
 Vue.use(GeonetworkPlugin)
 
+
 // main component for app
 import FormaterCatalogue from './formater-catalogue.vue'
 
@@ -46,6 +47,9 @@ let locale = navigator.language.substr(0, 2)
 if (config.lang) {
   locale = config.lang
 } 
+
+
+		/* eslint-disable */
 
 
 ljs.addAliases({
