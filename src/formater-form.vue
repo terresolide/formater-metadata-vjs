@@ -29,7 +29,7 @@
  </div>
  <formater-map></formater-map>
  <formater-search-box header-icon-class="fa fa-globe" open-icon-class="fa fa-caret-right" :title="$t('spatial_extent')" :deployed="false" type="empty" :disable-level="+ $store.state.disable.spatial">
- <formater-spatial-search :disable="$store.state.disable.spatial"></formater-spatial-search>
+ <formater-spatial-search :disable="$store.state.disable.spatial" :lang="$store.state.lang"></formater-spatial-search>
  </formater-search-box>
  
 <formater-search-box header-icon-class="fa fa-calendar" open-icon-class="fa fa-caret-right" :title="$t('time_slot')" :deployed="true" type="empty" :disable-level="+ $store.state.disable.temporal">

@@ -56,6 +56,10 @@
 <script>
 export default {
   props:{
+    lang:{
+      type: String,
+      default: 'en'
+    }
   },
   data(){
     return {
@@ -72,6 +76,7 @@ export default {
     }
   },
   destroyed: function() {
+    this.$i18n.locale = this.lang
     document.removeEventListener('aerisResetEvent', this.resetEventListener);
     this.resetEventListener = null;
     document.removeEventListener('aerisSearchEvent', this.searchEventListener);
