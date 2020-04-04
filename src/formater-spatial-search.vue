@@ -24,7 +24,7 @@
 }
 </i18n>
 <template>
-<span class="formater-spatial-search" :class="{disable: $store && $store.state.disable.spatial}">
+<span class="formater-spatial-search" :class="{disable: isDisable}">
      <div class="box-toolbar" style="background: none;">
       <button class="spatial-edit-button" :title="$t('draw')" @click="handleDraw"><i class="fa fa-pencil-square-o"></i></button>
       <button class="spatial-reset-button" :title="$t('reset')" @click="handleResetLocal"><i class="fa fa-remove"></i></button>
@@ -75,8 +75,17 @@ export default {
       patternLongitude:"[-+]?(180(\.0+)?|((1[0-7][0-9])|([1-9]?[0-9]))([.][0-9]+)?)"
     }
   },
+  computed: {
+    isDisable () {
+      if (typeof this.$store === 'undefined') {
+        return false
+      } else {
+        return this.$store.state.disable.spatiale
+      }
+    }
+  },
   destroyed: function() {
-    this.$i18n.locale = this.lang
+  
     document.removeEventListener('aerisResetEvent', this.resetEventListener);
     this.resetEventListener = null;
     document.removeEventListener('aerisSearchEvent', this.searchEventListener);
@@ -89,6 +98,7 @@ export default {
     this.drawCloseListener = null
   },
   created: function () {
+    this.$i18n.locale = this.lang
     this.resetEventListener = this.handleReset.bind(this) 
     document.addEventListener('aerisResetEvent', this.resetEventListener);
     this.searchEventListener = this.handleSearch.bind(this) 
@@ -178,7 +188,7 @@ export default {
       this.east = "";
       this.west = "";
       this.south = "";
-      if (this.$store) {
+      if (typeof this.$store !== 'undefined') {
          this.$store.commit('selectAreaChange', null)
       } 
       var event = new CustomEvent( 'fmt:bboxChange', { detail: this.bbox()});
@@ -195,7 +205,7 @@ export default {
       this.south = e.detail.south;
       this.east = e.detail.east;
       this.west = e.detail.west;
-      if (this.$store) {
+      if (typeof this.$store !== 'undefined') {
         this.$store.commit('selectAreaChange', e.detail)
       }
        var event = new CustomEvent('fmt:spatialChangeEvent')
