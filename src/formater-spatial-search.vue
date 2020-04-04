@@ -24,7 +24,7 @@
 }
 </i18n>
 <template>
-<span class="formater-spatial-search" :class="{disable:$store.state.disable.spatial}">
+<span class="formater-spatial-search" :class="{disable: $store && $store.state.disable.spatial}">
      <div class="box-toolbar" style="background: none;">
       <button class="spatial-edit-button" :title="$t('draw')" @click="handleDraw"><i class="fa fa-pencil-square-o"></i></button>
       <button class="spatial-reset-button" :title="$t('reset')" @click="handleResetLocal"><i class="fa fa-remove"></i></button>
@@ -173,9 +173,12 @@ export default {
       this.east = "";
       this.west = "";
       this.south = "";
-      this.$store.commit('selectAreaChange', null)
-//       var event = new CustomEvent( 'fmt:bboxChange', { detail: this.bbox()});
-//       document.dispatchEvent( event);
+      if (this.$store) {
+         this.$store.commit('selectAreaChange', null)
+      } 
+      var event = new CustomEvent( 'fmt:bboxChange', { detail: this.bbox()});
+      document.dispatchEvent( event);
+    
     },
     handleResetLocal: function () {
       this.handleReset()
@@ -187,7 +190,9 @@ export default {
       this.south = e.detail.south;
       this.east = e.detail.east;
       this.west = e.detail.west;
-      this.$store.commit('selectAreaChange', e.detail)
+      if (this.$store) {
+        this.$store.commit('selectAreaChange', e.detail)
+      }
        var event = new CustomEvent('fmt:spatialChangeEvent')
        document.dispatchEvent(event)
     },
