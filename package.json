@@ -1,6 +1,6 @@
 {
   "name": "formater-metadata-vjs",
-  "version": "2.1.0",
+  "version": "3.0.0",
   "description": "Component to display metadata from Geonetwork Object ISO19139",
   "preproduction": {
     "url": "http://localhost:8080"
@@ -24,34 +24,30 @@
     "build": "cross-env NODE_ENV=production webpack --progress --hide-modules"
   },
   "dependencies": {
-    "auth0-js": "^9.12.2",
-    "axios": "^0.19.1",
-    "formater-commons-components-vjs": "github:terresolide/formater-commons-components-vjs#0.21.1",
+    "formater-commons-components-vjs": "github:terresolide/formater-commons-components-vjs#0.23.1",
     "formater-geotiff-visualizer-vjs": "github:terresolide/formater-geotiff-visualizer-vjs",
     "leaflet": "^1.6.0",
     "leaflet-draw": "^1.0.4",
     "leaflet-kml": "git+https://github.com/windycom/leaflet-kml.git",
     "moment": "^2.22.2",
-    "proj4": "^2.6.0",
+    "proj4": "^2.6.1",
     "vue": "^2.6.11",
     "vue-custom-element": "^1.4.4",
     "vue-i18n": "7.0.5",
     "vue-resource": "^1.5.0",
-    "vuejs-progress-bar": "^1.2.0",
-    "vuex": "^3.1.2"
+    "vuejs-progress-bar": "^1.2.2",
+    "vuex": "^3.1.3"
   },
   "devDependencies": {
     "@babel/core": "7.2.2",
     "@babel/plugin-syntax-dynamic-import": "^7.7.4",
     "@babel/preset-env": "7.2.0",
-    "@kazupon/vue-i18n-loader": "0.1.1",
-    "babel-loader": "^8.0.6",
+    "@intlify/vue-i18n-loader": "^0.6.1",
+    "babel-loader": "^8.1.0",
     "babel-preset-es2015": "^6.24.1",
     "clean-webpack-plugin": "^0.1.19",
     "cross-env": "^3.0.0",
     "css-loader": "^2.1.1",
-    "eslint": "^6.7.2",
-    "eslint-plugin-vue": "^5.2.3",
     "exports-loader": "^0.6.4",
     "file-loader": "^0.9.0",
     "friendly-errors-webpack-plugin": "^1.7.0",
@@ -59,9 +55,9 @@
     "style-loader": "^0.18.2",
     "uglifyjs-webpack-plugin": "^1.3.0",
     "url-loader": "^1.1.2",
-    "vue-loader": "^15.7.2",
+    "vue-loader": "^15.9.1",
     "vue-template-compiler": "^2.6.11",
-    "webpack": "^4.41.2",
+    "webpack": "^4.42.1",
     "webpack-cli": "^3.3.10",
     "webpack-dev-server": "^3.9.0"
   }
