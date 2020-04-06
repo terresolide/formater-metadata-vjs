@@ -144,11 +144,15 @@ export default {
     },
     createGeometry () {
       if (this.validForm()) {
-        var box = 'POLYGON((' + this.west + '+' + this.north + ','
-          box += this.east + '+' + this.north + ',';
-          box += this.east + '+' + this.south + ',';
-          box += this.west + '+' + this.south + ',';
-          box += this.west + '+' + this.north + '))';
+        var north = Math.round(this.north * 1000) / 1000
+        var south = Math.round(this.south * 1000) / 1000
+        var east = Math.round(this.east * 1000) / 1000
+        var west = Math.round(this.west * 1000) / 1000
+        var box = 'POLYGON((' + west + '+' + north + ','
+          box += east + '+' + north + ',';
+          box += east + '+' + south + ',';
+          box += west + '+' + south + ',';
+          box += west + '+' + north + '))';
         return box;
       } else {
         return false;

@@ -769,7 +769,7 @@ div[id="fmtMap"].mtdt-small .leaflet-control a{
    border-radius: 2px;
    line-height: 30px;
  }
- div[id="fmtMap"].mtdt-fullscreen a..leaflet-control-layers{
+ div[id="fmtMap"].mtdt-fullscreen a.leaflet-control-layers{
    border-radius: 2px;
  }
 </style>
