@@ -76,8 +76,15 @@ export default {
     }
   },
   computed: {
+    isFmtMetadata () {
+      if (typeof this.$store === 'undefined' || !this.$store.state.disable) {
+        return false
+      } else {
+        return true
+      }
+    },
     isDisable () {
-      if (typeof this.$store === 'undefined') {
+      if (this.isFmtMetadata) {
         return false
       } else {
         return this.$store.state.disable.spatiale
@@ -192,7 +199,7 @@ export default {
       this.east = "";
       this.west = "";
       this.south = "";
-      if (typeof this.$store !== 'undefined') {
+      if (this.isFmtMetadata) {
          this.$store.commit('selectAreaChange', null)
       } 
       var event = new CustomEvent( 'fmt:bboxChange', { detail: this.bbox()});
@@ -209,7 +216,7 @@ export default {
       this.south = e.detail.south;
       this.east = e.detail.east;
       this.west = e.detail.west;
-      if (typeof this.$store !== 'undefined') {
+      if (this.isFmtMetadata) {
         this.$store.commit('selectAreaChange', e.detail)
       }
        var event = new CustomEvent('fmt:spatialChangeEvent')
