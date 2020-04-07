@@ -77,7 +77,7 @@ export default {
   },
   computed: {
     isFmtMetadata () {
-      if (typeof this.$store === 'undefined' || !this.$store.state.disable) {
+      if (typeof this.$store === 'undefined' || typeof this.$store.state.disable === 'undefined') {
         return false
       } else {
         return true
