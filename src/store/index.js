@@ -11,7 +11,7 @@ export default function makeStore( config ) {
         regex: 'data\.shom'
     }
     delete config.proxyUrl
-  } else {
+  } else if (config.geonetwork){
     var proxy = {
           url: config.geonetwork + 'proxy',
           regex: 'data\.shom'

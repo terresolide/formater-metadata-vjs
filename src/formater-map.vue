@@ -271,6 +271,8 @@ export default {
      this.reader.loadInfo(layer, {opacity:0.5} , metaId, this.addWMSLayer)
    },
    addWMSLayer(layerObj, metaId) {
+     // add bearer if necessary
+     // layerObj.options._bearer = 'mon bearer'
      var newLayer = L.tileLayer.wms(layerObj.href, layerObj.options)
      this.addLayerToMap(layerObj.options.id, metaId, newLayer)
      // Add legend if there is specific legend with the layer

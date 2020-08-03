@@ -48,9 +48,7 @@ export default {
     if (this.$store.state.geonetwork) {
         this.srv = this.$store.state.geonetwork +  'srv/' + (this.$i18n.locale === 'fr'? 'fre' : 'eng') + '/'
     }
-    if (this.$store.state.metadata) {
-      this.searchSimpleMetadata()
-    }
+    
 
     // this.getRecords() done when <formater-paging> is mounted with its pageChangeEvent on order control change
     this.pageChangedListener = this.changePage.bind(this)
@@ -127,6 +125,12 @@ export default {
       }
     }, 
     getRecords (event) {
+      if (this.$store.state.metadata && this.first) {
+        this.first = false
+        this.searchSimpleMetadata()
+        return
+      }
+      console.log(event)
       this.$store.commit('searchingChange', true)
       // trigger search event like breadcrumb
       if (event.detail && typeof event.detail.depth == 'number') {
