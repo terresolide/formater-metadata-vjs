@@ -20,6 +20,8 @@
 
   <div >
    <!-- components can be view -->
+   <header style="margin-left:5px;height:45px;margin-bottom:5px;border: 1px solid #ccc; margin-right:10px;
+box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.2);"></header>
    <div class="mtdt-column-left" >
        <formater-form  :disableLevel="metadatas.length > 0 ? 1 : 0" :depth="metadatas.length" ></formater-form>
    </div>
