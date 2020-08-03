@@ -24,7 +24,7 @@
 }
 </i18n>
 <template>
-<span class="formater-spatial-search" :class="{disable:$store.state.disable.spatial}">
+<span class="formater-spatial-search" :class="{disable: isDisable}">
      <div class="box-toolbar" style="background: none;">
       <button class="spatial-edit-button" :title="$t('draw')" @click="handleDraw"><i class="fa fa-pencil-square-o"></i></button>
       <button class="spatial-reset-button" :title="$t('reset')" @click="handleResetLocal"><i class="fa fa-remove"></i></button>
@@ -56,6 +56,10 @@
 <script>
 export default {
   props:{
+    lang:{
+      type: String,
+      default: 'en'
+    }
   },
   data(){
     return {
@@ -71,7 +75,24 @@ export default {
       patternLongitude:"[-+]?(180(\.0+)?|((1[0-7][0-9])|([1-9]?[0-9]))([.][0-9]+)?)"
     }
   },
+  computed: {
+    isFmtMetadata () {
+      if (typeof this.$store === 'undefined' || typeof this.$store.state.disable === 'undefined') {
+        return false
+      } else {
+        return true
+      }
+    },
+    isDisable () {
+      if (this.isFmtMetadata) {
+        return false
+      } else {
+        return this.$store.state.disable.spatiale
+      }
+    }
+  },
   destroyed: function() {
+  
     document.removeEventListener('aerisResetEvent', this.resetEventListener);
     this.resetEventListener = null;
     document.removeEventListener('aerisSearchEvent', this.searchEventListener);
@@ -84,6 +105,7 @@ export default {
     this.drawCloseListener = null
   },
   created: function () {
+    this.$i18n.locale = this.lang
     this.resetEventListener = this.handleReset.bind(this) 
     document.addEventListener('aerisResetEvent', this.resetEventListener);
     this.searchEventListener = this.handleSearch.bind(this) 
@@ -129,11 +151,15 @@ export default {
     },
     createGeometry () {
       if (this.validForm()) {
-        var box = 'POLYGON((' + this.west + '+' + this.north + ','
-          box += this.east + '+' + this.north + ',';
-          box += this.east + '+' + this.south + ',';
-          box += this.west + '+' + this.south + ',';
-          box += this.west + '+' + this.north + '))';
+        var north = Math.round(this.north * 1000) / 1000
+        var south = Math.round(this.south * 1000) / 1000
+        var east = Math.round(this.east * 1000) / 1000
+        var west = Math.round(this.west * 1000) / 1000
+        var box = 'POLYGON((' + west + '+' + north + ','
+          box += east + '+' + north + ',';
+          box += east + '+' + south + ',';
+          box += west + '+' + south + ',';
+          box += west + '+' + north + '))';
         return box;
       } else {
         return false;
@@ -173,9 +199,12 @@ export default {
       this.east = "";
       this.west = "";
       this.south = "";
-      this.$store.commit('selectAreaChange', null)
-//       var event = new CustomEvent( 'fmt:bboxChange', { detail: this.bbox()});
-//       document.dispatchEvent( event);
+      if (this.isFmtMetadata) {
+         this.$store.commit('selectAreaChange', null)
+      } 
+      var event = new CustomEvent( 'fmt:bboxChange', { detail: this.bbox()});
+      document.dispatchEvent( event);
+    
     },
     handleResetLocal: function () {
       this.handleReset()
@@ -187,7 +216,9 @@ export default {
       this.south = e.detail.south;
       this.east = e.detail.east;
       this.west = e.detail.west;
-      this.$store.commit('selectAreaChange', e.detail)
+      if (this.isFmtMetadata) {
+        this.$store.commit('selectAreaChange', e.detail)
+      }
        var event = new CustomEvent('fmt:spatialChangeEvent')
        document.dispatchEvent(event)
     },

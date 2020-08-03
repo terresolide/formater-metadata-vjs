@@ -8,7 +8,7 @@
 }
 </i18n>
 <template>
- <div class="mtdt-draw-bbox"  v-show="drawing && !$store.state.disable.spatial">
+ <div class="mtdt-draw-bbox"  v-show="drawing && (($store && !$store.state.disable.spatial) || !$store)">
  <div class="mtdt-header" >
        <span class="close fa fa-close" @click="drawEnd" ></span>
      <h3  @mousedown="movestart" style="padding:10px;margin:0;">{{$t('draw_bbox')}}</h3>
@@ -45,10 +45,22 @@ export default {
   components: {
   },
   props: {
+    lang: {
+      type: String,
+      default: 'en'
+    },
+    color: {
+      type: String,
+      default: '#808080'
+    }
   },
   computed: {
     searchArea() {
-      return this.$store.state.searchArea
+      if(this.$store) {
+       return this.$store.state.searchArea
+      } else {
+        return this.bbox
+      }
     }
   },
   watch: {
@@ -69,12 +81,14 @@ export default {
   },
   
   created: function() {
+    this.$i18n.locale = this.lang
     if (this.$i18n.locale  === 'fr') {
       L.drawLocal = require('formater-geotiff-visualizer-vjs/src/module/leaflet.draw.fr.js')
     } 
 
     // open and close
     this.drawStartListener = this.open.bind(this)
+    document.addEventListener('fmt:selectAreaDrawStart', this.drawStartListener)
     document.addEventListener('fmt:selectAreaDrawStart', this.drawStartListener)
     this.drawEndListener = this.close.bind(this)
     document.addEventListener('fmt:selectAreaDrawEnd', this.drawEndListener)
@@ -105,8 +119,12 @@ export default {
   },
   mounted: function () {
     this.$el.querySelector(".mtdt-header").style.color = 'white'
-    this.$el.querySelector(".mtdt-header").style.background = this.$store.state.style.primary
-    this.initHeight()
+    if (this.$store) {
+      this.$el.querySelector(".mtdt-header").style.background = this.$store.state.style.primary
+    } else {
+      this.$el.querySelector(".mtdt-header").style.background = this.color
+    }
+      this.initHeight()
     this.initPosition()
     this.initMap()
   },
@@ -118,11 +136,11 @@ export default {
      drawStartListener: null,
      drawEndListener: null,
      bboxChangeListener: null,
-     resetListener: null,
      drawing: false,
      map: null,
      // the search limit on map
      boundsLayer: null,
+     defaultBounds: [[-60,-120],[75,130]],
      bbox: null,
      drawControl: null,
      drawLayers: null,
@@ -267,6 +285,7 @@ export default {
     },
     selectAreaChange (event) {
       var bbox = event.detail
+      console.log(bbox)
      // var bounds = L.latLngBounds(this.$store.state.spatialExtent)
       if (bbox && bbox.north !== "" && bbox.south !== "" && bbox.east !== "" && bbox.west !== "") {
         for(var key in bbox){
@@ -292,8 +311,10 @@ export default {
       if (!bounds) {
       	if (this.searchArea) {
       	  var bounds = this.boundsLayer.getBounds()
-      	} else {
+      	} else if (this.$store){
       	  var bounds = L.latLngBounds(this.$store.state.spatialExtent)
+      	} else {
+      	  var bounds = this.defaultBounds
       	}
       } else if (this.searchArea) {
         bounds.extend(this.boundsLayer.getBounds())

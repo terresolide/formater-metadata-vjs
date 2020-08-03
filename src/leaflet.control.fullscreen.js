@@ -57,15 +57,20 @@
       this._container.querySelector('a').setAttribute('title', this._translate[this._lang]['reduce'])
       this._map._container.style.height = height + 'px'
       this._map._container.className = this._map._container.className.replace('mtdt-small', 'mtdt-fullscreen')
-            this._map.setMinZoom(2)
+      this._map.setMinZoom(2)
       this._map.invalidateSize()
-
+      this._emitChange()
     },
     _reduce : function () {
       this._nodeSmall.appendChild(this._map._container)
       this._map.setMinZoom(1)
       this._map._container.className = this._map._container.className.replace('mtdt-fullscreen', 'mtdt-small')
       this._map.invalidateSize()
+      this._emitChange()
+    },
+    _emitChange : function () {
+      var event = new CustomEvent('mapNodeChange')
+      document.dispatchEvent(event)
     }
 })
 
