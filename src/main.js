@@ -35,8 +35,11 @@ Vue.use(GeonetworkPlugin)
 
 // main component for app
 import FormaterCatalogue from './formater-catalogue.vue'
+import Keycloak from 'keycloak-js'
 
 import makeStore from './store'
+
+
 
 var config = {}
 if (typeof formaterConfig != 'undefined') {
@@ -47,7 +50,15 @@ let locale = navigator.language.substr(0, 2)
 if (config.lang) {
   locale = config.lang
 } 
+//let initOptions = {
+//    url: configAuth.SSO_URL,
+//    realm: configAuth.SSO_REALM,
+//    clientId: configAuth.SSO_CLIENT_ID,
+//    checkLoginIframe: true
+//  }
 
+
+// export let keycloak = Keycloak(initOptions)
 
 		/* eslint-disable */
 

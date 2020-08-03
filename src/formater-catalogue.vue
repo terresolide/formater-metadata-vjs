@@ -63,11 +63,7 @@ import FormaterPaging from './formater-paging.vue';
 import FormaterDrawBbox from './formater-draw-bbox.vue';
 import AerisTheme from 'aeris-commons-components-vjs/src/aeris-theme/aeris-theme.vue'
 import FormaterRequester from './formater-requester.vue'
-import Keycloak from 'keycloak-js'
-let initOptions = {
-	      url: 'https://sso.aeris-data.fr/auth', realm: 'test', clientId: 'formater-vjs'
-	    }
-let keycloack = new Keycloack(initOptions)
+
 // prevent previous and next page for browser
 // function disableBack() { window.history.forward() }
 // window.onload = function () {
@@ -104,7 +100,7 @@ export default {
   },
   
   created () {
-	  keycloak.init({
+	  /* keycloak.init({
 		  onLoad: 'check-sso',
 		  promiseType: 'native'
 		}).then(function (authenticated) {
@@ -162,7 +158,7 @@ export default {
 		    }
 		    updateSSoToken();
 		})
-
+  */
 
     this.initTemporalExtent()
     this.$gn.init(this.$i18n.locale, this.$store.state.geonetwork, this.$http, this.$store)

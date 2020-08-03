@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+  <head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width"/>
+   <style>
+    </style>
+    <title>Metadata visualiser extrait CDGP</title>
+  </head>
+  <body>
+
+    <div id="formaterCatalogue"></div>
+
+  <script id="formaterConfig" type="application/json"  >
+    {
+     "lang": "en", 
+     "geonetwork": "http://localhost:8080/geonetwork/",
+     "summaryType": {
+       "step1": "step1",
+       "step2": "step2"
+     },
+     "group": [722],
+     "style": {
+         "primary":"#05578e",
+         "emphasis": "#07a8d5",
+         "link": "#05578e",
+         "over": "#8c0209"
+     },
+     "temporalExtent": 
+       {
+         "min": "1987-01-01",
+         "max": "now"
+       },
+     "proxyUrl": "https://api.poleterresolide.fr/interface-services/"
+    }
+    </script> 
+	 <script src="dist/build.js"></script> 
+
+  </body>
+</html>

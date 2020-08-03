@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+  <head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width"/>
+   <style>
+   a{
+     color:#754a15;
+   }
+   a:hover{
+     color:#8c0209;
+   }
+   body, button, input, select, textarea {
+    color: #333;
+    font-family: 'Roboto',Arial,sans-serif;
+    font-size: 1rem;
+    line-height: 1.7;
+}
+    </style>
+    <title>Metadata visualiser</title>
+  </head>
+  <body>
+ <!--   <div>detail: type,... voir geonetwork</div>
+ <div>step 1: groupOwner, facetFormater</div>
+ <div>step 2: groupOwner, facetFormater, resolution</div>
+ <div>step 3: status, serviceType, denominator, resolution</div>-->
+  <div id="formaterCatalogue"></div>
+
+  <script id="formaterConfig" type="application/json"  >
+    {
+     "lang": "fr", 
+      "metadata": "https://cdn.jsdelivr.net/gh/terresolide/formater-map-bbox-vjs@0.2.4/public
+     "summaryType": {
+       "step1": "step1",
+       "step2": "step3"
+     },
+     "style": {
+         "primary":"#754a15",
+         "emphasis": "#dd9946",
+         "link": "#754a15",
+         "over": "#8c0209"
+     },
+     "temporalExtent": 
+       {
+         "min": "1920-12-01",
+         "max": "now"
+     }
+    }
+    </script> 
+	 <script src="dist/build.js"></script> 
+
+  </body>
+</html>

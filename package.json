@@ -26,7 +26,7 @@
   "dependencies": {
     "formater-commons-components-vjs": "github:terresolide/formater-commons-components-vjs",
     "formater-geotiff-visualizer-vjs": "github:terresolide/formater-geotiff-visualizer-vjs",
-    "keycloak-js": "^9.0.0",
+    "keycloak-js": "^9.0.3",
     "leaflet": "^1.6.0",
     "leaflet-draw": "^1.0.4",
     "leaflet-kml": "git+https://github.com/windycom/leaflet-kml.git",
