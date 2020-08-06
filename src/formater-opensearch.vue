@@ -58,11 +58,15 @@ export default {
         })
     },
     loadWithProxy() {
-      var url = this.$store.state.proxy.url + '?url=' + encodeURIComponent(this.describe)
-      this.$http.get(url)
-      .then(
-          response => { this.extractDescribeParameters(response.body);}
-       )
+      if (this.$store.state.proxy.url) {
+	      var url = this.$store.state.proxy.url + '?url=' + encodeURIComponent(this.describe)
+	      this.$http.get(url)
+	      .then(
+	          response => { this.extractDescribeParameters(response.body);}
+	       )
+      } else {
+        console.log('CAN NOT GET ' + this.describe)
+      }
     },
     extractParameter (parameterNode, specName) {
       var listPredefined = this.$store.state.parameters.predefined
@@ -78,6 +82,13 @@ export default {
       var obj= {
           name: name,
           title: parameterNode.getAttribute('title')
+      }
+      // particular cas
+      switch(name) {
+        case 'relativeOrbitNumber':
+          obj.title = obj.title || 'Ex: 123'
+          break;
+        
       }
       
       var pattern = parameterNode.getAttribute('pattern')

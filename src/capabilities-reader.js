@@ -10,16 +10,19 @@ const reader = {
     init (http,  prox) {
       $http = http
       parser = new DOMParser()
-      regex = new RegExp(prox.regex)
-      proxy = prox.url
+      if (prox) {
+        regex = new RegExp(prox.regex)
+      }
+      proxy = prox.url ? proxy.url : null
     },
     loadInfo (layer, options, metaId, callback) {
       var url = layer.href
-      if (regex.test(url)) {
+      if (regex.test(url) && proxy) {
         search = proxy + '?url=' + encodeURIComponent(url)
       }
       $http.get(search)
-      .then(response => this.extract(response.body, layer, options, metaId, callback))
+      .then(response => this.extract(response.body, layer, options, metaId, callback),
+            response => console.log('CAN NOT GET ' + url))
     },
     extract (str, layer, options, metaId, callback) {
       var root = parser.parseFromString(str, 'text/xml')

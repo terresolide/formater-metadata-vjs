@@ -3,7 +3,7 @@
  */
 import Vue from 'vue'
 import Vuex from 'vuex'
-
+import user from './modules/user'
 export default function makeStore( config ) {
   if (config.proxyUrl) {
     var proxy = {
@@ -249,6 +249,9 @@ export default function makeStore( config ) {
       }
     },
     getters: {
+    },
+    modules: {
+      user: user
     }
-  } );
+  });
 }

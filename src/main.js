@@ -39,7 +39,12 @@ import Keycloak from 'keycloak-js'
 
 import makeStore from './store'
 
-
+export let keycloak = Keycloak({
+    url: 'https://sso.aeris-data.fr/auth',
+    realm: 'test',
+    clientId: 'formater-vjs',
+    checkLoginIframe: true
+})
 
 var config = {}
 if (typeof formaterConfig != 'undefined') {
@@ -57,13 +62,54 @@ if (config.lang) {
 //    checkLoginIframe: true
 //  }
 
+keycloak.init({
+  onLoad: 'check-sso',
+  promiseType: 'native'
+}).then(function (authenticated) {
+  if (authenticated) {
+    // Récupération des informations de l'utilisateur
+    if (keycloak.tokenParsed) {
+      var username = keycloak.tokenParsed.preferred_username
+      console.log(username)
+     // var name = keycloak.tokenParsed.given_name
+     // var family_name = keycloak.tokenParsed.family_name
+      var email = keycloak.tokenParsed.email
 
-// export let keycloak = Keycloak(initOptions)
+      // Le rôle est porté par le back-end (formater-php)
+      if (keycloak.tokenParsed.resource_access['formater-php']) {
+        var resourceRoles = keycloak.tokenParsed.resource_access['formater-php'].roles
+      }
 
-		/* eslint-disable */
+      var realmRoles = keycloak.tokenParsed.realm_access.roles
 
+      var roles = []
+      if (realmRoles) {
+        roles = roles.concat(realmRoles)
+      }
+      if (resourceRoles) {
+        roles = roles.concat(resourceRoles)
+      }
 
-ljs.addAliases({
+      // POUR LES APPLICATIONS CATALOGUE AERIS
+      let user = { type: 'aeris', token: keycloak.token, email: email, roles: roles, username: username }
+      store.commit('user/set', user)
+      console.log('USER AUTHENTICATED') 
+      // login to background (create session)
+      Vue.http.interceptors.push(function(request, next) {
+        if (keycloak.token && request.aeris) {
+          request.headers.set('Authorization', 'Bearer ' + keycloak.token);
+          request.headers.set('Accept', 'application/json');
+        }
+      })
+      Vue.http.get(store.state.url + 'apilogin', {credentials: true, aeris: true}).then(function (response) {
+          // Si l'utilisateur est authentifié
+
+      })
+    }
+  } else {
+    console.log('USER NOT AUTHENTICATED')
+  }
+  ljs.addAliases({
     dep: [
        // font-awesome
        'https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css', 
@@ -91,4 +137,8 @@ ljs.load('dep', function() {
   })
 
 })
+
+})
+
+
 

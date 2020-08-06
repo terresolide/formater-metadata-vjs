@@ -21,7 +21,10 @@
   <div >
    <!-- components can be view -->
    <header style="margin-left:5px;height:45px;margin-bottom:5px;border: 1px solid #ccc; margin-right:10px;
-box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.2);"></header>
+box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.2);">
+   <formater-login></formater-login>
+  
+</header>
    <div class="mtdt-column-left" >
        <formater-form  :disableLevel="metadatas.length > 0 ? 1 : 0" :depth="metadatas.length" ></formater-form>
    </div>
@@ -65,6 +68,7 @@ import FormaterPaging from './formater-paging.vue';
 import FormaterDrawBbox from './formater-draw-bbox.vue';
 import AerisTheme from 'aeris-commons-components-vjs/src/aeris-theme/aeris-theme.vue'
 import FormaterRequester from './formater-requester.vue'
+import FormaterLogin from './formater-login.vue'
 
 // prevent previous and next page for browser
 // function disableBack() { window.history.forward() }
@@ -77,6 +81,7 @@ export default {
   name: 'FormaterCatalogue',
   components: {
     FormaterDrawBbox,
+    FormaterLogin,
     FormaterForm,
     FormaterListMetadata,
     FormaterMetadata,

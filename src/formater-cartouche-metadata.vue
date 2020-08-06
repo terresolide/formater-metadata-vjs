@@ -221,7 +221,7 @@ export default {
     
     overflow: hidden;
     max-height:34px;
-    word-break: break-word;
+    word-break: break-all;
 }
 .mtdt-cartouche-metadata div.mtdt-header i + div {
     width:calc(100% - 28px); 

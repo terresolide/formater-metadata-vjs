@@ -44,9 +44,12 @@
 <h1 :style="{color:$store.state.style.primary}">{{$t('about_resource')}}</h1>
  <div class="mtdt-description" style="display:block;">
        <formater-quicklooks :quicklooks="metadata.images"></formater-quicklooks>
-       <dl class="mtdt-identifier" v-if="metadata.identifier && !metadata.description">
+       <dl  class="mtdt-identifier" v-if="metadata.identifier && !metadata.description">
              <dt :style="dtStyle()">{{$t('identifier')}}</dt>
-              <dd >{{metadata.identifier}}</dd>
+              <dd :style="{width:  'calc(100% - 380px)', minWidth: '300px'}">
+              {{metadata.identifier}}
+              </dd>
+             
        </dl>
        <span v-html="metadata.description" v-if="metadata.description" style="margin-bottom:20px;"></span> 
        <dl class="mtdt-identifier" v-if="metadata.identifier && metadata.description" :style="{clear: (type === 'opensearch' ? 'none' : 'left')}">
