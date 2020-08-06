@@ -19,6 +19,8 @@ Vue.use(VueI18n);
 import VueResource from 'vue-resource'
 Vue.use(VueResource);
 
+import App from './App.vue'
+import router from './router'
 
 // import {VueTools} from 'formater-commons-components-vjs'
 // Vue.use(VueTools)
@@ -50,6 +52,7 @@ var config = {}
 if (typeof formaterConfig != 'undefined') {
   config = JSON.parse(formaterConfig.innerHTML)
 } 
+const store = makeStore(config)
 let locale = navigator.language.substr(0, 2)
 
 if (config.lang) {
@@ -101,10 +104,6 @@ keycloak.init({
           request.headers.set('Accept', 'application/json');
         }
       })
-      Vue.http.get(store.state.url + 'apilogin', {credentials: true, aeris: true}).then(function (response) {
-          // Si l'utilisateur est authentifié
-
-      })
     }
   } else {
     console.log('USER NOT AUTHENTICATED')
@@ -127,13 +126,14 @@ ljs.load('dep', function() {
     fallbackLocale: 'en',
     locale: locale
   })
-  const store = makeStore(config)
+
   new Vue({
     el: '#formaterCatalogue',
-    template: '<FormaterCatalogue/>',
+    template: '<App/>',
     i18n,
     store,
-    components: { FormaterCatalogue }
+    router,
+    components: { App }
   })
 
 })

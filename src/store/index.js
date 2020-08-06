@@ -16,6 +16,8 @@ export default function makeStore( config ) {
           url: config.geonetwork + 'proxy',
           regex: 'data\.shom'
     }
+  } else {
+    var proxy = {url: null, regex: ''}
   }
 //  var isSameStep = true
 //  if (config.summaryType) {

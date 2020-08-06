@@ -13,7 +13,7 @@ const reader = {
       if (prox) {
         regex = new RegExp(prox.regex)
       }
-      proxy = prox.url ? proxy.url : null
+      proxy = prox.url
     },
     loadInfo (layer, options, metaId, callback) {
       var url = layer.href

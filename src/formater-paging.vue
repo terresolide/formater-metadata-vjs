@@ -142,17 +142,21 @@ export default {
      }
      switch (this.type) {
        case 'geonetwork':
-         this.count = parseInt(event.detail.summary['@count'])
-         this.from = parseInt(event.detail['@from'])
-         this.to = parseInt(event.detail['@to'])
-         this.nbPage = Math.ceil(event.detail.summary['@count'] / this.recordPerPage) 
+         if (event.detail.summary) {
+	         this.count = parseInt(event.detail.summary['@count'])
+	         this.from = parseInt(event.detail['@from'])
+	         this.to = parseInt(event.detail['@to'])
+	         this.nbPage = Math.ceil(event.detail.summary['@count'] / this.recordPerPage) 
+         }
          break
        case 'opensearch':
-         this.count = event.detail.properties.totalResults
-         this.to = this.from + Object.keys(event.detail.metadata).length -1
-         this.nbPage = Math.ceil(this.count/ this.recordPerPage)
-         if (typeof event.detail.properties.exactCount !== 'undefined') {
-           this.notExactly = (event.detail.properties.exactCount ? '': '~')
+         if (event.detail.properties) {
+	         this.count = event.detail.properties.totalResults
+	         this.to = this.from + Object.keys(event.detail.metadata).length -1
+	         this.nbPage = Math.ceil(this.count/ this.recordPerPage)
+	         if (typeof event.detail.properties.exactCount !== 'undefined') {
+	           this.notExactly = (event.detail.properties.exactCount ? '': '~')
+	         }
          }
          break
      }
