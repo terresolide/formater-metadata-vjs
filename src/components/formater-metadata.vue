@@ -185,7 +185,6 @@ export default {
 //     this.keydownListener = null
   },
   methods: {
-
 //       checkEscape (e) {
 //         var event = e || window.event
 //         var isEscape = false;

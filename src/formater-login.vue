@@ -1,39 +1,23 @@
-<i18n>{
-   "en":{
-     "localize": "Localize on the map"
-   },
-   "fr":{
-     "localize": "Localiser sur la carte, cliquer pour garder la position"
-   }
-}
-</i18n>
 <template>
-   <span>
-  </span>
+   <div class="page-login">
+  </div>
   </template>
   <script>
+ 
+  
   export default {
     name: 'FormaterLogin',
-    components: {
-    },
-    props: {
-    },
-    created () {
-    },
     mounted () {
-      setTimeout(function(){var ww = window.open(window.location, '_self'); ww.close();})
-      return false;
-    },
-    data () {
-      return {
+      if (window.parent) {
+        window.parent.postMessage(document.location.href, document.location.origin)
       }
-    },
-
-    methods: {
     }
-    
   }
   </script>
-  <style>
- 
+  <style scoped>
+  div.page-login {
+    width:100%;
+    height:100vh;
+    background:red;
+  }
   </style>

@@ -51,11 +51,9 @@ export default {
      load() {
        this.$http.get(this.describe)
        .then(
-           response => { this.extractDescribeParameters(response.body);}
-        ).catch(function (response) {
-           // use proxy if core trouble
-           this.loadWithProxy()
-        })
+           response => { this.extractDescribeParameters(response.body);},
+           response => { this.loadWithProxy()}
+        )
     },
     loadWithProxy() {
       if (this.$store.state.proxy.url) {
@@ -169,8 +167,16 @@ export default {
         }
         
       }
+      this.recordService()
       this.$emit('parametersChange', {parameters:this.osParameters, mapping: this.mappingParameters})
       
+    },
+    // record this service
+    recordService() {
+      // only if authenticate user
+      if (this.$store && this.$store.getters['user/email']) {
+        this.$store.commit('services/add', this.api)
+      }
     },
     handleSearch(e) {
       if (this.api && e.detail.parentUuid === this.uuid) {

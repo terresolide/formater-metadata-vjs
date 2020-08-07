@@ -1,7 +1,7 @@
 var path = require('path')
 var webpack = require('webpack')
 var PACKAGE = require('./package.json');
-var env = require('./config');
+var config = require('./config');
 var buildVersion = PACKAGE.version;
 var buildName = PACKAGE.name;
 var CleanWebpackPlugin = require('clean-webpack-plugin');
@@ -99,6 +99,7 @@ module.exports = {
     }
   },
   devServer: {
+    https: true,
     historyApiFallback: true,
     noInfo: true,
     headers: {
@@ -114,7 +115,7 @@ module.exports = {
 }
 module.exports.plugins = (module.exports.plugins || []).concat([
   new webpack.DefinePlugin({
-    'process.env': {GEONETWORK: env.GEONETWORK}
+    'process.env': config.dev.env
   }),
   new VueLoaderPlugin()
 ])

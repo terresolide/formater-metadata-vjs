@@ -3,7 +3,7 @@
   "version": "3.0.7",
   "description": "Component to display metadata from Geonetwork Object ISO19139",
   "preproduction": {
-    "url": "http://localhost:8080"
+    "url": "https://localhost:8080"
   },
   "production": {
     "url": "https://cdn.jsdelivr.net/gh/terresolide"

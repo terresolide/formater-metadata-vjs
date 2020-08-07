@@ -62,11 +62,15 @@ box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.2);text-align:right;">
     methods: {
       login () {
         // log to aeris
-        keycloak.login()
+        if (keycloak) {
+          keycloak.login()
+        }
       },
       logout () {
-        keycloak.logout()
-        this.$store.commit('user/reset')
+        if (keycloak) {
+          keycloak.logout()
+          this.$store.commit('user/reset')
+        }
       },
       getUrl (e) {
         console.log(e.target.baseURI)
@@ -87,26 +91,43 @@ box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.2);text-align:right;">
       getCliendId () {
         var url = 'https://flatsimdev-pp.cnes.fr/atdistrib/resto2/api/auth/aeris/clientid'
           
-        this.$http.get(url).then(response => console.log(response))
+        this.$http.get(url).then(function(response) {
+          console.log(response)
+          this.clientId = response.body.clientId
+        })
       },
+      // A ajouter au CNES
+//       if($_SERVER['REQUEST_METHOD'] == 'OPTIONS' && ENV == 'devel') {
+//     header('Access-Control-Allow-Origin: *');
+//     header('Access-Control-Allow-Headers: X-Requested-With');
+//     header("HTTP/1.1 200 OK");
+//     die();
+// }
+
       getToken (app, code, url) {
         var urlflatsim = 'https://flatsimdev-pp.cnes.fr/atdistrib/resto2/api/auth/aeris'
         // this.iframe.src = url + '?code=' + code + '&state=flatsimdev-pp&redirect_uri=//localhost:8080/#/'
-        this.$http.post(urlflatsimsss, 
-            {code: code, redirect_uri: url},
-            {credentials: true}).then(
-            function (resp ) {
-              console.log(resp)
-            }    
-         )
+//            this.$http.get(urlflatsim).then(function (resp) {
+//              console.log(resp.body)
+//            }, function (resp) {
+//              console.log(resp)
+//            })
+        this.$http.post(
+          urlflatsim, 
+          'code=' + code + '&redirect_uri=https://localhost:8080/#/login'
+        ).then(
+         function (resp ) {
+           console.log(resp)
+         }    
+        )
       },
       // test
       getFlatsimCliendId () {
       
         var sso = 'https://sso.aeris-data.fr/auth/realms/test/protocol/openid-connect/auth'
-          this.iframe.src = sso + '?response_type=code&client_id=formater-php&scope=openid&state=flatsimdev-pp&redirect_uri=http://localhost:8080/#/login'
+          this.iframe.src = sso + '?response_type=code&client_id=formater-php&scope=openid&state=flatsimdev-pp&redirect_uri=https://localhost:8080/#/login'
           return
-        this.$http.get(sso + '?response_type=code&client_id=formater-php&redirect_uri=http://localhost:8080/#/', {credentials: true}).then(
+        this.$http.post(sso + '?response_type=code&client_id=formater-php&redirect_uri=https://localhost:8080/#/').then(
          function (resp ) {
            console.log(resp)
          }    

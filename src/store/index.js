@@ -4,6 +4,8 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import user from './modules/user'
+// import basket from './modules/basket'
+import services from './modules/services'
 export default function makeStore( config ) {
   if (config.proxyUrl) {
     var proxy = {
@@ -253,7 +255,8 @@ export default function makeStore( config ) {
     getters: {
     },
     modules: {
-      user: user
+      user: user,
+      services: services
     }
   });
 }
