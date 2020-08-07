@@ -1,29 +1,15 @@
 require("exports-loader?!./l.min.js")
 
 import Vue from 'vue'
-
-
-
-//import vueCustomElement from 'vue-custom-element'
-//Vue.use(vueCustomElement);
-// import ajax from './services/ajax'
-
-
 import Vuex from 'vuex'
 Vue.use(Vuex)
-
-//pour la traduction 
 import VueI18n from 'vue-i18n'
 Vue.use(VueI18n);
-
 import VueResource from 'vue-resource'
 Vue.use(VueResource);
 
-import App from './App.vue'
+import App from './app.vue'
 import router from './router'
-
-// import {VueTools} from 'formater-commons-components-vjs'
-// Vue.use(VueTools)
 
 import {VueColorPlugin} from 'aeris-mixins'
 Vue.use(VueColorPlugin)
@@ -31,12 +17,9 @@ Vue.use(VueColorPlugin)
 import {VueTools} from 'formater-commons-components-vjs'
 Vue.use(VueTools)
 
-import GeonetworkPlugin from './geonetwork.js'
+import GeonetworkPlugin from './geonetwork'
 Vue.use(GeonetworkPlugin)
 
-
-// main component for app
-import FormaterCatalogue from './formater-catalogue.vue'
 import Keycloak from 'keycloak-js'
 
 import makeStore from './store'
@@ -48,7 +31,7 @@ export let keycloak = Keycloak({
     checkLoginIframe: true
 })
 
-var config = {}
+let config = {}
 if (typeof formaterConfig != 'undefined') {
   config = JSON.parse(formaterConfig.innerHTML)
 } 
@@ -58,25 +41,15 @@ let locale = navigator.language.substr(0, 2)
 if (config.lang) {
   locale = config.lang
 } 
-//let initOptions = {
-//    url: configAuth.SSO_URL,
-//    realm: configAuth.SSO_REALM,
-//    clientId: configAuth.SSO_CLIENT_ID,
-//    checkLoginIframe: true
-//  }
 
 keycloak.init({
   onLoad: 'check-sso',
   promiseType: 'native'
 }).then(function (authenticated) {
   if (authenticated) {
-    // Récupération des informations de l'utilisateur
-    if (keycloak.tokenParsed) {
+     if (keycloak.tokenParsed) {
       var username = keycloak.tokenParsed.preferred_username
-      console.log(username)
-     // var name = keycloak.tokenParsed.given_name
-     // var family_name = keycloak.tokenParsed.family_name
-      var email = keycloak.tokenParsed.email
+       var email = keycloak.tokenParsed.email
 
       // Le rôle est porté par le back-end (formater-php)
       if (keycloak.tokenParsed.resource_access['formater-php']) {
@@ -119,24 +92,24 @@ keycloak.init({
        // 'https://cdnjs.cloudflare.com/ajax/libs/document-register-element/1.4.1/document-register-element.js',
        'https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment-with-locales.min.js'
       ]
-})
-ljs.load('dep', function() {
-  // Vue.customElement('formater-catalogue', FormaterCatalogue) 
-  const i18n = new VueI18n({
-    fallbackLocale: 'en',
-    locale: locale
   })
-
-  new Vue({
-    el: '#formaterCatalogue',
-    template: '<App/>',
-    i18n,
-    store,
-    router,
-    components: { App }
+  ljs.load('dep', function() {
+    // Vue.customElement('formater-catalogue', FormaterCatalogue) 
+    const i18n = new VueI18n({
+      fallbackLocale: 'en',
+      locale: locale
+    })
+  
+    new Vue({
+      el: '#formaterCatalogue',
+      template: '<app/>',
+      i18n,
+      store,
+      router,
+      components: { App }
+    })
+  
   })
-
-})
 
 })
 

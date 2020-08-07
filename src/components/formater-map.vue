@@ -15,12 +15,12 @@
 <script>
 var L = require("leaflet");
 require("leaflet-kml")
-L.Control.Fmtlayer = require('./leaflet.control.fmtlayer.js')
-L.Control.Reset = require('./leaflet.control.reset.js')
-L.Control.Fullscreen = require('./leaflet.control.fullscreen.js')
-L.Control.Legend = require('./leaflet.control.legend.js')
+L.Control.Fmtlayer = require('../modules/leaflet.control.fmtlayer.js')
+L.Control.Reset = require('../modules/leaflet.control.reset.js')
+L.Control.Fullscreen = require('../modules/leaflet.control.fullscreen.js')
+L.Control.Legend = require('../modules/leaflet.control.legend.js')
 
-const getReader = () => import('./capabilities-reader.js')
+const getReader = () => import('../modules/capabilities-reader.js')
 const getProj4 = () => import('proj4')
 
 
@@ -647,7 +647,7 @@ export default {
 }
 </script>
 <style>
- @import "./assets/css/fontello.css";
+ @import "../assets/css/fontello.css";
 div[id="fmtMap"]{
   width:100%;
   margin:0;

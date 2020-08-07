@@ -56,13 +56,13 @@
   </div>
 </template>
 <script>
-import FormaterForm from './formater-form.vue';
-import FormaterListMetadata from './formater-list-metadata.vue';
-const FormaterMetadata = () => import('./formater-metadata.vue')
-import FormaterPaging from './formater-paging.vue';
-import FormaterDrawBbox from './formater-draw-bbox.vue';
+import FormaterForm from './components/formater-form.vue';
+import FormaterListMetadata from './components/formater-list-metadata.vue';
+const FormaterMetadata = () => import('./components/formater-metadata.vue')
+import FormaterPaging from './components/formater-paging.vue';
+import FormaterDrawBbox from './components/formater-draw-bbox.vue';
 import AerisTheme from 'aeris-commons-components-vjs/src/aeris-theme/aeris-theme.vue'
-import FormaterRequester from './formater-requester.vue'
+import FormaterRequester from './components/formater-requester.vue'
 
 // prevent previous and next page for browser
 // function disableBack() { window.history.forward() }
