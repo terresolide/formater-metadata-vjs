@@ -174,9 +174,9 @@ export default {
     // record this service
     recordService() {
       // only if authenticate user
-      if (this.$store && this.$store.getters['user/email']) {
+     // if (this.$store && this.$store.getters['user/email']) {
         this.$store.commit('services/add', this.api)
-      }
+      // }
     },
     handleSearch(e) {
       if (this.api && e.detail.parentUuid === this.uuid) {
