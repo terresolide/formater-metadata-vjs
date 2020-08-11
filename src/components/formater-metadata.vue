@@ -44,6 +44,7 @@
       </div>
       <!--  tab search if have child -->
       <formater-opensearch v-if="describe"  :describe="describe" :uuid="uuid" :depth="depth" @parametersChange="setParameters"></formater-opensearch>
+
       <div v-if="tabs.search" v-show="currentTab === 'search'">
            
            <formater-paging  :uuid="uuid"  :depth="depth" :type="describe ? 'opensearch': 'geonetwork'"></formater-paging>

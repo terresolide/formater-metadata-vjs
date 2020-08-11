@@ -1,7 +1,7 @@
 /**
  * Services
  */
-import Service from '../../modules/service.js'
+import Service from '@/modules/service.js'
 
 export default {
   namespaced: true,

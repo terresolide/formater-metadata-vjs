@@ -20,8 +20,8 @@ box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.2);text-align:right;">
          | <a @click='getFlatsimCliendId'>test</a>
          
 </header>
-    <iframe id="myIframe" src='' @load="getUrl" ></iframe>
-
+      <iframe id="myIframe" style="display:none;"src='' @load="getUrl" ></iframe>
+-->
       <div id="view">
         <div id="page">
            <router-view></router-view>
@@ -42,7 +42,7 @@ box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.2);text-align:right;">
     props: {
     },
     created () {
-      this.getCliendId()
+      // this.getCliendId()
     },
     computed: {
       email () {
@@ -58,6 +58,9 @@ box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.2);text-align:right;">
     mounted () {
        this.iframe = this.$el.querySelector('#myIframe')
        console.log(this.iframe)
+       
+       
+       
     },
     methods: {
       login () {
@@ -74,6 +77,7 @@ box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.2);text-align:right;">
       },
       getUrl (e) {
         console.log(e.target.baseURI)
+        return
         var url = new URL(e.target.baseURI);
       var code = url.searchParams.get("code");
         console.log('code = ', code)
@@ -125,7 +129,7 @@ box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.2);text-align:right;">
       getFlatsimCliendId () {
       
         var sso = 'https://sso.aeris-data.fr/auth/realms/test/protocol/openid-connect/auth'
-          this.iframe.src = sso + '?response_type=code&client_id=formater-php&scope=openid&state=flatsimdev-pp&redirect_uri=https://localhost:8080/#/login'
+          this.iframe.src = sso + '?response_type=code&client_id=formater-php&scope=openid&state=flatsimdev-pp&redirect_uri=https://localhost:8080/#/login/'
           return
         this.$http.post(sso + '?response_type=code&client_id=formater-php&redirect_uri=https://localhost:8080/#/').then(
          function (resp ) {

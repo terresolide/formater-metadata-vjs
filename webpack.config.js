@@ -20,9 +20,7 @@ var FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin');
 var pathsToClean = [
   'dist/*.*'
 ]
-function resolve (dir) {
-  return path.join(__dirname, '..', dir)
-}
+
 module.exports = {
   entry: './src/main.js',
   output: {
@@ -93,9 +91,10 @@ module.exports = {
     ]
   },
   resolve: {
+    extensions: ['.js', '.vue', '.json', '.jsx'],
     alias: {
       'vue$': 'vue/dist/vue.esm.js',
-      '@': resolve('src')
+      '@': path.resolve(__dirname, './src'),
     }
   },
   devServer: {

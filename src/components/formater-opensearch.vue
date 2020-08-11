@@ -31,6 +31,9 @@ export default {
   	document.addEventListener('aerisSearchEvent', this.searchEventListener);
     this.load()
   },
+  mounted () {
+
+  },
   destroyed () {
     document.removeEventListener('aerisSearchEvent', this.searchEventListener);
     this.searchEventListener = null

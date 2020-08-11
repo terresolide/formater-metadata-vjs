@@ -130,7 +130,6 @@ export default {
         this.searchSimpleMetadata()
         return
       }
-      console.log(event)
       this.$store.commit('searchingChange', true)
       // trigger search event like breadcrumb
       if (event.detail && typeof event.detail.depth == 'number') {
