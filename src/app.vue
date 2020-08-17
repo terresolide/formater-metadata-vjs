@@ -9,16 +9,13 @@
  }
 </i18n>
 <template>
-<div>
+<div class="mtdt-app">
  <aeris-theme :primary="$store.state.style.primary" :active="true" :emphasis="$store.state.style.emphasis"></aeris-theme>
- 
-       <header v-if="$store.state.auth && $route.name !== 'FormaterLogin' && $route.name !== 'FormaterLogout'" style="width:100%;margin-left:5px;height:45px;margin-bottom:5px;border: 1px solid #ccc; 
-box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.2);text-align:right;">
-        <formater-service v-for="(service, index) in services" :key="index" :api="service.api" :domain="service.domain"></formater-service>
-        {{email}}
-        <formater-authentication ></formater-authentication>
-         
-</header>
+ <header>
+    <formater-authentication v-if="authEnabled" ></formater-authentication>
+    <i class="fa fa-shopping-cart" style="font-size:1.5rem;opacity:0.6" :style="{color: $store.state.style.primary}"></i>
+ </header>      
+
   <!--     <iframe id="myIframe" style="display:none;"src='' @load="getUrl" ></iframe>
 -->
       <div id="view">
@@ -50,11 +47,8 @@ box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.2);text-align:right;">
       // this.getCliendId()
     },
     computed: {
-      email () {
-        return this.$store.getters['user/email']
-      },
-      services () {
-        return this.$store.getters['services/all']
+      authEnabled () {
+        return (this.$store.state.auth && this.$route.name !== 'FormaterLogin' && this.$route.name !== 'FormaterLogout')
       }
     },
     data () {
@@ -64,6 +58,7 @@ box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.2);text-align:right;">
       }
     },
     mounted () {
+      console.log(this.$store.getters['user/clientId'])
         // this.$router.push('/')
 //        this.iframe = this.$el.querySelector('#myIframe')
 //        console.log(this.iframe)      
@@ -148,4 +143,20 @@ box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.2);text-align:right;">
     
   }
 </script>
-
+<style>
+.mtdt-app > header{
+  width: calc(100% - 10px);
+  margin-left:5px;
+  height:40px;
+  margin-bottom:5px;
+  padding-right: 10px;
+  padding-top: 5px;
+  border: 1px solid #ccc; 
+  box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.2);
+  text-align:right;
+}
+.mtdt-app > header i {
+  vertical-align: middle;
+  width: 30px;
+}
+</style>

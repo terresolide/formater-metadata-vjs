@@ -13,6 +13,9 @@ export default {
    all (state, getters) {
      return state.services
    },
+   current (state, getters) {
+     return state.current
+   },
    byDomain (state, getters, domain) {
      return state.services.find(obj => obj.domain === domain)
    },

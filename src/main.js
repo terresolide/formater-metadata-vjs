@@ -90,7 +90,7 @@ if (config.lang) {
         }
         if (result['code']) {
           console.log('commit code', result['code'])
-          // store.commit('auth/code', result['code'])
+          store.commit('user/setCode', result['code'])
         }
         delete result['code']
         delete result['error']
