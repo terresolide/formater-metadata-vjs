@@ -30,6 +30,7 @@ export default function makeStore( config ) {
 //  }
   
   var defaultConfig = {
+      auth: true,
       lang: 'en',
       currentUuid: null,
       geonetwork: null,
