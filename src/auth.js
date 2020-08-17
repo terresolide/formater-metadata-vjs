@@ -6,7 +6,7 @@ export default function makeAuth(auth) {
     var keycloak = Keycloak({
       url: process.env.SSO_URL,
       realm: process.env.SSO_REALM,
-      clientId: process.env.SSO_CLIENT_ID,
+      clientId: process.env.SSO_CLIENT_ID
     })
     return keycloak
   } else {

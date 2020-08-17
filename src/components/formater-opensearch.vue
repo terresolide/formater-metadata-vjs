@@ -170,17 +170,17 @@ export default {
         }
         
       }
-      this.recordService()
-      this.$emit('parametersChange', {parameters:this.osParameters, mapping: this.mappingParameters})
+     // this.recordService()
+      this.$emit('parametersChange', {api: this.api, parameters:this.osParameters, mapping: this.mappingParameters})
       
     },
     // record this service
-    recordService() {
-      // only if authenticate user
-     // if (this.$store && this.$store.getters['user/email']) {
-        this.$store.commit('services/add', this.api)
-      // }
-    },
+//     recordService() {
+//       // only if authenticate user
+//      // if (this.$store && this.$store.getters['user/email']) {
+//         this.$store.commit('services/add', this.api)
+//       // }
+//     },
     handleSearch(e) {
       if (this.api && e.detail.parentUuid === this.uuid) {
         e.detail.api = this.api

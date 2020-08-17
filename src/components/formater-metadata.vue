@@ -40,15 +40,16 @@
       <hr style="border:1px solid grey;margin-bottom:0px;clear:both;"/>
       <div class="mtdt-tabs">
          <div v-for="(tab,index) in tabs" v-if="tab === true" class="mtdt-tab" :class="{'selected': currentTab === index}" @click="currentTab = index">{{$t(index)}}</div>
+      <!--   <formater-service v-if="osApi" :api="osApi"></formater-service>-->  
+     
         <formater-export-links v-if="metadata.exportLinks" :export-links="metadata.exportLinks"></formater-export-links> 
       </div>
       <!--  tab search if have child -->
       <formater-opensearch v-if="describe"  :describe="describe" :uuid="uuid" :depth="depth" @parametersChange="setParameters"></formater-opensearch>
-
       <div v-if="tabs.search" v-show="currentTab === 'search'">
            
            <formater-paging  :uuid="uuid"  :depth="depth" :type="describe ? 'opensearch': 'geonetwork'"></formater-paging>
-           <formater-list-metadata  :depth="depth"  ></formater-list-metadata>
+           <formater-list-metadata  :depth="depth" ></formater-list-metadata>
       </div>
       <!--  others tab -->
       <div v-if="currentTab === 'main'" style="margin-top:20px;">
@@ -84,6 +85,7 @@ const FormaterPaging = () => import('./formater-paging.vue')
 const FormaterListMetadata = () => import('./formater-list-metadata.vue')
 
 const FormaterOpensearch = () => import('./formater-opensearch.vue')
+// const FormaterService = () => import('./formater-service.vue')
 const FormaterFullMetadata = () => import('./formater-full-metadata.vue')
 import FormaterRelated from './formater-related.vue';
 import FormaterMetadataContent from './formater-metadata-content.vue'
@@ -97,6 +99,7 @@ export default {
     FormaterPaging,
     FormaterListMetadata,
     FormaterOpensearch,
+  //  FormaterService,
     FormaterRelated,
     FormaterFullMetadata ,
     FormaterMetadataContent
@@ -136,6 +139,7 @@ export default {
      popstateListener: null,
      keydownListener: null,
      describe: null,
+     domain: null,
      type: 'geonetwork',
      aerisSearchListener: null,
      aerisResetListener: null
@@ -222,6 +226,11 @@ export default {
 //         this.metadata.mapping = osParameters.mapping
         this.osParameters = osParameters.parameters
         this.mapping = osParameters.mapping
+        if (osParameters.api) {
+          var url = new URL(osParameters.api)
+          this.domain = url.hostname
+    	    this.$store.commit('services/add', {domain: url.hostname, api: osParameters.api})
+        }
         this.disableType =  this.describe ? 'opensearch' : 'geonetwork'
         this.$emit('parametersChange', {osParameters: this.osParameters, mapping: this.mapping, type: this.disableType, depth: this.depth})
 

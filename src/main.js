@@ -11,6 +11,7 @@ Vue.use(VueResource);
 import App from './app.vue'
 import router from './router'
 
+
 //import {VueColorPlugin} from 'aeris-mixins'
 //Vue.use(VueColorPlugin)
 
@@ -20,6 +21,12 @@ Vue.use(VueTools)
 import GeonetworkPlugin from './geonetwork'
 Vue.use(GeonetworkPlugin)
 
+// import Keycloak  from 'keycloak-js'
+//export let keycloak = Keycloak({
+//  url: process.env.SSO_URL,
+//  realm: process.env.SSO_REALM,
+//  clientId: process.env.SSO_CLIENT_ID
+//})
 import makeAuth from './auth.js'
 import makeStore from './store'
 
@@ -67,12 +74,11 @@ let launch = function () {
   })
 }
 
-if (!keycloak) {
-  // launch the Vue app
-  launch()
-} else {
+if (keycloak) {
   keycloak.init({
-    onLoad: 'check-sso'
+    onLoad: 'check-sso',
+    promiseType: 'native',
+    checkLoginIframe: false
   }).then(function (authenticated) {
     if (authenticated) {
        if (keycloak.tokenParsed) {
@@ -101,8 +107,22 @@ if (!keycloak) {
     } else {
       console.log('USER NOT AUTHENTICATED')
     }
+    // Met à jour le token toutes les 3 minutes 30
+    function updateSSoToken() {
+        setTimeout(function () {
+      keycloak.updateToken(200000).then(function(token) {
+        // POUR LES APPLICATIONS CATALOGUE AERIS :
+//        let user = store.getters.getUser;
+//        user.token = keycloak.token;
+      }),
+      updateSSoToken();
+        }, 200000);
+    }
+    updateSSoToken();
     launch()
   })
+} else {
+  launch()
 }
 
 

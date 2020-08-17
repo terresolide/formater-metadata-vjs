@@ -14,13 +14,14 @@
  
        <header style="width:100%;margin-left:5px;height:45px;margin-bottom:5px;border: 1px solid #ccc; 
 box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.2);text-align:right;">
+        <formater-service v-if="$route.name !== 'FormaterLogins'" v-for="(service, index) in services" :api="service.api" :domain="service.domain"></formater-service>
         {{email}}
         <a v-if="!email" @click="login">Login</a>
         <a v-else @click="logout">Logout</a>
          | <a @click='getFlatsimCliendId'>test</a>
          
 </header>
-      <iframe id="myIframe" style="display:none;"src='' @load="getUrl" ></iframe>
+  <!--     <iframe id="myIframe" style="display:none;"src='' @load="getUrl" ></iframe>
 -->
       <div id="view">
         <div id="page">
@@ -33,11 +34,12 @@ box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.2);text-align:right;">
 <script>
  import {keycloak} from './main.js'
  import AerisTheme from 'aeris-commons-components-vjs/src/aeris-theme/aeris-theme.vue'
-
+ import FormaterService from '@/components/formater-service.vue'
  export default {
     name: 'App',
     components: {
-      AerisTheme
+      AerisTheme,
+      FormaterService
     },
     props: {
     },
@@ -47,6 +49,9 @@ box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.2);text-align:right;">
     computed: {
       email () {
         return this.$store.getters['user/email']
+      },
+      services () {
+        return this.$store.getters['services/all']
       }
     },
     data () {
@@ -56,11 +61,8 @@ box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.2);text-align:right;">
       }
     },
     mounted () {
-       this.iframe = this.$el.querySelector('#myIframe')
-       console.log(this.iframe)
-       
-       
-       
+//        this.iframe = this.$el.querySelector('#myIframe')
+//        console.log(this.iframe)      
     },
     methods: {
       login () {

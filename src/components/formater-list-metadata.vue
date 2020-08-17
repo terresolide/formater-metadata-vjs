@@ -24,6 +24,10 @@ export default {
 //     list: {
 //       type: Array,
 //       default: null
+// //     },
+//     auth: {
+//       type: String,
+//       default: null
 //     },
     depth: {
       type: Number,
