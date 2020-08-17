@@ -16,6 +16,7 @@
 box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.2);text-align:right;">
         <formater-service v-if="$route.name !== 'FormaterLogins'" v-for="(service, index) in services" :key="index" :api="service.api" :domain="service.domain"></formater-service>
         {{email}}
+        <formater-authentication></formater-authentication>
         <a v-if="!email" @click="login">Login</a>
         <a v-else @click="logout">Logout</a>
          | <a @click='getFlatsimCliendId'>test</a>
@@ -38,10 +39,12 @@ box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.2);text-align:right;">
  console.log(jwt_decode(token))
  import AerisTheme from 'aeris-commons-components-vjs/src/aeris-theme/aeris-theme.vue'
  import FormaterService from '@/components/formater-service.vue'
+ import FormaterAuthentication from '@/components/formater-authentication.vue'
  export default {
     name: 'App',
     components: {
       AerisTheme,
+      FormaterAuthentication,
       FormaterService
     },
     props: {
@@ -64,6 +67,7 @@ box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.2);text-align:right;">
       }
     },
     mounted () {
+        // this.$router.push('/')
 //        this.iframe = this.$el.querySelector('#myIframe')
 //        console.log(this.iframe)      
     },

@@ -1,6 +1,6 @@
 <template>
  <span class="mtdt-service">
- <div class="mtdt-tab" @click="start" style="color:darkred;border:1px solid blackred;border-radius:3px;">Autorise {{this.domain}} to acess your data</div>
+ <div class="mtdt-tab" @click="start" style="display:inline-block;color:darkred;border:1px solid blackred;border-radius:3px;">Autorise {{this.domain}} to acess your data</div>
 <!--   <iframe :show="false" style="display:none;" :src="src" @load="getCode"></iframe>
  --></span>
 </template>

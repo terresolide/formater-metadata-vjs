@@ -68,13 +68,50 @@ let launch = function () {
       i18n,
       store,
       router,
-      components: { App }
+      components: { App },
+      beforeCreate(e) {
+        if (document.location.href.indexOf('/login') > 0 ||
+            document.location.href.indexOf('/logout') > 0) {
+          return
+        }
+        var split = window.location.href.split(/\&|\?/)
+        console.log(split)
+        var result = []
+        split.forEach(function(tab) {
+          var value = tab.split('=')
+          if (value.length > 1) {
+            result[value[0]] = value[1]
+          }
+        })
+        console.log(result)
+        if (!result['error'] && !result['code']) { 
+          var url = 'https://sso.aeris-data.fr/auth/realms/test/protocol/openid-connect/auth?client_id=formater-vjs&redirect_uri=' + encodeURIComponent(window.location.href) + '&state=cddf3af8-a1f8-4365-a47f-5f964c047c33&response_mode=fragment&response_type=code&scope=openid&nonce=f932a31d-b20a-422f-a210-277913cbc84a&prompt=none'
+          window.location.href = url
+        }
+        if (result['code']) {
+          console.log('commit code', result['code'])
+          // store.commit('auth/code', result['code'])
+        }
+        delete result['code']
+        delete result['error']
+        delete result['state']
+        delete result['session_state']
+        var params = Object.keys(result).map(function (key) {
+          console.log(key)
+          return key + '=' + result[key]
+        }).join('&')
+  
+        
+        console.log(params)
+         window.location.replace(split[0] + (params.length > 0 ? ('?' + params) : ''))
+        
+      }
     })
   
   })
 }
 
-if (keycloak) {
+if (keycloak.truc) {
   keycloak.init({
     onLoad: 'check-sso',
     promiseType: 'native',
