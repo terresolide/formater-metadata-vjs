@@ -49,7 +49,7 @@
       <div v-if="tabs.search" v-show="currentTab === 'search'">
            
            <formater-paging  :uuid="uuid"  :depth="depth" :type="describe ? 'opensearch': 'geonetwork'"></formater-paging>
-           <formater-list-metadata  :depth="depth" ></formater-list-metadata>
+           <formater-list-metadata :service="domain" :depth="depth" ></formater-list-metadata>
       </div>
       <!--  others tab -->
       <div v-if="currentTab === 'main'" style="margin-top:20px;">
@@ -158,23 +158,6 @@ export default {
 
     this.popstateListener = this.close.bind(this)
     document.addEventListener('popstate', this.popstateListener)
-//     this.keydownListener = this.checkEscape.bind(this)
-//     document.addEventListener('keydown', this.keydownListener)
-//     var post = {
-//         "clientId":"lJ9NjcIZLGYkgRzvRlBDQS_LeVoa",
-//         "code":"62d32c7eb43e579b82713f8d04cfe7",
-//         "redirectUri": "https://muscatemaj-pp.theia-land.fr/atdistrib/rocket/",
-//          "state": "q9m4whb4nvldywjh7oahco"
-//     }
-// //      this.$http.get('https://muscatemaj-pp.theia-land.fr/atdistrib/resto2/api/collections//describe.xml').then(
-// //         response => console.log(response));
-// //     this.$http.post('https://muscatemaj-pp.theia-land.fr/atdistrib/resto2/api/auth/theia', JSON.stringify(post), {credentials: true}).then(
-// //          response => console.log(response));
-//      var xhr = new XMLHttpRequest();
-//     xhr.open('POST', 'https://muscatemaj-pp.theia-land.fr/atdistrib/resto2/api/auth/theia', true);
-//   //  xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-//     xhr.withCredentials = true;
-//     xhr.send(JSON.stringify(post));
   },
   mounted () {
    if (this.metadata) {

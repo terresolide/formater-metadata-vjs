@@ -21,6 +21,9 @@ Vue.use(VueTools)
 import GeonetworkPlugin from './geonetwork'
 Vue.use(GeonetworkPlugin)
 
+import ToolsPlugin from '@/modules/tools.js'
+Vue.use(ToolsPlugin)
+
 // import Keycloak  from 'keycloak-js'
 //export let keycloak = Keycloak({
 //  url: process.env.SSO_URL,
@@ -70,97 +73,46 @@ if (config.lang) {
       router,
       components: { App },
       beforeCreate(e) {
-        if (!store.state.auth || document.location.href.indexOf('/login') > 0 ||
-            document.location.href.indexOf('/logout') > 0) {
+        if (!process.env.SSO_URL || !store.state.auth || document.location.href.indexOf('login') > 0 ||
+            document.location.href.indexOf('/logout') > 0 || document.location.href.indexOf('state=php') > 0) {
+          console.log(document.location.href)
+          if (document.location.href.indexOf('state=php') > 0) {
+            var regex = new RegExp(/^(.*\/)\?(.*)#\/$/)
+            var found = document.location.href.match(regex)
+            // var found = document.location.href.match(/^(.*\/)\?(.*)#\/$/g)
+            location = found[1] + '#/login?' + found[2]
+            window.location.replace(location)
+          }
           return
         }
-        var split = window.location.href.split(/\&|\?/)
-        console.log(split)
-        var result = []
-        split.forEach(function(tab) {
-          var value = tab.split('=')
-          if (value.length > 1) {
-            result[value[0]] = value[1]
-          }
+        var location = this.$custURL(window.location.href)
+        this.$store.commit('user/initAuth', {
+          clientId: process.env.SSO_CLIENT_ID, 
+          ssoUrl: process.env.SSO_URL,
+          realm: process.env.SSO_REALM
         })
-        console.log(result)
-        if (!result['error'] && !result['code']) { 
-          var url = 'https://sso.aeris-data.fr/auth/realms/test/protocol/openid-connect/auth?client_id=formater-vjs&redirect_uri=' + encodeURIComponent(window.location.href) + '&state=cddf3af8-a1f8-4365-a47f-5f964c047c33&response_mode=fragment&response_type=code&scope=openid&nonce=f932a31d-b20a-422f-a210-277913cbc84a&prompt=none'
-          window.location.href = url
-        }
-        if (result['code']) {
-          console.log('commit code', result['code'])
-          store.commit('user/setCode', result['code'])
-        }
-        delete result['code']
-        delete result['error']
-        delete result['state']
-        delete result['session_state']
-        var params = Object.keys(result).map(function (key) {
+        var paramsStr = Object.keys(location.params).map(function (key) {
           console.log(key)
-          return key + '=' + result[key]
+          return key + '=' + location.params[key]
         }).join('&')
-  
+        var redirectUri = location.base + (paramsStr.length > 0 ? ('?' + paramsStr) : '')
+        if (!location.authParams['error'] && !location.authParams['code']) { 
+          var url = this.$store.getters['user/loginUrl']
+          var loginParams = this.$store.getters['user/loginParams'](redirectUri, false)
+          url += '?' + loginParams
+          window.location.href = url
+          return
+        }
+        if (location.authParams['code']) {
+          console.log('commit code', location.authParams['code'])
+          store.commit('user/setRedirectUri', redirectUri)
+          store.commit('user/setCode', location.authParams['code'])
+        }
         
-        console.log(params)
-         window.location.replace(split[0] + (params.length > 0 ? ('?' + params) : ''))
+        window.location.replace(redirectUri)
         
       }
     })
   
   })
-// }
-
-//if (keycloak.truc) {
-//  keycloak.init({
-//    onLoad: 'check-sso',
-//    promiseType: 'native',
-//    checkLoginIframe: false
-//  }).then(function (authenticated) {
-//    if (authenticated) {
-//       if (keycloak.tokenParsed) {
-//        var username = keycloak.tokenParsed.preferred_username
-//         var email = keycloak.tokenParsed.email
-//  
-//        // Le rôle est porté par le back-end (formater-php)
-//        if (keycloak.tokenParsed.resource_access['formater-php']) {
-//          var resourceRoles = keycloak.tokenParsed.resource_access['formater-php'].roles
-//        }
-//  
-//        var realmRoles = keycloak.tokenParsed.realm_access.roles
-//  
-//        var roles = []
-//        if (realmRoles) {
-//          roles = roles.concat(realmRoles)
-//        }
-//        if (resourceRoles) {
-//          roles = roles.concat(resourceRoles)
-//        } 
-//        // POUR LES APPLICATIONS CATALOGUE AERIS
-//        let user = { type: 'aeris', email: email, roles: roles, username: username }
-//        store.commit('user/set', user)
-//        console.log('USER AUTHENTICATED') 
-//      }
-//    } else {
-//      console.log('USER NOT AUTHENTICATED')
-//    }
-//    // Met à jour le token toutes les 3 minutes 30
-//    function updateSSoToken() {
-//        setTimeout(function () {
-//      keycloak.updateToken(200000).then(function(token) {
-//        // POUR LES APPLICATIONS CATALOGUE AERIS :
-////        let user = store.getters.getUser;
-////        user.token = keycloak.token;
-//      }),
-//      updateSSoToken();
-//        }, 200000);
-//    }
-//    updateSSoToken();
-//    launch()
-//  })
-//} else {
-//  launch()
-//}
-//
-
 

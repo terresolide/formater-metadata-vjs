@@ -1,6 +1,6 @@
 <template>
  <span class="mtdt-service">
- <div class="mtdt-tab" @click="start" style="display:inline-block;color:darkred;border:1px solid blackred;border-radius:3px;">Autorise {{this.domain}} to acess your data</div>
+ <div class="mtdt-tab" v-show="email" @click="searchCode" style="display:inline-block;color:darkred;border:1px solid blackred;border-radius:3px;">Autorise {{this.domain}} to acess your data</div>
 <!--   <iframe :show="false" style="display:none;" :src="src" @load="getCode"></iframe>
  --></span>
 </template>
@@ -25,6 +25,19 @@ export default {
     },
     token () {
       return this.$store.getters['services/token'](this.domain)
+    },
+    redirectUri () {
+      
+      var found = window.location.href.match(/^(.*\/)#/)
+      if (found && found.length > 1) {
+        console.log(found[1])
+       return found[1]
+      } else {
+        return null
+      }
+    }, 
+    authUrl () {
+      return this.$store.getters['user/loginUrl']
     }
   },
   data() {
@@ -33,8 +46,8 @@ export default {
       root: null,
       clientId: null,
       domain: null,
-      baseUrl: null,
-      codeListener: null
+      codeListener: null,
+      state: null
     }
   },
   created () {
@@ -49,52 +62,53 @@ export default {
 //     console.log(this.baseUrl)
     this.host = url.protocol + '//' + url.hostname
     this.domain = url.hostname
-    var found = window.location.href.match(/.*\/#/)
-    if (found && found.length > 0) {
-      this.baseUrl = found[0]
-    }
+    this.getClientId()
+    this.codeListener = this.getMessage.bind(this)
+    window.addEventListener('message', this.codeListener)
+    // var location = this.$custURL(window.location.href)
+    // this.redirectUri = location.base + '/login?'
+    
+   
     // this.$store.commit('services/add', {domain: 'machin', token: 'untoken'})
     // console.log(this.token)
 //     this.getClientId()
 //       .then(clientId => this.searchCode(clientId))
     
   },
+  destroyed () {
+    window.removeEventListener('message', this.codeListener)
+    this.codeListener = null
+  },
   methods: {
-    start () {
-      this.getClientId()
-      .then(clientId => this.searchCode(clientId))
-    },
     getClientId () {
-      var _this = this
       var url = this.host + '/atdistrib/resto2/api/auth/aeris/clientid'
-      return new Promise ((resolve, reject) => {
-	      _this.$http.get(url).then(function (response) {
-	        if (response.body && response.body.clientId) {
-	          _this.clientId = response.body.clientId
-	          resolve(_this.clientId)
-	        } else {
-	          reject()
-	        }
-	      }, response => reject(response))
-      })
+      this.$http.get(url, {credentials: true}).then(function (response) {
+        if (response.body && response.body.clientId) {
+          this.clientId = response.body.clientId
+          this.state = 'php' + btoa(this.clientId).replace(/=|\+|\//gm, '0')
+        }
+	    })
     },
-    searchCode (clientId) {
-      console.log(clientId)
-      if (!clientId) {
+    searchCode () {
+      if (!this.clientId) {
         return null
       }
-      console.log('continue')
+      console.log(this.redirectUri)
       var params = {
+          redirect_uri: encodeURIComponent(this.redirectUri),
           response_type: 'code',
-          client_id: clientId,
+          client_id: this.clientId,
           scope: 'openid',
-          state: this.domain,
-          redirect_uri: this.baseUrl + 'login/'
+          state: this.state,
+          prompt: 'none'
+          
       }
-      var url = process.env.SSO_URL + '/realms/' + process.env.SSO_REALM + '/protocol/openid-connect/auth?' 
-      url += Object.keys(params).map(function (key) {
-        return key + '=' + encodeURIComponent(params[key])
+      var url = this.authUrl + '?'
+      var paramsStr = Object.keys(params).map(function (key) {
+        return key + '=' + params[key]
       }).join('&')
+      url += paramsStr
+      console.log(url)
       // this.src = url
 //       window.onerror = function (e) {
 //         console.log('erreur')
@@ -102,17 +116,33 @@ export default {
 //       window.onload = function (e) {
 //         console.log(e)
 //       }
-      window.addEventListener('message', function (e) {
-        console.log('receive message')
-        console.log(e.data)
-      }, false);
-      var childWin = window.open(url, "_blank", "height=750, width=850, status=yes, toolbar=no, menubar=no, location=no,addressbar=no");
-      console.log(childWin)
-//       childWin.onload = function (e) {
-//         console.log(e.data)
-//         console.log('load window')
-//       }
-//       console.log(window.opener)
+     
+      window.open(url, "_blank", "height=750, width=850, status=yes, toolbar=no, menubar=no, location=no,addressbar=no");
+    },
+    getMessage(e) {
+      console.log(e.data.code)
+      console.log(this.state)
+      console.log(e.data.state)
+      if (e.data.code && e.data.state === this.state) {
+        this.getToken(e.data.code)
+      } 
+    },
+    getToken (code) {
+      console.log('GET TOKEN')
+      console.log(code)
+      var url = this.host + '/atdistrib/resto2/api/auth/aeris'
+      var params = {
+        code: code,
+        redirect_uri: this.redirectUri
+      }
+      this.$http.post(url, params, 
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application.json'
+         }
+      })
+      .then(resp => console.log(resp.body))
     },
     getCode (e) {
       if (!this.clientId) {
@@ -131,9 +161,6 @@ export default {
       var token = url.searchParams.get('token')
       this.count = this.count + 1
       console.log(this.count)
-    },
-    getToken () {
-      
     }
   }
 }

@@ -58,6 +58,13 @@
       }
     },
     mounted () {
+      console.log(window.location.href)
+      var machin = 'http://localhost:8080/?state=xxZm9ybWF0ZXItcGhw&session_state=a95f3c5f-883b-42b1-9d91-41ee57d065d9&code=9bdb27ba-5cb1-4ae2-8b7a-289c8518832d.a95f3c5f-883b-42b1-9d91-41ee57d065d9.8039a281-bf0e-4b54-85bb-933f579728ec#/'
+      var regex = new RegExp(/^(.*\/)\?(.*)#\/$/)
+      var found = machin.match(regex)
+      console.log(found)
+     // location = found[1] + '#/login?' + found[2]
+      
       console.log(this.$store.getters['user/clientId'])
         // this.$router.push('/')
 //        this.iframe = this.$el.querySelector('#myIframe')
