@@ -4,33 +4,18 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width"/>
    <style>
-   a{
-     color:#754a15;
-   }
-   a:hover{
-     color:#8c0209;
-   }
-   body, button, input, select, textarea {
-    color: #333;
-    font-family: 'Roboto',Arial,sans-serif;
-    font-size: 1rem;
-    line-height: 1.7;
-}
     </style>
-    <title>Metadata visualiser</title>
+    <title>Metadata visualiser with metadata file</title>
   </head>
   <body>
- <!--   <div>detail: type,... voir geonetwork</div>
- <div>step 1: groupOwner, facetFormater</div>
- <div>step 2: groupOwner, facetFormater, resolution</div>
- <div>step 3: status, serviceType, denominator, resolution</div>-->
-  <div id="formaterCatalogue"></div>
 
-  <script id="formaterConfig" type="application/json"  >
+    <div id="formaterCatalogue"></div>
+
+   <script id="formaterConfig" type="application/json"  >
     {
      "lang": "fr", 
-     "https://cdn.jsdelivr.net/gh/terresolide/formater-map-bbox-vjs@3.0.1/public/metadata/tibet_fr.json",
-      "summaryType": {
+     "metadata": "https://cdn.jsdelivr.net/gh/terresolide/formater-map-bbox-vjs@3.0.2/public/metadata/grenade_fr.json",
+     "summaryType": {
        "step1": "step1",
        "step2": "step3"
      },
@@ -47,7 +32,7 @@
      }
     }
     </script> 
-	 <script src="dist/build.js"></script> 
+   <script src="dist/build.js"></script> 
 
   </body>
 </html>
