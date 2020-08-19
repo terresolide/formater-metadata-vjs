@@ -186,6 +186,7 @@ export default {
 //      )
      var layer = event.detail.layer
      var metaId = event.detail.id
+     var token = event.detail.token
      var bounds = this.searchBboxBoundsById(metaId)
      var newLayer = null
      switch (layer.type) {
@@ -206,6 +207,9 @@ export default {
            layers: layer.name,
            format: 'image/png',
            opacity: 0.5
+         }
+         if (token && token !== -1) {
+           layer.options._bearer = token
          }
        }
        this.addWMSLayer(layer, metaId)

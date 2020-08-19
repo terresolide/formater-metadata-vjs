@@ -1,6 +1,7 @@
 <template>
  <span class="mtdt-service">
- <div class="mtdt-tab" v-show="email" @click="searchCode" style="display:inline-block;color:darkred;border:1px solid blackred;border-radius:3px;">Autorise {{this.domain}} to acess your data</div>
+ <div class="mtdt-tab" v-show="email" @click="searchCode" style="display:inline-block;color:darkred;border:1px solid blackred;border-radius:3px;">
+ Autorise {{this.service.domain}} to acess your data</div>
 <!--   <iframe :show="false" style="display:none;" :src="src" @load="getCode"></iframe>
  --></span>
 </template>
@@ -11,16 +12,13 @@ export default {
   components: {
   },
   props: {
-    api: {
-      type: String,
+    service: {
+      type: Object,
       default: null
     }
   },
   computed: {
     email () {
-//       if (!this.find) {
-//         this.searchCode()
-//       }
       return this.$store.getters['user/email']
     },
     token () {
@@ -51,29 +49,9 @@ export default {
     }
   },
   created () {
-    var url = new URL(this.api)
-    if (url.pathname.indexOf('atdistrib/resto2') > 0) {
-      this.type = 'resto2'
-    }
-    console.log(url.host)
-    console.log(url.hash)
-    console.log(window.location.href)
-//     this.baseUrl = base.hash
-//     console.log(this.baseUrl)
-    this.host = url.protocol + '//' + url.hostname
-    this.domain = url.hostname
     this.getClientId()
     this.codeListener = this.getMessage.bind(this)
-    window.addEventListener('message', this.codeListener)
-    // var location = this.$custURL(window.location.href)
-    // this.redirectUri = location.base + '/login?'
-    
-   
-    // this.$store.commit('services/add', {domain: 'machin', token: 'untoken'})
-    // console.log(this.token)
-//     this.getClientId()
-//       .then(clientId => this.searchCode(clientId))
-    
+    window.addEventListener('message', this.codeListener)    
   },
   destroyed () {
     window.removeEventListener('message', this.codeListener)
@@ -81,10 +59,11 @@ export default {
   },
   methods: {
     getClientId () {
-      var url = this.host + '/atdistrib/resto2/api/auth/aeris/clientid'
-      this.$http.get(url, {credentials: true}).then(function (response) {
+      var url = this.service.clientIdUrl
+      this.$http.get(url).then(function (response) {
         if (response.body && response.body.clientId) {
           this.clientId = response.body.clientId
+          this.$store.commit('services/setClientId', {id: this.service.id, clientId: this.clientId})
           this.state = 'php' + btoa(this.clientId).replace(/=|\+|\//gm, '0')
         }
 	    })
@@ -93,7 +72,6 @@ export default {
       if (!this.clientId) {
         return null
       }
-      console.log(this.redirectUri)
       var params = {
           redirect_uri: encodeURIComponent(this.redirectUri),
           response_type: 'code',
@@ -108,15 +86,6 @@ export default {
         return key + '=' + params[key]
       }).join('&')
       url += paramsStr
-      console.log(url)
-      // this.src = url
-//       window.onerror = function (e) {
-//         console.log('erreur')
-//       }
-//       window.onload = function (e) {
-//         console.log(e)
-//       }
-     
       window.open(url, "_blank", "height=750, width=850, status=yes, toolbar=no, menubar=no, location=no,addressbar=no");
     },
     getMessage(e) {
@@ -130,10 +99,12 @@ export default {
     getToken (code) {
       console.log('GET TOKEN')
       console.log(code)
-      var url = this.host + '/atdistrib/resto2/api/auth/aeris'
+      var url = this.service.authUrl
       var params = {
         code: code,
-        redirect_uri: this.redirectUri
+        state: this.state,
+        clientId: this.clientId,
+        redirectUri: this.redirectUri
       }
       this.$http.post(url, params, 
       {
@@ -142,25 +113,12 @@ export default {
           'Accept': 'application.json'
          }
       })
-      .then(resp => console.log(resp.body))
+      .then(resp => this.setToken(resp.body))
     },
-    getCode (e) {
-      if (!this.clientId) {
-        return null
+    setToken (data) {
+      if (data.token) {
+        this.$store.commit('services/setToken', {id: this.service.id, token: data.token})
       }
-      console.log(e.target.contentDocument.URL)
-      var url = new URL(e.target.contentDocument.URL);
-      var code = url.searchParams.get("code");
-      console.log('code = ', code)
-      var app = url.searchParams.get('state')
-      console.log('app = ', app)
-      alert(code)
-      if (code && app) {
-        this.getToken(app, code, url)
-      }
-      var token = url.searchParams.get('token')
-      this.count = this.count + 1
-      console.log(this.count)
     }
   }
 }

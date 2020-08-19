@@ -49,7 +49,7 @@
       <div v-if="tabs.search" v-show="currentTab === 'search'">
            
            <formater-paging  :uuid="uuid"  :depth="depth" :type="describe ? 'opensearch': 'geonetwork'"></formater-paging>
-           <formater-list-metadata :service="domain" :depth="depth" ></formater-list-metadata>
+           <formater-list-metadata :depth="depth" ></formater-list-metadata>
       </div>
       <!--  others tab -->
       <div v-if="currentTab === 'main'" style="margin-top:20px;">
@@ -139,7 +139,7 @@ export default {
      popstateListener: null,
      keydownListener: null,
      describe: null,
-     domain: null,
+     serviceId: -1,
      type: 'geonetwork',
      aerisSearchListener: null,
      aerisResetListener: null
@@ -187,6 +187,10 @@ export default {
 //       },
       close (event) {
         event.preventDefault();
+        if (this.serviceId >= 0) {
+          // remove current service
+          this.$store.commit('services/reset')
+        }
         this.$emit('close');
       },
       computeHasChild (val) {
@@ -211,8 +215,7 @@ export default {
         this.mapping = osParameters.mapping
         if (osParameters.api) {
           var url = new URL(osParameters.api)
-          this.domain = url.hostname
-    	    this.$store.commit('services/add', {domain: url.hostname, api: osParameters.api})
+    	    this.serviceId = this.$store.commit('services/add', {domain: url.hostname, api: osParameters.api})
         }
         this.disableType =  this.describe ? 'opensearch' : 'geonetwork'
         this.$emit('parametersChange', {osParameters: this.osParameters, mapping: this.mapping, type: this.disableType, depth: this.depth})

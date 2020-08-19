@@ -1,7 +1,7 @@
 <template>
  <span class="mtdt-authentication">
  
-    <formater-service v-show="currentService === index" v-for="(service, index) in services" :key="index" :api="service.api" :domain="service.domain"></formater-service>
+    <formater-service v-show="currentService === index" v-for="(service, index) in services" :key="index" :service="service"></formater-service>
     {{email}}
 	  <a @click="logout" v-if="email">Logout</a>
 	  <a @click="login" v-else >Login</a>

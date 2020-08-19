@@ -34,12 +34,12 @@
    </div>
    <div v-if="type === 'metadata'"></div>
     <div v-if="layers && (layers.length > 1 || (type === 'metadata' && layers.length > 0))">
-      <div class="mtdt-related-type fa fa-globe" :style="{backgroundColor: layerAdded ? '#8c0209' : primary}" :title="$t('display_layer')">
+      <div class="mtdt-related-type fa fa-globe" :class="{disabled: !token}" :style="{backgroundColor: layerAdded ? '#8c0209' : primary}" :title="$t('display_layer')">
           <span class="fa fa-caret-down" v-if="type === 'cartouche'"></span>
        </div>
        <div class="mtdt-expand">
             <ul class="mtdt-layers">
-            <li v-for="(layer, index) in layers" :key="index" @click="changeLayer(layer);">
+            <li v-for="(layer, index) in layers" :class="{disabled: !token}" :key="index" @click="changeLayer(layer);">
              <i class="fa" :class="{'fa-square-o': !layer.checked,'fa-check-square-o': layer.checked}"  :data-layer="index"></i>
              <div  :title="layer.description">{{layer.name}}</div>
            </li>
@@ -77,19 +77,26 @@
     <div v-if="download && download.length === 1 && type === 'cartouche'">
        <a v-if="download[0].type && download[0].type === 'WWW:DOWNLOAD-1.0-link--download'" :href="download[0].url" target="_blank" :style="{backgroundColor: primary}" class="mtdt-related-type fa fa-download" :title="$t('download_data')">
        </a>
-       <a v-else class="mtdt-related-type fa fa-download" :class="{disabled:download[0].disabled}" :style="{backgroundColor: primary}" :title="$t('download_data')" @click="triggerDownload(0)">
+               
+       <a v-else-if="token && token !== -1" class="mtdt-related-type fa fa-download" 
+       :href="download[0].url + '?_bearer=' + token" :class="{disabled:download[0].disabled || !token}" 
+       :style="{backgroundColor: primary}" :title="$t('download_data')">
+         
+      </a> 
+        <a v-else class="mtdt-related-type fa fa-download" :class="{disabled:download[0].disabled || !token}" :style="{backgroundColor: primary}" :title="$t('download_data')" @click="triggerDownload(0)">
          
       </a> 
     </div>
     <div v-if="download && (download.length >1 || (type === 'metadata' && download.length > 0))">
-       <div class="mtdt-related-type fa fa-download"  :style="{backgroundColor: primary}" :title="$t('download_data')">
+       <div class="mtdt-related-type fa fa-download" :class="{disabled: !token}" :style="{backgroundColor: primary}" :title="$t('download_data')">
          <span v-if="type === 'cartouche'" class="fa fa-caret-down"></span>
       </div> 
       <div v-if="type === 'metadata'"></div>
       <div class="mtdt-expand mtdt-links" >
            <ul >
-           <li v-for="(file, index) in download" :key="index"  :class="{disabled: file.disabled}">
+           <li v-for="(file, index) in download" :key="index"  :class="{disabled: file.disabled || !token}">
               <a  v-if="file.type && file.type === 'WWW:DOWNLOAD-1.0-link--download'" :href="file.url" :title="file.description" target="_blank">{{file.name? file.name: $t('download_data')}}</a>
+              <a  v-else-if="token !== -1" :title="file.description" :href="file.url + '?_bearer=' + token">{{file.name? file.name: $t('download_data')}}</a>
               <a  v-else :title="file.description" @click="triggerDownload(index);">{{file.name? file.name: $t('download_data')}}</a>
           </li>
           </ul>    
@@ -212,6 +219,9 @@
     		  })
     	  }
 		  return platforms
+      },
+      token () {
+        return this.$store.getters['services/token']
       }
     },
     data () {
@@ -268,7 +278,7 @@
            //   this.meta.layers[index].checked = !this.meta.layers[index].checked
 
          if (layer.checked) {
-           var event = new CustomEvent('fmt:addLayerEvent', {detail: {layer: layer, id: this.id}})
+           var event = new CustomEvent('fmt:addLayerEvent', {detail: {layer: layer, id: this.id, token: this.token}})
            document.dispatchEvent(event)
            // this.layerAdded = true
          } else {
@@ -301,8 +311,12 @@
          }
          
          var _this = this
+         var url = this.download[index].url 
+         if (this.token && this.token !== -1) {
+           url += '?_bearer=' + this.token
+         }
 
-         this.$http.get(this.download[index].url )
+         this.$http.get(url )
             // this.$http.get('http://api.formater/interface-services/' , {responseType: 'blob', downloadProgress: downloadProgress})
              .then( response => {
                console.log(response)
