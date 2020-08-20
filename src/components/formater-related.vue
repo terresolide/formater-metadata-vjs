@@ -30,7 +30,7 @@
     <div v-if="layers && layers.length === 1 && type === 'cartouche'">
       <div class="mtdt-related-type fa fa-globe" @click="changeLayer(layers[0])" :style="{backgroundColor: layerAdded ? '#8c0209' : primary}" :title="$t('display_layer')">
           
-       </div> 
+    </div> 
    </div>
    <div v-if="type === 'metadata'"></div>
     <div v-if="layers && (layers.length > 1 || (type === 'metadata' && layers.length > 0))">
@@ -96,7 +96,7 @@
            <ul >
            <li v-for="(file, index) in download" :key="index"  :class="{disabled: file.disabled || !token}">
               <a  v-if="file.type && file.type === 'WWW:DOWNLOAD-1.0-link--download'" :href="file.url" :title="file.description" target="_blank">{{file.name? file.name: $t('download_data')}}</a>
-              <a  v-else-if="token !== -1" :title="file.description" :href="file.url + '?_bearer=' + token">{{file.name? file.name: $t('download_data')}}</a>
+              <a  v-else-if="token && token !== -1" :title="file.description" :href="file.url + '?_bearer=' + token">{{file.name? file.name: $t('download_data')}}</a>
               <a  v-else :title="file.description" @click="triggerDownload(index);">{{file.name? file.name: $t('download_data')}}</a>
           </li>
           </ul>    

@@ -1,7 +1,7 @@
 <template>
  <span class="mtdt-service">
- <div class="mtdt-tab" v-show="email" @click="searchCode" style="display:inline-block;color:darkred;border:1px solid blackred;border-radius:3px;">
- Autorise {{this.service.domain}} to acess your data</div>
+ <div class="mtdt-tab" v-show="email && clientId && service.token === null" @click="searchCode" style="display:inline-block;color:darkred;border:1px solid blackred;border-radius:3px;">
+ Autorise {{service.domain}} to acess your data</div>
 <!--   <iframe :show="false" style="display:none;" :src="src" @load="getCode"></iframe>
  --></span>
 </template>
@@ -20,9 +20,6 @@ export default {
   computed: {
     email () {
       return this.$store.getters['user/email']
-    },
-    token () {
-      return this.$store.getters['services/token'](this.domain)
     },
     redirectUri () {
       
@@ -66,7 +63,7 @@ export default {
           this.$store.commit('services/setClientId', {id: this.service.id, clientId: this.clientId})
           this.state = 'php' + btoa(this.clientId).replace(/=|\+|\//gm, '0')
         }
-	    })
+	    }, resp => console.log('NO_CLIENT_ID'))
     },
     searchCode () {
       if (!this.clientId) {
@@ -89,9 +86,6 @@ export default {
       window.open(url, "_blank", "height=750, width=850, status=yes, toolbar=no, menubar=no, location=no,addressbar=no");
     },
     getMessage(e) {
-      console.log(e.data.code)
-      console.log(this.state)
-      console.log(e.data.state)
       if (e.data.code && e.data.state === this.state) {
         this.getToken(e.data.code)
       } 

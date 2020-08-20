@@ -28,7 +28,7 @@ export default {
      if (service) {
        return service.token
      } else {
-       return null
+       return -1
      }
    },
    token (state, getters) {
@@ -44,6 +44,11 @@ export default {
       state.sso = ssoname
     },
     reset (state) {
+      state.services.forEach(function(service, index) {
+        state.services[index].token = null
+      })
+    },
+    resetCurrent (state) {
       state.current = -1
     },
     add (state, service) {
@@ -65,7 +70,7 @@ export default {
          }
        }
        state.current = index
-       return index
+       // return index
 //      let service = new Service(api)
 //      console.log(service.domain)
 //      console.log(service.type)

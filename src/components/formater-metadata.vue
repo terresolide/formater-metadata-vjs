@@ -167,6 +167,7 @@ export default {
    }
   },
   destroyed () {
+    
     document.removeEventListener('popstate', this.popstateListener)
     this.popstateListener = null
 //     document.removeEventListener('keydown', this.keydownListener)
@@ -188,8 +189,7 @@ export default {
       close (event) {
         event.preventDefault();
         if (this.serviceId >= 0) {
-          // remove current service
-          this.$store.commit('services/reset')
+          this.$store.commit('services/resetCurrent')
         }
         this.$emit('close');
       },
@@ -215,7 +215,8 @@ export default {
         this.mapping = osParameters.mapping
         if (osParameters.api) {
           var url = new URL(osParameters.api)
-    	    this.serviceId = this.$store.commit('services/add', {domain: url.hostname, api: osParameters.api})
+    	    this.$store.commit('services/add', {domain: url.hostname, api: osParameters.api})
+    	    this.serviceId = this.$store.getters['services/current']
         }
         this.disableType =  this.describe ? 'opensearch' : 'geonetwork'
         this.$emit('parametersChange', {osParameters: this.osParameters, mapping: this.mapping, type: this.disableType, depth: this.depth})
