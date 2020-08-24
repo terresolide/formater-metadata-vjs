@@ -45,7 +45,7 @@
     computed: {
       authEnabled () {
         return (this.$store.state.auth && this.$route.name !== 'FormaterLogin' &&
-            this.$route.name !== 'FormaterLogout' && this.$route.name !== 'FormaterHome')
+            this.$route.name !== 'FormaterLogout' )
       }
     },
     data () {
@@ -62,8 +62,11 @@
   }
 </script>
 <style>
+.mtdt-app #view {
+  position: relative;
+}
 .mtdt-app > header{
-  width: calc(100% - 10px);
+  width: calc(100% - 16px);
   margin-left:5px;
   height:40px;
   margin-bottom:5px;

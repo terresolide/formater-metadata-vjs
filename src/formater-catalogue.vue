@@ -423,7 +423,7 @@ export default {
   float:left;
 }
 .mtdt-catalogue .mtdt-column-right{
-  width:calc(100% - 325px);
+  width:calc(100% - 315px);
   float:left;
   display:box;
   margin-left:10px;

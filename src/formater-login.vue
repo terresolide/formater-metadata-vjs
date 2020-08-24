@@ -1,5 +1,6 @@
 <template>
    <div class="page-login">
+     <h1>WELCOME !</h1>
   </div>
   </template>
   <script>
@@ -20,7 +21,7 @@
         )
       }
 
-      // window.close()
+      window.close()
     }
   }
   </script>
@@ -28,6 +29,5 @@
   div.page-login {
     width:100%;
     height:100vh;
-    background:red;
   }
   </style>

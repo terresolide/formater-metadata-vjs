@@ -1,11 +1,11 @@
 <template>
  <span class="mtdt-authentication">
-  current service == {{currentService}}
     <formater-service v-show="currentService === index" v-for="(service, index) in services" :key="index" :service="service"></formater-service>
-    {{email}}
-	  <a @click="logout" v-if="email">Logout</a>
-	  <a @click="login" v-else >Login</a>
-	  <i class="fa fa-user" :style="{color:$store.state.style.primary}"></i>
+    <div v-if="!$store.state.metadata" style="display:inline-block;"> {{email}}
+		  <a @click="logout" v-if="email" class="fa fa-sign-out" title="logout"></a>
+		  <a @click="login" v-else class="fa fa-sign-in" title="login" > login</a>
+	  </div>
+	 <!--  <i class="fa fa-user" :style="{color:$store.state.style.primary}"></i>  -->
  </span>
 
 </template>
@@ -173,6 +173,9 @@ export default {
 .mtdt-authentication span,
 .mtdt-authentication  i {
   vertical-align:middle;
+}
+.mtdt-authentication a {
+  cursor: pointer;
 }
 .mtdt-authentication  i {
  font-size: 1.5rem;

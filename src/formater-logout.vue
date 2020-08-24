@@ -1,5 +1,6 @@
 <template>
    <div class="page-logout">
+     <h1>GOOD BYE!</h1>
   </div>
   </template>
   <script>
@@ -16,7 +17,7 @@
 //       if (window.parent) {
 //         window.parent.postMessage(document.location.href, document.location.origin)
 //       }
-      // window.close()
+       window.close()
     }
   }
   </script>
@@ -24,6 +25,5 @@
   div.page-login {
     width:100%;
     height:100vh;
-    background:red;
   }
   </style>
