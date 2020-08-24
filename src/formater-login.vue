@@ -8,16 +8,7 @@
   export default {
     name: 'FormaterLogin',
     mounted () {
-      // var url = new URL(document.location.href)
       var location = this.$custURL(window.location.href)
-     // var split = window.location.href.split(/\&|\?/)
-//       var result = []
-//       split.forEach(function(tab) {
-//         var value = tab.split('=')
-//         if (value.length > 1) {
-//           result[value[0]] = value[1]
-//         }
-//       })
       if (window.opener) {
         window.opener.postMessage(
           {

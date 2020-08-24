@@ -11,9 +11,9 @@
 <template>
 <div class="mtdt-app">
  <aeris-theme :primary="$store.state.style.primary" :active="true" :emphasis="$store.state.style.emphasis"></aeris-theme>
- <header>
+ <header v-if="authEnabled" >
     <formater-authentication v-if="authEnabled" ></formater-authentication>
-    <i class="fa fa-shopping-cart" style="font-size:1.5rem;opacity:0.6" :style="{color: $store.state.style.primary}"></i>
+    <!--  <i class="fa fa-shopping-cart" style="font-size:1.5rem;opacity:0.6" :style="{color: $store.state.style.primary}"></i>-->
  </header>      
 
   <!--     <iframe id="myIframe" style="display:none;"src='' @load="getUrl" ></iframe>
@@ -44,13 +44,12 @@
     },
     computed: {
       authEnabled () {
-        return (this.$store.state.auth && this.$route.name !== 'FormaterLogin' && this.$route.name !== 'FormaterLogout')
+        return (this.$store.state.auth && this.$route.name !== 'FormaterLogin' &&
+            this.$route.name !== 'FormaterLogout' && this.$route.name !== 'FormaterHome')
       }
     },
     data () {
       return {
-        iframe: null,
-        count: 0,
       }
     },
     mounted () {

@@ -177,6 +177,7 @@ export default {
   mounted () {
 //     var evt = new CustomEvent('fmt:pageChangedEvent')
 //     document.dispatchEvent(evt)
+//    this.$router.push({path: '/', query: {date: 'yys-sd-dfs'}})
   },
   destroyed () {
     document.removeEventListener('fmt:metadataEvent', this.metadataListener);

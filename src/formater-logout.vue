@@ -16,7 +16,7 @@
 //       if (window.parent) {
 //         window.parent.postMessage(document.location.href, document.location.origin)
 //       }
-      window.close()
+      // window.close()
     }
   }
   </script>
