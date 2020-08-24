@@ -2,11 +2,14 @@
 {
   "fr": {
    "need_log": "Pour accéder à toutes les données du service <b>{domain}</b>, vous devez<br /> - vous connecter <br /> - puis autoriser ce service à accéder à vos données.",
-   "need_authorize": "Pour accéder à toutes les données du service <b>{domain}</b>, vous devez l'autoriser à accéder à vos données."
+   "need_authorize": "Pour accéder à toutes les données du service <b>{domain}</b>, vous devez l'autoriser à accéder à vos données.",
+   "log_service": "Pour accéder à toutes les données du service <b>{domain}</b>, vous devez vous connecter."
    },
    "en": {
    "need_log": "To access all data of {domain} service,<br /> you must login in then authorize this service to access your personnal data.",
-   "need_authorize": "To access all data of {domain} service,<br /> you must authorize this service to access your personnal data."
+   "need_authorize": "To access all data of {domain} service,<br /> you must authorize this service to access your personnal data.",
+    "log_service": "To access all data of {domain} service,<br /> you must login to this service."
+  
    }
 }
 </i18n>
@@ -23,13 +26,12 @@
   
   <div v-else="$store.state.metadata" 
     v-html="$t('log_service', {domain: service.domain})"></div>
-  </div>
+ </div>
  <div class="mtdt-service-button" v-show="clientId && service.token === null" @click="searchCode" style="display:inline-block;color:darkred;border:1px solid blackred;border-radius:3px;">
    <span v-if="$store.state.metadata">Log to {{service.domain}}</span>
    <span v-else-if="email">Authorize {{service.domain}}</span>
 </div>
-<!--   <iframe :show="false" style="display:none;" :src="src" @load="getCode"></iframe>
- --></span>
+</span>
 </template>
 <script>
 
