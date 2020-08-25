@@ -73,6 +73,7 @@ if (config.lang) {
       router,
       components: { App },
       beforeCreate(e) {
+        
         if (!process.env.SSO_URL || !store.state.auth || document.location.href.indexOf('/login') > 0 ||
             document.location.href.indexOf('/logout') > 0 || document.location.href.indexOf('state=php') > 0) {
           if (document.location.href.indexOf('state=php') > 0) {
@@ -94,23 +95,23 @@ if (config.lang) {
         this.$store.commit('services/init', process.env.SSO_NAME)
         
         // only to auth when begin ...
-        var paramsStr = Object.keys(location.params).map(function (key) {
-          return key + '=' + location.params[key]
-        }).join('&')
-        var redirectUri = location.base + (paramsStr.length > 0 ? ('?' + paramsStr) : '')
-        if (!this.$store.state.metadata && !location.authParams['error'] && !location.authParams['code']) { 
-          var url = this.$store.getters['user/loginUrl']
-          var loginParams = this.$store.getters['user/loginParams'](redirectUri, false)
-          url += '?' + loginParams
-          window.location.href = url
-          return
-        }
-        if (location.authParams['code']) {
-          store.commit('user/setRedirectUri', redirectUri)
-          store.commit('user/setCode', location.authParams['code'])
-        }
-        
-        window.location.replace(redirectUri)
+//        var paramsStr = Object.keys(location.params).map(function (key) {
+//          return key + '=' + location.params[key]
+//        }).join('&')
+//        var redirectUri = location.base + (paramsStr.length > 0 ? ('?' + paramsStr) : '')
+//        if (!this.$store.state.metadata && !location.authParams['error'] && !location.authParams['code']) { 
+//          var url = this.$store.getters['user/loginUrl']
+//          var loginParams = this.$store.getters['user/loginParams'](redirectUri, false)
+//          url += '?' + loginParams
+//          window.location.href = url
+//          return
+//        }
+//        if (location.authParams['code']) {
+//          store.commit('user/setRedirectUri', redirectUri)
+//          store.commit('user/setCode', location.authParams['code'])
+//        }
+//        
+//        window.location.replace(redirectUri)
         
       }
     })
