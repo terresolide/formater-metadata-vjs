@@ -62,17 +62,21 @@
   }
 </script>
 <style>
+.mtdt-app {
+}
 .mtdt-app #view {
   position: relative;
 }
 .mtdt-app > header{
-  margin-left:5px;
+
   height:40px;
   margin-bottom:5px;
   padding-right: 10px;
   padding-top: 5px;
-  border: 1px solid #ccc; 
-  box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.2);
+  border-top: 3px double grey; 
+ /* box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.2);*/
+
+ 
   text-align:right;
 }
 .mtdt-app > header i {
