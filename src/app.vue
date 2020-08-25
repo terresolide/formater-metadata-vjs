@@ -40,6 +40,7 @@
     props: {
     },
     created () {
+      // this.$root.$i18n.locale = this.$store.state.lang
       // this.getCliendId()
     },
     computed: {
@@ -70,10 +71,12 @@
 .mtdt-app > header{
 
   height:40px;
-  margin-bottom:5px;
+  margin-bottom:0px;
   padding-right: 10px;
   padding-top: 5px;
   border-top: 3px double grey; 
+  /* border-bottom: 1px dotted lightgrey;*/
+ 
  /* box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.2);*/
 
  
@@ -81,6 +84,5 @@
 }
 .mtdt-app > header i {
   vertical-align: middle;
-  width: 30px;
 }
 </style>

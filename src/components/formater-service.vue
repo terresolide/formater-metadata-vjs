@@ -3,12 +3,14 @@
   "fr": {
    "need_log": "Pour accéder à toutes les données du service <b>{domain}</b>, vous devez<br /> - vous connecter <br /> - puis autoriser ce service à accéder à vos données.",
    "need_authorize": "Pour accéder à toutes les données du service <b>{domain}</b>, vous devez l'autoriser à accéder à vos données.",
-   "log_service": "Pour accéder à toutes les données du service <b>{domain}</b>, vous devez vous y connecter."
+   "log_service": "Pour accéder à toutes les données du service <b>{domain}</b>, vous devez vous y connecter.",
+   "authorize": "Autoriser"
    },
    "en": {
-   "need_log": "To access all data of {domain} service,<br /> you must login in then authorize this service to access your personnal data.",
-   "need_authorize": "To access all data of {domain} service,<br /> you must authorize this service to access your personnal data.",
-    "log_service": "To access all data of {domain} service,<br /> you must login to this service."
+   "need_log": "To access data of <b>{domain}</b>  service,<br /> you must login in then authorize this service to access your personnal data.",
+   "need_authorize": "To access data of <b>{domain}</b> service,<br /> you must authorize this service to access your personnal data.",
+    "log_service": "To access data of <b>{domain}</b>  service,<br /> you must login to this service.",
+    "authorize": "Authorize"
   
    }
 }
@@ -33,15 +35,29 @@
    <span v-else-if="email">Authorize</span>
 </div>
  </div>
- <div class="mtdt-service-button" v-show="clientId && service.token === null"
-  :style="{color: $shadeColor($store.state.style.primary, -0.3)}"
-   @click="searchCode" :title="'Log to ' + service.domain">
-   <span v-if="$store.state.metadata">{{service.domain}} <i class="fa fa-sign-in"></i></span>
-   <span v-else-if="email">Authorize {{service.domain}}</span>
+ <div class="mtdt-service-button" :class="{searching: searching}" v-show="clientId"
+    :title="'Log to ' + service.domain" >
+   <a  v-if="$store.state.metadata" @click="searchCode">
+   {{$t('login')}} 
+   <i class="fa fa-sign-in" style="font-size:1.5rem;"></i>
+   </a>
+   <a class="mtdt-menu-item" v-else-if="email && service.token"
+   @click="logout">
+      {{$t('authorize')}} {{service.domain}}
+      <i  class="fa fa-check-square-o"></i>
+   </a>
+   <a class="mtdt-menu-item" v-else-if="email && !service.token"
+   @click="searchCode">
+      {{$t('authorize')}} {{service.domain}}
+      <i  class="fa fa-square-o"></i>
+   </a>
 </div>
 <div class="mtdt-service-button" v-show="$store.state.metadata && service.token"
-:style="{color: $store.state.style.primary}" title="logout" @click="logout">
-  {{service.domain}} <i class="fa fa-sign-out"></i>
+title="logout" @click="logout">
+	 <a>
+	 <i class="fa fa-sign-out" style="font-size:1.5rem;"></i>
+	  {{$t('logout')}} 
+	 </a>
  </div>
 </span>
 </template>
@@ -85,7 +101,8 @@ export default {
       domain: null,
       codeListener: null,
       state: null,
-      msg: null
+      msg: null,
+      searching: false
     }
   },
   created () {
@@ -120,6 +137,7 @@ export default {
           scope: 'openid',
           state: this.state
       }
+      this.searching = true
       var url = this.authUrl + '?'
       var paramsStr = Object.keys(params).map(function (key) {
         return key + '=' + params[key]
@@ -131,7 +149,9 @@ export default {
       if (e.data.code && e.data.state === this.state) {
         this.msg = false
         this.getToken(e.data.code)
-      } 
+      } else {
+        this.searching = false
+      }
     },
     getToken (code) {
       console.log('GET TOKEN')
@@ -150,9 +170,10 @@ export default {
           'Accept': 'application.json'
          }
       })
-      .then(resp => this.setToken(resp.body))
+      .then(resp => this.setToken(resp.body), resp => {this.searching = false})
     },
     setToken (data) {
+      this.searching = false
       if (data.token) {
         this.$store.commit('services/setToken', {id: this.service.id, token: data.token})
       }
@@ -167,13 +188,13 @@ export default {
 .mtdt-service-button{
   display:inline-block;
   border-radius:3px;
-  opacity:0.8;
   cursor: pointer;
+   pointer-events: auto;
+}
+.mtdt-service-button.searching{
+  pointer-events: none;
+  }
   
-}
-.mtdt-service-button:hover{
-  opacity: 1;
-}
 .mtdt-msg .mtdt-service-button {
  display: block;
   text-align: right;
@@ -206,4 +227,12 @@ div.mtdt-msg-title {
   font-weight:800;
   margin-bottom:10px;
 }
+.mtdt-menu-item {
+  padding: 0 10px;
+  border-right: 1px solid black;
+}
+/* .mtdt-menu-item:after{
+  content: "|";
+  padding-left:10px;
+}*/
 </style>

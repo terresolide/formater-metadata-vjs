@@ -1,11 +1,34 @@
+<i18n>
+{
+  "en": {
+    "login": "Sign in",
+    "logout": "Sign out"
+  },
+  "fr": {
+    "login": "Se connecter",
+    "logout": "Se déconnecter"
+  }
+}
+</i18n>
 <template>
  <span class="mtdt-authentication">
     <formater-service v-show="currentService === index"
      v-for="(service, index) in services" :key="index" :service="service">
      </formater-service>
-    <div v-if="!$store.state.metadata" style="display:inline-block;"> {{email}}
-		  <a @click="logout" v-if="email" class="fa fa-sign-out" title="logout"></a>
-		  <a @click="login" v-else class="fa fa-sign-in" title="login" > login</a>
+    <div v-if="!$store.state.metadata" class="mtdt-user" :class="{searching: searching}"> 
+      <span   v-if="email">{{email}}</span>
+		  <span   v-if="email">
+		  
+		    <a   @click="logout"   :title="$t('logout')">
+		    <i class="fa fa-sign-out" ></i> 
+		    {{$t('logout')}}</a>
+		  </span>
+		  <span  v-else>
+		    <a @click="login"   title="login" >
+		    <i class="fa fa-sign-in" style="font-size:1.2rem;vertical-align:middle;"></i> 
+		    {{$t('login')}}
+		    </a>
+	     </span>
 	  </div>
 	 <!--  <i class="fa fa-user" :style="{color:$store.state.style.primary}"></i>  -->
  </span>
@@ -64,10 +87,12 @@ export default {
   },
   data() {
     return {
-      codeListener: null
+      codeListener: null,
+      searching: false
     }
   },
   created () {
+    // this.$i18n.locale = this.$store.state.lang
      // logout in iframe
 //     this.logoutUrl = this.root + '/realms/' + this.realm + '/protocol/openid-connect/logout'
 //     this.loginUrl = this.root + '/realms/' + this.realm + '/protocol/openid-connect/auth'
@@ -85,12 +110,10 @@ export default {
      return this.$store.getters['user/loginParams'](redirectUrl, true)
    },
    getMessage (e) {
-     console.log(e)
      if (e.data.code && e.data.state == this.$store.getters['user/getState']) {
        this.$store.commit('user/setCode', e.data.code)
        this.getTokens()
      } else if (e.data === 'logout') {
-       console.log('logout')
        this.resetUser()
      }
    },
@@ -122,6 +145,7 @@ export default {
      }
    },
    setTokens (data) {
+     this.searching = false
      this.$store.commit('user/setTokens', data)
    },
    updateTokens () {
@@ -154,13 +178,14 @@ export default {
      }, this.resetUser)
    },
    logout () {
-    
+     this.searching = true
      var redirectUri = this.$store.state.ssoLogout ? this.$store.state.ssoLogout : this.baseUrl + '/logout?'
          
      var url = this.logoutUrl + '?redirect_uri=' + redirectUri 
      window.open(url, "_blank", "height=750, width=850, status=yes, toolbar=no, menubar=no, location=no,addressbar=no");
    },
    login () {
+     this.searching = true
      // var redirectUri = this.baseUrl + '/login?'
      var redirectUri = this.$store.state.ssoLogin ? this.$store.state.ssoLogin : this.baseUrl + '/login?'
        
@@ -170,6 +195,7 @@ export default {
      window.open(url, "_blank", "height=750, width=850, status=yes, toolbar=no, menubar=no, location=no,addressbar=no");
    },
    resetUser () {
+     this.searching = false
      this.$store.commit('user/reset')
      this.$store.commit('services/reset')
    }
@@ -177,16 +203,29 @@ export default {
 }
 </script>
 <style>
-.mtdt-authentication ,
+/*.mtdt-authentication ,
 .mtdt-authentication  a,
 .mtdt-authentication span,
 .mtdt-authentication  i {
   vertical-align:middle;
+}*/
+.mtdt-authentication .mtdt-user {
+  display: inline-block;
+  pointer-events:auto;
 }
+.mtdt-authentication .mtdt-user i {
+font-size:1.2rem;
+vertical-align:middle;
+}
+.mtdt-authentication .mtdt-user > span {
+  padding: 0 10px;
+}
+.mtdt-authentication .mtdt-user.searching {
+  pointer-events: none;
+}
+
 .mtdt-authentication a {
   cursor: pointer;
 }
-.mtdt-authentication  i {
- font-size: 1.5rem;
-}
+
 </style>
