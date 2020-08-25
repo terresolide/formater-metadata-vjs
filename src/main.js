@@ -98,7 +98,7 @@ if (config.lang) {
           return key + '=' + location.params[key]
         }).join('&')
         var redirectUri = location.base + (paramsStr.length > 0 ? ('?' + paramsStr) : '')
-        if (!location.authParams['error'] && !location.authParams['code']) { 
+        if (!this.$store.state.metadata && !location.authParams['error'] && !location.authParams['code']) { 
           var url = this.$store.getters['user/loginUrl']
           var loginParams = this.$store.getters['user/loginParams'](redirectUri, false)
           url += '?' + loginParams

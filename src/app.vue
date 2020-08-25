@@ -66,7 +66,6 @@
   position: relative;
 }
 .mtdt-app > header{
-  width: calc(100% - 16px);
   margin-left:5px;
   height:40px;
   margin-bottom:5px;

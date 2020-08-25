@@ -3,7 +3,7 @@
   "fr": {
    "need_log": "Pour accéder à toutes les données du service <b>{domain}</b>, vous devez<br /> - vous connecter <br /> - puis autoriser ce service à accéder à vos données.",
    "need_authorize": "Pour accéder à toutes les données du service <b>{domain}</b>, vous devez l'autoriser à accéder à vos données.",
-   "log_service": "Pour accéder à toutes les données du service <b>{domain}</b>, vous devez vous connecter."
+   "log_service": "Pour accéder à toutes les données du service <b>{domain}</b>, vous devez vous y connecter."
    },
    "en": {
    "need_log": "To access all data of {domain} service,<br /> you must login in then authorize this service to access your personnal data.",
@@ -17,7 +17,7 @@
  <span class="mtdt-service">
  <div class="mtdt-msg" v-if="msg" >
  <div  style="text-align:right;" ><i class="fa fa-close" style="cursor: pointer;" @click="msg = false"></i></div>
- <h2 style="margin-top:0;">Important!</h2>
+ <div class="mtdt-msg-title" >Important!</div>
   <div v-if="$store.state.geonetwork && !email" 
   v-html="$t('need_log', {domain: service.domain})"></div>
 
@@ -26,11 +26,23 @@
   
   <div v-else="$store.state.metadata" 
     v-html="$t('log_service', {domain: service.domain})"></div>
+  
+   <div class="mtdt-service-button" v-show="clientId && service.token === null"
+     @click="searchCode">
+   <span v-if="$store.state.metadata">Login </span>
+   <span v-else-if="email">Authorize</span>
+</div>
  </div>
- <div class="mtdt-service-button" v-show="clientId && service.token === null" @click="searchCode" style="display:inline-block;color:darkred;border:1px solid blackred;border-radius:3px;">
-   <span v-if="$store.state.metadata">Log to {{service.domain}}</span>
+ <div class="mtdt-service-button" v-show="clientId && service.token === null"
+  :style="{color: $shadeColor($store.state.style.primary, -0.3)}"
+   @click="searchCode" :title="'Log to ' + service.domain">
+   <span v-if="$store.state.metadata">{{service.domain}} <i class="fa fa-sign-in"></i></span>
    <span v-else-if="email">Authorize {{service.domain}}</span>
 </div>
+<div class="mtdt-service-button" v-show="$store.state.metadata && service.token"
+:style="{color: $store.state.style.primary}" title="logout" @click="logout">
+  {{service.domain}} <i class="fa fa-sign-out"></i>
+ </div>
 </span>
 </template>
 <script>
@@ -50,7 +62,9 @@ export default {
       return this.$store.getters['user/email']
     },
     redirectUri () {
-      
+      if (this.$store.state.ssoLogin) {
+        return this.$store.state.ssoLogin
+      }
       var found = window.location.href.match(/^(.*\/)#/)
       if (found && found.length > 1) {
         console.log(found[1])
@@ -115,6 +129,7 @@ export default {
     },
     getMessage(e) {
       if (e.data.code && e.data.state === this.state) {
+        this.msg = false
         this.getToken(e.data.code)
       } 
     },
@@ -141,13 +156,37 @@ export default {
       if (data.token) {
         this.$store.commit('services/setToken', {id: this.service.id, token: data.token})
       }
+    },
+    logout () {
+      this.$store.commit('services/setToken', {id: this.service.id, token: null})
     }
   }
 }
 </script>
 <style >
 .mtdt-service-button{
-  border: 1px solid black;
+  display:inline-block;
+  border-radius:3px;
+  opacity:0.8;
+  cursor: pointer;
+  
+}
+.mtdt-service-button:hover{
+  opacity: 1;
+}
+.mtdt-msg .mtdt-service-button {
+ display: block;
+  text-align: right;
+  margin-right: 20px;
+   cursor: auto;
+}
+.mtdt-msg .mtdt-service-button span {
+  background: darkred;
+  color: white;
+  padding: 5px 8px;
+  border-radius:5px;
+   cursor: pointer;
+  box-shadow: 0 1px 5px rgba(0,0,0,.65);
 }
 .mtdt-msg {
 background: #fefefe;
@@ -161,5 +200,10 @@ left:30%;
 z-index:10;
 text-align: left;
 box-shadow: 2px 3px 3px 3px rgba(0, 0, 0, 0.5);
+}
+div.mtdt-msg-title {
+  font-size: 1.5rem;
+  font-weight:800;
+  margin-bottom:10px;
 }
 </style>

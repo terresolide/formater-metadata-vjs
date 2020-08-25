@@ -27,4 +27,7 @@ export default new Router({
       component: FormaterLogout
     }
   ]
+//  beforeEach: (to, from, next) => {
+//    console.log(from)
+//  }
 })
