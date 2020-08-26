@@ -19,12 +19,12 @@
       <span   v-if="email">{{email}}</span>
 		  <span   v-if="email">
 		  
-		    <a   @click="logout"   :title="$t('logout')">
+		    <a   @click="logout"   :title="$t('logout')" :style="{'--color': $store.state.style.primary}">
 		    <i class="fa fa-sign-out" ></i> 
 		    {{$t('logout')}}</a>
 		  </span>
 		  <span  v-else>
-		    <a @click="login"   title="login" >
+		    <a @click="login"   title="login" :style="{'--color': $store.state.style.primary}">
 		    <i class="fa fa-sign-in" style="font-size:1.2rem;vertical-align:middle;"></i> 
 		    {{$t('login')}}
 		    </a>
@@ -226,6 +226,12 @@ vertical-align:middle;
 
 .mtdt-authentication a {
   cursor: pointer;
+}
+.mtdt-authentication a {
+  color: var(--color);
+}
+.mtdt-authentication a:hover {
+  color: darkred;
 }
 
 </style>

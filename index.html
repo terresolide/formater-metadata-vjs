@@ -4,17 +4,32 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width"/>
    <style>
+   a{
+     color:#754a15;
+   }
+   a:hover{
+     color:#8c0209;
+   }
+   body, button, input, select, textarea {
+    color: #333;
+    font-family: 'Roboto',Arial,sans-serif;
+    font-size: 1rem;
+    line-height: 1.7;
+}
     </style>
-    <title>Metadata visualiser with metadata file</title>
+    <title>Metadata visualiser</title>
   </head>
   <body>
+ <!--   <div>detail: type,... voir geonetwork</div>
+ <div>step 1: groupOwner, facetFormater</div>
+ <div>step 2: groupOwner, facetFormater, resolution</div>
+ <div>step 3: status, serviceType, denominator, resolution</div>-->
+  <div id="formaterCatalogue"></div>
 
-    <div id="formaterCatalogue"></div>
-
-   <script id="formaterConfig" type="application/json"  >
+  <script id="formaterConfig" type="application/json"  >
     {
-     "lang": "fr", 
-      "metadata": "https://cdn.jsdelivr.net/gh/terresolide/formater-map-bbox-vjs@3.0.2/public/metadata/grenade_fr.json",
+     "lang": "en", 
+     "geonetwork": "https://gravi165.step.univ-paris-diderot.fr/geonetwork/",
      "summaryType": {
        "step1": "step1",
        "step2": "step3"

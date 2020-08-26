@@ -4,13 +4,19 @@
    "need_log": "Pour accéder à toutes les données du service <b>{domain}</b>, vous devez<br /> - vous connecter <br /> - puis autoriser ce service à accéder à vos données.",
    "need_authorize": "Pour accéder à toutes les données du service <b>{domain}</b>, vous devez l'autoriser à accéder à vos données.",
    "log_service": "Pour accéder à toutes les données du service <b>{domain}</b>, vous devez vous y connecter.",
-   "authorize": "Autoriser"
+   "authorize": "Autoriser",
+   "login": "Se connecter",
+   "logout": "Se déconnecter",
+   "log_to": "Se connecter au service {domain}"
    },
    "en": {
    "need_log": "To access data of <b>{domain}</b>  service,<br /> you must login in then authorize this service to access your personnal data.",
    "need_authorize": "To access data of <b>{domain}</b> service,<br /> you must authorize this service to access your personnal data.",
     "log_service": "To access data of <b>{domain}</b>  service,<br /> you must login to this service.",
-    "authorize": "Authorize"
+    "authorize": "Authorize",
+    "login": "Sign in",
+    "logout": "Se déconnecter",
+    "log_to": "Sign in the {domain} service"
   
    }
 }
@@ -31,30 +37,31 @@
   
    <div class="mtdt-service-button" v-show="clientId && service.token === null"
      @click="searchCode">
-   <span v-if="$store.state.metadata">Login </span>
-   <span v-else-if="email">Authorize</span>
+   <span v-if="$store.state.metadata">{{$t('login')}}</span>
+   <span v-else-if="email">{{$t('authorize')}}</span>
 </div>
  </div>
- <div class="mtdt-service-button" :class="{searching: searching}" v-show="clientId"
-    :title="'Log to ' + service.domain" >
-   <a  v-if="$store.state.metadata" @click="searchCode">
-   {{$t('login')}} 
-   <i class="fa fa-sign-in" style="font-size:1.5rem;"></i>
-   </a>
-   <a class="mtdt-menu-item" v-else-if="email && service.token"
-   @click="logout">
+ <div v-if="!$store.state.metadata && email" class="mtdt-service-button" :class="{searching: searching}" v-show="clientId">
+
+   <a v-if="service.token" class="mtdt-menu-item" 
+   @click="logout" :style="{'--color': $store.state.style.primary}">
       {{$t('authorize')}} {{service.domain}}
       <i  class="fa fa-check-square-o"></i>
    </a>
-   <a class="mtdt-menu-item" v-else-if="email && !service.token"
-   @click="searchCode">
+   <a v-if="!service.token" class="mtdt-menu-item" 
+   @click="searchCode" :style="{'--color': $store.state.style.primary}">
       {{$t('authorize')}} {{service.domain}}
       <i  class="fa fa-square-o"></i>
    </a>
 </div>
-<div class="mtdt-service-button" v-show="$store.state.metadata && service.token"
-title="logout" @click="logout">
-	 <a>
+<div class="mtdt-service-button" v-else="$store.state.metadata">
+      <a  v-if="!service.token" @click="searchCode" 
+   :style="{'--color': $store.state.style.primary}"
+    :title="$t('log_to', {domain: service.domain})">
+   <i class="fa fa-sign-in" style="font-size:1.5rem;"></i>
+    {{$t('login')}} 
+   </a>
+	 <a v-else @click="logout"  :style="{'--color': $store.state.style.primary}">
 	 <i class="fa fa-sign-out" style="font-size:1.5rem;"></i>
 	  {{$t('logout')}} 
 	 </a>
@@ -230,6 +237,12 @@ div.mtdt-msg-title {
 .mtdt-menu-item {
   padding: 0 10px;
   border-right: 1px solid black;
+}
+.mtdt-service-button a {
+  color: var(--color);
+}
+.mtdt-service-button a:hover {
+  color: darkred;
 }
 /* .mtdt-menu-item:after{
   content: "|";
