@@ -8,7 +8,7 @@
      "platform": "Platform"
    },
    "fr":{
-      "main": "Decription",
+      "main": "Description",
        "complement": "Informations complémentaires",
       "temporal_extent": "Etendue temporelle",
       "search": "Rechercher",

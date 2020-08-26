@@ -88,7 +88,8 @@ export default {
   data() {
     return {
       codeListener: null,
-      searching: false
+      searching: false,
+      popup: null
     }
   },
   created () {
@@ -182,7 +183,18 @@ export default {
      var redirectUri = this.$store.state.ssoLogout ? this.$store.state.ssoLogout : this.baseUrl + '/logout?'
          
      var url = this.logoutUrl + '?redirect_uri=' + redirectUri 
-     window.open(url, "_blank", "height=750, width=850, status=yes, toolbar=no, menubar=no, location=no,addressbar=no");
+     this.openPopup(url)
+   },
+   openPopup (url) {
+     this.popup = window.open(url, "_blank", "height=750, width=850, status=yes, toolbar=no, menubar=no, location=no,addressbar=no");
+     var _this = this
+     var loop = setInterval(function() {
+       if (_this.popup.closed) {
+         clearInterval(loop)
+         _this.searching = false
+         _this.popup = null
+       }
+     })
    },
    login () {
      this.searching = true
@@ -192,7 +204,8 @@ export default {
     // var redirectUri = 'https://www.poleterresolide.fr/sso-login/'
      var url = this.loginUrl + '?' + this.loginParams(redirectUri)  
      this.$store.commit('user/setRedirectUri', redirectUri)
-     window.open(url, "_blank", "height=750, width=850, status=yes, toolbar=no, menubar=no, location=no,addressbar=no");
+     this.openPopup(url)
+     // window.open(url, "_blank", "height=750, width=850, status=yes, toolbar=no, menubar=no, location=no,addressbar=no");
    },
    resetUser () {
      this.searching = false

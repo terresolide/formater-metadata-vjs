@@ -35,8 +35,8 @@
   <div v-else="$store.state.metadata" 
     v-html="$t('log_service', {domain: service.domain})"></div>
   
-   <div class="mtdt-service-button" v-show="clientId && service.token === null"
-     @click="searchCode">
+   <div class="mtdt-service-button" :class="{searching: searching}" v-show="clientId && service.token === null"
+     @click="searchCode" >
    <span v-if="$store.state.metadata">{{$t('login')}}</span>
    <span v-else-if="email">{{$t('authorize')}}</span>
 </div>
@@ -48,13 +48,14 @@
       {{$t('authorize')}} {{service.domain}}
       <i  class="fa fa-check-square-o"></i>
    </a>
-   <a v-if="!service.token" class="mtdt-menu-item" 
+   <a v-if="!service.token" class="mtdt-menu-item" :class="{searching: searching}"
    @click="searchCode" :style="{'--color': $store.state.style.primary}">
       {{$t('authorize')}} {{service.domain}}
       <i  class="fa fa-square-o"></i>
    </a>
 </div>
-<div class="mtdt-service-button" v-if="$store.state.metadata">
+<div class="mtdt-service-button" v-if="$store.state.metadata"
+:class="{searching: searching}" >
    <a  v-if="!service.token" @click="searchCode" 
    :style="{'--color': $store.state.style.primary}"
     :title="$t('log_to', {domain: service.domain})">
@@ -109,7 +110,8 @@ export default {
       codeListener: null,
       state: null,
       msg: null,
-      searching: false
+      searching: false,
+      popup: null
     }
   },
   created () {
@@ -150,7 +152,19 @@ export default {
         return key + '=' + params[key]
       }).join('&')
       url += paramsStr
-      window.open(url, "_blank", "height=750, width=850, status=yes, toolbar=no, menubar=no, location=no,addressbar=no");
+      this.openPopup(url)
+      // window.open(url, "_blank", "height=750, width=850, status=yes, toolbar=no, menubar=no, location=no,addressbar=no");
+    },
+    openPopup (url) {
+      this.popup = window.open(url, "_blank", "height=750, width=850, status=yes, toolbar=no, menubar=no, location=no,addressbar=no");
+      var _this = this
+      var loop = setInterval(function() {
+        if (_this.popup.closed) {
+          clearInterval(loop)
+          _this.searching = false
+          _this.popup = null
+        }
+      })
     },
     getMessage(e) {
       if (e.data.code && e.data.state === this.state) {
@@ -206,6 +220,7 @@ export default {
  display: block;
   text-align: right;
   margin-right: 20px;
+  margin-top:20px;
    cursor: auto;
 }
 .mtdt-msg .mtdt-service-button span {
