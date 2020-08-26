@@ -54,8 +54,8 @@
       <i  class="fa fa-square-o"></i>
    </a>
 </div>
-<div class="mtdt-service-button" v-else="$store.state.metadata">
-      <a  v-if="!service.token" @click="searchCode" 
+<div class="mtdt-service-button" v-if="$store.state.metadata">
+   <a  v-if="!service.token" @click="searchCode" 
    :style="{'--color': $store.state.style.primary}"
     :title="$t('log_to', {domain: service.domain})">
    <i class="fa fa-sign-in" style="font-size:1.5rem;"></i>
