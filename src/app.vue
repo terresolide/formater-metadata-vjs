@@ -54,7 +54,10 @@
       }
     },
     mounted () {
-      
+      var node = document.querySelector('#internetExplorer')
+      if (node) {
+        node.style.display = 'none'
+      }
     },
     methods: {
 
