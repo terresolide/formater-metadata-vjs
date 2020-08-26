@@ -73,16 +73,16 @@ export default function makeStore( config ) {
       osFields: {
         cartouche: {
           identifier: ['productType'],
-          quality: ['resolution'],
+          quality: ['resolution', 'productValidity'],
           acquisition:  [ 'platform', 'instrument', 'sensorMode', 'polarisation',  'relativeOrbitNumber', 'orbitDirection', 'subswath'],
           process:  ['processingLevel', 'processingMode',  'correction', 'version']
         },
         metadata: {
           identifier: ['productIdentifier', 'parentIdentifier', 'productType'],
-          quality: [ 'resolution', 'nbCols', 'nbRows', 'waterCover', 'snowCover', 'cloudCover'],
+          quality: [ 'resolution', 'nbCols', 'nbRows', 'waterCover', 'snowCover', 'cloudCover', 'productValidity'],
           acquisition: [ 'platform', 'instrument','sensorMode', 'polarisation', 
             'orbitNumber', 'relativeOrbitNumber', 'orbitDirection', 'subswath'],
-          process: ['processingLevel', 'processingMode', 'processingContext', 'correction', 'version']
+          process: ['processingLevel', 'processingMode', 'processingContext',  'correction', 'version']
         }
       },
       // default date & constraint list
