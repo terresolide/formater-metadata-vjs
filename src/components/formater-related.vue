@@ -79,7 +79,7 @@
        </a>
                
        <a v-else-if="token && token !== -1" class="mtdt-related-type fa fa-download" 
-       :href="download[0].url + '?_bearer=' + token" :class="{disabled:download[0].disabled || !token}" 
+       @click="triggerDownload(0)" :class="{disabled:download[0].disabled || !token}" 
        :style="{backgroundColor: primary}" :title="$t('download_data')">
          
       </a> 
@@ -96,7 +96,7 @@
            <ul >
            <li v-for="(file, index) in download" :key="index"  :class="{disabled: file.disabled || !token}">
               <a  v-if="file.type && file.type === 'WWW:DOWNLOAD-1.0-link--download'" :href="file.url" :title="file.description" target="_blank">{{file.name? file.name: $t('download_data')}}</a>
-              <a  v-else-if="token && token !== -1" :title="file.description" :href="file.url + '?_bearer=' + token">{{file.name? file.name: $t('download_data')}}</a>
+              <a  v-else-if="token && token !== -1" :title="file.description" @click="triggerDownload(index);">{{file.name? file.name: $t('download_data')}}</a>
               <a  v-else :title="file.description" @click="triggerDownload(index);">{{file.name? file.name: $t('download_data')}}</a>
           </li>
           </ul>    
@@ -307,27 +307,40 @@
          var downloadProgress = function (e) {
            if (e.total) {
              _this.progress = Math.round(100 * e.loaded / e.total)
+            
            }
          }
-         
          var _this = this
          var url = this.download[index].url 
          if (this.token && this.token !== -1) {
            url += '?_bearer=' + this.token
          }
+          var url = 'http://api.formater/geotiff/abana/iw2/geo_filt_20180518-20180623_sd_4rlks.tif'
+            var objUrl = new URL(url)
+          console.log(objUrl.pathname)
+//            var downloading = browser.downloads.download({
+//              url : url
+//            });
 
-         this.$http.get(url )
-            // this.$http.get('http://api.formater/interface-services/' , {responseType: 'blob', downloadProgress: downloadProgress})
+//            downloading.then(console.log('done'), resp => console.log(resp));
+//            returns
+          var xhr = this.$http.get(url, {responseType: 'blob', downloadProgress: downloadProgress} )
+         //this.$http.get('http://api.formater/interface-services/' , {responseType: 'blob', downloadProgress: downloadProgress})
              .then( response => {
-               console.log(response)
+   
                var headerDisposition = response.headers.get('Content-Disposition')
                if (headerDisposition) {
-                 console.log(headerDisposition)
                  var match = headerDisposition.match(/filename[^;\n=]*=(\\?\"|'){0,1}([^\\?\"']*)(\\?\"|'){0,1}/i)
+                 console.log(headerDisposition )
                  if (match) {
                    var filename = match[2]
                  }
                 //  res = re.search("filename[^;\n=]*=(['\"])*(.*)(?(1)\1|)", string) res.group(2)
+               } else {
+                 // get filename from url
+                   var objUrl = new URL(response.url)
+                   console.log(objUrl.pathname)
+                   var filename = objUrl.pathname.substring(objUrl.pathname.lastIndexOf('/') + 1)
                }
                const url = window.URL.createObjectURL(response.bodyBlob);
                const link = document.createElement('a')
@@ -337,18 +350,22 @@
                document.body.appendChild(link)
                link.click()
                _this.progress = null
-             }).catch(function (response) {
+             }, response => {
                  _this.progress = null
                  switch(response.status) {
                  case 403:
                    console.log('forbidden')
                    this.message = this.$i18n.t('download_forbidden')
-                   this.download[index].disabled = true
+                   
                    break
+                 case 404:
+                   this.message = 'NOT FOUND'
                    default:
                      console.log(response);
                  }
+                 this.download[index].disabled = true
             })
+            this.$http.previousRequest.abort()
        },
        handleOver (e) {
          e.target.style.color = this.$store.state.style.over
