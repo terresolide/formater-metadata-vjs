@@ -20,7 +20,13 @@
 <template>
   <span class="mtdt-related" :class="'mtdt-related-' + type" v-if="!empty || type === 'cartouche'">
        <div class="formater-message" v-if="message" @click="message = ''">{{message}}</div>
-       <progress-bar :value="progress" v-if="progress!==null && progress < 100" :options="progressBarOptions"></progress-bar>
+       <div class="fmt-progress-bar-container" v-if="progress!==null && progress < 100" style="width: 70px;padding:0;">
+       <div @click="abortRequest" style="width:100%;text-align:right;">
+       <i class="fa fa-close" style="color:darkred;width:40px;text-align:right;cursor:pointer;margin:0"></i></div>
+       
+       
+       <progress-bar :value="progress"  :options="progressBarOptions"></progress-bar>
+         </div>
     <div v-if="type === 'cartouche' && hasBboxLayer" style="display:inline-block;" >
       <div class="mtdt-related-type fa fa-dot-circle-o" :style="{backgroundColor:primary}" 
      :title="$t('localize')"   @click="fixBbox">
@@ -231,6 +237,7 @@
         platformAdded: false,
         message: '',
         progress: null,
+        abort: false,
         progressBarOptions: {
           text: {
             color: '#000000',
@@ -238,8 +245,9 @@
             shadowColor: '#000000',
             fontSize: 14,
             fontFamily: 'Helvetica',
-            dynamicPosition: false,
-            hideText: false
+            dynamicPosition: true,
+            hideText: false,
+            backgroundColor: 'rgba(0,0,0,0.5)'
           },
           progress: {
             color: '#2dbd2d',
@@ -248,8 +256,8 @@
           layout: {
             height: 70,
             width: 70,
-            verticalTextAlign: 35,
-            horizontalTextAlign: 28,
+            verticalTextAlign: 16,
+            horizontalTextAlign: 0,
             zeroOffset: 10,
             strokeWidth: 10,
             progressPadding: 0,
@@ -260,6 +268,9 @@
     },
 
     methods: {
+      abortRequest () {
+        this.abort = true
+      },
       checkEmpty () {
         if (this.download && this.download.length > 0) {
           this.empty = false
@@ -295,19 +306,22 @@
     	   this.platformAdded = newvalue
        },
        triggerDownload (index) {
-         console.log('trigger download')
          if (this.download[index].disabled) {
            return
          }
          var _this = this
          this.progress = 0
    
+         this.$set(this.download[index], 'disabled', true) 
          
          var filename = 'download'
+         var localIndex = index
          var downloadProgress = function (e) {
            if (e.total) {
              _this.progress = Math.round(100 * e.loaded / e.total)
-            
+            if (_this.abort) {
+               e.srcElement.abort()
+            }
            }
          }
          var _this = this
@@ -315,31 +329,20 @@
          if (this.token && this.token !== -1) {
            url += '?_bearer=' + this.token
          }
-          var url = 'http://api.formater/geotiff/abana/iw2/geo_filt_20180518-20180623_sd_4rlks.tif'
-            var objUrl = new URL(url)
-          console.log(objUrl.pathname)
-//            var downloading = browser.downloads.download({
-//              url : url
-//            });
-
-//            downloading.then(console.log('done'), resp => console.log(resp));
-//            returns
-          var xhr = this.$http.get(url, {responseType: 'blob', downloadProgress: downloadProgress} )
+         // var url = 'http://api.formater/geotiff/abana/iw2/geo_filt_20180518-20180623_sd_4rlks.tif'
+         var objUrl = new URL(url)
+         this.$http.get(url, {responseType: 'blob', downloadProgress: downloadProgress} )
          //this.$http.get('http://api.formater/interface-services/' , {responseType: 'blob', downloadProgress: downloadProgress})
              .then( response => {
-   
                var headerDisposition = response.headers.get('Content-Disposition')
                if (headerDisposition) {
                  var match = headerDisposition.match(/filename[^;\n=]*=(\\?\"|'){0,1}([^\\?\"']*)(\\?\"|'){0,1}/i)
-                 console.log(headerDisposition )
                  if (match) {
                    var filename = match[2]
                  }
-                //  res = re.search("filename[^;\n=]*=(['\"])*(.*)(?(1)\1|)", string) res.group(2)
-               } else {
+                     } else {
                  // get filename from url
                    var objUrl = new URL(response.url)
-                   console.log(objUrl.pathname)
                    var filename = objUrl.pathname.substring(objUrl.pathname.lastIndexOf('/') + 1)
                }
                const url = window.URL.createObjectURL(response.bodyBlob);
@@ -349,10 +352,18 @@
                link.setAttribute('download', filename)
                document.body.appendChild(link)
                link.click()
-               _this.progress = null
+               this.progress = null
+               this.$set(this.download[index], 'disabled', false) 
              }, response => {
-                 _this.progress = null
+                 this.progress = null
+                 console.log(response)
                  switch(response.status) {
+                 case 0:
+                   //case abort, can retry
+                   console.log('abort')
+                   this.abort = false
+                   this.$set(this.download[index], 'disabled', false) 
+                   break;
                  case 403:
                    console.log('forbidden')
                    this.message = this.$i18n.t('download_forbidden')
@@ -363,9 +374,9 @@
                    default:
                      console.log(response);
                  }
-                 this.download[index].disabled = true
             })
-            this.$http.previousRequest.abort()
+           // xhr.promise.abort()
+            
        },
        handleOver (e) {
          e.target.style.color = this.$store.state.style.over
@@ -412,18 +423,24 @@
     text-decoration: underline;
     cursor: pointer;
   }
-  .mtdt-related .progress-bar{
+  .mtdt-related .fmt-progress-bar-container{
     display: block;
     position: absolute;
     top: -100px;
-    right: 2px;
-    background: rgba(255,255, 255, 0.9);
     z-index: 2;
     padding:10px;
 }
- .mtdt-related .progress-bar > div {
-   position: absolute !important;
- }
+.mtdt-related .progress-bar svg {
+   background: rgba(255,255, 255, 0.5);
+}
+ .mtdt-related .progress-bar > div { 
+   position: absolute !important; 
+   top:16px;
+   left:0;
+   line-height: 70px !important;
+   width: 100%;
+  text-align:center;
+  } 
  .mtdt-related-metadata{
    margin: 10px;
    padding:10px;
