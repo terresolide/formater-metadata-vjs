@@ -56,6 +56,7 @@
 </div>
 <div class="mtdt-service-button" v-if="$store.state.metadata"
 :class="{searching: searching}" >
+  <span v-if="identity">{{identity.email}}</span>
    <a  v-if="!service.token" @click="searchCode" 
    :style="{'--color': $store.state.style.primary}"
     :title="$t('log_to', {domain: service.domain})">
@@ -70,7 +71,7 @@
 </span>
 </template>
 <script>
-
+import jwt_decode from 'jwt-decode'
 export default {
   name: 'FormaterService',
   components: {
@@ -111,7 +112,9 @@ export default {
       state: null,
       msg: null,
       searching: false,
-      popup: null
+      popup: null,
+      identity: null,
+      expire: null
     }
   },
   created () {
@@ -197,9 +200,34 @@ export default {
       this.searching = false
       if (data.token) {
         this.$store.commit('services/setToken', {id: this.service.id, token: data.token})
-      }
+        if (this.$store.state.metadata) {
+          var obj = jwt_decode(data.token)
+          this.identity = obj.data || null
+          var now = new Date()
+          this.expire = obj.exp * 1000 - now.getTime() 
+          if (this.expire > 2000) {
+            setTimeout(this.updateToken, this.expire - 2000)
+          }
+        }
+      }  else {
+        this.logout()
+      }   
+    },
+    updateToken () {
+      this.$http.get(this.service.connectUrl,
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application.json',
+              'Authorization': 'Bearer ' + this.service.token
+             }
+          })
+          .then(resp => this.setToken(resp.body), resp => this.logout())
+      
     },
     logout () {
+      this.identity = null
+      this.expire = null
       this.$store.commit('services/setToken', {id: this.service.id, token: null})
     }
   }

@@ -11,6 +11,7 @@
     _nodeLarge: null,
     _mapContainer: null,
     _lang: 'en',
+    _removeHeight: 400,
     _fullscreen: false,
     _translate: {
       'en': {
@@ -22,12 +23,20 @@
         'reduce': 'Reduire'
       }
     },
-    initialize: function(idLarge, lang){
+    initialize: function(idLarge, options){
         this._large = idLarge
-        this.setLang(lang)
+        if (options.lang) {
+          this.setLang(options.lang)
+        }
+        if (options.hasOwnProperty('removeHeight') && options.removeHeight !== null) {
+         this.setRemoveHeight(options.removeHeight) 
+        }
     },
     setLang (lang) {
       this._lang = (['en', 'fr'].indexOf(lang) >=0 ? lang : 'en')
+    },
+    setRemoveHeight (height) {
+      this._removeHeight = height
     },
     onAdd : function(map){
         this._nodeSmall = map._container.parentNode
@@ -53,7 +62,8 @@
     },
     _enlarge : function () {
       this._nodeLarge.appendChild(this._map._container)
-      var height = window.innerHeight - 400 
+      this._nodeLarge.style.display = 'block'
+      var height = window.innerHeight - this._removeHeight
       this._container.querySelector('a').setAttribute('title', this._translate[this._lang]['reduce'])
       this._map._container.style.height = height + 'px'
       this._map._container.className = this._map._container.className.replace('mtdt-small', 'mtdt-fullscreen')
@@ -62,6 +72,7 @@
       this._emitChange()
     },
     _reduce : function () {
+      this._nodeLarge.style.display = 'none'
       this._nodeSmall.appendChild(this._map._container)
       this._map.setMinZoom(1)
       this._map._container.className = this._map._container.className.replace('mtdt-fullscreen', 'mtdt-small')
