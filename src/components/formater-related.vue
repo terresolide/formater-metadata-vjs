@@ -85,7 +85,7 @@
        </a>
                
        <a v-else-if="token && token !== -1" class="mtdt-related-type fa fa-download" 
-       @click="triggerDownload(0)" :class="{disabled:download[0].disabled || !token}" 
+       :href="download[0].url + '?_bearer=' + token" :class="{disabled:download[0].disabled || !token}" 
        :style="{backgroundColor: primary}" :title="$t('download_data')">
          
       </a> 
@@ -102,7 +102,7 @@
            <ul >
            <li v-for="(file, index) in download" :key="index"  :class="{disabled: file.disabled || !token}">
               <a  v-if="file.type && file.type === 'WWW:DOWNLOAD-1.0-link--download'" :href="file.url" :title="file.description" target="_blank">{{file.name? file.name: $t('download_data')}}</a>
-              <a  v-else-if="token && token !== -1" :title="file.description" @click="triggerDownload(index);">{{file.name? file.name: $t('download_data')}}</a>
+              <a  v-else-if="token && token !== -1" :title="file.description" :href="file.url + '?_bearer=' + token">{{file.name? file.name: $t('download_data')}}</a>
               <a  v-else :title="file.description" @click="triggerDownload(index);">{{file.name? file.name: $t('download_data')}}</a>
           </li>
           </ul>    
@@ -200,6 +200,13 @@
 //       }
       this.checkEmpty()
     },
+    destroyed () {
+       this.downloadLink.forEach(function (link) {
+         document.body.remove(link)
+         link = null
+       })
+       this.downloadLink = []
+    },
     computed: {
       primary() {
         return this.$store.state.style.primary
@@ -238,6 +245,7 @@
         message: '',
         progress: null,
         abort: false,
+        downloadLink: [],
         progressBarOptions: {
           text: {
             color: '#000000',
@@ -310,12 +318,18 @@
            return
          }
          var _this = this
-         this.progress = 0
    
-         this.$set(this.download[index], 'disabled', true) 
          
          var filename = 'download'
          var localIndex = index
+         if (this.downloadLink[index]) {
+           this.downloadLink[index].click()
+           return
+         }
+         this.$set(this.download[index], 'disabled', true) 
+         
+         this.downloadLink[index] = document.createElement('a')
+         document.body.appendChild(this.downloadLink[index])
          var downloadProgress = function (e) {
            if (e.total) {
              _this.progress = Math.round(100 * e.loaded / e.total)
@@ -346,23 +360,29 @@
                    var filename = objUrl.pathname.substring(objUrl.pathname.lastIndexOf('/') + 1)
                }
                const url = window.URL.createObjectURL(response.bodyBlob);
-               const link = document.createElement('a')
-               // link.setAttribute('download', )
-               link.href = url
-               link.setAttribute('download', filename)
-               document.body.appendChild(link)
-               link.click()
+//                const link = document.createElement('a')
+//                // link.setAttribute('download', )
+//                link.href = url
+               this.downloadLink[index].href = url
+               this.downloadLink[index].setAttribute('download', filename)
+               // document.body.appendChild(link)
+               this.downloadLink[index].click()
                this.progress = null
                this.$set(this.download[index], 'disabled', false) 
              }, response => {
                  this.progress = null
-                 console.log(response)
                  switch(response.status) {
                  case 0:
                    //case abort, can retry
-                   console.log('abort')
-                   this.abort = false
                    this.$set(this.download[index], 'disabled', false) 
+                   if (this.abort) {
+                     this.abort = false   
+                   } else {
+                     // use direct link
+                      this.downloadLink[index].removeAttribute('download')
+                      this.downloadLink[index].href = url
+                      this.downloadLink[index].click()
+                   }
                    break;
                  case 403:
                    console.log('forbidden')

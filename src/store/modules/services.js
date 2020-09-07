@@ -66,7 +66,7 @@ export default {
            service.clientIdUrl = null
            service.authUrl = service.host + '/atdistrib/resto2/api/auth/' + state.sso
            service.clientIdUrl = service.host + '/atdistrib/resto2/api/auth/' + state.sso + '/clientid'
-           service.connectUrl = service.host + '/atdistrib/resto2/api/user/connect'
+           service.validationUrl = service.host + '/atdistrib/resto2/api/user/checkToken'
            service.disconnectUrl = service.host + '/atdistrib/resto2/api/user/disconnect'
            state.services.push(service)
          }

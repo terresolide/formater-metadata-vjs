@@ -4,30 +4,32 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width"/>
    <style>
+   a{
+     color:#754a15;
+   }
+   a:hover{
+     color:#8c0209;
+   }
+   body, button, input, select, textarea {
+    color: #333;
+    font-family: 'Roboto',Arial,sans-serif;
+    font-size: 1rem;
+    line-height: 1.7;
+}
     </style>
-    <title>Metadata visualiser with metadata file</title>
+    <title>Metadata visualiser</title>
   </head>
   <body>
-   <div id="internetExplorer" >Si ce message persiste, c'est que votre navigateur ne supporte pas les webcomponents. Utilisez plutôt <b>Edge</b>, <b>Firefox</b> ou <b>Chrome</b>.
-  </div>
+ <!--   <div>detail: type,... voir geonetwork</div>
+ <div>step 1: groupOwner, facetFormater</div>
+ <div>step 2: groupOwner, facetFormater, resolution</div>
+ <div>step 3: status, serviceType, denominator, resolution</div>-->
+  <div id="formaterCatalogue"></div>
 
-<style>
-#internetExplorer {
-  clear:left;
-  border:1px solid darkred;
-  border-radius:3px;
-  margin:20px 0;
-  padding:10px;
-  font-size:1.5em;color:darkred;
-}
-</style>
-
-    <div id="formaterCatalogue"></div>
-
-   <script id="formaterConfig" type="application/json"  >
+  <script id="formaterConfig" type="application/json"  >
     {
-     "lang": "fr", 
-     "metadata": "https://cdn.jsdelivr.net/gh/terresolide/formater-map-bbox-vjs@3.1.4/public/metadata/grenade_fr.json",
+     "lang": "en", 
+     "geonetwork": "https://gravi165.step.univ-paris-diderot.fr/geonetwork/",
      "summaryType": {
        "step1": "step1",
        "step2": "step3"
@@ -42,7 +44,9 @@
        {
          "min": "1920-12-01",
          "max": "now"
-     }
+     },
+     "proxyUrl": "https://api.poleterresolide.fr/interface-services/"
+
     }
     </script> 
    <script src="dist/build.js"></script> 

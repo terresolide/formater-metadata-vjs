@@ -7,7 +7,8 @@
    "authorize": "Autoriser",
    "login": "Se connecter",
    "logout": "Se déconnecter",
-   "log_to": "Se connecter au service {domain}"
+   "log_to": "Se connecter au service {domain}",
+    "session_expire": "Votre session auprès de <b>{domain}</b> a expiré.<br />Vous devez vous reconnecter."
    },
    "en": {
    "need_log": "To access data of <b>{domain}</b>  service,<br /> you must login in then authorize this service to access your personnal data.",
@@ -16,19 +17,21 @@
     "authorize": "Authorize",
     "login": "Sign in",
     "logout": "Se déconnecter",
-    "log_to": "Sign in the {domain} service"
-  
+    "log_to": "Sign in the {domain} service",
+    "session_expire": "Your session width <b>{domain}</b> has expired.<br /> You need to log back in."
    }
 }
 </i18n>
 <template>
  <span class="mtdt-service">
  <div class="mtdt-msg" v-if="msg" >
- <div  style="text-align:right;" ><i class="fa fa-close" style="cursor: pointer;" @click="msg = false"></i></div>
+ <div  style="text-align:right;" ><i class="fa fa-close" style="cursor: pointer;" @click="close"></i></div>
  <div class="mtdt-msg-title" >Important!</div>
+ 
   <div v-if="$store.state.geonetwork && !email" 
   v-html="$t('need_log', {domain: service.domain})"></div>
-
+   <div v-else-if="hasExpired" v-html="$t('session_expire', {domain: service.domain})">
+  </div>
   <div v-else-if="$store.state.geonetwork && email"
    v-html="$t('need_authorize', {domain: service.domain})"></div>
   
@@ -114,7 +117,9 @@ export default {
       searching: false,
       popup: null,
       identity: null,
-      expire: null
+      expire: null,
+      hasExpired: false,
+      timer: null
     }
   },
   created () {
@@ -127,6 +132,10 @@ export default {
     this.codeListener = null
   },
   methods: {
+    close () {
+      this.msg = false
+      this.hasExpired = false
+    },
     getClientId () {
       var url = this.service.clientIdUrl
       this.$http.get(url).then(function (response) {
@@ -204,30 +213,39 @@ export default {
           var obj = jwt_decode(data.token)
           this.identity = obj.data || null
           var now = new Date()
-          this.expire = obj.exp * 1000 - now.getTime() 
-          if (this.expire > 2000) {
-            setTimeout(this.updateToken, this.expire - 2000)
-          }
+          this.expire = obj.exp * 1000 // - now.getTime() 
+          // if (this.expire > 2000) {
+          this.timer = setInterval(this.validToken, 6000)
+          // }
         }
       }  else {
         this.logout()
       }   
     },
-    updateToken () {
-      this.$http.get(this.service.connectUrl,
-          {
-            headers: {
-              'Content-Type': 'application/json',
-              'Accept': 'application.json',
-              'Authorization': 'Bearer ' + this.service.token
-             }
-          })
-          .then(resp => this.setToken(resp.body), resp => this.logout())
-      
+    validToken () {
+      var now = new Date()
+      if (this.expire - now.getTime() < 180000) {
+	      this.$http.get(this.service.validationUrl + '?_tk=' + this.service.token,
+	          {
+	            headers: {
+	              'Content-Type': 'application/json',
+	              'Accept': 'application.json',
+	             }
+	          })
+	          .then(function (resp) {
+	            if (resp.body.status === 'error') {
+	              this.hasExpired = true
+	              this.msg = true
+	              this.logout()
+	            }
+	          }, resp => this.logout())
+      } 
     },
     logout () {
       this.identity = null
       this.expire = null
+      clearInterval(this.timer)
+      this.timer = null
       this.$store.commit('services/setToken', {id: this.service.id, token: null})
     }
   }
