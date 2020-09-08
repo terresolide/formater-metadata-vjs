@@ -207,9 +207,12 @@ export default {
     },
     setToken (data) {
       this.searching = false
+      if (this.timer) {
+        clearInterval(this.timer)
+      } 
       if (data.token) {
         this.$store.commit('services/setToken', {id: this.service.id, token: data.token})
-        if (this.$store.state.metadata) {
+        // if (this.$store.state.metadata) {
           var obj = jwt_decode(data.token)
           this.identity = obj.data || null
           var now = new Date()
@@ -217,7 +220,7 @@ export default {
           // if (this.expire > 2000) {
           this.timer = setInterval(this.validToken, 6000)
           // }
-        }
+        // }
       }  else {
         this.logout()
       }   
