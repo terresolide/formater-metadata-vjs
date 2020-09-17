@@ -30,7 +30,16 @@
  import AerisTheme from 'aeris-commons-components-vjs/src/aeris-theme/aeris-theme.vue'
  import FormaterService from '@/components/formater-service.vue'
  import FormaterAuthentication from '@/components/formater-authentication.vue'
- export default {
+ 
+//prevent previous and next page for browser
+function disableBack() { window.history.forward() }
+window.onload = function () {
+disableBack();
+}
+window.onpageshow = function(evt) { if (evt.persisted) disableBack() }
+window.onbeforeunload = function() { return "Your work will be lost."; };
+
+export default {
     name: 'App',
     components: {
       AerisTheme,
@@ -58,6 +67,7 @@
       if (node) {
         node.style.display = 'none'
       }
+      
     },
     methods: {
 
