@@ -85,6 +85,7 @@ export default {
   data() {
     return {
       currentUuid: null,
+      first: true,
       // bbox: null,
       // depth: null,
       // array breadcrumb of records
@@ -105,7 +106,7 @@ export default {
       var newDepth = newroute.query.depth ? newroute.query.depth : 0
       if (newDepth < oldDepth) {
         this.back()
-      } else if (newDepth > oldDepth && !this.currentUuid){
+      } else if (newDepth > oldDepth && !this.currentUuid ){
         this.$router.replace({name: 'FormaterCatalogue', query:{}})
       }
     }
@@ -133,7 +134,9 @@ export default {
   mounted () {
 //     var evt = new CustomEvent('fmt:pageChangedEvent')
 //     document.dispatchEvent(evt)
-    this.$router.push({name: 'FormaterCatalogue', query: {}})
+    if (!this.$store.state.metadata) {
+      this.$router.push({name: 'FormaterCatalogue', query: {}})
+    }
   },
   destroyed () {
     document.removeEventListener('fmt:metadataEvent', this.metadataListener);
@@ -157,6 +160,10 @@ export default {
       }
     },
     receiveMetadata (event) {
+      if (this.$store.state.metadata && this.first) {
+        this.first = false
+        this.metadataUui = event.detail.meta.id
+      }
       this.metadatas.push(event.detail.meta)
       this.currentUuid = event.detail.meta.id
       this.$store.commit('currentUuidChange', this.currentUuid)
@@ -248,8 +255,10 @@ export default {
         var parameters = []
         var mapping = []
         var type = null
+        this.$store.commit('services/resetCurrent')
         this.$store.commit('temporalChange', this.temporalExtent)
       }
+
       this.$store.commit('currentUuidChange', this.currentUuid)
       this.$store.commit('parametersChange', {parameters: parameters, mapping: mapping, type: type})
       var event = new CustomEvent('fmt:closeMetadataEvent', {detail:  {depth: this.metadatas.length }})

@@ -5,7 +5,7 @@
 const ToolsPlugin = {
     install(Vue, options) {
       Vue.prototype.$custURL = function (url) {
-        var split = url.split(/\&|\?/)
+        var split = url.split(/\&|\?|#/)
         var params = []
         var authParams = []
         split.forEach(function(tab) {

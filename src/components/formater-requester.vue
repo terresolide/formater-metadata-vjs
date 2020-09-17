@@ -270,7 +270,9 @@ export default {
         }
     },
     requestApiGeonetwork (depth) {
-      
+      if (!this.srv) {
+        return
+      }
       // var depth = (typeof this.parameters.depth != 'undefined') ? this.parameters.depth : this.depth
      
       delete this.parameters.depth
@@ -319,6 +321,10 @@ export default {
         response => { this.treatmentError(response, url); })
     },
     requestApiOpensearch (depth) {
+		  if (!this.api) {
+		    this.$store.commit('searchingChange', false)
+		    return
+		  }
       // var depth = (typeof this.parameters.depth != 'undefined') ? this.parameters.depth : this.depth
       var self = this
       var url = this.api + (this.api.indexOf('?') > 0 ? '&' :'?');

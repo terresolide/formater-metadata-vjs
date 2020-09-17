@@ -45,7 +45,7 @@
         <formater-export-links v-if="metadata.exportLinks" :export-links="metadata.exportLinks"></formater-export-links> 
       </div>
       <!--  tab search if have child -->
-      <formater-opensearch v-if="describe"  :describe="describe" :uuid="uuid" :depth="depth" @parametersChange="setParameters"></formater-opensearch>
+      <formater-opensearch v-if="describe"  :describe="describe" :uuid="uuid" :depth="depth" @parametersChange="setParameters" @failed="removeDescribe"></formater-opensearch>
       <div v-if="tabs.search" v-show="currentTab === 'search'">
            
            <formater-paging  :uuid="uuid"  :depth="depth" :type="describe ? 'opensearch': 'geonetwork'"></formater-paging>
@@ -186,11 +186,15 @@ export default {
 //           this.close(event);
 //         }
 //       },
+      removeDescribe (e) {
+        this.describe = null
+        this.setHasChild(false)
+      },
       close (event) {
         event.preventDefault();
-        if (this.serviceId >= 0) {
-          this.$store.commit('services/resetCurrent')
-        }
+//         if (this.serviceId >= 0) {
+//           this.$store.commit('services/resetCurrent')
+//         }
         this.$emit('close');
       },
       computeHasChild (val) {

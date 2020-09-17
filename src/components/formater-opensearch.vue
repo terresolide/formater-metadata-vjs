@@ -63,10 +63,12 @@ export default {
 	      var url = this.$store.state.proxy.url + '?url=' + encodeURIComponent(this.describe)
 	      this.$http.get(url)
 	      .then(
-	          response => { this.extractDescribeParameters(response.body);}
+	          response => { this.extractDescribeParameters(response.body);},
+	          response => { this.$emit('failed');}
 	       )
       } else {
         console.log('CAN NOT GET ' + this.describe)
+        this.$emit('failed')
       }
     },
     extractParameter (parameterNode, specName) {
