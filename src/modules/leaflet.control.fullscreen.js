@@ -53,18 +53,18 @@
         a.setAttribute('title', this._translate[this._lang]['fullscreen'])
         container.appendChild(a)
         var self = this
-        a.onclick = function(){
+        a.onclick = function(e){
            self._fullscreen = !self._fullscreen
            this.setAttribute('class', self._fullscreen ? 'fa fa-compress' : 'fa fa-expand')
            if (self._fullscreen) {
-             self._enlarge()
+             self._enlarge(e)
            } else {
-             self._reduce()
+             self._reduce(e)
            }
         }
         return container;
     },
-    _enlarge : function () {
+    _enlarge : function (e) {
       this._nodeLarge.appendChild(this._map._container)
       this._nodeLarge.style.display = 'block'
       var height = window.innerHeight - this._removeHeight
@@ -77,8 +77,9 @@
       }
       this._map.invalidateSize()
       this._emitChange()
+      e.stopPropagation()
     },
-    _reduce : function () {
+    _reduce : function (e) {
       this._nodeLarge.style.display = 'none'
       this._nodeSmall.appendChild(this._map._container)
       this._map.setMinZoom(1)
@@ -86,6 +87,7 @@
       this._map.invalidateSize()
       this._map.scrollWheelZoom.disable()
       this._emitChange()
+      e.stopPropagation()
     },
     _emitChange : function () {
       var event = new CustomEvent('mapNodeChange')
