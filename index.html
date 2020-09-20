@@ -25,18 +25,14 @@
  <div>step 2: groupOwner, facetFormater, resolution</div>
  <div>step 3: status, serviceType, denominator, resolution</div>-->
   <div id="formaterCatalogue"></div>
-</div>
-   
+
   <script id="formaterConfig" type="application/json"  >
     {
-     "lang": "fr",
-     "ssoLogin": "http://localhost:8080/#/login",
-     "ssoLogout": "http://localhost:8080/#/logout",
-     "auth": true,
-     "metadata": "https://cdn.jsdelivr.net/gh/terresolide/formater-map-bbox-vjs@3.1.5/public/metadata/grenade2_fr.json",
+     "lang": "fr", 
+     "geonetwork": "https://gravi165.step.univ-paris-diderot.fr/geonetwork/",
      "summaryType": {
-       "step1": "details",
-       "step2": "subtemplate"
+       "step1": "step1",
+       "step2": "step3"
      },
      "style": {
          "primary":"#754a15",
@@ -48,8 +44,9 @@
        {
          "min": "1920-12-01",
          "max": "now"
-       },
-      "proxyUrl": "https://api.poleterresolide.fr/interface-services/"
+     },
+     "proxyUrl": "https://api.poleterresolide.fr/interface-services/"
+
     }
     </script> 
    <script src="dist/build.js"></script> 

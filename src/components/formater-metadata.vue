@@ -53,7 +53,7 @@
       </div>
       <!--  others tab -->
       <div v-if="currentTab === 'main'" style="margin-top:20px;">
-        <div class="mtdt-column-left">
+        <div class="mtdt-column-left" :class="{hasRelated: hasRelated}">
           <!--  <div class="mtdt-description" style="display:block;">
             <formater-quicklooks :quicklooks="meta.images" :legend="meta.legend"></formater-quicklooks>
             <dl class="mtdt-content" v-if="meta.identifier"><dt :style="{color: $store.state.style.primary}">Identifiant</dt><dd>{{meta.identifier}}</dd></dl>
@@ -64,7 +64,7 @@
 
 
         </div>
-              <div class="mtdt-column-right">
+       <div class="mtdt-column-right" v-if="hasRelated">
         <formater-related type="metadata" :download="metadata.download" :id="metadata.id"
          :layers="metadata.layers"  :links="metadata.links" :related="metadata.related" :order="metadata.order" :siblings="metadata.siblings"></formater-related>
       </div>
@@ -123,6 +123,11 @@ export default {
       }
     }
     
+  },
+  computed: {
+    hasRelated () {
+      return this.metadata.download || this.metadata.layers || this.metadata.links || this.metadata.related
+    }
   },
   data() {
     return {
@@ -294,9 +299,12 @@ export default {
   border-color:black;
   box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.5)
 }
-.mtdt-metadata .mtdt-column-left{
-  width:calc(100% - 330px);
+.mtdt-metadata div.mtdt-column-left{
+  width:calc(100% - 30px);
   padding-left: 10px;
+}
+.mtdt-metadata div.mtdt-column-left.hasRelated{
+  width:calc(100% - 330px);
 }
 .mtdt-metadata .mtdt-column-right{
   width: 300px;

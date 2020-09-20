@@ -25,7 +25,7 @@ export default {
       api: null,
       headers: {
         'Accept': 'application/json, text/plain, */*',
-        'Accept-Language': this.$store.state.lang === 'fr' ? 'fre': 'eng'
+        'Accept-Language': this.$store.state.lang === 'fr' ? 'fre,eng': 'eng,fre'
       },
       first: true,
       dimensions: [],

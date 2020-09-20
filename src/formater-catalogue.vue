@@ -12,6 +12,7 @@
 </i18n>
 <template>
  <div class="mtdt-catalogue">
+ <div>{{metaDisplayed}}</div>
   <!-- components not visible  -->
  <formater-requester  :depth="metadatas.length"  @registerValues="registerValues"></formater-requester>
   <!-- component to draw bbox -->
@@ -86,6 +87,7 @@ export default {
     return {
       currentUuid: null,
       first: true,
+      metaDisplayed: null,
       // bbox: null,
       // depth: null,
       // array breadcrumb of records
@@ -128,6 +130,13 @@ export default {
     this.resizeListener = this.resize.bind(this)
     window.addEventListener('resize', this.resizeListener);
     this.resize()
+
+//       var headers =  {
+//           'Accept': 'application/xml'
+//       }
+    
+//     this.$http.get('https://gravi165.step.univ-paris-diderot.fr/geonetwork/srv/api/0.1/records/86a28260-dc26-4b40-8433-9d06e9b9e628', {headers: headers})
+//     .then(resp => console.log(this.displayMeta(resp)))
 //     this.backListener = this.back.bind(this)
 //     window.addEventListener('beforeunload', this.backListener);
   },
@@ -151,6 +160,9 @@ export default {
 //     this.backListener = null
   },
   methods: {
+//     displayMeta(obj) {
+//       console.log(obj.body) 
+//     },
     initTemporalExtent () {
       if(this.$store.state.temporalExtent && this.$store.state.temporalExtent.min) {
         this.temporalExtent.min = this.$store.state.temporalExtent.min

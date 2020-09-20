@@ -13,6 +13,7 @@
     _lang: 'en',
     _removeHeight: 400,
     _fullscreen: false,
+    _mouseWheel: false,
     _translate: {
       'en': {
         'fullscreen': 'Enlarge',
@@ -30,6 +31,9 @@
         }
         if (options.hasOwnProperty('removeHeight') && options.removeHeight !== null) {
          this.setRemoveHeight(options.removeHeight) 
+        }
+        if (options.mouseWheel) {
+          this._mouseWheel = options.mouseWheel
         }
     },
     setLang (lang) {
@@ -68,6 +72,9 @@
       this._map._container.style.height = height + 'px'
       this._map._container.className = this._map._container.className.replace('mtdt-small', 'mtdt-fullscreen')
       this._map.setMinZoom(2)
+      if (this._mouseWheel) {
+        this._map.scrollWheelZoom.enable()
+      }
       this._map.invalidateSize()
       this._emitChange()
     },
@@ -77,6 +84,7 @@
       this._map.setMinZoom(1)
       this._map._container.className = this._map._container.className.replace('mtdt-fullscreen', 'mtdt-small')
       this._map.invalidateSize()
+      this._map.scrollWheelZoom.disable()
       this._emitChange()
     },
     _emitChange : function () {
