@@ -82,7 +82,7 @@
 </dl>
 <dl v-if="metadata.lineage" class="mtdt-main-parameter">
     <dt :style="dtStyle()">{{$t('lineage')}}</dt>
-   <dd>{{metadata.lineage}}</dd>
+   <dd style="word-break:break-word;text-align:justify;" v-html="toHTML(metadata.lineage)"></dd>
 </dl>
 <dl v-if="countConstraint > 0" class="mtdt-main-parameter">
   <dt :style="dtStyle()">{{$t('constraint')}}</dt>
@@ -194,6 +194,9 @@ export default {
     },
     dtStyle () {
       return {color: this.$store.state.style.primary}
+    },
+    toHTML (str) {
+      return str.replace(/(?:\r\n|\r|\n)/g, '<br />');
     }
   }
 }

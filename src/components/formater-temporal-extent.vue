@@ -10,10 +10,10 @@
 </i18n>
 <template>
 <div  class="mtdt-cartouche-elt">
-  <div  v-for="(begin, index) in startDate" v-if="begin">
-    <span>{{date2str(begin)}}</span>
+  <div  v-if="startDate">
+    <span>{{date2str(startDate)}}</span>
     <i class="fa fa-long-arrow-right" :style="{color:$store.state.style.primary}" ></i>
-    <span >{{date2str(endDate[index])}}</span>
+    <span >{{date2str(endDate)}}</span>
   </div>
 </div>
 </template>
@@ -38,14 +38,14 @@ export default{
   },
   created () {
     if (this.start && typeof this.start === 'object') {
-      this.startDate = this.start
+      this.startDate = this.start[0]
     } else {
-      this.startDate = [this.start]
+      this.startDate = this.start
     }
     if (this.end && typeof this.end === 'object') {
-      this.endDate = this.end
+      this.endDate = this.end[0]
     } else {
-      this.endDate = [this.end]
+      this.endDate = this.end
     }
   },
   methods: {
