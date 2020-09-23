@@ -51,7 +51,7 @@
               </dd>
              
        </dl>
-       <span v-html="metadata.description" v-if="metadata.description" style="margin-bottom:20px;"></span> 
+       <p v-html="metadata.description" v-if="metadata.description" style="margin-bottom:20px;"></p> 
        <dl class="mtdt-identifier" v-if="metadata.identifier && metadata.description" :style="{clear: (type === 'opensearch' ? 'none' : 'left')}">
              <dt :style="dtStyle()">{{$t('identifier')}}</dt>
               <dd >{{metadata.identifier}}</dd>
