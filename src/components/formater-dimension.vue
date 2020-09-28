@@ -86,9 +86,9 @@ export default {
         return
       }
       this.isChecked = !this.isChecked;
-      var event = new CustomEvent('fmt:dimensionChangeEvent')
-      document.dispatchEvent(event)
-      
+//       var event = new CustomEvent('fmt:dimensionChangeEvent', {detail: {name: this.name}})
+//       document.dispatchEvent(event)
+      this.$emit('change', {name: this.value, value: this.isChecked})
     },
     handleSearch (e) {
       if(!this.isChecked) {

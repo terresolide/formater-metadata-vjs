@@ -2,7 +2,8 @@
 <template>
  <div class="mtdt-dimension-block">
       	
-	      	<formater-dimension :disable="disable" :value="encodeURIComponent(item['@value'])" v-for="(item,index) in dimension" :dimension="item" :key="index" :name="filteredName"></formater-dimension>
+	      	<formater-dimension :disable="disable" :value="encodeURIComponent(item['@value'])"
+	      	 v-for="(item,index) in dimension" :dimension="item" :key="index" :name="filteredName" @change="change"></formater-dimension>
  </div>
 </template>
 <script>
@@ -30,7 +31,14 @@ export default {
       default: ''
     }
   },
-
+  data () {
+    return {
+      values: {}
+    }
+  },
+  created () {
+    this.values = this.dimension
+  },
   computed: {
     filteredName () {
       switch (this.name) {
@@ -42,7 +50,14 @@ export default {
     }
   },
   methods: {
-    
+    change (event) {
+      console.log(event)
+//       this.values[event.name] = event.value
+//       var checked = this.values.filter(function (value) {
+//         return value
+//       })
+//       console.log(checked)
+    }
   }
 }
 </script>

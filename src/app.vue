@@ -32,12 +32,12 @@
  import FormaterAuthentication from '@/components/formater-authentication.vue'
  
 //prevent previous and next page for browser
-function disableBack() { window.history.forward() }
-window.onload = function () {
-disableBack();
-}
-window.onpageshow = function(evt) { if (evt.persisted) disableBack() }
-window.onbeforeunload = function() { return "Your work will be lost."; };
+// function disableBack() { window.history.forward() }
+// window.onload = function () {
+// disableBack();
+// }
+// window.onpageshow = function(evt) { if (evt.persisted) disableBack() }
+// window.onbeforeunload = function() { return "Your work will be lost."; };
 
 export default {
     name: 'App',

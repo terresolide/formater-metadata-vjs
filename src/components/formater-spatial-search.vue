@@ -59,6 +59,10 @@ export default {
     lang:{
       type: String,
       default: 'en'
+    },
+    defaultBbox: {
+      type: String,
+      default: null
     }
   },
   data(){
@@ -73,6 +77,24 @@ export default {
       aerisThemeListener:null,
       patternLatitude: "[-+]?(90|([1-8]?[0-9])([.][0-9]+)?)",
       patternLongitude:"[-+]?(180(\.0+)?|((1[0-7][0-9])|([1-9]?[0-9]))([.][0-9]+)?)"
+    }
+  },
+  watch: {
+    $route (newroute) {
+      if (newroute.query.bbox) {
+        var split = newroute.query.bbox.split(',')
+        this.north = split[3]
+        this.east = split[2]
+        this.south = split[1]
+        this.west = split[0]
+      } else {
+        this.north = ''
+        this.east = ''
+        this.south = ''
+        this.west = ''
+      } 
+      var event = new CustomEvent( 'fmt:bboxChange', { detail: this.bbox()});
+      document.dispatchEvent( event);
     }
   },
   computed: {
@@ -93,10 +115,10 @@ export default {
   },
   destroyed: function() {
   
-    document.removeEventListener('aerisResetEvent', this.resetEventListener);
-    this.resetEventListener = null;
-    document.removeEventListener('aerisSearchEvent', this.searchEventListener);
-    this.searchEventListener = null;
+//     document.removeEventListener('aerisResetEvent', this.resetEventListener);
+//     this.resetEventListener = null;
+//     document.removeEventListener('aerisSearchEvent', this.searchEventListener);
+//     this.searchEventListener = null;
     document.removeEventListener('aerisTheme', this.aerisThemeListener);
     this.aerisThemeListener = null;
     document.removeEventListener('fmt:selectAreaChange', this.selectAreaChangeListener);
@@ -106,10 +128,10 @@ export default {
   },
   created: function () {
     this.$i18n.locale = this.lang
-    this.resetEventListener = this.handleReset.bind(this) 
-    document.addEventListener('aerisResetEvent', this.resetEventListener);
-    this.searchEventListener = this.handleSearch.bind(this) 
-    document.addEventListener('aerisSearchEvent', this.searchEventListener);
+//     this.resetEventListener = this.handleReset.bind(this) 
+//     document.addEventListener('aerisResetEvent', this.resetEventListener);
+//     this.searchEventListener = this.handleSearch.bind(this) 
+//     document.addEventListener('aerisSearchEvent', this.searchEventListener);
     this.aerisThemeListener = this.handleTheme.bind(this) 
     document.addEventListener('aerisTheme', this.aerisThemeListener);
     this.selectAreaChangeListener = this.handleBounds.bind(this) 
@@ -151,10 +173,10 @@ export default {
     },
     createGeometry () {
       if (this.validForm()) {
-        var north = Math.round(this.north * 1000) / 1000
-        var south = Math.round(this.south * 1000) / 1000
-        var east = Math.round(this.east * 1000) / 1000
-        var west = Math.round(this.west * 1000) / 1000
+        var north = Math.round(this.north * 10000) / 10000
+        var south = Math.round(this.south * 10000) / 10000
+        var east = Math.round(this.east * 10000) / 10000
+        var west = Math.round(this.west * 10000) / 10000
         var box = 'POLYGON((' + west + '+' + north + ','
           box += east + '+' + north + ',';
           box += east + '+' + south + ',';
@@ -208,34 +230,51 @@ export default {
     },
     handleResetLocal: function () {
       this.handleReset()
-      var event = new CustomEvent('fmt:spatialChangeEvent')
-      document.dispatchEvent(event)
+      var query = {}
+      for (var prop in this.$route.query) {
+        query[prop] = this.$route.query[prop]
+      }
+      delete query.bbox
+       this.$router.push({name: this.$route.name, params: this.$route.params, query: query})
+
+//       var event = new CustomEvent('fmt:spatialChangeEvent')
+//       document.dispatchEvent(event)
     },
     handleBounds: function(e){
-      this.north = e.detail.north;
-      this.south = e.detail.south;
-      this.east = e.detail.east;
-      this.west = e.detail.west;
+      var query = {}
+      for (var prop in this.$route.query) {
+        query[prop] = this.$route.query[prop]
+      }
+      if (e.detail.north !== '') {
+	      this.north = Math.round(e.detail.north * 10000) / 10000;
+	      this.south = Math.round(e.detail.south * 10000) / 10000;
+	      this.east = Math.round(e.detail.east * 10000) / 10000;
+	      this.west = Math.round(e.detail.west * 10000) / 10000;
+        query.bbox = this.west + ',' + this.south + ',' + this.east + ',' + this.north
+      } else {
+        delete query.bbox
+      }
       if (this.isFmtMetadata) {
         this.$store.commit('selectAreaChange', e.detail)
       }
-       var event = new CustomEvent('fmt:spatialChangeEvent')
-       document.dispatchEvent(event)
+       this.$router.push({name: this.$route.name, params: this.$route.params, query: query})
+//        var event = new CustomEvent('fmt:spatialChangeEvent')
+//        document.dispatchEvent(event)
     },
-    handleSearch: function(e) {
-      // add bbox if valid 
-      var geometry = this.createGeometry()
-      var box = this.createBbox()
-      delete e.detail.geometry
-      delete e.detail.box
-      if (geometry) {
-        e.detail.geometry = geometry;
-        // this.handleChange();
-      } 
-      if (box) {
-        e.detail.box = box
-      }
-    },
+//     handleSearch: function(e) {
+//       // add bbox if valid 
+//       var geometry = this.createGeometry()
+//       var box = this.createBbox()
+//       delete e.detail.geometry
+//       delete e.detail.box
+//       if (geometry) {
+//         e.detail.geometry = geometry;
+//         // this.handleChange();
+//       } 
+//       if (box) {
+//         e.detail.box = box
+//       }
+//     },
     handleTheme: function(theme) {
       this.theme = theme.detail;
       this.ensureTheme();

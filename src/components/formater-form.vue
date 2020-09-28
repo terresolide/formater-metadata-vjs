@@ -33,7 +33,9 @@
  </formater-search-box>
  
 <formater-search-box header-icon-class="fa fa-calendar" open-icon-class="fa fa-caret-right" :title="$t('time_slot')" :deployed="true" type="empty" :disable-level="+ $store.state.disable.temporal">
-  <formater-temporal-search :lang="$i18n.locale" :daymin="$store.state.temporalExtent.min" :daymax="$store.state.temporalExtent.max" :disable="$store.state.disable.temporal"></formater-temporal-search>
+  <formater-temporal-search :lang="$i18n.locale" name="ext" :daymin="$store.state.temporalExtent.min"
+   :daymax="$store.state.temporalExtent.max" :disable="$store.state.disable.temporal"
+   :default-from="temp.from" :default-to="temp.to"></formater-temporal-search>
 </formater-search-box>
 <!--  opensearch parameters -->
 <formater-search-box header-icon-class="fa fa-thermometer-3" v-if="$store.state.parameters.others.length > 0" open-icon-class="fa fa-caret-right" :title="$t('parameters')" :deployed="true" type="empty">
@@ -61,7 +63,7 @@
 <div v-for="(key, index) in $store.state.gnParameters.step2" v-if="depth > 0" >
 <formater-search-box v-if="dimensions[nameToIndex[key]] && dimensions[nameToIndex[key]].category" :header-icon-class="facetToIcon(key)" open-icon-class="fa fa-caret-right" :title="titleDimension(key)" 
 :disable-level="$store.state.disable.other ? 1 : 0" type="empty">
-  <formater-dimension-block v-if="!isFacet(key)"   :dimension="dimensions[nameToIndex[key]].category" :disable="$store.state.disable.other":name="key" ></formater-dimension-block>
+  <formater-dimension-block :ref="key" v-if="!isFacet(key)"   :dimension="dimensions[nameToIndex[key]].category" :disable="$store.state.disable.other":name="key" ></formater-dimension-block>
   <formater-facet-block v-if="isFacet(key)"   :dimension="dimensions[nameToIndex[key]].category" :disable="$store.state.disable.other" :name="key" ></formater-facet-block>
  </formater-search-box>
 </div>
@@ -121,24 +123,41 @@ export default {
   data() {
     return {
       fulltextSearch: '',
+      temp: {
+        from: null,
+        to: null
+      },
       first: true,
       parameters: [],
       dimensions: [],
       nameToIndex: [],
-      aerisSearchListener: null,
-      aerisResetListener: null,
+      // aerisSearchListener: null,
+      // aerisResetListener: null,
       metadataListListener: null,
-      closeMetadataListener: null
+      temporalChangedListener: null
+     // closeMetadataListener: null
     }
   },
-
+  watch: {
+    $route (newroute) {
+      this.initValues(newroute)
+    }
+  },
   created () {
 	  // add new facet in geonetwork facets
+	  
 	  this.addNewFacets()
-    this.aerisSearchListener = this.handleSearch.bind(this)
-    document.addEventListener('aerisSearchEvent', this.aerisSearchListener)
-    this.aerisResetListener = this.handleReset.bind(this)
-    document.addEventListener('aerisResetEvent', this.aerisResetListener)
+	  this.initValues(this.$route)
+	  this.temporalChangedListener = this.changeDate.bind(this)
+    document.addEventListener('temporalChangeEvent', this.temporalChangedListener);
+	  this.dimensionChangedListener = this.changeDimension.bind(this);
+    document.addEventListener('fmt:dimensionChangeEvent', this.dimensionChangedListener);
+
+//    
+//     this.aerisSearchListener = this.handleSearch.bind(this)
+//     document.addEventListener('aerisSearchEvent', this.aerisSearchListener)
+//     this.aerisResetListener = this.handleReset.bind(this)
+//     document.addEventListener('aerisResetEvent', this.aerisResetListener)
     this.metadataListListener = this.fill.bind(this)
     document.addEventListener('fmt:metadataListEvent', this.metadataListListener)
   },
@@ -146,15 +165,62 @@ export default {
     this.handleTheme()
   },
   destroyed () {
-    document.removeEventListener('aerisSearchEvent', this.aerisSearchListener)
-    this.aerisSearchListener = null
-    document.removeEventListener('aerisResetEvent', this.aerisResetListener)
-    this.aerisResetListener = null
+//     document.removeEventListener('aerisSearchEvent', this.aerisSearchListener)
+//     this.aerisSearchListener = null
+//     document.removeEventListener('aerisResetEvent', this.aerisResetListener)
+//     this.aerisResetListener = null
     document.removeEventListener('fmt:metadataListEvent', this.metadataListListener)
     this.metadataListListener = null;
   },
- 
+//   beforeRouteUpdate (to, from, next) {
+//     console.log(to)
+//     console.log(from)
+//     next();
+  
+//   },
   methods: {
+    initValues (newroute) {
+      if (!newroute.query.any) {
+        this.fulltextSearch = null
+      } else {
+        this.fulltextSearch = newroute.query.any
+      }
+      if (!newroute.query.extTo) {
+        this.temp.to = null
+      } else {
+        this.temp.to = newroute.query.extTo
+      }
+      if (!newroute.query.extFrom) {
+        this.temp.from = null
+      } else {
+        this.temp.from = newroute.query.extFrom
+      }
+    },
+    changeDate (event) {
+      var query = {}
+      for (var prop in this.$route.query) {
+        query[prop] = this.$route.query[prop]
+      }
+      if (event.detail.name === "extto") {
+        if (event.detail.value && event.detail.value !== 'Invalid date') {
+          query.extTo = event.detail.value
+        } else {
+          delete query.extTo
+        }
+      } 
+      if (event.detail.name === "extfrom") {
+         if( event.detail.value && event.detail.value !== 'Invalid date') {
+	        query.extFrom = event.detail.value
+	      } else {
+	        delete query.extFrom
+	      }
+      }
+      this.$router.push({name: this.$route.name, params: this.$route.params, query: query})
+    },
+    changeDimension (event) {
+      console.log(event)
+      console.log(this.$refs[event.detail.name])
+    },
 	  addNewFacets () {
 		  var self = this
 		  this.$store.state.facets.forEach(function (facet) {
@@ -280,8 +346,13 @@ export default {
       return dimensions
     },
     reset () {
-      var event = new CustomEvent('fmt:resetEvent')
-      document.dispatchEvent(event)
+      this.$router.push({
+        name: this.$route.name,
+        params: this.$route.params,
+        query: {}
+      })
+//       var event = new CustomEvent('fmt:resetEvent')
+//       document.dispatchEvent(event)
     },
     handleReset () {
       this.fulltextSearch = ''  
@@ -314,14 +385,29 @@ export default {
     },
     changeTextOnEnter (event) {
       if (event.which == 13 || event.keyCode == 13) {
-        this.changeText()
+        this.changeText(event)
         return false;
       }
     },
     changeText(event) {
-       // trigger event change text
-       var e = new CustomEvent('fmt:textChangeEvent')
-       document.dispatchEvent(e)
+      var route = this.$route
+      console.log(event)
+      var query = {}
+      for (var prop in route.query) {
+        query[prop] = route.query[prop]
+      }
+       // var query = Object.assign(route.query, {any: this.fulltextSearch})
+      // query = {any: 'machin'}
+   
+    // query.a = Math.random()
+   
+     query.any = this.fulltextSearch
+      
+      console.log(query)
+     this.$router.push({name: this.$route.name, params: this.$route.params, query: query})
+     //  this.$emit('change', {type: 'text', value: this.fulltextSearch})
+//        var e = new CustomEvent('fmt:textChangeEvent')
+//        document.dispatchEvent(e)
     }//,
   }
 }

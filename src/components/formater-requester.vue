@@ -19,6 +19,13 @@ export default {
       default:0
     }
   },
+  watch: {
+    $route (newroute, old) {
+      console.log(newroute)
+      this.getRecords(newroute)
+      
+    }
+  },
   data() {
     return {
       srv: null,
@@ -40,7 +47,7 @@ export default {
       // listen a global reset event
       resetListener: null,
       facet: [],
-       type: 'geonetwork',
+      type: 'geonetwork',
       credentials: {}
      }
   },
@@ -48,47 +55,48 @@ export default {
     if (this.$store.state.geonetwork) {
         this.srv = this.$store.state.geonetwork +  'srv/' + (this.$i18n.locale === 'fr'? 'fre' : 'eng') + '/'
     }
+    this.getRecords(this.$route)
     
 
     // this.getRecords() done when <formater-paging> is mounted with its pageChangeEvent on order control change
-    this.pageChangedListener = this.changePage.bind(this)
-    document.addEventListener('fmt:pageChangedEvent', this.pageChangedListener);
-    this.temporalChangedListener = this.getRecords.bind(this)
-    document.addEventListener('temporalChangeEvent', this.temporalChangedListener);
-    this.spatialChangedListener = this.getRecords.bind(this)
-    document.addEventListener('fmt:spatialChangeEvent', this.spatialChangedListener);
-    this.dimensionChangedListener = this.getRecords.bind(this);
-    document.addEventListener('fmt:dimensionChangeEvent', this.dimensionChangedListener);
-    this.textChangedListener = this.getRecords.bind(this);
-    document.addEventListener('fmt:textChangeEvent', this.textChangedListener);
-    this.selectChangedListener = this.getRecords.bind(this);
-    document.addEventListener('fmt:selectChangeEvent', this.selectChangedListener)
-     this.metadataWithChildListener = this.getRecords.bind(this)
-    document.addEventListener('fmt:metadataWithChildEvent', this.metadataWithChildListener)
-    this.closeMetadataListener = this.getRecords.bind(this)
-     document.addEventListener('fmt:closeMetadataEvent', this.closeMetadataListener)
-    this.resetListener = this.handleReset.bind(this);
-     document.addEventListener('fmt:resetEvent', this.resetListener);
+//     this.pageChangedListener = this.changePage.bind(this)
+//     document.addEventListener('fmt:pageChangedEvent', this.pageChangedListener);
+//     this.temporalChangedListener = this.getRecords.bind(this)
+//     document.addEventListener('temporalChangeEvent', this.temporalChangedListener);
+//     this.spatialChangedListener = this.getRecords.bind(this)
+//     document.addEventListener('fmt:spatialChangeEvent', this.spatialChangedListener);
+//     this.dimensionChangedListener = this.getRecords.bind(this);
+//     document.addEventListener('fmt:dimensionChangeEvent', this.dimensionChangedListener);
+//     this.textChangedListener = this.getRecords.bind(this);
+//     document.addEventListener('fmt:textChangeEvent', this.textChangedListener);
+//     this.selectChangedListener = this.getRecords.bind(this);
+//     document.addEventListener('fmt:selectChangeEvent', this.selectChangedListener)
+//      this.metadataWithChildListener = this.getRecords.bind(this)
+//     document.addEventListener('fmt:metadataWithChildEvent', this.metadataWithChildListener)
+//     this.closeMetadataListener = this.getRecords.bind(this)
+//      document.addEventListener('fmt:closeMetadataEvent', this.closeMetadataListener)
+//     this.resetListener = this.handleReset.bind(this);
+//      document.addEventListener('fmt:resetEvent', this.resetListener);
   },
   destroyed () {
-    document.removeEventListener('fmt:pageChangedEvent', this.pageChangedListener);
-    this.pageChangedListener = null;
-    document.removeEventListener('temporalChangeEvent', this.temporalChangedListener);
-    this.temporalChangedListener = null;
-    document.removeEventListener('fmt:spatialChangeEvent', this.spatialChangedListener);
-    this.spatialChangedListener = null;
-    document.addEventListener('fmt:dimensionChangeEvent', this.dimensionChangedListener);
-    this.dimensionChangedListener = null
-    document.removeEventListener('fmt:textChangeEvent', this.textChangedListener)
-    this.textChangedListener = null
-    document.removeEventListener('fmt:selectChangeEvent', this.selectChangedListener)
-    this.selectChangedListener = null
-    document.removeEventListener('fmt:metadataWithChildEvent', this.metadataWithChildListener)
-    this.metadataWithChildListener = null
-     document.addEventListener('fmt:closeMetadataEvent', this.closeMetadataListener)
-     this.closeMetadataListener = null
-    document.addEventListener('fmt:resetEvent', this.resetListener);
-    this.resetListener = null
+//     document.removeEventListener('fmt:pageChangedEvent', this.pageChangedListener);
+//     this.pageChangedListener = null;
+//     document.removeEventListener('temporalChangeEvent', this.temporalChangedListener);
+//     this.temporalChangedListener = null;
+//     document.removeEventListener('fmt:spatialChangeEvent', this.spatialChangedListener);
+//     this.spatialChangedListener = null;
+//     document.addEventListener('fmt:dimensionChangeEvent', this.dimensionChangedListener);
+//     this.dimensionChangedListener = null
+//     document.removeEventListener('fmt:textChangeEvent', this.textChangedListener)
+//     this.textChangedListener = null
+//     document.removeEventListener('fmt:selectChangeEvent', this.selectChangedListener)
+//     this.selectChangedListener = null
+//     document.removeEventListener('fmt:metadataWithChildEvent', this.metadataWithChildListener)
+//     this.metadataWithChildListener = null
+//      document.addEventListener('fmt:closeMetadataEvent', this.closeMetadataListener)
+//      this.closeMetadataListener = null
+//     document.addEventListener('fmt:resetEvent', this.resetListener);
+//     this.resetListener = null
   },
   mounted () {
 //     this.facet.facetFormaterFre = []
@@ -132,26 +140,26 @@ export default {
       }
       this.$store.commit('searchingChange', true)
       // trigger search event like breadcrumb
-      if (event.detail && typeof event.detail.depth == 'number') {
-        var depth = event.detail.depth
-      } else {
-        var depth = this.depth
-      }
-      var e = new CustomEvent("aerisSearchEvent", { detail: {depth: depth}});
-      document.dispatchEvent(e);
-      
-      if (e.detail.api) {
-        this.api = e.detail.api
-        delete e.detail.api
-        this.type = 'opensearch'
+//       if (event.detail && typeof event.detail.depth == 'number') {
+//         var depth = event.detail.depth
+//       } else {
+//         var depth = this.depth
+//       }
+//       var e = new CustomEvent("aerisSearchEvent", { detail: {depth: depth}});
+//       document.dispatchEvent(e);
+     
+//       if (e.detail.api) {
+//         this.api = e.detail.api
+//         delete e.detail.api
+//         this.type = 'opensearch'
         
-      } else {
+ //     } else {
         this.type = 'geonetwork'
         this.api = null
-      }
+//      }
 
-      this.prepareRequest(e)
-      this.requestApi(depth)
+      this.prepareRequest(event)
+      this.requestApi(event)
     },
     prepareRequest (e) {
       switch (this.type) {
@@ -163,41 +171,47 @@ export default {
         break
       }
     },
-    prepareRequestGeonetwork(e) {
+    createGeometry (bbox) {
+      var split = bbox.split(',')
+      var north = split[3]
+      var south = split[1]
+      var east = split[2]
+      var west = split[0]
+      var box = 'POLYGON((' + west + '+' + north + ','
+        box += east + '+' + north + ',';
+        box += east + '+' + south + ',';
+        box += west + '+' + south + ',';
+        box += west + '+' + north + '))';
+      return box;
+    },
+    prepareRequestGeonetwork(route) {
       
       this.initParameters()
-      delete e.detail.lang
-      if (!e.detail.startDefault) {
-        e.detail.renameProperty('start', 'extFrom')
-      } else {
-        delete e.detail.start
-      }
-      if (e.detail.endDefault) {
-        delete e.detail.endDefault
-        delete e.detail.end
+      
+      // delete e.detail.lang
+//       if (!e.detail.startDefault) {
+//         e.detail.renameProperty('start', 'extFrom')
+//       } else {
+//         delete e.detail.start
+//       }
+//       if (e.detail.endDefault) {
+//         delete e.detail.endDefault
+//         delete e.detail.end
         
-      } else {
-        e.detail.renameProperty('end', 'extTo')
-      }
-      delete e.detail.startDefault
-      delete e.detail.endDefault
-      delete e.detail.box
+//       } else {
+//         e.detail.renameProperty('end', 'extTo')
+//       }
+//       delete e.detail.startDefault
+//       delete e.detail.endDefault
+//       delete e.detail.box
 
-     // delete e.detail.depth
-      delete e.detail.recordPerPage
-      if (e.detail.parentUuid) {
-//   @toDelete test 
-//         var authorizeParameters = this.$store.state.gnParameters.defaut.concat(this.$store.state.gnParameters.step2)
-//         authorizeParameters.concat(this.$store.state.gnParameters.step1step2)
-//         authorizeParameters.push('parentUuid')
-        this.parameters.resultType = this.$store.state.summaryType.step2
+//      // delete e.detail.depth
+//       delete e.detail.recordPerPage
+      if (route.name === 'FormaterMetadata') {
+       this.parameters.resultType = this.$store.state.summaryType.step2
       } else {
-        this.parameters.isChild = false
-//         var authorizeParameters = this.$store.state.gnParameters.defaut.concat(this.$store.state.gnParameters.step1)
-//         authorizeParameters.concat(this.$store.state.gnParameters.step1step2)
-        
-//         authorizeParameters.push('isChild')
-        this.parameters.resultType = this.$store.state.summaryType.step1
+       this.parameters.isChild = false
+       this.parameters.resultType = this.$store.state.summaryType.step1
       }
 //       if (e.detail.depth > 0) {
 //         // voir plutôt les key à éliminer centre de données, variable, instruments, gemet, types?
@@ -207,8 +221,8 @@ export default {
 //           }
 //         }
 //       } else {
-        this.prepareFacet(e)
-        this.parameters = Object.assign(this.parameters, e.detail)
+        // this.prepareFacet(route)
+     
         var _this = this
 
     },
@@ -269,18 +283,23 @@ export default {
           break;
         }
     },
-    requestApiGeonetwork (depth) {
+    requestApiGeonetwork (route) {
       if (!this.srv) {
         return
       }
       // var depth = (typeof this.parameters.depth != 'undefined') ? this.parameters.depth : this.depth
      
-      delete this.parameters.depth
+     // delete this.parameters.depth
       var headers =  {
           'Accept': 'application/json, text/plain, */*',
           'Accept-Language': this.$store.state.lang === 'fr' ? 'fre': 'eng'
        }
-      
+      this.parameters = Object.assign(this.parameters, route.query)
+
+      if (this.parameters.bbox) {
+          this.parameters.geometry = this.createGeometry(this.parameters.bbox)
+          delete this.parameters.bbox
+      }
       //first requête to type=me to record session and token
 //       this.$http.get('http://demo.formater/geonetwork/srv/fre/info?type=me', {credentials:true, headers: headers}).then(
 //           response => {console.log(response.headers)}
@@ -290,13 +309,15 @@ export default {
 //       )
       var self = this
       // parameters according to depth
-      if (depth === 0) {
+      if (route.name === 'FormaterCatalogue') {
+     // if (depth === 0) {
         // remove all parameters coming from step2 (normally there is not)
         this.$store.state.gnParameters.step2.forEach(function (key) {
           delete self.parameters[key]
         })
       }
-      if (depth > 0) {
+      if (route.name === 'FormaterMetadata') {
+     // if (depth > 0) {
         // remove all parameters exlusivy reserve to step1
         this.$store.state.gnParameters.step1.forEach(function (key) {
           delete self.parameters[key]
@@ -312,12 +333,13 @@ export default {
         delete this.parameters.sortOrder
         // this.parameters.sortOrder = 'reverse'
       }
+      // this.$router.push({name: 'FormaterCatalogue', query:this.parameters})
       // this.parameters.sortOrder =  this.parameters.sortBy === 'title' ? 'ordering': 'reverse';
       var url = this.srv + 'q?' + Object.keys(this.parameters).map(function (prop) {
         return prop + '=' + self.parameters[prop]
       }).join('&');
       this.$http.get(url, {headers: headers}).then(
-        response => { this.treatmentGeonetwork(response.body, depth);},
+        response => { this.treatmentGeonetwork(response.body, 0);},
         response => { this.treatmentError(response, url); })
     },
     requestApiOpensearch (depth) {

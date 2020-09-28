@@ -22,7 +22,7 @@
    <!-- components can be view -->
  
    <div class="mtdt-column-left" >
-       <formater-form  :disableLevel="metadatas.length > 0 ? 1 : 0" :depth="metadatas.length" ></formater-form>
+       <formater-form  :disableLevel="metadatas.length > 0 ? 1 : 0" :depth="metadatas.length"></formater-form>
    </div>
    <div class="mtdt-column-right" >
         <!-- div where append map when enlarge it -->
@@ -83,6 +83,7 @@ export default {
     FormaterRequester,
     AerisTheme
   },
+ 
   data() {
     return {
       currentUuid: null,
@@ -104,19 +105,18 @@ export default {
   },
   watch: {
     $route (newroute, old) {
+      console.log(newroute)
       var oldDepth = old.query.depth ? old.query.depth : 0
       var newDepth = newroute.query.depth ? newroute.query.depth : 0
       if (newDepth < oldDepth) {
         this.back()
       } else if (newDepth > oldDepth && !this.currentUuid ){
-        this.$router.replace({name: 'FormaterCatalogue', query:{}})
+       //  this.$router.replace({name: 'FormaterCatalogue', query:{}})
       }
     }
   },
   created () {
     // this.$router.push({name: 'FormaterCatalogue'})
-    
-
     this.initTemporalExtent()
     this.$gn.init(this.$i18n.locale, this.$store.state.geonetwork, this.$http, this.$store)
     this.metadataListener = this.receiveMetadata.bind(this)
@@ -144,7 +144,7 @@ export default {
 //     var evt = new CustomEvent('fmt:pageChangedEvent')
 //     document.dispatchEvent(evt)
     if (!this.$store.state.metadata) {
-      this.$router.push({name: 'FormaterCatalogue', query: {}})
+      // this.$router.push({name: 'FormaterCatalogue', query: {}})
     }
   },
   destroyed () {
@@ -163,6 +163,7 @@ export default {
 //     displayMeta(obj) {
 //       console.log(obj.body) 
 //     },
+
     initTemporalExtent () {
       if(this.$store.state.temporalExtent && this.$store.state.temporalExtent.min) {
         this.temporalExtent.min = this.$store.state.temporalExtent.min
