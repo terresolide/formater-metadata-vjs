@@ -404,7 +404,7 @@ export default {
       data.type = 'geonetwork'
       data.features = features
       this.fill(data, depth)
-      this.$store.commit('searchingChange', false)
+      // this.$store.commit('searchingChange', false)
       this.searchGnStep2Parameters(data.summary.dimension)
       // this.searchRelated()
     },

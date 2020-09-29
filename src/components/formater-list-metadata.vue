@@ -77,6 +77,7 @@ export default {
        if (!this.metadatas) {
          return
        }
+       this.$store.commit('searchingChange', true)
         var headers =  {
           'Accept': 'application/json, text/plain, */*',
           'Accept-Language': this.$i18n.locale === 'fr' ? 'fre': 'eng'
@@ -86,7 +87,8 @@ export default {
         var self = this
         this.$http.get(url, {
               headers: headers
-            }).then( response => {self.addRelated(response.body)})
+            }).then( response => {self.addRelated(response.body)},
+                     response => {this.$store.commit('searchingChange', false)})
      },
      addRelated (related) {
        var self = this
@@ -105,6 +107,7 @@ export default {
            }
          }
        }
+       this.$store.commit('searchingChange', false)
      }
   }
 }
