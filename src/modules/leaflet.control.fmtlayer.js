@@ -49,7 +49,9 @@
      } else {
         this.addBboxLayer()
      }
-     this.bbox.addLayer(bboxLayer)
+     if (bboxLayer) {
+        this.bbox.addLayer(bboxLayer)
+     }
    },
    removeBboxLayer () {
      if (this.bbox) {

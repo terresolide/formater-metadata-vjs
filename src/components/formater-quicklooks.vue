@@ -39,16 +39,16 @@ export default {
 .mtdt-quicklooks{
   position: relative;
    float:left;
-   max-width: 340px;
+   max-width: 200px;
   /* max-height:260px;*/
    background: #ddd;
    margin: 0px 15px 10px 0;
 }
 .mtdt-quicklooks div.wrapper{
    text-align:center;
-   max-width: 340px;
+   max-width: 200px;
    max-height:296px;
-   line-height:260px;
+   line-height:180px;
    margin:auto;
    width: 340px;
 }
@@ -63,7 +63,7 @@ export default {
 }
 .mtdt-quicklooks img{
   width:100%;
-  max-width:320px;
+  max-width:180px;
   max-height:260px;
   display:block;
   margin:auto;
@@ -92,5 +92,31 @@ export default {
 .mtdt-metadata .mtdt-quicklooks .fa-chevron-circle-left{
   left:1px;
   margin-left:0;
+}
+@media screen and (min-width:1100px) {
+  .mtdt-quicklooks{
+   max-width: 250px;
+  }
+  .mtdt-quicklooks div.wrapper{
+     max-width: 250px;
+      line-height:240px;
+  }
+  .mtdt-quicklooks img{
+    max-width:230px;
+  }
+}
+@media screen and (min-width:1500px) {
+  .mtdt-quicklooks{
+   max-width: 340px;
+	}
+	.mtdt-quicklooks div.wrapper{
+	   max-width: 340px;
+	    line-height:300px;
+	}
+	
+	
+	.mtdt-quicklooks img{
+	  max-width:320px;
+	}
 }
 </style>

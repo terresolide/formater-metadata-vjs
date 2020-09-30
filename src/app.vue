@@ -80,6 +80,7 @@ export default {
 }
 .mtdt-app #view {
   position: relative;
+  min-width:800px;
 }
 .mtdt-app > header{
 

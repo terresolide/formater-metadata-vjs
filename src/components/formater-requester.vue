@@ -244,6 +244,7 @@ export default {
             var data = response.body
             var uuid = data['geonet:info'].uuid
             var meta = this.$gn.treatmentMetadata(data, uuid);
+            // var feature = self.$gn.extractBbox(data.geoBox, uuid)
             meta.appRoot = true
             var event = new CustomEvent('fmt:metadataEvent', {detail: {meta:meta, depth: 0 } })
             document.dispatchEvent(event)
@@ -426,7 +427,7 @@ export default {
       data.type = 'geonetwork'
       data.features = features
       this.fill(data, depth)
-      this.$store.commit('searchingChange', false)
+      // this.$store.commit('searchingChange', false)
       this.searchGnStep2Parameters(data.summary.dimension)
       // this.searchRelated()
     },
