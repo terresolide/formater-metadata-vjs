@@ -41,6 +41,11 @@
 </i18n>
 <template>
 <div class="mtdt-content">
+<div style="float:right;background:#eee;margin-left:5px;max-width:300px;min-width:200px;width:25%;" v-if="hasRelated">
+ <formater-related type="metadata" :download="metadata.download" :id="metadata.id"
+         :layers="metadata.layers"  :links="metadata.links" :related="metadata.related" :order="metadata.order" :siblings="metadata.siblings"></formater-related>
+    
+</div>
 <h1 :style="{color:$store.state.style.primary}">{{$t('about_resource')}}</h1>
  <div class="mtdt-description" style="display:block;">
        <formater-quicklooks :quicklooks="metadata.images"></formater-quicklooks>
@@ -87,10 +92,10 @@
 <dl v-if="countConstraint > 0" class="mtdt-main-parameter">
   <dt :style="dtStyle()">{{$t('constraint')}}</dt>
   <dd>
-     <dl v-for="key in $store.state.constraintList" v-if="metadata[key]">
-       <dt>{{$t(key)}}</dt>
-       <dd><div v-for="line in metadata[key]">{{line}}</div></dd>
-     </dl>
+     <div v-for="key in $store.state.constraintList" v-if="metadata[key]">
+
+       <div v-for="line in metadata[key]" style="line-height:1;margin-bottom:5px;">{{line}}</div>
+     </div>
   </dd>
 </dl>
           
@@ -119,6 +124,8 @@ import FormaterParameters from './formater-parameters.vue'
 import FormaterListContact from './formater-list-contact.vue'
 import FormaterKeywords from './formater-keywords.vue'
 import FormaterTemporalExtent from './formater-temporal-extent.vue'
+import FormaterRelated from './formater-related.vue';
+
 export default {
   name: 'FormaterMetadataContent',
   components: {
@@ -126,7 +133,8 @@ export default {
     FormaterParameters,
     FormaterListContact,
     FormaterKeywords,
-    FormaterTemporalExtent
+    FormaterTemporalExtent,
+    FormaterRelated
   },
   props:{
     metadata: {
@@ -178,7 +186,11 @@ export default {
         }
       })
       return n
+    },
+    hasRelated () {
+      return this.metadata.download || this.metadata.layers || this.metadata.links || this.metadata.related
     }
+
   },
   methods:{
 
@@ -222,7 +234,9 @@ background-image: linear-gradient(to right, #ccc, #333, #ccc);
   padding-top:0px;
 }
 .mtdt-metadata .mtdt-content dt{
-  width:130px;
+  min-width:85px;
+  width:15%;
+  max-width:170px;
   display: inline-block;
   word-break: break-word;
   font-size:1.1em;
@@ -233,14 +247,14 @@ background-image: linear-gradient(to right, #ccc, #333, #ccc);
   width:auto;
   display: inline-block;
   word-break: break-all;
-  line-height: 1.3em;
+  line-height: 1em;
   vertical-align: top;
 }
 .mtdt-metadata .mtdt-content dl.mtdt-main-parameter{
   clear: left;
 }
 .mtdt-metadata .mtdt-content dl.mtdt-main-parameter dd{
-  width: calc(100% - 180px);
+  width: calc(82%);
 }
 
 .mtdt-metadata .mtdt-content .mtdt-description span.mtdt-quicklooks + span > ul,
@@ -269,4 +283,5 @@ background-image: linear-gradient(to right, #ccc, #333, #ccc);
   width:100%;
   font-size:1em;
 }*/
+
 </style>

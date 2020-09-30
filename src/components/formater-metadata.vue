@@ -53,7 +53,7 @@
       </div>
       <!--  others tab -->
       <div v-if="currentTab === 'main'" style="margin-top:20px;">
-        <div class="mtdt-column-left" :class="{hasRelated: hasRelated}">
+        <div class="mtdt-column-content" >
           <!--  <div class="mtdt-description" style="display:block;">
             <formater-quicklooks :quicklooks="meta.images" :legend="meta.legend"></formater-quicklooks>
             <dl class="mtdt-content" v-if="meta.identifier"><dt :style="{color: $store.state.style.primary}">Identifiant</dt><dd>{{meta.identifier}}</dd></dl>
@@ -64,10 +64,10 @@
 
 
         </div>
-       <div class="mtdt-column-right" v-if="hasRelated">
+       <!--  <div class="mtdt-column-right" v-if="hasRelated">
         <formater-related type="metadata" :download="metadata.download" :id="metadata.id"
          :layers="metadata.layers"  :links="metadata.links" :related="metadata.related" :order="metadata.order" :siblings="metadata.siblings"></formater-related>
-      </div>
+      </div>-->
       </div>
 
       <div v-show="currentTab === 'full'" >
@@ -87,7 +87,7 @@ const FormaterListMetadata = () => import('./formater-list-metadata.vue')
 const FormaterOpensearch = () => import('./formater-opensearch.vue')
 // const FormaterService = () => import('./formater-service.vue')
 const FormaterFullMetadata = () => import('./formater-full-metadata.vue')
-import FormaterRelated from './formater-related.vue';
+// import FormaterRelated from './formater-related.vue';
 import FormaterMetadataContent from './formater-metadata-content.vue'
 // const FormaterParameters = () => import('./formater-parameters.vue')
 
@@ -100,7 +100,7 @@ export default {
     FormaterListMetadata,
     FormaterOpensearch,
   //  FormaterService,
-    FormaterRelated,
+  //  FormaterRelated,
     FormaterFullMetadata ,
     FormaterMetadataContent
    // FormaterParameters
@@ -124,11 +124,7 @@ export default {
     }
     
   },
-  computed: {
-    hasRelated () {
-      return this.metadata.download || this.metadata.layers || this.metadata.links || this.metadata.related
-    }
-  },
+  
   data() {
     return {
      tabs: {
@@ -299,15 +295,15 @@ export default {
   border-color:black;
   box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.5)
 }
-.mtdt-metadata div.mtdt-column-left{
-  width:calc(100% - 30px);
+.mtdt-metadata div.mtdt-column-content{
+  width:calc(100% - 15px);
   padding-left: 10px;
+  padding-right: 5px;
+  text-align:justify;
 }
-.mtdt-metadata div.mtdt-column-left.hasRelated{
-  width:calc(100% - 330px);
-}
+
 .mtdt-metadata .mtdt-column-right{
-  width: 300px;
+  width: 200px;
   background: #eee;
   margin:0 10px 0 0;
  }

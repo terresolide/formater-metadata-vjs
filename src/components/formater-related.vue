@@ -462,8 +462,8 @@
   text-align:center;
   } 
  .mtdt-related-metadata{
-   margin: 10px;
-   padding:10px;
+   margin: 0px;
+   padding:0px;
    height:auto;
    text-align: center;
 }
