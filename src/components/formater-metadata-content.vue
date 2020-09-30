@@ -41,12 +41,13 @@
 </i18n>
 <template>
 <div class="mtdt-content">
-<div style="float:right;background:#eee;margin-left:5px;max-width:300px;min-width:200px;width:25%;" v-if="hasRelated">
+
+<h1 :style="{color:$store.state.style.primary}">{{$t('about_resource')}}</h1>
+ <div style="float:right;background:#eee;margin-left:5px;max-width:300px;min-width:200px;width:25%;" v-if="hasRelated">
  <formater-related type="metadata" :download="metadata.download" :id="metadata.id"
          :layers="metadata.layers"  :links="metadata.links" :related="metadata.related" :order="metadata.order" :siblings="metadata.siblings"></formater-related>
     
 </div>
-<h1 :style="{color:$store.state.style.primary}">{{$t('about_resource')}}</h1>
  <div class="mtdt-description" style="display:block;">
        <formater-quicklooks :quicklooks="metadata.images"></formater-quicklooks>
        <dl  class="mtdt-identifier" v-if="metadata.identifier && !metadata.description">
