@@ -9,7 +9,7 @@
  }
 </i18n>
 <template>
-<div class="mtdt-app">
+<div class="mtdt-app" >
  <aeris-theme :primary="$store.state.style.primary" :active="true" :emphasis="$store.state.style.emphasis"></aeris-theme>
  <header v-if="authEnabled" >
     <formater-authentication v-if="authEnabled" ></formater-authentication>
@@ -60,16 +60,30 @@ export default {
     },
     data () {
       return {
+        resizeListener: null
       }
+    },
+    created () {
+      this.resizeListener = this.resize.bind(this)
+      window.addEventListener('resize', this.resizeListener);
+     // this.resize()
     },
     mounted () {
       var node = document.querySelector('#internetExplorer')
       if (node) {
         node.style.display = 'none'
       }
-      
+      // need soustract 10px because of scroll bar?
+      this.$store.commit('sizeChange', this.$el.clientWidth - 10)
+    },
+    destroyed () {
+      window.removeEventListener('resize', this.resizeListener)
+      this.resizeListener = null
     },
     methods: {
+      resize () {
+        this.$store.commit('sizeChange', this.$el.clientWidth)
+     },
 
     }
     
@@ -77,10 +91,12 @@ export default {
 </script>
 <style>
 .mtdt-app {
+  margin:auto;
 }
 .mtdt-app #view {
   position: relative;
   min-width:800px;
+ 
 }
 .mtdt-app > header{
 

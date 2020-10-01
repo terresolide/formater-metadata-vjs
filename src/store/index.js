@@ -227,13 +227,16 @@ export default function makeStore( config ) {
           }
         })
       },
-      sizeChange(state) {
+      sizeChange(state, appWidth) {
         var width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
-        width -= 350
+        width = Math.min(appWidth, width)
+        width -= 330
+        console.log(width)
         var count = parseInt(width/334)
-        state.size.capsuleWidth = parseInt(width / count - 16)
+        state.size.capsuleWidth = parseInt(width / count - 10)
         state.size.recordByLine = count
         state.size.nbRecord = count * state.size.nbLine
+        console.log(state.size)
       },
       currentUuidChange(state, id) {
         state.currentUuid = id

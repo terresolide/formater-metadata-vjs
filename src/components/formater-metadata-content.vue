@@ -52,7 +52,7 @@
        <formater-quicklooks :quicklooks="metadata.images"></formater-quicklooks>
        <dl  class="mtdt-identifier" v-if="metadata.identifier && !metadata.description">
              <dt :style="dtStyle()">{{$t('identifier')}}</dt>
-              <dd :style="{width:  'calc(100% - 380px)', minWidth: '300px'}">
+              <dd :style="{width:  'calc(100% - 700px)', minWidth: '300px'}">
               {{metadata.identifier}}
               </dd>
              
@@ -60,7 +60,7 @@
        <p v-html="metadata.description" v-if="metadata.description" style="margin-bottom:20px;"></p> 
        <dl class="mtdt-identifier" v-if="metadata.identifier && metadata.description" :style="{clear: (type === 'opensearch' ? 'none' : 'left')}">
              <dt :style="dtStyle()">{{$t('identifier')}}</dt>
-              <dd >{{metadata.identifier}}</dd>
+              <dd style="max-width:calc(100% - 380px);">{{metadata.identifier}}</dd>
        </dl>
        <formater-parameters type="metadata" :metadata="metadata" ></formater-parameters>
 </div>
@@ -78,7 +78,7 @@
 </dl>
 <dl v-if="metadata.keyword.length > 0" class="mtdt-main-parameter">
   <dt :style="dtStyle()">{{$tc('keyword', metadata.keyword.length)}}</dt>
-  <dd> <formater-keywords :keywords="metadata.keyword"></formater-keywords></dd>
+  <dd style="max-width:calc(100% - 305px);"> <formater-keywords :keywords="metadata.keyword"></formater-keywords></dd>
 </dl>
 <dl  v-if="metadata.tempExtentBegin" class="mtdt-main-parameter">
   <dt :style="dtStyle()">{{$t('temporal_extent')}}</dt>
@@ -223,6 +223,7 @@ background: #333;
     background-image: none;
 background-image: linear-gradient(to right, #ccc, #333, #ccc);
 }
+
 .mtdt-metadata .mtdt-content dl{
   display: block;
  /* clear:left;*/
@@ -231,6 +232,7 @@ background-image: linear-gradient(to right, #ccc, #333, #ccc);
   margin:0;
   padding-top:20px;
 }
+
 .mtdt-metadata .mtdt-content dd dl:first-child {
   padding-top:0px;
 }
@@ -255,7 +257,7 @@ background-image: linear-gradient(to right, #ccc, #333, #ccc);
   clear: left;
 }
 .mtdt-metadata .mtdt-content dl.mtdt-main-parameter dd{
-  width: calc(82%);
+  width: calc(100% - 305px);
 }
 
 .mtdt-metadata .mtdt-content .mtdt-description span.mtdt-quicklooks + span > ul,
@@ -268,6 +270,7 @@ background-image: linear-gradient(to right, #ccc, #333, #ccc);
 .mtdt-metadata .mtdt-content .mtdt-description ul {
   padding-left:12px;
 }
+
 /*.mtdt-metadata .mtdt-content dd div,
 .mtdt-metadata .mtdt-content dd span{
   display: inline-block;
