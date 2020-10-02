@@ -26,8 +26,8 @@
      "revisionDate": "mise à jour",
      "contact": "Contact | Contacts",
      "keyword": "Mot-clé | Mots-clés",
-      "lineage": "Généalogie",
-      "constraint": "Contraintes",
+     "lineage": "Généalogie",
+     "constraint": "Contraintes",
      "legalConstraints": "légales",
      "securityConstraints": "de sécurité",
      "resourceConstraints": "sur les données",
@@ -58,7 +58,7 @@
              
        </dl>
        <p v-html="metadata.description" v-if="metadata.description" style="margin-bottom:20px;"></p> 
-       <dl class="mtdt-identifier" v-if="metadata.identifier && metadata.description" :style="{clear: (type === 'opensearch' ? 'none' : 'left')}">
+       <dl class="mtdt-identifier" v-if="metadata.identifier && metadata.description" style="max-width:calc(100% - 305px);" :style="{clear: (type === 'opensearch' ? 'none' : 'left')}">
              <dt :style="dtStyle()">{{$t('identifier')}}</dt>
               <dd style="max-width:calc(100% - 380px);">{{metadata.identifier}}</dd>
        </dl>
@@ -78,7 +78,7 @@
 </dl>
 <dl v-if="metadata.keyword.length > 0" class="mtdt-main-parameter">
   <dt :style="dtStyle()">{{$tc('keyword', metadata.keyword.length)}}</dt>
-  <dd style="max-width:calc(100% - 305px);"> <formater-keywords :keywords="metadata.keyword"></formater-keywords></dd>
+  <dd> <formater-keywords :keywords="metadata.keyword"></formater-keywords></dd>
 </dl>
 <dl  v-if="metadata.tempExtentBegin" class="mtdt-main-parameter">
   <dt :style="dtStyle()">{{$t('temporal_extent')}}</dt>
@@ -102,7 +102,7 @@
           
  <dl>         <hr /> </dl>
  <h1 :style="{color:$store.state.style.primary}">{{$t('about_metadata')}}</h1>
- <dl><dt :style="dtStyle()">{{$t('identifier')}}</dt><dd>{{metadata.id}}</dd></dl>
+ <dl class="mtdt-main-parameter"><dt :style="dtStyle()">{{$t('identifier')}}</dt><dd>{{metadata.id}}</dd></dl>
  <dl v-if="countMetadataDate > 0" class="mtdt-main-parameter">
    <dt :style="dtStyle()">{{$tc('date', countDate)}} </dt>
    <dd>
@@ -111,7 +111,7 @@
       </div>
    </dd>
 </dl>
- <dl v-if="Object.keys(metadata.contacts.metadata).length > 0">
+ <dl v-if="Object.keys(metadata.contacts.metadata).length > 0" class="mtdt-main-parameter">
    <dt :style="dtStyle()">Contacts</dt>
    <dd>
            <formater-list-contact   :contacts="metadata.contacts.metadata" type="metadata" ></formater-list-contact>
@@ -247,7 +247,8 @@ background-image: linear-gradient(to right, #ccc, #333, #ccc);
   vertical-align: top;
 }
 .mtdt-metadata .mtdt-content dd{
-  width:auto;
+  min-width: 300px;
+  width:80%;
   display: inline-block;
   word-break: break-all;
   line-height: 1em;
@@ -255,9 +256,10 @@ background-image: linear-gradient(to right, #ccc, #333, #ccc);
 }
 .mtdt-metadata .mtdt-content dl.mtdt-main-parameter{
   clear: left;
+   width: calc(100% - 305px);
 }
 .mtdt-metadata .mtdt-content dl.mtdt-main-parameter dd{
-  width: calc(100% - 305px);
+
 }
 
 .mtdt-metadata .mtdt-content .mtdt-description span.mtdt-quicklooks + span > ul,
