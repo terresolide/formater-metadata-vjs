@@ -143,7 +143,7 @@ export default {
           this.clientId = response.body.clientId
           this.msg = true
           this.$store.commit('services/setClientId', {id: this.service.id, clientId: this.clientId})
-          this.state = 'php' + btoa(this.clientId).replace(/=|\+|\//gm, '0')
+          this.state = 'php' + btoa(this.clientId + this.service.domain).replace(/=|\+|\//gm, '0')
         }
 	    }, resp => console.log('NO_CLIENT_ID'))
     },
