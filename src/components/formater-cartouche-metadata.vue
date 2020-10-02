@@ -107,6 +107,9 @@ export default {
      this.hasBboxLayer = true
    }
   },
+  mounted () {
+    console.log(this.width)
+  },
   methods: {
     displayMetadata () {
       var event = new CustomEvent('fmt:metadataEvent', {detail: {meta:this.meta, depth: this.depth } })

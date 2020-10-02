@@ -97,7 +97,6 @@ export default {
       drawing: false,
       aerisSearchListener: null,
       aerisResetListener: null,
-      resizeListener: null,
       backListener: null,
       // default temporalExtent
       temporalExtent: {min: '1900-01-01', max: 'now'}
@@ -127,9 +126,8 @@ export default {
     document.addEventListener('aerisResetEvent', this.aerisResetListener)
     this.keydownListener = this.checkEscape.bind(this)
     document.addEventListener('keydown', this.keydownListener)
-    this.resizeListener = this.resize.bind(this)
-    window.addEventListener('resize', this.resizeListener);
-    this.resize()
+
+    // this.resize()
 
 //       var headers =  {
 //           'Accept': 'application/xml'
@@ -154,8 +152,7 @@ export default {
     this.aerisSearchListener = null
     document.removeEventListener('aerisResetEvent', this.aerisResetListener)
     this.aerisResetListener = null
-    window.removeEventListener('resize', this.resizeListener)
-    this.resizeListener = null
+
 //     window.removeEventListener('beforeunload', this.backListener);
 //     this.backListener = null
   },
@@ -299,9 +296,7 @@ export default {
         })
       }
     },
-   resize () {
-      this.$store.commit('sizeChange')
-   },
+
     handleReset (event) {
    this.$store.commit('resetSelectedMetadata')
      if (this.metadatas[0] && this.metadatas[0].appRoot) {

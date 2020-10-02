@@ -26,8 +26,8 @@
      "revisionDate": "mise à jour",
      "contact": "Contact | Contacts",
      "keyword": "Mot-clé | Mots-clés",
-      "lineage": "Généalogie",
-      "constraint": "Contraintes",
+     "lineage": "Généalogie",
+     "constraint": "Contraintes",
      "legalConstraints": "légales",
      "securityConstraints": "de sécurité",
      "resourceConstraints": "sur les données",
@@ -52,15 +52,15 @@
        <formater-quicklooks :quicklooks="metadata.images"></formater-quicklooks>
        <dl  class="mtdt-identifier" v-if="metadata.identifier && !metadata.description">
              <dt :style="dtStyle()">{{$t('identifier')}}</dt>
-              <dd :style="{width:  'calc(100% - 380px)', minWidth: '300px'}">
+              <dd :style="{width:  'calc(100% - 700px)', minWidth: '300px'}">
               {{metadata.identifier}}
               </dd>
              
        </dl>
        <p v-html="metadata.description" v-if="metadata.description" style="margin-bottom:20px;"></p> 
-       <dl class="mtdt-identifier" v-if="metadata.identifier && metadata.description" :style="{clear: (type === 'opensearch' ? 'none' : 'left')}">
+       <dl class="mtdt-identifier" v-if="metadata.identifier && metadata.description" style="max-width:calc(100% - 305px);" :style="{clear: (type === 'opensearch' ? 'none' : 'left')}">
              <dt :style="dtStyle()">{{$t('identifier')}}</dt>
-              <dd >{{metadata.identifier}}</dd>
+              <dd style="max-width:calc(100% - 380px);">{{metadata.identifier}}</dd>
        </dl>
        <formater-parameters type="metadata" :metadata="metadata" ></formater-parameters>
 </div>
@@ -102,7 +102,7 @@
           
  <dl>         <hr /> </dl>
  <h1 :style="{color:$store.state.style.primary}">{{$t('about_metadata')}}</h1>
- <dl><dt :style="dtStyle()">{{$t('identifier')}}</dt><dd>{{metadata.id}}</dd></dl>
+ <dl class="mtdt-main-parameter"><dt :style="dtStyle()">{{$t('identifier')}}</dt><dd>{{metadata.id}}</dd></dl>
  <dl v-if="countMetadataDate > 0" class="mtdt-main-parameter">
    <dt :style="dtStyle()">{{$tc('date', countDate)}} </dt>
    <dd>
@@ -111,7 +111,7 @@
       </div>
    </dd>
 </dl>
- <dl v-if="Object.keys(metadata.contacts.metadata).length > 0">
+ <dl v-if="Object.keys(metadata.contacts.metadata).length > 0" class="mtdt-main-parameter">
    <dt :style="dtStyle()">Contacts</dt>
    <dd>
            <formater-list-contact   :contacts="metadata.contacts.metadata" type="metadata" ></formater-list-contact>
@@ -223,6 +223,7 @@ background: #333;
     background-image: none;
 background-image: linear-gradient(to right, #ccc, #333, #ccc);
 }
+
 .mtdt-metadata .mtdt-content dl{
   display: block;
  /* clear:left;*/
@@ -231,6 +232,7 @@ background-image: linear-gradient(to right, #ccc, #333, #ccc);
   margin:0;
   padding-top:20px;
 }
+
 .mtdt-metadata .mtdt-content dd dl:first-child {
   padding-top:0px;
 }
@@ -245,7 +247,8 @@ background-image: linear-gradient(to right, #ccc, #333, #ccc);
   vertical-align: top;
 }
 .mtdt-metadata .mtdt-content dd{
-  width:auto;
+  min-width: 300px;
+  width:80%;
   display: inline-block;
   word-break: break-all;
   line-height: 1em;
@@ -253,9 +256,10 @@ background-image: linear-gradient(to right, #ccc, #333, #ccc);
 }
 .mtdt-metadata .mtdt-content dl.mtdt-main-parameter{
   clear: left;
+   width: calc(100% - 305px);
 }
 .mtdt-metadata .mtdt-content dl.mtdt-main-parameter dd{
-  width: calc(82%);
+
 }
 
 .mtdt-metadata .mtdt-content .mtdt-description span.mtdt-quicklooks + span > ul,
@@ -268,6 +272,7 @@ background-image: linear-gradient(to right, #ccc, #333, #ccc);
 .mtdt-metadata .mtdt-content .mtdt-description ul {
   padding-left:12px;
 }
+
 /*.mtdt-metadata .mtdt-content dd div,
 .mtdt-metadata .mtdt-content dd span{
   display: inline-block;

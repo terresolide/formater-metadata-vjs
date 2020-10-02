@@ -17,7 +17,7 @@
        
          <dl class="mtdt-content" v-for="(item, key) in metadata" :key="key" v-if="$store.state.osFields[type].identifier.indexOf(key) >=0">
            <dt style="text-transform:capitalize;" :style="{color:primary}">{{$t(key)}}</dt> 
-           <dd>{{item}}</dd>
+           <dd style="max-width:300px;">{{item}}</dd>
          </dl>
          <div class="mtdt-block-parameters">
           <dl class="mtdt-content mtdt-parameter-title" style="padding-bottom:5px;" v-if="type === 'metadata' & countParameters > 0"><dt :style="{color:primary}">{{$t('parameters')}}</dt><dd></dd></dl>
@@ -77,6 +77,7 @@ export default{
 <style>
 .mtdt-parameters-metadata .mtdt-block-parameters{
   display: block;
+  max-width:calc(100% - 305px);
 }
 dl.mtdt-simple-parameter:parent{
   display:block;
@@ -114,6 +115,14 @@ dl.mtdt-simple-parameter:parent{
   width: 160px;
   padding-left: 10px;
   line-height:1;
+}
+.mtdt-content .mtdt-parameters-metadata  dl.mtdt-simple-parameter dd{
+  min-width: 0;
+  font-weight:500;
+  padding-left: 10px;
+  line-height:1;
+  display:inline-block;
+  width:auto;
 }
 dl.mtdt-parameter-title{
   display:none;

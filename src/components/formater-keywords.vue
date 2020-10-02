@@ -1,9 +1,9 @@
 
 <template>
   <span class="mtdt-keywords" >
-  <div>
-    <div class="mtdt-keyword" v-for="(item, key) in keywords">{{item}}</div>
-  </div>
+  <span>
+    <span class="mtdt-keyword" v-for="(item, key) in keywords">{{item}}</span>
+  </span>
   </span>
 </template>
 <script>
@@ -17,7 +17,7 @@ export default{
 }
 </script>
 <style>
-.mtdt-keywords > div{
+.mtdt-keywords > span{
   margin-left:-6px;
 }
 .mtdt-keyword{
