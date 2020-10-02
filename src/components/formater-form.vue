@@ -63,7 +63,7 @@
 <div v-for="(key, index) in $store.state.gnParameters.step2" v-if="depth > 0" >
 <formater-search-box v-if="dimensions[nameToIndex[key]] && dimensions[nameToIndex[key]].category" :header-icon-class="facetToIcon(key)" open-icon-class="fa fa-caret-right" :title="titleDimension(key)" 
 :disable-level="$store.state.disable.other ? 1 : 0" type="empty">
-  <formater-dimension-block :ref="key" v-if="!isFacet(key)"   :dimension="dimensions[nameToIndex[key]].category" :disable="$store.state.disable.other":name="key" @change="dimnesionChange"></formater-dimension-block>
+  <formater-dimension-block :ref="key" v-if="!isFacet(key)"   :dimension="dimensions[nameToIndex[key]].category" :disable="$store.state.disable.other":name="key" ></formater-dimension-block>
   <formater-facet-block v-if="isFacet(key)"   :dimension="dimensions[nameToIndex[key]].category" :disable="$store.state.disable.other" :name="key" ></formater-facet-block>
  </formater-search-box>
 </div>
@@ -217,10 +217,20 @@ export default {
       }
       this.$router.push({name: this.$route.name, params: this.$route.params, query: query})
     },
-    changeDimension (event) {
-      console.log(event)
-      console.log(this.$refs[event.detail.name])
-    },
+//     changeDimension (detail) {
+//       console.log(detail)
+//    // change query
+//       var query = {}
+//       for (var prop in this.$route.query) {
+//         query[prop] = this.$route.query[prop]
+//       }
+//       if (values.length > 0) {
+//         query[detail.name] = detail.values.join('+or+')
+//       } else {
+//         delete query[detail.name]
+//       }
+//       this.$router.push({name: this.$route.name, params: this.$route.params, query: query})
+//     },
 	  addNewFacets () {
 		  var self = this
 		  this.$store.state.facets.forEach(function (facet) {
@@ -322,6 +332,7 @@ export default {
         newdimensions = [newdimensions]
       }
       var _this = this
+      
       dimensions.forEach(function (dimension, index) {
         var found = newdimensions.find( function (obj) {
           if (obj['@name']) {
@@ -341,6 +352,28 @@ export default {
 	          subDimension = found.category
 	        }
 	        dimensions[index].category = _this.updateDimensions(dimensions[index].category, subDimension, false)
+        }
+      })
+      newdimensions.forEach(function (newdimension, index) {
+        var found = dimensions.find( function (obj) {
+          if (obj['@name']) {
+            return obj['@name'] === newdimension['@name'] 
+          } else if (obj['@value']){
+            return obj['@value'] === newdimension['@value'] 
+          } 
+        })
+        if (!found) {
+          dimensions.push(newdimension)
+        }
+      })
+      // order dimension by name
+      dimensions.sort(function (a, b) {
+        if (a['@label']) {
+          return a['@label'] > b['@label'] ? 1 : -1
+        } else if (a['@name']) {
+          return a['@name'] > b['@name'] ? 1 : -1
+        } else if (a['@value']) {
+          return a['@value'] > b['@value'] ? 1 : -1
         }
       })
       return dimensions

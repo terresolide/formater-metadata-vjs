@@ -2,7 +2,7 @@
 <template>
  <div class="mtdt-dimension-block">
       	
-	      	<formater-dimension :ref="filteredName" :disable="disable" :value="encodeURIComponent(item['@value'])"
+	      	<formater-dimension :ref="filteredName" :disable="disable" :value="item.value" :checked="item.checked"
 	      	 v-for="(item,index) in dimension" :dimension="item" :key="index" :name="filteredName" @change="change"></formater-dimension>
  </div>
 </template>
@@ -37,9 +37,10 @@ export default {
     }
   },
   created () {
-    this.values = this.dimension
+    this.fill()
   },
   computed: {
+
     filteredName () {
       switch (this.name) {
       case 'groupOwner':
@@ -49,10 +50,29 @@ export default {
       }
     }
   },
+  watch:{
+    dimension (newvalue) {
+      console.log(newvalue)
+      this.fill()
+    }
+  },
   methods: {
+    fill () {
+      var checked = []
+      if (this.$route.query[this.filteredName]) {
+        var param = decodeURIComponent(this.$route.query[this.filteredName])
+        var checked = param.split('+or+')
+      }
+      var dimensions = []
+      for (var key in this.dimension) {
+        var dimension = this.dimension[key]
+        dimension.value = dimension['@value']
+        dimension.checked = checked.indexOf(dimension.value) >= 0
+        dimensions.push(dimension)
+      }
+      this.values = dimensions
+    },
     change (event) {
-      console.log(event)
-      console.log(this.$refs[this.filteredName])
       var values = []
       this.$refs[this.filteredName].forEach(function (dimension) {
         var value = dimension.getValue()
@@ -71,11 +91,6 @@ export default {
         delete query[this.filteredName]
       }
       this.$router.push({name: this.$route.name, params: this.$route.params, query: query})
-//       this.values[event.name] = event.value
-//       var checked = this.values.filter(function (value) {
-//         return value
-//       })
-//       console.log(checked)
     }
   }
 }
