@@ -81,6 +81,13 @@ export default {
 	this.searchEventListener = null;
   },
   methods: {
+    getValue () {
+      if (!this.isChecked) {
+        return null
+      } else {
+        return this.value
+      }
+    },
     handleChange () {
       if (this.disable) {
         return

@@ -63,7 +63,7 @@
 <div v-for="(key, index) in $store.state.gnParameters.step2" v-if="depth > 0" >
 <formater-search-box v-if="dimensions[nameToIndex[key]] && dimensions[nameToIndex[key]].category" :header-icon-class="facetToIcon(key)" open-icon-class="fa fa-caret-right" :title="titleDimension(key)" 
 :disable-level="$store.state.disable.other ? 1 : 0" type="empty">
-  <formater-dimension-block :ref="key" v-if="!isFacet(key)"   :dimension="dimensions[nameToIndex[key]].category" :disable="$store.state.disable.other":name="key" ></formater-dimension-block>
+  <formater-dimension-block :ref="key" v-if="!isFacet(key)"   :dimension="dimensions[nameToIndex[key]].category" :disable="$store.state.disable.other":name="key" @change="dimnesionChange"></formater-dimension-block>
   <formater-facet-block v-if="isFacet(key)"   :dimension="dimensions[nameToIndex[key]].category" :disable="$store.state.disable.other" :name="key" ></formater-facet-block>
  </formater-search-box>
 </div>
@@ -150,8 +150,8 @@ export default {
 	  this.initValues(this.$route)
 	  this.temporalChangedListener = this.changeDate.bind(this)
     document.addEventListener('temporalChangeEvent', this.temporalChangedListener);
-	  this.dimensionChangedListener = this.changeDimension.bind(this);
-    document.addEventListener('fmt:dimensionChangeEvent', this.dimensionChangedListener);
+// 	  this.dimensionChangedListener = this.changeDimension.bind(this);
+//     document.addEventListener('fmt:dimensionChangeEvent', this.dimensionChangedListener);
 
 //    
 //     this.aerisSearchListener = this.handleSearch.bind(this)
@@ -402,7 +402,9 @@ export default {
     // query.a = Math.random()
    
      query.any = this.fulltextSearch
-      
+      if (query.any === '') {
+        delete query.any
+      }
       console.log(query)
      this.$router.push({name: this.$route.name, params: this.$route.params, query: query})
      //  this.$emit('change', {type: 'text', value: this.fulltextSearch})

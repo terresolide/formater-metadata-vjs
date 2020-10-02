@@ -120,10 +120,10 @@ export default {
     this.$gn.init(this.$i18n.locale, this.$store.state.geonetwork, this.$http, this.$store)
     this.metadataListener = this.receiveMetadata.bind(this)
     document.addEventListener('fmt:metadataEvent', this.metadataListener);
-    this.aerisSearchListener = this.handleSearch.bind(this)
-    document.addEventListener('aerisSearchEvent', this.aerisSearchListener)
-    this.aerisResetListener = this.handleReset.bind(this)
-    document.addEventListener('aerisResetEvent', this.aerisResetListener)
+//     this.aerisSearchListener = this.handleSearch.bind(this)
+//     document.addEventListener('aerisSearchEvent', this.aerisSearchListener)
+//     this.aerisResetListener = this.handleReset.bind(this)
+//     document.addEventListener('aerisResetEvent', this.aerisResetListener)
     this.keydownListener = this.checkEscape.bind(this)
     document.addEventListener('keydown', this.keydownListener)
 
@@ -297,52 +297,52 @@ export default {
       }
     },
 
-    handleReset (event) {
-   this.$store.commit('resetSelectedMetadata')
-     if (this.metadatas[0] && this.metadatas[0].appRoot) {
+//     handleReset (event) {
+//    this.$store.commit('resetSelectedMetadata')
+//      if (this.metadatas[0] && this.metadatas[0].appRoot) {
 
-       event.detail.depth = 1
-       var metadata = this.metadatas[0]
-       this.metadatas = this.metadatas.slice(0, 1)
-       this.currentUuid = this.metadatas[0].id
-       this.metadatas.length = 1
-       this.metadatas[0].osParameters.forEach(function (parameter) {
-           parameter.value = null
-       })
-       var parameters = this.metadatas[0].osParameters
-       var mapping = this.metadatas[0].mapping
-       var type = this.metadatas[0].disableType
-       var min = null
-       var max = null
-       if (metadata.tempExtentBegin) {
-         min = metadata.tempExtentBegin.substring(0, 10)
-       }
-       if (metadata.tempExtentEnd) {
-         max = metadata.tempExtentEnd.substring(0, 10)
-       }
-       var temp = {
-           min: min ? min : this.temporalExtent.min,
-           max: max ? max : this.temporalExtent.max
-       }
-       this.$store.commit('temporalChange', temp)
-       this.$store.commit('currentUuidChange', this.currentUuid)
-       this.$store.commit('parametersChange', {parameters: parameters, mapping: mapping, type: type})
+//        event.detail.depth = 1
+//        var metadata = this.metadatas[0]
+//        this.metadatas = this.metadatas.slice(0, 1)
+//        this.currentUuid = this.metadatas[0].id
+//        this.metadatas.length = 1
+//        this.metadatas[0].osParameters.forEach(function (parameter) {
+//            parameter.value = null
+//        })
+//        var parameters = this.metadatas[0].osParameters
+//        var mapping = this.metadatas[0].mapping
+//        var type = this.metadatas[0].disableType
+//        var min = null
+//        var max = null
+//        if (metadata.tempExtentBegin) {
+//          min = metadata.tempExtentBegin.substring(0, 10)
+//        }
+//        if (metadata.tempExtentEnd) {
+//          max = metadata.tempExtentEnd.substring(0, 10)
+//        }
+//        var temp = {
+//            min: min ? min : this.temporalExtent.min,
+//            max: max ? max : this.temporalExtent.max
+//        }
+//        this.$store.commit('temporalChange', temp)
+//        this.$store.commit('currentUuidChange', this.currentUuid)
+//        this.$store.commit('parametersChange', {parameters: parameters, mapping: mapping, type: type})
 
-     } else {
-      event.detail.depth = 0
-      this.metadatas = []
-      this.metadatas.length = 0
-      this.currentUuid = null
-      this.$store.commit('currentUuidChange', this.currentUuid)
-      this.$store.commit('parametersChange', {parameters: [], mapping: [], type: 'geonetwork'})
-     }
-    },
-    handleSearch (event) {
-      // mettre plutôt dans formater-metadata ??
-      if (this.metadatas.length > 0) {
-        event.detail.parentUuid = this.currentUuid
-      }
-    },
+//      } else {
+//       event.detail.depth = 0
+//       this.metadatas = []
+//       this.metadatas.length = 0
+//       this.currentUuid = null
+//       this.$store.commit('currentUuidChange', this.currentUuid)
+//       this.$store.commit('parametersChange', {parameters: [], mapping: [], type: 'geonetwork'})
+//      }
+//     },
+//     handleSearch (event) {
+//       // mettre plutôt dans formater-metadata ??
+//       if (this.metadatas.length > 0) {
+//         event.detail.parentUuid = this.currentUuid
+//       }
+//     },
     closeError () {
       this.$store.commit('removeError')
     }

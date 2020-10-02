@@ -328,6 +328,7 @@ export default {
       ['index', 'maxRecords', 'page'].forEach(function (key) {
         delete self.parameters[key]
       })
+    
       if (this.parameters.sortBy === 'title') {
         this.parameters.sortOrder = 'ordering'
       } else {
@@ -427,7 +428,7 @@ export default {
       data.type = 'geonetwork'
       data.features = features
       this.fill(data, depth)
-      // this.$store.commit('searchingChange', false)
+      this.$store.commit('searchingChange', false)
       this.searchGnStep2Parameters(data.summary.dimension)
       // this.searchRelated()
     },

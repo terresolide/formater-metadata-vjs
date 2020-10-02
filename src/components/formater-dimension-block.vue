@@ -2,7 +2,7 @@
 <template>
  <div class="mtdt-dimension-block">
       	
-	      	<formater-dimension :disable="disable" :value="encodeURIComponent(item['@value'])"
+	      	<formater-dimension :ref="filteredName" :disable="disable" :value="encodeURIComponent(item['@value'])"
 	      	 v-for="(item,index) in dimension" :dimension="item" :key="index" :name="filteredName" @change="change"></formater-dimension>
  </div>
 </template>
@@ -52,6 +52,25 @@ export default {
   methods: {
     change (event) {
       console.log(event)
+      console.log(this.$refs[this.filteredName])
+      var values = []
+      this.$refs[this.filteredName].forEach(function (dimension) {
+        var value = dimension.getValue()
+        if (value !== null) {
+          values.push(value)
+        }
+      })
+      // change query
+      var query = {}
+      for (var prop in this.$route.query) {
+        query[prop] = this.$route.query[prop]
+      }
+      if (values.length > 0) {
+        query[this.filteredName] = values.join('+or+')
+      } else {
+        delete query[this.filteredName]
+      }
+      this.$router.push({name: this.$route.name, params: this.$route.params, query: query})
 //       this.values[event.name] = event.value
 //       var checked = this.values.filter(function (value) {
 //         return value
