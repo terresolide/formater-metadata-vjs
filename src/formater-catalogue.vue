@@ -41,7 +41,7 @@
         </div>
         <!-- list of all records with page navigation -->
         <div  v-show="metadatas.length === 0">
-            <formater-paging   :depth="0" :orders="['title','changeDate']" order-by="title"></formater-paging>
+            <formater-paging   :depth="0" :orders="['title','changeDate']" :order-by="sortBy"></formater-paging>
             <formater-list-metadata :depth="0"></formater-list-metadata>
         </div>
         
@@ -88,6 +88,7 @@ export default {
     return {
       currentUuid: null,
       first: true,
+      sortBy: '',
       metaDisplayed: null,
       // bbox: null,
       // depth: null,
@@ -104,18 +105,29 @@ export default {
   },
   watch: {
     $route (newroute, old) {
-      console.log(newroute)
-      var oldDepth = old.query.depth ? old.query.depth : 0
-      var newDepth = newroute.query.depth ? newroute.query.depth : 0
-      if (newDepth < oldDepth) {
-        this.back()
-      } else if (newDepth > oldDepth && !this.currentUuid ){
-       //  this.$router.replace({name: 'FormaterCatalogue', query:{}})
+      if (newroute.query.sortBy) {
+        this.sortBy = newroute.query.sortBy
+      } else {
+        this.sortBy = this.$store.state.orderBy
       }
+//       console.log(newroute)
+//       var oldDepth = old.query.depth ? old.query.depth : 0
+//       var newDepth = newroute.query.depth ? newroute.query.depth : 0
+//       if (newDepth < oldDepth) {
+//         this.back()
+//       } else if (newDepth > oldDepth && !this.currentUuid ){
+//        //  this.$router.replace({name: 'FormaterCatalogue', query:{}})
+//       }
     }
   },
   created () {
     // this.$router.push({name: 'FormaterCatalogue'})
+    if (this.$route.query.sortBy) {
+      this.sortBy = this.$route.query.sortBy
+    } else {
+      this.sortBy = this.$store.state.orderBy
+    }
+    
     this.initTemporalExtent()
     this.$gn.init(this.$i18n.locale, this.$store.state.geonetwork, this.$http, this.$store)
     this.metadataListener = this.receiveMetadata.bind(this)

@@ -2,20 +2,20 @@
 <template>
  <div class="mtdt-facet" :class="{disable: disable && level===0}" >
 
-         <label :for="name" @click="handleChange()" style="vertical-align:top;">
+         <label  @click="handleChange()" style="vertical-align:top;">
               <i class="fa fa-check-square-o" v-if="isChecked"></i>
               <i class="fa fa-square-o" v-if="!isChecked"></i>
          </label>
 	    <!--  <input type="checkbox" :name="name" :value="dimension['@name']" v-model="isChecked"/> -->
 	     <div class="mtdt-facet-title">
-	        {{label}}&#8239;{{ strCount }}
+	        {{name}}&#8239;{{ strCount }}
 	     </div>
 	     <div :class="{deployed: deployed}" style="float:right" @click="deployed = !deployed" v-if="dimension.category && dimension.category.length > 0">
 	         <i   class="fa fa-plus-square-o" ></i>
 	         <i class="fa fa-minus-square-o"></i>
 	     </div>
 	     <div class="mtdt-child" v-if="dimension.category && dimension.category.length > 0" >
-	      	<formater-facet  :level="level + 1" :defaut="defaut" :checked="isChecked" :name="name" :value="childValue(index)" v-for="(item,index) in dimension.category" :dimension="item" :key="index" @input="childChanged"></formater-facet>
+	      	<formater-facet  :level="level + 1" :defaut="defaut"  :facet-name="facetName" :label="item['@label']" :value="childValue(index)" v-for="(item,index) in dimension.category" :dimension="item" :key="index" @input="childChanged"></formater-facet>
 	     </div>
 	  </div>
  </div>
@@ -32,9 +32,13 @@ export default {
       type: Object|Array,
       default: []
     },
-    name: {
+    facetName: {
       type: String,
       default: ''
+    },
+    label: {
+      type: String,
+      default: null
     },
     value: {
       type: String,
@@ -48,10 +52,6 @@ export default {
       type: String,
       default: null
     },
-    checked: {
-      type: Boolean,
-      default: false
-    },
     disable: {
       type: Boolean,
       default: false
@@ -63,7 +63,7 @@ export default {
       deployed: false,
       isChecked: false,
       changed: false,
-      label: ''
+      name: '',
     }
   },
   computed: {
@@ -85,20 +85,24 @@ export default {
 	        this.isChecked = false
 	      }
     },
-    checked (newvalue) {
-      if (!newvalue) {
-        this.isChecked = newvalue
-      }
-    }
+    label (newvalue) {
+      this.name = this.label.split('|').pop()
+    }// ,
+//     checked (newvalue) {
+//       if (!newvalue) {
+//         this.isChecked = newvalue
+//       }
+//     }
   },
   mounted () {
-   if (this.defaut.indexOf(this.value)>=0) {
+    this.name = this.label.split('|').pop()
+   if (this.defaut && this.defaut.indexOf(this.value)>=0) {
      this.isChecked = true;
    } else {
      this.isChecked = false;
    }
    // extract last term 
-   this.label = this.dimension['@label'].split('|').pop()
+   // this.label = this.dimension['@label'].split('|').pop()
 
 //    if (!this.dimension.category) {
 //      this.categories = []
@@ -136,13 +140,13 @@ export default {
       if (this.isChecked) {
          // if check a node => new facet value
          var detail = {}
-         detail[this.name] = this.value
+         detail[this.facetName] = this.value
          var event = new CustomEvent('fmt:facetChangeEvent', {detail: detail})
          document.dispatchEvent(event)
        } else if (!this.isChecked && this.level === 0){
          // if unckecked a root node => remove facet value
          var detail = {}
-         detail[this.name] = ''
+         detail[this.facetName] = ''
          var event = new CustomEvent('fmt:facetChangeEvent', {detail: detail})
          document.dispatchEvent(event)
        }
@@ -150,17 +154,17 @@ export default {
        this.$emit('input', this.isChecked)
      
     },
-    handleReset (e) {
-      this.isChecked = false
-    },
-    handleSearch (e) {
-      if (this.isChecked) {
-        if (!e.detail.facet) {
-          e.detail.facet = []
-        }
-        e.detail.facet[this.name] = this.value
-      }
-    },
+//     handleReset (e) {
+//       this.isChecked = false
+//     },
+//     handleSearch (e) {
+//       if (this.isChecked) {
+//         if (!e.detail.facet) {
+//           e.detail.facet = []
+//         }
+//         e.detail.facet[this.facetName] = this.value
+//       }
+//     },
     childChanged (childChecked) { 
       if(childChecked && !this.isChecked) {
         this.isChecked = true

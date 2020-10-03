@@ -118,7 +118,7 @@ export default {
           to: this.$store.state.size.nbRecord,
           //  resultType: 'subtemplate',
           // resultType: 'details',
-          sortBy: 'changeDate',
+          sortBy: this.$store.state.orderBy,
           sortOrder: 'ordering',
           type:'dataset+or+series+or+publication'
          }
@@ -611,41 +611,41 @@ export default {
       return properties
     },
     // @todo DEPLACER DANS FORM VOIR MÊME DANS formater-dimension-block/ formater-facet-block!!
-    prepareFacet (e) {
-      var facet = ''
+//     prepareFacet (e) {
+//       var facet = ''
      
-      for(var key in e.detail.facet) {
-        if (e.detail.facet[key].length > 0) {
-          if (facet === '') {
-            facet = key +'/' + e.detail.facet[key]
-          } else {
-            facet += '&' + key + '/' + e.detail.facet[key]
-          }
-        }
-      }
-      if (facet !== '') {
-       e.detail['facet.q'] = encodeURIComponent(facet)
-       delete e.detail.facet
-      }
-      return e;
-    },
+//       for(var key in e.detail.facet) {
+//         if (e.detail.facet[key].length > 0) {
+//           if (facet === '') {
+//             facet = key +'/' + e.detail.facet[key]
+//           } else {
+//             facet += '&' + key + '/' + e.detail.facet[key]
+//           }
+//         }
+//       }
+//       if (facet !== '') {
+//        e.detail['facet.q'] = encodeURIComponent(facet)
+//        delete e.detail.facet
+//       }
+//       return e;
+//     },
     fill (data, depth) {
       data.depth = depth
       var event = new CustomEvent('fmt:metadataListEvent', {detail:  data})
       document.dispatchEvent(event)
     },
-    handleReset () {
-      var event = new CustomEvent('aerisResetEvent', {detail: {}})
-      document.dispatchEvent(event)
-      this.getRecords({detail: {depth:event.detail.depth}})
-    },
-    changePage (event) {
-      this.getRecords(event)
-    },
-    changeSearch (event) {
-      this.parameters.any = event.target.value
-      this.getRecords()
-    }
+//     handleReset () {
+//       var event = new CustomEvent('aerisResetEvent', {detail: {}})
+//       document.dispatchEvent(event)
+//       this.getRecords({detail: {depth:event.detail.depth}})
+//     },
+//     changePage (event) {
+//       this.getRecords(event)
+//     },
+//     changeSearch (event) {
+//       this.parameters.any = event.target.value
+//       this.getRecords()
+//     }
   }
 }
 </script>

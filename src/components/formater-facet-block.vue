@@ -2,7 +2,8 @@
 <template>
  <div class="mtdt-dimension-block" >
       	
-	      	<formater-facet  :disable="disable" :level="0" :defaut="defaut" :value="encodeURIComponent(item['@value'])" v-for="(item,index) in dimensions" :dimension="item" :key="index" :name="filteredName"></formater-facet>
+	      	<formater-facet  :disable="disable" :level="0" :defaut="defaut" :value="encodeURIComponent(item['@value'])" 
+	      	v-for="(item,index) in dimensions" :label="item['@label']" :dimension="item" :key="index" :facet-name="filteredName"></formater-facet>
  </div>
 </template>
 <script>
@@ -48,17 +49,21 @@ export default {
     disable: {
       type: Boolean,
       default: false
+    },
+    defaut: {
+      type: String,
+      default: null
     }
   },
   data() {
     return {
       dimensions: [],
-      facetChangeListener: null,
-      aerisSearchEvent: null,
-      aerisResetEvent: null,
-      defaut: ''
+      facetChangeListener: null
+//       aerisSearchEvent: null,
+//       aerisResetEvent: null
     }
   },
+
   mounted () {
    	if (this.dimension.length > 0) {
 	  this.dimensions = this.dimension
@@ -68,18 +73,18 @@ export default {
     }
     this.facetChangeListener = this.facetChange.bind(this) 
     document.addEventListener('fmt:facetChangeEvent', this.facetChangeListener);
-    this.aerisSearchListener = this.handleSearch.bind(this)
-    document.addEventListener('aerisSearchEvent', this.aerisSearchListener);
-    this.aerisResetListener = this.handleReset.bind(this)
-    document.addEventListener('aerisResetEvent', this.aerisResetListener);
+//     this.aerisSearchListener = this.handleSearch.bind(this)
+//     document.addEventListener('aerisSearchEvent', this.aerisSearchListener);
+//     this.aerisResetListener = this.handleReset.bind(this)
+//     document.addEventListener('aerisResetEvent', this.aerisResetListener);
   },
   destroyed () {
     document.removeEventListener('fmt:facetChangeEvent', this.facetChangeListener)
     this.facetChangeListener = null
-    document.addEventListener('aerisSearchEvent', this.aerisSearchListener)
-    this.aerisSearchListener = null
-    document.addEventListener('aerisResetEvent', this.aerisResetListener)
-    this.aerisResetListener = null
+//     document.addEventListener('aerisSearchEvent', this.aerisSearchListener)
+//     this.aerisSearchListener = null
+//     document.addEventListener('aerisResetEvent', this.aerisResetListener)
+//     this.aerisResetListener = null
   },
   computed: {
     filteredName () {
@@ -94,23 +99,53 @@ export default {
   methods: {
     facetChange (e) {
 	  if (typeof e.detail[this.name] != 'undefined') {
-	    this.defaut = e.detail[this.name]
-	    var event = new CustomEvent('fmt:dimensionChangeEvent', {detail: e.detail})
-	    document.dispatchEvent(event)
+	    // this.defaut = e.detail[this.name]
+	     // change query
+      var query = {}
+      for (var prop in this.$route.query) {
+        query[prop] = this.$route.query[prop]
+      }
+	    var facets = {}
+	    // extract all facet if there is some
+	    if (query['facet.q']) {
+	      var tabs = decodeURIComponent(query['facet.q']).split('&')
+	      tabs.forEach(function (tab) {
+	        var x = tab.split('/')
+	        facets[x[0]] = x[1]
+	      })
+
+	    }
+      if (e.detail[this.filteredName] !== '') {
+        facets[this.filteredName] =  e.detail[this.filteredName]
+      } else {
+        delete facets[this.filteredName]
+      }
+      if (Object.keys(facets).length === 0) {
+        delete query['facet.q']
+      } else {
+        // rebuild facet
+        var strFacet = Object.keys(facets).map(function (prop) {
+          return prop + '/' + facets[prop]
+        }).join('&');
+        query['facet.q'] = encodeURIComponent(strFacet)
+      }
+      this.$router.push({name: this.$route.name, params: this.$route.params, query: query})
+// 	    var event = new CustomEvent('fmt:dimensionChangeEvent', {detail: e.detail})
+// 	    document.dispatchEvent(event)
 	  }
 	},
-	handleSearch (e) {
-	  if (this.defaut.length === 0) {
-	    return
-	  }
-	  if (!e.detail.facet) {
-	    e.detail.facet = []
-	  }
-	  e.detail.facet[this.name] = this.defaut
-	},
-	handleReset () {
-	  this.defaut = ''
-	}
+// 	handleSearch (e) {
+// 	  if (this.defaut.length === 0) {
+// 	    return
+// 	  }
+// 	  if (!e.detail.facet) {
+// 	    e.detail.facet = []
+// 	  }
+// 	  e.detail.facet[this.name] = this.defaut
+// 	},
+// 	handleReset () {
+// 	  this.defaut = ''
+// 	}
   }
 }
 </script>

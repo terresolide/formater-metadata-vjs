@@ -47,7 +47,8 @@
 <formater-search-box v-if="dimensions[nameToIndex[key]] && dimensions[nameToIndex[key]].category" :header-icon-class="facetToIcon(key)" open-icon-class="fa fa-caret-right" :title="titleDimension(key)"  
 :disable-level="depth > 0 ? 1 : 0" type="empty">
   <formater-dimension-block v-if="!isFacet(key)"   :dimension="dimensions[nameToIndex[key]].category" :name="key" :disable="depth > 0"></formater-dimension-block>
-  <formater-facet-block v-if="isFacet(key)"   :dimension="dimensions[nameToIndex[key]].category" :name="key" :disable="depth > 0"></formater-facet-block>
+  <formater-facet-block v-if="isFacet(key)"   :dimension="dimensions[nameToIndex[key]].category" :name="key" 
+  :disable="depth > 0" :defaut="facets[key]"></formater-facet-block>
  </formater-search-box>
 </div>
 
@@ -56,7 +57,8 @@
 <formater-search-box v-if="dimensions[nameToIndex[key]] && dimensions[nameToIndex[key]].category" :header-icon-class="facetToIcon(key)" open-icon-class="fa fa-caret-right" :title="titleDimension(key)"
 :disable-level="$store.state.disable.other ? 1 : 0" type="empty">
   <formater-dimension-block v-if="!isFacet(key)"   :dimension="dimensions[nameToIndex[key]].category" :disable="$store.state.disable.other" :name="key" ></formater-dimension-block>
-  <formater-facet-block v-if="isFacet(key)"   :dimension="dimensions[nameToIndex[key]].category" :disable="$store.state.disable.other" :name="key" ></formater-facet-block>
+  <formater-facet-block v-if="isFacet(key)"   :dimension="dimensions[nameToIndex[key]].category" :disable="$store.state.disable.other" 
+  :name="key" :defaut="facets[key]" ></formater-facet-block>
  </formater-search-box>
 </div>
 
@@ -64,7 +66,8 @@
 <formater-search-box v-if="dimensions[nameToIndex[key]] && dimensions[nameToIndex[key]].category" :header-icon-class="facetToIcon(key)" open-icon-class="fa fa-caret-right" :title="titleDimension(key)" 
 :disable-level="$store.state.disable.other ? 1 : 0" type="empty">
   <formater-dimension-block :ref="key" v-if="!isFacet(key)"   :dimension="dimensions[nameToIndex[key]].category" :disable="$store.state.disable.other":name="key" ></formater-dimension-block>
-  <formater-facet-block v-if="isFacet(key)"   :dimension="dimensions[nameToIndex[key]].category" :disable="$store.state.disable.other" :name="key" ></formater-facet-block>
+  <formater-facet-block v-if="isFacet(key)"   :dimension="dimensions[nameToIndex[key]].category" :disable="$store.state.disable.other" 
+  :name="key" :defaut="facets[key]"></formater-facet-block>
  </formater-search-box>
 </div>
 <!--  <div v-for="(dim, k) in dimensions" v-if="k <= depth">
@@ -127,6 +130,7 @@ export default {
         from: null,
         to: null
       },
+      facets: {},
       first: true,
       parameters: [],
       dimensions: [],
@@ -134,7 +138,8 @@ export default {
       // aerisSearchListener: null,
       // aerisResetListener: null,
       metadataListListener: null,
-      temporalChangedListener: null
+      temporalChangedListener: null,
+      pageChangedListener: null
      // closeMetadataListener: null
     }
   },
@@ -145,11 +150,15 @@ export default {
   },
   created () {
 	  // add new facet in geonetwork facets
-	  
+	 
 	  this.addNewFacets()
+	
 	  this.initValues(this.$route)
 	  this.temporalChangedListener = this.changeDate.bind(this)
-    document.addEventListener('temporalChangeEvent', this.temporalChangedListener);
+    document.addEventListener('temporalChangeEvent', this.temporalChangedListener)
+    this.pageChangedListener = this.changePage.bind(this)
+    document.addEventListener('fmt:pageChangedEvent', this.pageChangedListener);
+
 // 	  this.dimensionChangedListener = this.changeDimension.bind(this);
 //     document.addEventListener('fmt:dimensionChangeEvent', this.dimensionChangedListener);
 
@@ -169,6 +178,11 @@ export default {
 //     this.aerisSearchListener = null
 //     document.removeEventListener('aerisResetEvent', this.aerisResetListener)
 //     this.aerisResetListener = null
+    document.removeEventListener('fmt:pageChangedEvent', this.pageChangedListener);
+    this.pageChangedListener = null;
+    document.removeEventListener('temporalChangeEvent', this.temporalChangedListener);
+    this.temporalChangedListener = null;
+
     document.removeEventListener('fmt:metadataListEvent', this.metadataListListener)
     this.metadataListListener = null;
   },
@@ -179,7 +193,22 @@ export default {
   
 //   },
   methods: {
+    initFacets (route) {
+      // extract facets
+      var facets = []
+      if (route.query['facet.q']) {
+        var tabs = decodeURIComponent(route.query['facet.q']).split('&')
+        tabs.forEach(function (tab) {
+          var x = tab.split('/')
+          var key = x[0]
+          x.slice(1)
+          facets[x[0]] = x.join('/')
+        })
+      }
+      this.facets = facets
+    },
     initValues (newroute) {
+      this.initFacets(this.$route)
       if (!newroute.query.any) {
         this.fulltextSearch = null
       } else {
@@ -195,6 +224,7 @@ export default {
       } else {
         this.temp.from = newroute.query.extFrom
       }
+  
     },
     changeDate (event) {
       var query = {}
@@ -217,20 +247,14 @@ export default {
       }
       this.$router.push({name: this.$route.name, params: this.$route.params, query: query})
     },
-//     changeDimension (detail) {
-//       console.log(detail)
-//    // change query
-//       var query = {}
-//       for (var prop in this.$route.query) {
-//         query[prop] = this.$route.query[prop]
-//       }
-//       if (values.length > 0) {
-//         query[detail.name] = detail.values.join('+or+')
-//       } else {
-//         delete query[detail.name]
-//       }
-//       this.$router.push({name: this.$route.name, params: this.$route.params, query: query})
-//     },
+    changePage (event) {
+      var query = {}
+      for (var prop in this.$route.query) {
+        query[prop] = this.$route.query[prop]
+      }
+      query = Object.assign(query, event.detail)
+      this.$router.push({name: this.$route.name, params: this.$route.params, query: query})
+    },
 	  addNewFacets () {
 		  var self = this
 		  this.$store.state.facets.forEach(function (facet) {
@@ -272,9 +296,7 @@ export default {
         return
       }
       var  newdimensions = this.initializeDimensions(e.detail.summary.dimension)
-      
-      this.updateDimensions(this.dimensions, e.detail.summary.dimension)
-      this.addDimensions(newdimensions) 
+      this.updateDimensions(this.dimensions, newdimensions)  
       if (e.detail.depth === 0) {
         // remove all step2 dimension
         this.removeStep2Dimensions()
@@ -314,15 +336,6 @@ export default {
         }
       })
       return dimension
-    },
-    addDimensions(newDimension) {
-    	var toAdd = []
-    	var self = this
-    	newDimension.forEach(function (dimension) {
-    		if (typeof self.nameToIndex[dimension['@name']] !== 'number') {
-    			self.dimensions.push( self.initializeDimensions(dimension, true)[0])
-    		}
-    	} )
     },
     updateDimensions (dimensions, newdimensions) {
       if (!dimensions) {
@@ -364,7 +377,7 @@ export default {
         })
         if (!found) {
           dimensions.push(newdimension)
-        }
+        } 
       })
       // order dimension by name
       dimensions.sort(function (a, b) {
@@ -424,26 +437,16 @@ export default {
     },
     changeText(event) {
       var route = this.$route
-      console.log(event)
       var query = {}
       for (var prop in route.query) {
         query[prop] = route.query[prop]
       }
-       // var query = Object.assign(route.query, {any: this.fulltextSearch})
-      // query = {any: 'machin'}
-   
-    // query.a = Math.random()
-   
-     query.any = this.fulltextSearch
+      query.any = this.fulltextSearch
       if (query.any === '') {
         delete query.any
       }
-      console.log(query)
-     this.$router.push({name: this.$route.name, params: this.$route.params, query: query})
-     //  this.$emit('change', {type: 'text', value: this.fulltextSearch})
-//        var e = new CustomEvent('fmt:textChangeEvent')
-//        document.dispatchEvent(e)
-    }//,
+      this.$router.push({name: this.$route.name, params: this.$route.params, query: query})
+    }
   }
 }
 </script>

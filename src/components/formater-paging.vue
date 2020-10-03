@@ -31,7 +31,7 @@
 	   <span class="fa fa-angle-double-right" @click="goToLast()"></span>
   </span>
   <div style="float:right;display:inline-block;" v-if="orders.length > 0">
-    {{$t('sortBy')}} <formater-select :options="options" name="sortBy" type="associative" :defaut="$store.state.orderBy" @input="sortChange" color="#ffffff"></formater-select>
+    {{$t('sortBy')}} <formater-select :options="options" name="sortBy" type="associative" :defaut="orderBy" @input="sortChange" color="#ffffff"></formater-select>
   </div>
    </div>
  </span>
@@ -73,28 +73,34 @@ export default {
       return this.$store.state.size.recordByLine
     }
   },
-//   watch: {
-//     recordByLine (newvalue) {
-//       this.updateRecordsPerPage(newvalue)
-//     }
-//   },
+  watch: {
+    $route (newvalue) {
+      if (newvalue.query.from && newvalue.query.to) {
+        this.recordPerPage = newvalue.query.to - newvalue.query.from + 1
+      } else {
+        this.recordPerPage = this.$store.state.size.nbRecord
+      }
+    }
+  },
   created: function() {
-    this.recordPerPage = this.$store.state.size.nbRecord
+    this.updateRecordsPerPage(this.recordByLine)
+    if (this.$route && this.$route.query.from && this.$route.query.to) {
+      this.recordPerPage = this.$route.query.to - this.$route.query.from + 1
+    } else {
+      this.recordPerPage = this.$store.state.size.nbRecord
+    }
+    
     this.metadataListListener = this.receiveTotalRecord.bind(this)
     document.addEventListener('fmt:metadataListEvent', this.metadataListListener)
     this.searchEventListener = this.handleSearch.bind(this) 
-	document.addEventListener('aerisSearchEvent', this.searchEventListener);
+	  document.addEventListener('aerisSearchEvent', this.searchEventListener);
     this.resetEventListener = this.handleReset.bind(this) 
   	document.addEventListener('aerisResetEvent', this.resetEventListener);
     var self = this
     this.orders.forEach( function (order) {
       self.options[order] = self.$i18n.t(order)
     })
-    this.updateRecordsPerPage(this.recordByLine)
-    if (this.initialize) {
-      this.emitChange()
-      this.initialize = false
-    }
+    
   },
   mounted () {
 
@@ -112,7 +118,8 @@ export default {
 
   data() {
     return {
-      initialize: true,
+      initializeSort: true,
+      initializeMaxRecords: true,
       recordPerPage: 24,
       // recordByLine: 4,
       recordsPerPage: { 
@@ -146,6 +153,7 @@ export default {
 	         this.count = parseInt(event.detail.summary['@count'])
 	         this.from = parseInt(event.detail['@from'])
 	         this.to = parseInt(event.detail['@to'])
+	         this.currentPage = (this.from - 1) / this.recordPerPage + 1
 	         this.nbPage = Math.ceil(event.detail.summary['@count'] / this.recordPerPage) 
          }
          break
@@ -238,15 +246,24 @@ export default {
    },
    nbRecordChange (value) {
      this.recordPerPage = parseInt(value)
-     this.emitChange()
+     if (this.initializeMaxRecord) {
+       this.initializeMaxRecord = false
+     } else {
+       this.emitChange()
+     }
    },
    sortChange (event) {
      this.sortBy = event
-     this.emitChange()
+//      if (this.initializeSort) {
+//        // this.emitChange()
+//        this.initializeSort = false
+//      } else {
+       this.emitChange()
+     // }
    },
    emitChange() {
      var to = this.from + this.recordPerPage - 1
-     var event = new CustomEvent('fmt:pageChangedEvent', {detail:{ depth: this.depth}})
+     var event = new CustomEvent('fmt:pageChangedEvent', {detail:{ from: this.from, to: to, sortBy: this.sortBy}})
      document.dispatchEvent(event)
    }
   }
