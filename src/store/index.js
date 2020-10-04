@@ -167,7 +167,9 @@ export default function makeStore( config ) {
           } 
           if (obj.dimension) {
             obj.dimension.forEach(function (dim) {
-              state.gnParameters[key].push(dim['@name'])
+              if (state.gnParameters[key].indexOf(dim['@name']) < 0) {
+                state.gnParameters[key].push(dim['@name'])
+              }
             })
           }
         }

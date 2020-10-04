@@ -112,8 +112,10 @@ export default {
   },
   methods: {
     displayMetadata () {
-      var event = new CustomEvent('fmt:metadataEvent', {detail: {meta:this.meta, depth: this.depth } })
-      document.dispatchEvent(event)
+      console.log(this.meta)
+      this.$router.push({name:'Metadata', params: {uuid: this.meta.id}})
+//       var event = new CustomEvent('fmt:metadataEvent', {detail: {meta:this.meta, depth: this.depth } })
+//       document.dispatchEvent(event)
     }
   /*  changeLayer (layer) {
      // console.log(index)

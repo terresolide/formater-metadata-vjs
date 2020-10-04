@@ -89,7 +89,7 @@ export default {
     } else {
       this.recordPerPage = this.$store.state.size.nbRecord
     }
-    
+    this.sortBy = this.orderBy
     this.metadataListListener = this.receiveTotalRecord.bind(this)
     document.addEventListener('fmt:metadataListEvent', this.metadataListListener)
     this.searchEventListener = this.handleSearch.bind(this) 
@@ -103,8 +103,6 @@ export default {
     
   },
   mounted () {
-
-
     this.handleTheme()
   },
   destroyed () {

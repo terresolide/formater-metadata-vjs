@@ -14,7 +14,7 @@
  <div class="mtdt-catalogue">
  <div>{{metaDisplayed}}</div>
   <!-- components not visible  -->
- <formater-requester  :depth="metadatas.length"  @registerValues="registerValues"></formater-requester>
+ <formater-requester  :depth="0" ></formater-requester>
   <!-- component to draw bbox -->
   <formater-draw-bbox ></formater-draw-bbox>
 
@@ -129,7 +129,7 @@ export default {
     }
     
     this.initTemporalExtent()
-    this.$gn.init(this.$i18n.locale, this.$store.state.geonetwork, this.$http, this.$store)
+   //  this.$gn.init(this.$i18n.locale, this.$store.state.geonetwork, this.$http, this.$store)
     this.metadataListener = this.receiveMetadata.bind(this)
     document.addEventListener('fmt:metadataEvent', this.metadataListener);
 //     this.aerisSearchListener = this.handleSearch.bind(this)
