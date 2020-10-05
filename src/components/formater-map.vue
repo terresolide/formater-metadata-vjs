@@ -367,13 +367,22 @@ export default {
 //       return this.type
 //    },
    receiveMetadata(event) {
-     if (event.detail && event.detail.meta && event.detail.meta.appRoot && event.detail.meta.geoBox) {
-       var box = event.detail.meta.geoBox.split('|')
-       var spatialExtent = [[parseFloat(box[1]), parseFloat(box[0])] , [parseFloat(box[3]), parseFloat(box[2])]]
-       this.$store.commit('setDefaultSpatialExtent', spatialExtent)
-       
-     } else {
-        var bounds = this.selectBbox(event)
+     console.log(event)
+     if (event.detail && event.detail.meta  && event.detail.feature) {
+//        if (event.detail.meta.geoBox) {
+// 	       var box = event.detail.meta.geoBox.split('|')
+// 	       var spatialExtent = [[parseFloat(box[1]), parseFloat(box[0])] , [parseFloat(box[3]), parseFloat(box[2])]]
+// 	       // this.$store.commit('setDefaultSpatialExtent', spatialExtent)
+//        }
+     // } else {
+       this.bboxLayer[1] = L.geoJSON(event.detail.feature, {style:this.getOptionsLayer()}) 
+       this.bboxLayer[1].addTo(this.map)
+       var bounds = this.bboxLayer[1].getBounds()
+       this.bounds[1] = bounds
+       // @todo passer cette variable comme local ? utilité
+       // this.$store.commit('setDefaultSpatialExtent', bounds)
+       this.map.fitBounds(bounds)
+        // this.selectBbox(event)
      }
      this.$store.commit('searchAreaChange', bounds)
      if (event.detail && event.detail.meta && event.detail.meta.legend) {

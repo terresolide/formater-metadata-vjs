@@ -69,8 +69,8 @@ export default {
   margin:auto;
   vertical-align:middle;
 }
-.mtdt-quicklooks .fa-chevron-circle-right,
-.mtdt-quicklooks .fa-chevron-circle-left{
+.mtdt-catalogue .mtdt-quicklooks .fa-chevron-circle-right,
+.mtdt-catalogue .mtdt-quicklooks .fa-chevron-circle-left{
   position: absolute;
   font-size:40px;
   top: 110px;
@@ -85,7 +85,7 @@ export default {
 .mtdt-quicklooks .fa-chevron-circle-left:hover{
   opacity: 0.7;
 }
-.mtdt-metadata .mtdt-quicklooks .fa-chevron-circle-right{
+ .mtdt-metadata .mtdt-quicklooks .fa-chevron-circle-right{
   right:1px;
   margin-right:0;
 }

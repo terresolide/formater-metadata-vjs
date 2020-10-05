@@ -40,7 +40,7 @@
             <formater-metadata :metadata="$store.state.selectedMetadata" :depth="-1" @close="$store.commit('resetSelectedMetadata')"></formater-metadata>
           </div>
         </div>
-       <formater-metadata v-if="metadata" :metadata="metadata" @parametersChange="setParameters" @close="close"></formater-metadata>
+       <formater-metadata v-if="metadata" :metadata="metadata" @parametersChange="setParameters" @close="close" :depth="1"></formater-metadata>
      
         <!-- view of one record -->
        <!--   <div>
@@ -87,6 +87,7 @@ export default {
       first: true,
       sortBy: '',
       metaDisplayed: null,
+      previousRoute: null,
       // bbox: null,
       // depth: null,
       // array breadcrumb of records
@@ -98,6 +99,11 @@ export default {
       // default temporalExtent
       temporalExtent: {min: '1900-01-01', max: 'now'}
     }
+  },
+  beforeRouteEnter(to, from, next) {
+    next(vm => {
+      vm.previousRoute = from
+    })
   },
   watch: {
     $route (newroute, old) {
@@ -169,16 +175,18 @@ export default {
 //    //  'facet.q': '',
 //      bucket: 's101',
       var url = this.$store.state.geonetwork +  'srv/' + (this.$i18n.locale === 'fr'? 'fre' : 'eng') + '/'
-      url +=  'q?bucket=s101&resultType=step1&_content_type=json&uuid=' + this.uuid
+      url +=  'q?fast=index&bucket=s101&resultType=step1&_content_type=json&uuid=' + this.uuid
       this.$http.get(url, {headers: headers}).then(
         response => { this.treatmentMeta(response.body)},
         response => { console.log(response.body)})
     },
     treatmentMeta(data) {
       console.log(data)
-      this.metadata = this.$gn.treatmentMetadata(data.metadata[0] ,this.uuid)
+      this.metadata = this.$gn.treatmentMetadata(data.metadata ,this.uuid)
       console.log(this.metadata)
-      var feature = this.$gn.extractBbox(data.metadata[0].geoBox, this.uuid)
+      var feature = this.$gn.extractBbox(data.metadata.geoBox, this.uuid)
+       var event = new CustomEvent('fmt:metadataEvent', {detail:  {meta: this.metadata, feature:feature}})
+      document.dispatchEvent(event)
     },
     initTemporalExtent () {
       if(this.$store.state.temporalExtent && this.$store.state.temporalExtent.min) {
@@ -224,15 +232,22 @@ export default {
      // this.$router.push({name: 'FormaterCatalogue', query:{uuid:event.detail.meta.id, depth: this.metadatas.length}})
     },
     close () {
-      this.$router.go(-1)
+      console.log(this.previousRoute)
+      if (this.previousRoute && this.previousRoute.name === 'FormaterCatalogue' ||
+          this.previousRoute === 'Metadata') {
+        this.$router.go(-1)
+      } else {
+        this.$router.push({name: 'FormaterCatalogue'})
+      }
+      // 
     },
     back () {
       //e.preventDefault()
-      if (this.$store.state.selectedMetadata) {
-        this.$store.commit('resetSelectedMetadata')
-      } else {
-        this.resetMetadata()
-      }
+//       if (this.$store.state.selectedMetadata) {
+//         this.$store.commit('resetSelectedMetadata')
+//       } else {
+//         this.resetMetadata()
+//       }
     },
     checkEscape (e) {
         var event = e || window.event
@@ -299,6 +314,17 @@ export default {
 //         event.detail.parentUuid = this.currentUuid
 //       }
 //     },
+    setParameters (obj) {
+      return
+//       if (obj.depth) {
+//         this.metadatas[obj.depth - 1].osParameters = obj.osParameters
+//         this.metadatas[obj.depth - 1].mapping = obj.mapping
+//         this.metadatas[obj.depth - 1].disableType = obj.disableType
+//       }
+//       if (obj.depth === this.metadatas.length) {
+//         this.$store.commit('parametersChange', {parameters: obj.osParameters, mapping: obj.mapping, type: obj.type})
+//       }
+    },
     closeError () {
       this.$store.commit('removeError')
     }
