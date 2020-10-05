@@ -28,6 +28,12 @@ const getProj4 = () => import('proj4')
 // import L from 'leaflet'
 export default {
   name: 'FormaterMap',
+  props: {
+    depth: {
+      type: Number,
+      default: 0
+    }
+  },
   created: function() {
     this.metadataListListener = this.receiveMetadatas.bind(this)
     document.addEventListener('fmt:metadataListEvent', this.metadataListListener);
@@ -86,7 +92,6 @@ export default {
      bboxLayer: [],
      layers: [],
      selected: [], // selected bbox
-     depth: 0,
      // bounds of all records display for a depth
      bounds: [],
      // bounds for the displayed record
@@ -417,7 +422,7 @@ export default {
      } else {
        this.hideBboxLayers()
        this.hideLayers()
-       this.depth = event.detail.depth;
+       // this.depth = event.detail.depth;
      }
      this.type = event.detail.type
      this.filterBboxWithSelectedBounds(event.detail.features)
@@ -557,6 +562,7 @@ export default {
       } 
      this.controlLayer.setBboxLayer(this.bboxLayer[this.depth])
      this.seeAllLayers()
+     console.log('depth = ', this.depth)
      if (this.bounds[this.depth]) {
        this.map.fitBounds(this.bounds[this.depth])
      }
@@ -564,6 +570,7 @@ export default {
    searchBboxBoundsById (id) {
      var self = this
      var bounds = null
+     console.log('depth = ', this.depth)
      this.bboxLayer[this.depth].eachLayer(function(layer) {
        if (layer.options.id === id || (layer.feature && layer.feature.id === id)) {
          var bds = layer.getBounds()
