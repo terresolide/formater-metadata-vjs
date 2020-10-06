@@ -62,14 +62,13 @@ export default {
   methods: {
 
      receiveMetadatas (event) {
-       console.log(event)
-       console.log(event.detail.depth)
-       console.log(this.depth)
+       
 //        if (event.detail.depth != this.depth) {
 //          return;
 //        }
        this.type = event.detail.type
        this.metadatas = event.detail.metadata
+       if (this.metadatas)
 
        if (this.type === 'geonetwork') {
          this.searchRelated()

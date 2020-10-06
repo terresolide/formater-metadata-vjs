@@ -372,6 +372,7 @@ export default {
   width:100%;
   -webkit-box-sizing: content-box;
   box-sizing: content-box;
+  position:relative !important;
   }
 
   .mtdt-catalogue h1,

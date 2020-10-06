@@ -23,7 +23,6 @@
    
    <span v-if="metadata && !metadata.appRoot" class="mtdt-metadata-close fa fa-close" @click="close"></span>
    <div v-if="metadata">
-     <formater-requester  :depth="depth"  ></formater-requester>
       <h1 class="mtdt-metadata-header" :style="{color:$store.state.style.primary}">
            <a v-if="metadata.groupWebsite" :href="metadata.groupWebsite" :title="$gn.t('group-'+ metadata.groupOwner)" starget="_blank" class="mtdt-group-logo">
              <img :src="metadata.logo"/>
@@ -46,11 +45,13 @@
         <formater-export-links v-if="metadata.exportLinks" :export-links="metadata.exportLinks"></formater-export-links> 
       </div>
       <!--  tab search if have child -->
+       <formater-requester v-if="!describe" :depth="depth"  ></formater-requester>
+    
       <formater-opensearch v-if="describe"  :describe="describe" :uuid="uuid" :depth="depth" @parametersChange="setParameters" @failed="removeDescribe"></formater-opensearch>
-      <div v-show="currentTab === 'search'">
+      <div v-show="currentTab === 'search' && hasChild">
            
            <formater-paging  :uuid="uuid"  :depth="depth" :type="describe ? 'opensearch': 'geonetwork'"></formater-paging>
-           <formater-list-metadata :depth="depth" ></formater-list-metadata>
+           <formater-list-metadata :depth="depth" @hasChild="setHasChild"></formater-list-metadata>
       </div>
       <!--  others tab -->
       <div v-if="currentTab === 'main'" style="margin-top:20px;">
@@ -234,6 +235,8 @@ export default {
       },
       setHasChild(value) {
         this.hasChild = value
+
+        
         this.$set(this.tabs, 'search', value)
         if (value) {
           this.currentTab = 'search'
@@ -244,7 +247,7 @@ export default {
           // this.getRecords()
         } else {
           this.disableType = 'noChild'
-        	  this.$emit('parametersChange', {osParameters: [], mapping: [], type: 'noChild', depth: this.depth})
+        	 // this.$emit('parametersChange', {osParameters: [], mapping: [], type: 'noChild', depth: this.depth})
 
         //  this.$store.commit('parametersChange', {parameters: [], mapping:[], type: 'noChild'})
         }

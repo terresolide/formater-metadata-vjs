@@ -20,9 +20,10 @@
 -->
       <div id="view">
         <div id="page">
-           <router-view></router-view>
+           <router-view ></router-view>
         </div>
       </div>
+      <div style="clear:both;"></div>
 </div>  
 </template>
 
@@ -115,5 +116,8 @@ export default {
 }
 .mtdt-app > header i {
   vertical-align: middle;
+}
+.content-component {
+  position:relative;
 }
 </style>
