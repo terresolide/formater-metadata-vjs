@@ -23,7 +23,7 @@
            <router-view ></router-view>
         </div>
       </div>
-      <div style="clear:both;"></div>
+      <div style="clear:both;height:10px;"></div>
 </div>  
 </template>
 
@@ -94,6 +94,8 @@ export default {
 <style>
 .mtdt-app {
   margin:auto;
+  font-family: "Roboto", Arial, sans-serif;
+font-size: 16px;
 }
 .mtdt-app #view {
   position: relative;
@@ -117,6 +119,11 @@ export default {
 .mtdt-app > header i {
   vertical-align: middle;
 }
+
+.mtdt-app h1::after {
+  display:none;
+}
+
 .content-component {
   position:relative;
 }

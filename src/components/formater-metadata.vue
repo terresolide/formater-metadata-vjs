@@ -119,12 +119,12 @@ export default {
     }
   },
   watch: {
-    metadata: {
-      immediate: true,
-      handler (newvalue) {
-        this.computeHasChild(newvalue)
-      }
-    }
+//     metadata: {
+//       immediate: true,
+//       handler (newvalue) {
+//         this.computeHasChild(newvalue)
+//       }
+//     }
     
   },
   
@@ -166,7 +166,7 @@ export default {
   mounted () {
    if (this.metadata) {
      // this.meta = this.metadata
-     this.computeHasChild(this.metadata)
+    //  this.computeHasChild(this.metadata)
      this.fillMetadata()
    }
   },
@@ -202,7 +202,7 @@ export default {
         this.$emit('close');
       },
       computeHasChild (val) {
-        this.setHasChild(true)
+        this.setHasChild(val)
         return
         if (val.related && val.related.children) {
           // case child in geonetwork

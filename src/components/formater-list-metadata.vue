@@ -68,7 +68,9 @@ export default {
 //        }
        this.type = event.detail.type
        this.metadatas = event.detail.metadata
-       if (this.metadatas)
+       if (this.metadatas) {
+         this.$emit('hasChild', true)
+       }
 
        if (this.type === 'geonetwork') {
          this.searchRelated()

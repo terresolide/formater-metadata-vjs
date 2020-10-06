@@ -413,6 +413,10 @@ export default {
 //          layer.remove()
 //        })
 //      }
+    if (!event.detail.metadata) {
+      // no child
+      return
+    }
      this.legendControl.removeAll()
      if (this.depth === event.detail.depth   && this.bboxLayer[this.depth]) {
           this.bboxLayer[this.depth].clearLayers();
