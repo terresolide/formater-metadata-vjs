@@ -62,9 +62,12 @@ export default {
   methods: {
 
      receiveMetadatas (event) {
-       if (event.detail.depth != this.depth) {
-         return;
-       }
+       console.log(event)
+       console.log(event.detail.depth)
+       console.log(this.depth)
+//        if (event.detail.depth != this.depth) {
+//          return;
+//        }
        this.type = event.detail.type
        this.metadatas = event.detail.metadata
 

@@ -27,7 +27,7 @@
   <div class="formater-input-group" :class="{disable: $store.state.disable.searchTerm}" style="margin:10px; width:calc(100% - 20px);">
      <input id="any" name="any" v-model="fulltextSearch" :placeholder="$t('search')" @keypress="changeTextOnEnter"  /><i class="fa fa-search"></i>
  </div>
- <formater-map :depth="1"></formater-map>
+ <formater-map :depth="depth"></formater-map>
  <formater-search-box header-icon-class="fa fa-globe" open-icon-class="fa fa-caret-right" :title="$t('spatial_extent')" :deployed="false" type="empty" :disable-level="+ $store.state.disable.spatial">
  <formater-spatial-search :disable="$store.state.disable.spatial" :lang="$store.state.lang"></formater-spatial-search>
  </formater-search-box>

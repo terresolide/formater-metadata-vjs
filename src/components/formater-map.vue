@@ -380,8 +380,9 @@ export default {
 // 	       // this.$store.commit('setDefaultSpatialExtent', spatialExtent)
 //        }
      // } else {
+       
        this.bboxLayer[1] = L.geoJSON(event.detail.feature, {style:this.getOptionsLayer()}) 
-       this.bboxLayer[1].addTo(this.map)
+       // this.bboxLayer[1].addTo(this.map)
        var bounds = this.bboxLayer[1].getBounds()
        this.bounds[1] = bounds
        // @todo passer cette variable comme local ? utilité

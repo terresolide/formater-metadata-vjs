@@ -20,9 +20,10 @@
 </i18n>
 <template>
  <div class="mtdt-metadata mtdt-capsule" :class="{'fmt-free': depth === -1}">
-    
+   
    <span v-if="metadata && !metadata.appRoot" class="mtdt-metadata-close fa fa-close" @click="close"></span>
    <div v-if="metadata">
+     <formater-requester  :depth="depth"  ></formater-requester>
       <h1 class="mtdt-metadata-header" :style="{color:$store.state.style.primary}">
            <a v-if="metadata.groupWebsite" :href="metadata.groupWebsite" :title="$gn.t('group-'+ metadata.groupOwner)" starget="_blank" class="mtdt-group-logo">
              <img :src="metadata.logo"/>
@@ -46,7 +47,7 @@
       </div>
       <!--  tab search if have child -->
       <formater-opensearch v-if="describe"  :describe="describe" :uuid="uuid" :depth="depth" @parametersChange="setParameters" @failed="removeDescribe"></formater-opensearch>
-      <div v-if="tabs.search" v-show="currentTab === 'search'">
+      <div v-show="currentTab === 'search'">
            
            <formater-paging  :uuid="uuid"  :depth="depth" :type="describe ? 'opensearch': 'geonetwork'"></formater-paging>
            <formater-list-metadata :depth="depth" ></formater-list-metadata>
@@ -83,7 +84,7 @@
 import FormaterExportLinks from './formater-export-links.vue'
 const FormaterPaging = () => import('./formater-paging.vue')
 const FormaterListMetadata = () => import('./formater-list-metadata.vue')
-
+import FormaterRequester from '@/components/formater-requester.vue'
 const FormaterOpensearch = () => import('./formater-opensearch.vue')
 // const FormaterService = () => import('./formater-service.vue')
 const FormaterFullMetadata = () => import('./formater-full-metadata.vue')
@@ -99,6 +100,7 @@ export default {
     FormaterPaging,
     FormaterListMetadata,
     FormaterOpensearch,
+    FormaterRequester,
   //  FormaterService,
   //  FormaterRelated,
     FormaterFullMetadata ,
@@ -128,7 +130,7 @@ export default {
   data() {
     return {
      tabs: {
-       search: false,
+       search: true,
        main: true,
        full: false
      },
@@ -199,6 +201,8 @@ export default {
         this.$emit('close');
       },
       computeHasChild (val) {
+        this.setHasChild(true)
+        return
         if (val.related && val.related.children) {
           // case child in geonetwork
            if (!this.hasChild) {

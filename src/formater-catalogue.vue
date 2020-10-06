@@ -22,7 +22,7 @@
    <!-- components can be view -->
  
    <div class="mtdt-column-left" >
-       <formater-form  :disableLevel="metadatas.length > 0 ? 1 : 0" :depth="metadatas.length"></formater-form>
+       <formater-form  :disableLevel="metadatas.length > 0 ? 1 : 0" :depth="0"></formater-form>
    </div>
    <div class="mtdt-column-right" >
         <!-- div where append map when enlarge it -->

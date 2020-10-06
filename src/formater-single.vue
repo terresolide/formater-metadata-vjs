@@ -14,8 +14,8 @@
  <div class="mtdt-catalogue">
  <div>{{metaDisplayed}}</div>
   <!-- components not visible  -->
- <!--  <formater-requester  :depth="1" :uuid="uuid" ></formater-requester>
-  -->
+
+
   <!-- component to draw bbox -->
   <formater-draw-bbox ></formater-draw-bbox>
 
@@ -60,7 +60,7 @@ const FormaterMetadata = () => import('./components/formater-metadata.vue')
 import FormaterPaging from './components/formater-paging.vue';
 import FormaterDrawBbox from './components/formater-draw-bbox.vue';
 import AerisTheme from 'aeris-commons-components-vjs/src/aeris-theme/aeris-theme.vue'
-import FormaterRequester from './components/formater-requester.vue'
+
 
 // prevent previous and next page for browser
 // function disableBack() { window.history.forward() }
@@ -77,7 +77,7 @@ export default {
     FormaterListMetadata,
     FormaterMetadata,
     FormaterPaging,
-    FormaterRequester,
+   // FormaterRequester,
     AerisTheme
   },
   data() {
@@ -107,7 +107,8 @@ export default {
   },
   watch: {
     $route (newroute, old) {
-      
+      this.uuid = newroute.params.uuid
+      this.getMetadata()
     }
   },
   created () {
