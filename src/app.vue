@@ -119,6 +119,9 @@ font-size: 16px;
 .mtdt-app > header i {
   vertical-align: middle;
 }
+.mtdt-app h1::after {
+  display:none;
+}
 .content-component {
   position:relative;
 }
