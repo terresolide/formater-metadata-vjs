@@ -20,9 +20,10 @@
 -->
       <div id="view">
         <div id="page">
-           <router-view></router-view>
+           <router-view ></router-view>
         </div>
       </div>
+      <div style="clear:both;"></div>
 </div>  
 </template>
 
@@ -32,12 +33,12 @@
  import FormaterAuthentication from '@/components/formater-authentication.vue'
  
 //prevent previous and next page for browser
-function disableBack() { window.history.forward() }
-window.onload = function () {
-disableBack();
-}
-window.onpageshow = function(evt) { if (evt.persisted) disableBack() }
-window.onbeforeunload = function() { return "Your work will be lost."; };
+// function disableBack() { window.history.forward() }
+// window.onload = function () {
+// disableBack();
+// }
+// window.onpageshow = function(evt) { if (evt.persisted) disableBack() }
+// window.onbeforeunload = function() { return "Your work will be lost."; };
 
 export default {
     name: 'App',
@@ -64,6 +65,7 @@ export default {
       }
     },
     created () {
+      this.$gn.init(this.$i18n.locale, this.$store.state.geonetwork, this.$http, this.$store)
       this.resizeListener = this.resize.bind(this)
       window.addEventListener('resize', this.resizeListener);
      // this.resize()
@@ -92,6 +94,8 @@ export default {
 <style>
 .mtdt-app {
   margin:auto;
+  font-family: "Roboto", Arial, sans-serif;
+font-size: 16px;
 }
 .mtdt-app #view {
   position: relative;
@@ -114,5 +118,8 @@ export default {
 }
 .mtdt-app > header i {
   vertical-align: middle;
+}
+.content-component {
+  position:relative;
 }
 </style>
