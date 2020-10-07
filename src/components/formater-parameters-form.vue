@@ -9,12 +9,15 @@
 <div class="fmt-parameters-form">
 <div v-for="(item, index) in parameters" class="fmt-input-block fmt-input-group" >
 	<label :style="{color: textColor}">{{item.name}}</label>
-	<formater-select v-if="item.options && item.options.length > 0" :depth="depth" :name="item.name" width="260px" :options="item.options" @input="selectChange" :defaut="null" :set-value="item.value"></formater-select>
+	<formater-select v-if="item.options && item.options.length > 0" :depth="depth" :name="item.name" width="260px" :options="item.options" @input="(event) => {selectChange(item.name, event)}" 
+	:defaut="null" :set-value="$route.query[item.name]"></formater-select>
 	<div class="fmt-input disable" v-if="item.options && item.options.length === 1" :style="{backgroundColor: inputColor}">
 	 <span>{{item.options[0]}}</span>
 	</div>
 	<div class="fmt-input" v-if="!item.options" :style="{backgroundColor: inputColor}">
-		<input type="text" :name="item.name"  v-model="inputs[item.name]"  :defaultValue="item.value" :pattern="item.pattern" :title="item.title" :placeholder="item.title"  @change="changeText" @keypress="changeTextOnEnter"></input>
+		<input type="text" :name="item.name"  v-model="inputs[item.name]"  :default="$route.query[item.name]" 
+		:pattern="item.pattern" :title="item.title" :placeholder="item.title"  
+		@change="changeText" @keypress="changeTextOnEnter"></input>
 	</div>
 </div>
 </div>
@@ -67,10 +70,16 @@ export default {
   created () {
     var _this = this
     this.parameters.forEach(function (parameter) {
-      if(!parameter.options) {
+     if(!parameter.options) {
+       if (_this.$route.query.hasOwnProperty(parameter.name)) {
+         _this.inputs[parameter.name] = _this.$route.query[parameter.name]
+       } else {
         _this.inputs[parameter.name] = parameter.value ? parameter.value : null
+       }
       }
     })
+    console.log(this.$route.params)
+    console.log(this.parameters)
     this.textColor = this.$store.state.style.primary
     this.handleTheme(this.$store.state.style.emphasis)
   	this.aerisSearchListener = this.handleSearch.bind(this)
@@ -98,18 +107,43 @@ export default {
     },
     changeTextOnEnter (event) {
       if (event.which == 13 || event.keyCode == 13) {
-        this.changeText()
+        this.changeText(event)
         return false;
       }
     },
     changeText(event) {
-       // trigger event change text
-       var e = new CustomEvent('fmt:textChangeEvent')
-       document.dispatchEvent(e)
+      var name = event.target.name
+      var value = event.target.value.trim()
+     var query = {}
+      for (var prop in this.$route.query) {
+        query[prop] = this.$route.query[prop]
+      }
+      if (value && value !== '') {
+        query[name] = value
+      } else {
+        delete query[name]
+      }
+      this.$router.push({
+        name: this.$route.name,
+        params: this.$route.params,
+        query: query
+      })
     },
-    selectChange (value) {
-      var evt = new CustomEvent('fmt:selectChangeEvent')
-      document.dispatchEvent(evt)
+    selectChange(name, value) {
+      var query = {}
+      for (var prop in this.$route.query) {
+        query[prop] = this.$route.query[prop]
+      }
+      if (value && value !== '---') {
+        query[name] = value
+      } else {
+        delete query[name]
+      }
+      this.$router.push({
+        name: this.$route.name,
+        params: this.$route.params,
+        query: query
+      })
     },
     handleSearch (event) {
       if (this.depth !== event.detail.depth) {

@@ -216,7 +216,7 @@ export default {
    text-align: center;
    display:inline-block;
    position: absolute;
-   width:calc(100% - 325px);
+   width:100%;
    height: 100%;
    z-index:1;
    background: rgba(255, 255, 255, 0.8);

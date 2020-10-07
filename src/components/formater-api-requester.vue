@@ -45,7 +45,7 @@ export default {
       // listen a global reset event
       resetListener: null,
       facet: [],
-      type: 'geonetwork',
+      type: 'opensearch',
       credentials: {}
      }
   },
@@ -93,14 +93,9 @@ export default {
         box += west + '+' + north + '))';
       return box;
     },
-   Request(e) {
+   prepareRequest(e) {
       this.initParameters()
-       if (e.detail.startDefault) {
-        delete e.detail.start
-      }
-      if (e.detail.endDefault) {
-        delete e.detail.end
-      } 
+      
       this.mapParameters(e)
       this.parameters = Object.assign(this.parameters, e.detail)   
 
@@ -139,6 +134,7 @@ export default {
       var self = this
       var url = this.api + (this.api.indexOf('?') > 0 ? '&' :'?');
       // register parameters value
+      this.parameters = Object.assign(this.parameters, this.$route.query)
       url += Object.keys(this.parameters).map(function (prop) {
         return prop + '=' + self.parameters[prop]
       }).join('&');
