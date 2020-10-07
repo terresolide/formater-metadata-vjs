@@ -316,15 +316,14 @@ export default {
 //       }
 //     },
     setParameters (obj) {
-      return
 //       if (obj.depth) {
 //         this.metadatas[obj.depth - 1].osParameters = obj.osParameters
 //         this.metadatas[obj.depth - 1].mapping = obj.mapping
 //         this.metadatas[obj.depth - 1].disableType = obj.disableType
 //       }
 //       if (obj.depth === this.metadatas.length) {
-//         this.$store.commit('parametersChange', {parameters: obj.osParameters, mapping: obj.mapping, type: obj.type})
-//       }
+        this.$store.commit('parametersChange', {parameters: obj.osParameters, mapping: obj.mapping, type: obj.type})
+//     }
     },
     closeError () {
       this.$store.commit('removeError')

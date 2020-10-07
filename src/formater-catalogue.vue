@@ -156,6 +156,7 @@ export default {
     if (!this.$store.state.metadata) {
       // this.$router.push({name: 'FormaterCatalogue', query: {}})
     }
+    this.$store.commit('parametersChange', {parameters: [], mapping: [], type: null})
   },
   destroyed () {
     document.removeEventListener('fmt:metadataEvent', this.metadataListener);

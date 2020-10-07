@@ -5,13 +5,19 @@
  *
  **/
  
-<template></template>
+<template>
+<formater-api-requester v-if="api" :api="api"></formater-api-requester>
+</template>
 <script>
+import FormaterApiRequester from '@/components/formater-api-requester.vue'
 function getKeyByValue(object, value) {
   return Object.keys(object).find(key => object[key] === value);
 }
 export default {
   name: 'FormaterOpensearch',
+  components: {
+    FormaterApiRequester
+  },
   props: {
     describe: {
       type: String,
@@ -27,20 +33,20 @@ export default {
     }
   },
   created () {
-    this.searchEventListener = this.handleSearch.bind(this) 
-  	document.addEventListener('aerisSearchEvent', this.searchEventListener);
+    // this.searchEventListener = this.handleSearch.bind(this) 
+  	// document.addEventListener('aerisSearchEvent', this.searchEventListener);
     this.load()
   },
   mounted () {
 
   },
   destroyed () {
-    document.removeEventListener('aerisSearchEvent', this.searchEventListener);
-    this.searchEventListener = null
+//     document.removeEventListener('aerisSearchEvent', this.searchEventListener);
+//     this.searchEventListener = null
   },
   data () {
     return {
-      searchEventListener: null,
+     // searchEventListener: null,
       api: null,
       // associative array of: parameter name in this application => name in the opensearch api
       // for the predefined parameters like box, temporalExtent, and paging (common for all api)
@@ -183,11 +189,11 @@ export default {
 //         this.$store.commit('services/add', this.api)
 //       // }
 //     },
-    handleSearch(e) {
-      if (this.api && e.detail.parentUuid === this.uuid) {
-        e.detail.api = this.api
-      }
-    }
+//     handleSearch(e) {
+//       if (this.api && e.detail.parentUuid === this.uuid) {
+//         e.detail.api = this.api
+//       }
+//     }
   }
 }
 

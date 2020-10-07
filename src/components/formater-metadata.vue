@@ -46,7 +46,7 @@
       </div>
       <!--  tab search if have child -->
        <formater-requester v-if="depth >= 0 && !describe" :depth="depth"  ></formater-requester>
-    
+      
       <formater-opensearch v-if="depth >= 0 && describe"  :describe="describe" :uuid="uuid" :depth="depth" @parametersChange="setParameters" @failed="removeDescribe"></formater-opensearch>
       <div  v-if="depth >= 0 " v-show="currentTab === 'search' && hasChild">
            
@@ -85,7 +85,7 @@
 import FormaterExportLinks from './formater-export-links.vue'
 const FormaterPaging = () => import('./formater-paging.vue')
 const FormaterListMetadata = () => import('./formater-list-metadata.vue')
-import FormaterRequester from '@/components/formater-requester.vue'
+const FormaterRequester = () => '@/components/formater-requester.vue'
 const FormaterOpensearch = () => import('./formater-opensearch.vue')
 // const FormaterService = () => import('./formater-service.vue')
 const FormaterFullMetadata = () => import('./formater-full-metadata.vue')
@@ -119,12 +119,12 @@ export default {
     }
   },
   watch: {
-//     metadata: {
-//       immediate: true,
-//       handler (newvalue) {
-//         this.computeHasChild(newvalue)
-//       }
-//     }
+    metadata: {
+      immediate: true,
+      handler (newvalue) {
+        this.computeHasChild(newvalue)
+      }
+    }
     
   },
   
@@ -166,7 +166,7 @@ export default {
   mounted () {
    if (this.metadata) {
      // this.meta = this.metadata
-    //  this.computeHasChild(this.metadata)
+     this.computeHasChild(this.metadata)
      this.fillMetadata()
    }
   },
@@ -202,21 +202,12 @@ export default {
         this.$emit('close');
       },
       computeHasChild (val) {
-        this.setHasChild(val)
-        return
-        if (val.related && val.related.children) {
-          // case child in geonetwork
-           if (!this.hasChild) {
-             this.setHasChild(true)
-           }
-         } else if (val.api) {
+        if (val.api) {
            if (!this.hasChild) {
            // case child from a custom api opensearch
               this.describe = val.api.http
            }
-         } else {
-           this.setHasChild(false)
-         }
+         } 
       },
       setParameters(osParameters) {
     	  //         this.metadata.osParameters = osParameters.parameters
@@ -280,11 +271,6 @@ export default {
               this.hasChild = true
               this.getRecords()
             } */
-      },
-      getRecords () {
-          // useless, it's trigger when load formater-page-changed
-         // var event = new CustomEvent('fmt:metadataWithChildEvent', {detail: {uuid: this.uuid, depth: this.depth}})
-         // document.dispatchEvent(event)
       }
   }
 }
