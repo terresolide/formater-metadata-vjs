@@ -457,7 +457,10 @@ export default {
     searchGnStep2Parameters (dimension) {
       if (this.first) {
         // register dimension in store
-        this.$store.commit('gnParametersChange', {step:1, dimension: dimension})
+        if (this.depth === 0) {
+          this.$store.commit('gnParametersChange', {step:1, dimension: dimension})
+        }
+        // this.$store.commit('gnParametersChange', {step:2, dimension:[]})
         // search summary for all record (including child dataset) for step 2
         if (this.$store.state.summaryType.step1 !== this.$store.state.summaryType.step2) {
           
@@ -636,7 +639,7 @@ export default {
 //       return e;
 //     },
     fill (data, depth) {
-      data.depth = depth
+      data.depth = this.depth
       console.log('DISPATHC mt:metadataListEvent')
       var event = new CustomEvent('fmt:metadataListEvent', {detail:  data})
       document.dispatchEvent(event)

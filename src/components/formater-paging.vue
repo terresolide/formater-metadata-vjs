@@ -53,10 +53,10 @@ export default {
       type: String,
       default: 'geonetwork'
     },
-    uuid: {
-      type: String,
-      default: null
-    },
+//     uuid: {
+//       type: String,
+//       default: null
+//     },
     orders: {
       type: Array,
       default: () => []
@@ -137,6 +137,8 @@ export default {
   
   methods: {
    receiveTotalRecord (event) {
+     console.log(this.depth)
+     console.log(event.detail.depth)
      if (event.detail.depth !=  this.depth ){
        return;
      }
@@ -175,12 +177,12 @@ export default {
      }
    },
    updateRecordsPerPage (recordsByLine) {
-     var isCurrent = (this.$store.state.currentUuid === this.uuid)
+    // var isCurrent = (this.$store.state.currentUuid === this.uuid)
      var options = {}
      var i = 1
      var nbRecords = recordsByLine * i
      while(i < 9) {
-       if (!isCurrent && this.recordPerPage < nbRecords && this.recordPerPage > (i-1) * recordsByLine ) {
+       if (this.recordPerPage < nbRecords && this.recordPerPage > (i-1) * recordsByLine ) {
          // keep the value in list of options
          options[this.recordPerPage] = this.recordPerPage + ' ' + this.$t('per_page')
        }
@@ -188,10 +190,10 @@ export default {
 		i++
 		nbRecords = recordsByLine * i
      }
-     if (isCurrent) {
+    // if (isCurrent) {
        // change the record per page only for the current metadata
        this.recordPerPage = 4 * recordsByLine
-     }
+    // }
      // change the list of options for all
      this.recordsPerPage = options
    },

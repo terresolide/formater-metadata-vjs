@@ -284,9 +284,12 @@ export default {
       document.dispatchEvent(event)
     },
     selectAreaChange (event) {
+      if (!this.map) {
+        return
+      }
       var bbox = event.detail
       console.log(bbox)
-     // var bounds = L.latLngBounds(this.$store.state.spatialExtent)
+      var bounds = L.latLngBounds(this.$store.state.spatialExtent)
       if (bbox && bbox.north !== "" && bbox.south !== "" && bbox.east !== "" && bbox.west !== "") {
         for(var key in bbox){
           bbox[key] = parseFloat(bbox[key]);
@@ -316,7 +319,7 @@ export default {
       	} else {
       	  var bounds = this.defaultBounds
       	}
-      } else if (this.searchArea) {
+      } else if (this.searchArea && this.boundsLayer) {
         bounds.extend(this.boundsLayer.getBounds())
       }
       this.map.fitBounds(bounds, {padding: [20, 20]})
@@ -357,7 +360,9 @@ export default {
       this.map.invalidateSize()
     },
     drawValidBbox (bounds) {
-      this.drawLayers.clearLayers()
+      if (!this.drawLayers) {
+        return
+      }
       if (!bounds) {
         return null
       }

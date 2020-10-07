@@ -81,20 +81,7 @@ export default {
   },
   watch: {
     $route (newroute) {
-      if (newroute.query.bbox) {
-        var split = newroute.query.bbox.split(',')
-        this.north = split[3]
-        this.east = split[2]
-        this.south = split[1]
-        this.west = split[0]
-      } else {
-        this.north = ''
-        this.east = ''
-        this.south = ''
-        this.west = ''
-      } 
-      var event = new CustomEvent( 'fmt:bboxChange', { detail: this.bbox()});
-      document.dispatchEvent( event);
+     this.initBbox(newroute.query)
     }
   },
   computed: {
@@ -128,6 +115,7 @@ export default {
   },
   created: function () {
     this.$i18n.locale = this.lang
+    this.initBbox(this.$route.query)
 //     this.resetEventListener = this.handleReset.bind(this) 
 //     document.addEventListener('aerisResetEvent', this.resetEventListener);
 //     this.searchEventListener = this.handleSearch.bind(this) 
@@ -145,6 +133,22 @@ export default {
      document.dispatchEvent(event);
   },
   methods:{
+    initBbox (query) {
+      if (query.bbox) {
+        var split = query.bbox.split(',')
+        this.north = split[3]
+        this.east = split[2]
+        this.south = split[1]
+        this.west = split[0]
+      } else {
+        this.north = ''
+        this.east = ''
+        this.south = ''
+        this.west = ''
+      } 
+      var event = new CustomEvent( 'fmt:bboxChange', { detail: this.bbox()});
+      document.dispatchEvent( event);
+    },
     bbox: function(){
       return {
         north: this.north,

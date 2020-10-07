@@ -518,7 +518,6 @@
  background:#754a15;
  padding:3px 5px;
  color:white;
- font-size:1.3em;
  margin-right:3px;
 }
 .mtdt-related-cartouche .mtdt-related-type{

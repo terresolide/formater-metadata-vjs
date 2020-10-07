@@ -45,12 +45,12 @@
         <formater-export-links v-if="metadata.exportLinks" :export-links="metadata.exportLinks"></formater-export-links> 
       </div>
       <!--  tab search if have child -->
-       <formater-requester v-if="!describe" :depth="depth"  ></formater-requester>
+       <formater-requester v-if="depth >= 0 && !describe" :depth="depth"  ></formater-requester>
     
-      <formater-opensearch v-if="describe"  :describe="describe" :uuid="uuid" :depth="depth" @parametersChange="setParameters" @failed="removeDescribe"></formater-opensearch>
-      <div v-show="currentTab === 'search' && hasChild">
+      <formater-opensearch v-if="depth >= 0 && describe"  :describe="describe" :uuid="uuid" :depth="depth" @parametersChange="setParameters" @failed="removeDescribe"></formater-opensearch>
+      <div  v-if="depth >= 0 " v-show="currentTab === 'search' && hasChild">
            
-           <formater-paging  :uuid="uuid"  :depth="depth" :type="describe ? 'opensearch': 'geonetwork'"></formater-paging>
+           <formater-paging  :uuid="uuid"  :depth="depth" order-by="changeDate" :type="describe ? 'opensearch': 'geonetwork'"></formater-paging>
            <formater-list-metadata :depth="depth" @hasChild="setHasChild"></formater-list-metadata>
       </div>
       <!--  others tab -->
@@ -131,7 +131,7 @@ export default {
   data() {
     return {
      tabs: {
-       search: true,
+       search: false,
        main: true,
        full: false
      },
@@ -234,6 +234,9 @@ export default {
         this.setHasChild(true)
       },
       setHasChild(value) {
+        if (this.depth === -1) {
+          return
+        }
         this.hasChild = value
 
         

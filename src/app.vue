@@ -91,11 +91,17 @@ export default {
     
   }
 </script>
+<style src="formater-commons-components-vjs/src/assets/css/formater-icon.css"></style>
+
 <style>
 .mtdt-app {
   margin:auto;
   font-family: "Roboto", Arial, sans-serif;
-font-size: 16px;
+  font-size: 16px;
+  letter-spacing:0px;
+}
+.mtdt-app div[id="page"] {
+  padding:0;
 }
 .mtdt-app #view {
   position: relative;
@@ -126,5 +132,155 @@ font-size: 16px;
 
 .content-component {
   position:relative;
+}
+.mtdt-catalogue{
+  font-family: "Times New Roman", Times, serif;
+  color: #000000;
+  font-size: 15px;
+  line-height: 16px;
+  height:auto;
+  width:100%;
+  -webkit-box-sizing: content-box;
+  box-sizing: content-box;
+  position:relative !important;
+  }
+
+  .mtdt-catalogue h1,
+  .mtdt-catalogue h2,
+  .mtdt-catalogue h3  {
+    border:none;
+    font-family: "Times New Roman", Times, serif;
+    font-weight:700;
+    color: inherit;
+  }
+  .mtdt-catalogue h4,
+  .mtdt-catalogue h5 {
+    font-family: inherit;
+    color: inherit;
+  } 
+  .mtdt-catalogue input,
+  .mtdt-catalogue select, 
+  .mtdt-catalogue textarea{
+         font-family: Roboto,Arial,sans-serif;
+     font-size: 15px;
+  }
+  .mtdt-catalogue button,
+  .mtdt-catalogue input[type="button"]{
+
+    letter-spacing: .5px;
+  }
+  .mtdt-catalogue dd{
+    margin:0;
+  }
+ .mtdt-catalogue .formater-search-box .box-title h4 {
+    margin: 0;
+    font-size: 18px;
+    color: inherit;
+    font-family: inherit;
+    font-weight: 600;
+}
+ .mtdt-catalogue .fa{
+  font-size: inherit;
+ }
+
+.mtdt-capsule{
+  border: 1px solid #ccc;
+  border-radius: 0 0 5px 5px;
+  box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.2);
+}
+.mtdt-catalogue .mtdt-column-left{
+  width:300px;
+  margin-left:5px;
+  float:left;
+}
+.mtdt-catalogue .mtdt-column-right{
+  position:relative;
+  width:calc(100% - 315px);
+  min-height:1000px;
+  float:left;
+  display:box;
+  margin-left:10px;
+}
+.mtdt-catalogue  .formater-select select {
+  font-family: inherit;
+  padding:6.5px 32px 6.5px 6.5px;
+  line-height:1.3;
+}
+.mtdt-catalogue .mtdt-paging .formater-select select {
+  font-family: inherit;
+  font-size: 13px;
+  padding:0 32px 0px 6.5px;
+}
+.mtdt-catalogue .fmt-waiting,
+.mtdt-catalogue .fmt-error {
+   text-align: center;
+   display:inline-block;
+   position: absolute;
+   width:calc(100% - 325px);
+   height: 100%;
+   z-index:1;
+   background: rgba(255, 255, 255, 0.8);
+}
+.mtdt-catalogue .fmt-error {
+  font-size: 1.5rem;
+  color: darkred;
+  line-height: 1.5rem;
+}
+.mtdt-catalogue .fmt-error div {
+  position:relative;
+  padding: 15px;
+  border: 1px solid darkred;
+  background: rgba(0,0,0,0.05);
+  border-radius: 5px;
+  box-shadow: 1px 2px 5px -5pxrgb(0, 0, 0);
+  margin: 150px 5px 0 5px;
+}
+.mtdt-catalogue .fmt-error div span.fa-close{
+  position: absolute;
+  top:1px;
+  right: 4px;
+  cursor: pointer;
+}
+.mtdt-catalogue .fmt-waiting div {
+  padding-top:150px;
+
+  opacity:0.7;
+}
+
+.mtdt-catalogue .fmt-waiting div span{
+    font-size:3rem;
+}
+@keyframes spin { 
+  from { 
+      transform: rotate(0deg); 
+  } to { 
+      transform: rotate(360deg); 
+  }
+}
+.fa-refresh.animated,
+.fa-circle-o-notch.animated,
+.fa-spinner.animated{
+  -webkit-animation: spin 1.5s linear infinite;
+  animation: spin 1.5s linear infinite;
+}
+.mtdt-free-capsule {
+  position:absolute;
+  z-index:101;
+
+  width: 100%;
+  background: rgba(0,0,0,0.3);
+  min-height:100%;
+}
+.mtdt-free-capsule > div {
+  position:relative;
+  margin: 10px auto;
+  min-width:800px;
+  width:99%;
+  max-width:1000px;
+}
+.clearfix:after {
+  content: "";
+  display: table;
+  clear: both;
 }
 </style>

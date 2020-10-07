@@ -175,18 +175,23 @@ export default function makeStore( config ) {
         }
         if (obj.step === 2) {
           if (state.summaryType.step1 !== state.summaryType.step2) {
-            if (obj.dimension)
-            obj.dimension.forEach(function (dim) {
-              // search in step1
-              var found = state.gnParameters.step1.indexOf( dim['@name'])
-              if (found >= 0) {
-                // in step1step2
-                state.gnParameters.step1step2.push(dim['@name'])
-                state.gnParameters.step1.splice(found, 1)
-              } else {
+            if (obj.dimension) {
+              state.gnParameters.step2 = []
+              obj.dimension.forEach(function (dim) {
                 state.gnParameters.step2.push(dim['@name'])
-              }
-            })
+              })
+            }
+//            obj.dimension.forEach(function (dim) {
+//              // search in step1
+//              var found = state.gnParameters.step1.indexOf( dim['@name'])
+//              if (found >= 0) {
+//                // in step1step2
+//                state.gnParameters.step1step2.push(dim['@name'])
+//                state.gnParameters.step1.splice(found, 1)
+//              } else if (state.gnParameters.step2.indexOf( dim['@name']) < 0){
+//                state.gnParameters.step2.push(dim['@name'])
+//              }
+//            })
           } else {
             // all step1step2
             state.gnParameters.step1step2 = state.gnParameters.step1
