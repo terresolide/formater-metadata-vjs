@@ -46,15 +46,16 @@ export default {
     }
   },
   watch: {
-    $route (newroute) {
-      this.initValues(newroute.query)
-    }
+//     $route (newroute) {
+//       this.initValues(newroute.query)
+//       this.$forceUpdate()
+//     }
   },
   data () {
     return {
       inputColor: null,
       textColor: null,
-      aerisSearchListener: null,
+      // aerisSearchListener: null,
       aerisResetListener: null,
       values: {}
     }
@@ -79,15 +80,15 @@ export default {
     console.log(this.parameters)
     this.textColor = this.$store.state.style.primary
     this.handleTheme(this.$store.state.style.emphasis)
-  	this.aerisSearchListener = this.handleSearch.bind(this)
-    document.addEventListener('aerisSearchEvent', this.aerisSearchListener)
+//   	this.aerisSearchListener = this.handleSearch.bind(this)
+//     document.addEventListener('aerisSearchEvent', this.aerisSearchListener)
     this.aerisResetListener = this.handleReset.bind(this)
     document.addEventListener('aerisResetEvent', this.aerisResetListener)
   	
   },
   destroyed () {
-    document.removeEventListener('aerisSearchEvent', this.aerisSearchListener)
-    this.aerisSearchListener = null
+//     document.removeEventListener('aerisSearchEvent', this.aerisSearchListener)
+//     this.aerisSearchListener = null
     document.removeEventListener('aerisResetEvent', this.aerisResetListener)
     this.aerisResetListener = null
   },

@@ -97,12 +97,16 @@ export default {
       aerisResetListener: null,
       backListener: null,
       // default temporalExtent
-      temporalExtent: {min: '1900-01-01', max: 'now'}
+      temporalExtent: {min: '1900-01-01', max: 'now'},
+      previousRoutes: []
     }
   },
   beforeRouteEnter(to, from, next) {
     next(vm => {
-      vm.previousRoute = from
+      console.log('BEFORE ROUTE ENTER')
+      if (from.params.uuid !== to.params.uuid) {
+        vm.previousRoutes.push(from)
+      }
     })
   },
   watch: {
@@ -233,10 +237,11 @@ export default {
      // this.$router.push({name: 'FormaterCatalogue', query:{uuid:event.detail.meta.id, depth: this.metadatas.length}})
     },
     close () {
-      console.log(this.previousRoute)
-      if (this.previousRoute && this.previousRoute.name === 'FormaterCatalogue' ||
-          this.previousRoute === 'Metadata') {
-        this.$router.go(-1)
+      console.log(this.previousRoutes)
+      if (this.previousRoutes.length > 0) {
+        var route = this.previousRoutes.pop() 
+        console.log(route)
+        this.$router.push({name: route.name, params: route.params, query: route.query})
       } else {
         this.$router.push({name: 'FormaterCatalogue'})
       }

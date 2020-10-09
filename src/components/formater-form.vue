@@ -399,8 +399,8 @@ export default {
         params: this.$route.params,
         query: {}
       })
-//       var event = new CustomEvent('fmt:resetEvent')
-//       document.dispatchEvent(event)
+      var event = new CustomEvent('aerisResetEvent')
+      document.dispatchEvent(event)
     },
     handleReset () {
       this.fulltextSearch = ''  

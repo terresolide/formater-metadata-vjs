@@ -20,7 +20,10 @@
 </i18n>
 <template>
  <div class="mtdt-metadata mtdt-capsule" :class="{'fmt-free': depth === -1}">
-   
+    <formater-requester  v-if="depth >= 0 && !describe" :depth="depth"  ></formater-requester>
+      
+      <formater-opensearch v-if="depth >= 0 && describe"  :describe="describe" :uuid="uuid" :depth="depth" @parametersChange="setParameters" @failed="removeDescribe"></formater-opensearch>
+    
    <span v-if="metadata && !metadata.appRoot" class="mtdt-metadata-close fa fa-close" @click="close"></span>
    <div v-if="metadata">
       <h1 class="mtdt-metadata-header" :style="{color:$store.state.style.primary}">
@@ -45,10 +48,7 @@
         <formater-export-links v-if="metadata.exportLinks" :export-links="metadata.exportLinks"></formater-export-links> 
       </div>
       <!--  tab search if have child -->
-       <formater-requester v-if="depth >= 0 && !describe" :depth="depth"  ></formater-requester>
-      
-      <formater-opensearch v-if="depth >= 0 && describe"  :describe="describe" :uuid="uuid" :depth="depth" @parametersChange="setParameters" @failed="removeDescribe"></formater-opensearch>
-      <div  v-if="depth >= 0 " v-show="currentTab === 'search' && hasChild">
+        <div  v-if="depth >= 0 " v-show="currentTab === 'search' && hasChild">
            
            <formater-paging  :uuid="uuid"  :depth="depth" order-by="changeDate" :type="describe ? 'opensearch': 'geonetwork'"></formater-paging>
            <formater-list-metadata :depth="depth" @hasChild="setHasChild"></formater-list-metadata>
@@ -85,7 +85,7 @@
 import FormaterExportLinks from './formater-export-links.vue'
 const FormaterPaging = () => import('./formater-paging.vue')
 const FormaterListMetadata = () => import('./formater-list-metadata.vue')
-const FormaterRequester = () => '@/components/formater-requester.vue'
+const FormaterRequester = () => import('./formater-requester.vue')
 const FormaterOpensearch = () => import('./formater-opensearch.vue')
 // const FormaterService = () => import('./formater-service.vue')
 const FormaterFullMetadata = () => import('./formater-full-metadata.vue')
@@ -159,6 +159,7 @@ export default {
        this.uuid = this.metadata.id
        this.type = 'opensearch'
     }
+    console.log(this.describe)
 
     this.popstateListener = this.close.bind(this)
     document.addEventListener('popstate', this.popstateListener)
