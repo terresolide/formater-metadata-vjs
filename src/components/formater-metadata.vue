@@ -225,6 +225,7 @@ export default {
         this.setHasChild(true)
       },
       setHasChild(value) {
+        console.log(value)
         if (this.depth === -1) {
           return
         }

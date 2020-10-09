@@ -85,11 +85,18 @@ export default {
   created: function() {
     this.updateRecordsPerPage(this.recordByLine)
     if (this.$route && this.$route.query.from && this.$route.query.to) {
-      this.recordPerPage = this.$route.query.to - this.$route.query.from + 1
+      this.recordPerPage = parseInt(this.$route.query.to) - parseInt(this.$route.query.from) + 1
     } else {
       this.recordPerPage = this.$store.state.size.nbRecord
     }
+    if (this.$route.query.from) {
+      this.from = parseInt(this.$route.query.from)
+      this.currentPage = (this.from - 1) / this.recordPerPage + 1
+    }
     this.sortBy = this.orderBy
+    if (this.$route.query.sortBy) {
+      this.sortBy = this.$route.query.sortBy
+    }
     this.metadataListListener = this.receiveTotalRecord.bind(this)
     document.addEventListener('fmt:metadataListEvent', this.metadataListListener)
     this.searchEventListener = this.handleSearch.bind(this) 
@@ -139,6 +146,7 @@ export default {
    receiveTotalRecord (event) {
      console.log(this.depth)
      console.log(event.detail.depth)
+     console.log(event)
      if (event.detail.depth !=  this.depth ){
        return;
      }
@@ -263,7 +271,14 @@ export default {
    },
    emitChange() {
      var to = this.from + this.recordPerPage - 1
-     var event = new CustomEvent('fmt:pageChangedEvent', {detail:{ from: this.from, to: to, sortBy: this.sortBy}})
+     var detail = {
+         from: this.from,
+         to: to
+     }
+     if (this.type === 'geonetwork') {
+       detail.sortBy = this.sortBy
+     }
+     var event = new CustomEvent('fmt:pageChangedEvent', {detail:detail})
      document.dispatchEvent(event)
    }
   }

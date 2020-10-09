@@ -10,12 +10,12 @@
 <div v-for="(item, index) in parameters" class="fmt-input-block fmt-input-group" >
 	<label :style="{color: textColor}">{{item.name}}</label>
 	<formater-select v-if="item.options && item.options.length > 0" :depth="depth" :name="item.name" width="260px" :options="item.options" @input="(event) => {selectChange(item.name, event)}" 
-	:defaut="null" :set-value="$route.query[item.name]"></formater-select>
+	:defaut="null" :set-value="values[item.name]"></formater-select>
 	<div class="fmt-input disable" v-if="item.options && item.options.length === 1" :style="{backgroundColor: inputColor}">
 	 <span>{{item.options[0]}}</span>
 	</div>
 	<div class="fmt-input" v-if="!item.options" :style="{backgroundColor: inputColor}">
-		<input type="text" :name="item.name"  v-model="inputs[item.name]"  :default="$route.query[item.name]" 
+		<input type="text" :name="item.name"  v-model="values[item.name]"  :default="values[item.name]" 
 		:pattern="item.pattern" :title="item.title" :placeholder="item.title"  
 		@change="changeText" @keypress="changeTextOnEnter"></input>
 	</div>
@@ -45,13 +45,18 @@ export default {
       default: 0
     }
   },
+  watch: {
+    $route (newroute) {
+      this.initValues(newroute.query)
+    }
+  },
   data () {
     return {
       inputColor: null,
       textColor: null,
       aerisSearchListener: null,
       aerisResetListener: null,
-      inputs: {}
+      values: {}
     }
   },
   computed: {
@@ -68,16 +73,8 @@ export default {
 //     }
   },
   created () {
-    var _this = this
-    this.parameters.forEach(function (parameter) {
-     if(!parameter.options) {
-       if (_this.$route.query.hasOwnProperty(parameter.name)) {
-         _this.inputs[parameter.name] = _this.$route.query[parameter.name]
-       } else {
-        _this.inputs[parameter.name] = parameter.value ? parameter.value : null
-       }
-      }
-    })
+    this.initValues(this.$route.query)
+    
     console.log(this.$route.params)
     console.log(this.parameters)
     this.textColor = this.$store.state.style.primary
@@ -95,6 +92,20 @@ export default {
     this.aerisResetListener = null
   },
   methods: {
+    initValues (query) {
+      var _this = this
+      this.parameters.forEach(function (parameter) {
+        if(!parameter.options) {
+          if (query.hasOwnProperty(parameter.name)) {
+            _this.values[parameter.name] = query[parameter.name]
+          } else {
+            _this.values[parameter.name] = parameter.value ? parameter.value : null
+          }
+         } else {
+           _this.values[parameter.name] = query[parameter.name] || null
+         }
+       })
+    },
     handleTheme (color) {
       this.inputColor = this.$shadeColor(color, 0.8)
       if ((this.$el) && (this.$el.querySelector)) {
@@ -145,24 +156,24 @@ export default {
         query: query
       })
     },
-    handleSearch (event) {
-      if (this.depth !== event.detail.depth) {
-        return
-      }
-      for(var name in this.inputs) { 
-        if (this.inputs[name] !== null) {
-          event.detail[name] = this.inputs[name]
-        }
-      }
-//       this.parameters.forEach(function (parameter) {
-//         if (!parameter.options && parameter.value) {
-//           event.detail[parameter.name] = parameter.value
+//     handleSearch (event) {
+//       if (this.depth !== event.detail.depth) {
+//         return
+//       }
+//       for(var name in this.inputs) { 
+//         if (this.inputs[name] !== null) {
+//           event.detail[name] = this.inputs[name]
 //         }
-//       })
-    },
+//       }
+// //       this.parameters.forEach(function (parameter) {
+// //         if (!parameter.options && parameter.value) {
+// //           event.detail[parameter.name] = parameter.value
+// //         }
+// //       })
+//     },
      handleReset (event) {
-      for(var name in this.inputs) { 
-        this.inputs[name] = null
+      for(var name in this.values) { 
+        this.values[name] = null
       }
       this.$forceUpdate()
      }

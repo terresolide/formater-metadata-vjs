@@ -108,8 +108,6 @@ export default {
   },
   methods: {
     initParameters () {
-      switch (this.type) {
-      case 'geonetwork':
         this.parameters = {
           _content_type: 'json',
            fast: 'index', // more quick
@@ -123,15 +121,7 @@ export default {
           sortOrder: 'ordering',
           type:'dataset+or+series+or+publication'
          }
-        break;
-        
-      case 'opensearch':
-        this.parameters = {
-          index: 1,
-          maxRecords: 20
-        }
-        break;
-      }
+       
     }, 
     getRecords (event) {
       
@@ -158,22 +148,21 @@ export default {
         
  //     } else {
         this.type = 'geonetwork'
-        this.api = null
 //      }
 
       this.prepareRequest(event)
       this.requestApi(event)
     },
-    prepareRequest (e) {
-      switch (this.type) {
-      case 'geonetwork':
-        this.prepareRequestGeonetwork(e)
-        break;
-      case 'opensearch':
-        this.prepareRequestOpensearch(e)
-        break
-      }
-    },
+//     prepareRequest (e) {
+//       switch (this.type) {
+//       case 'geonetwork':
+//         this.prepareRequestGeonetwork(e)
+//         break;
+//       case 'opensearch':
+//         this.prepareRequestOpensearch(e)
+//         break
+//       }
+//     },
     createGeometry (bbox) {
       var split = bbox.split(',')
       var north = split[3]
@@ -187,7 +176,7 @@ export default {
         box += west + '+' + north + '))';
       return box;
     },
-    prepareRequestGeonetwork(route) {
+    prepareRequest(route) {
       
       this.initParameters()
       
@@ -211,6 +200,7 @@ export default {
 //      // delete e.detail.depth
 //       delete e.detail.recordPerPage
       console.log(route.name)
+     
       if (route.name === 'Metadata') {
        this.parameters.resultType = this.$store.state.summaryType.step2
        this.parameters.parentUuid = route.params.uuid
@@ -231,18 +221,18 @@ export default {
         var _this = this
 
     },
-    prepareRequestOpensearch(e) {
-      this.initParameters()
-       if (e.detail.startDefault) {
-        delete e.detail.start
-      }
-      if (e.detail.endDefault) {
-        delete e.detail.end
-      } 
-      this.mapParameters(e)
-      this.parameters = Object.assign(this.parameters, e.detail)   
+//     prepareRequestOpensearch(e) {
+//       this.initParameters()
+//        if (e.detail.startDefault) {
+//         delete e.detail.start
+//       }
+//       if (e.detail.endDefault) {
+//         delete e.detail.end
+//       } 
+//       this.mapParameters(e)
+//       this.parameters = Object.assign(this.parameters, e.detail)   
 
-    },
+//     },
     searchSimpleMetadata() {
       this.$http.get(this.$store.state.metadata).then(
           response => {  
@@ -256,40 +246,40 @@ export default {
          }
         )
     },
-    mapParameters(e) {
-      // transform the name of parameter from this application to the opensearch api for the predefined parameter
-      // or test if it is an opensearch parameter
-      // paramaters specific to api opensearch
-      var specificParameters = this.$store.state.parameters.others
-      // parameters mapping with our app parameters
-      var mappingParameters = this.$store.state.parameters.mapping
-      for(var name in e.detail){
+//     mapParameters(e) {
+//       // transform the name of parameter from this application to the opensearch api for the predefined parameter
+//       // or test if it is an opensearch parameter
+//       // paramaters specific to api opensearch
+//       var specificParameters = this.$store.state.parameters.others
+//       // parameters mapping with our app parameters
+//       var mappingParameters = this.$store.state.parameters.mapping
+//       for(var name in e.detail){
         
-        if (typeof mappingParameters[name] !== 'undefined') {
-          e.detail.renameProperty(name, mappingParameters[name])
-        } else  {
-          var isSpecific = specificParameters.find(function (obj) {
-            if (obj.name === name) {
-              return true
-            }
-          })
-          if (!isSpecific) {
-            delete e.detail[name]
-          }
-        } 
-      }
-    },
-    requestApi (depth)  {
-        switch (this.type) {
-        case 'geonetwork':
-          this.requestApiGeonetwork(depth)
-          break;
-        case 'opensearch':
-          this.requestApiOpensearch(depth)
-          break;
-        }
-    },
-    requestApiGeonetwork (route) {
+//         if (typeof mappingParameters[name] !== 'undefined') {
+//           e.detail.renameProperty(name, mappingParameters[name])
+//         } else  {
+//           var isSpecific = specificParameters.find(function (obj) {
+//             if (obj.name === name) {
+//               return true
+//             }
+//           })
+//           if (!isSpecific) {
+//             delete e.detail[name]
+//           }
+//         } 
+//       }
+//     },
+//     requestApi (depth)  {
+//         switch (this.type) {
+//         case 'geonetwork':
+//           this.requestApiGeonetwork(depth)
+//           break;
+//         case 'opensearch':
+//           this.requestApiOpensearch(depth)
+//           break;
+//         }
+//     },
+    requestApi (route) {
       if (!this.srv) {
         return
       }
@@ -301,10 +291,12 @@ export default {
           'Accept-Language': this.$store.state.lang === 'fr' ? 'fre': 'eng'
        }
       this.parameters = Object.assign(this.parameters, route.query)
+      this.parameters.renameProperty('start', 'extFrom')
+      this.parameters.renameProperty('end', 'extTo')
 
-      if (this.parameters.bbox) {
-          this.parameters.geometry = this.createGeometry(this.parameters.bbox)
-          delete this.parameters.bbox
+      if (this.parameters.box) {
+          this.parameters.geometry = this.createGeometry(this.parameters.box)
+          delete this.parameters.box
       }
       //first requête to type=me to record session and token
 //       this.$http.get('http://demo.formater/geonetwork/srv/fre/info?type=me', {credentials:true, headers: headers}).then(
@@ -350,24 +342,24 @@ export default {
         response => { this.treatmentGeonetwork(response.body, 0);},
         response => { this.treatmentError(response, url); })
     },
-    requestApiOpensearch (depth) {
-		  if (!this.api) {
-		    this.$store.commit('searchingChange', false)
-		    return
-		  }
-      // var depth = (typeof this.parameters.depth != 'undefined') ? this.parameters.depth : this.depth
-      var self = this
-      var url = this.api + (this.api.indexOf('?') > 0 ? '&' :'?');
-      // register parameters value
-      url += Object.keys(this.parameters).map(function (prop) {
-        return prop + '=' + self.parameters[prop]
-      }).join('&');
-      this.$emit('registerValues', {depth: depth, parameters: this.parameters})
-     // this.$store.commit('addValueToParameters', this.parameters)
-      this.$http.get(url).then(
-          response => {   this.treatmentGeojson(response.body, depth);},
-          response => { this.treatmentError(response, url); })
-    },
+//     requestApiOpensearch (depth) {
+// 		  if (!this.api) {
+// 		    this.$store.commit('searchingChange', false)
+// 		    return
+// 		  }
+//       // var depth = (typeof this.parameters.depth != 'undefined') ? this.parameters.depth : this.depth
+//       var self = this
+//       var url = this.api + (this.api.indexOf('?') > 0 ? '&' :'?');
+//       // register parameters value
+//       url += Object.keys(this.parameters).map(function (prop) {
+//         return prop + '=' + self.parameters[prop]
+//       }).join('&');
+//       this.$emit('registerValues', {depth: depth, parameters: this.parameters})
+//      // this.$store.commit('addValueToParameters', this.parameters)
+//       this.$http.get(url).then(
+//           response => {   this.treatmentGeojson(response.body, depth);},
+//           response => { this.treatmentError(response, url); })
+//     },
     treatmentError (response, url) {
       switch(response.status) {
       case 0:

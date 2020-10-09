@@ -6,7 +6,7 @@
  **/
  
 <template>
-<formater-api-requester v-if="api" :api="api"></formater-api-requester>
+<formater-api-requester v-if="api" :api="api" :depth="depth"></formater-api-requester>
 </template>
 <script>
 import FormaterApiRequester from '@/components/formater-api-requester.vue'

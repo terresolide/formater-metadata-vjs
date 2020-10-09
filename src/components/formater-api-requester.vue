@@ -17,6 +17,10 @@ export default {
     api: {
       type: String,
       default: null
+    },
+    depth: {
+      type: Number,
+      default: 1
     }
   },
   watch: {
@@ -68,49 +72,46 @@ export default {
       
         this.parameters = {
           index: 1,
-          maxRecords: 20
+          maxRecords: this.$store.state.size.nbRecord
         }
     }, 
-    getRecords (event) {
+    getRecords (newroute) {
       
          console.log('GET RECORDS')
      this.$store.commit('searchingChange', true)
 
 
-      this.prepareRequest(event)
+      this.prepareRequest(newroute)
       this.requestApi(event)
     },
-    createGeometry (bbox) {
-      var split = bbox.split(',')
-      var north = split[3]
-      var south = split[1]
-      var east = split[2]
-      var west = split[0]
-      var box = 'POLYGON((' + west + '+' + north + ','
-        box += east + '+' + north + ',';
-        box += east + '+' + south + ',';
-        box += west + '+' + south + ',';
-        box += west + '+' + north + '))';
-      return box;
-    },
-   prepareRequest(e) {
+ 
+   prepareRequest(newroute) {
       this.initParameters()
-      
-      this.mapParameters(e)
-      this.parameters = Object.assign(this.parameters, e.detail)   
+           
+      this.parameters = Object.assign(this.parameters, newroute.query)
+     
+      this.mapParameters()
 
     },
-    mapParameters(e) {
+    mapParameters() {
       // transform the name of parameter from this application to the opensearch api for the predefined parameter
       // or test if it is an opensearch parameter
       // paramaters specific to api opensearch
       var specificParameters = this.$store.state.parameters.others
       // parameters mapping with our app parameters
       var mappingParameters = this.$store.state.parameters.mapping
-      for(var name in e.detail){
+      // change 
+      this.parameters.renameProperty('bbox', mappingParameters['box'])
+      if (this.parameters.from) {
+        this.parameters[mappingParameters['index']] = this.parameters.from
+        if (this.parameters.to) {
+          this.parameters[mappingParameters['maxRecords']] = this.parameters.to - this.parameters.from + 1
+        }
+      }
+      for(var name in this.parameters){
         
         if (typeof mappingParameters[name] !== 'undefined') {
-          e.detail.renameProperty(name, mappingParameters[name])
+          this.parameters.renameProperty(name, mappingParameters[name])
         } else  {
           var isSpecific = specificParameters.find(function (obj) {
             if (obj.name === name) {
@@ -118,7 +119,7 @@ export default {
             }
           })
           if (!isSpecific) {
-            delete e.detail[name]
+            delete this.parameters[name]
           }
         } 
       }
@@ -134,8 +135,7 @@ export default {
       var self = this
       var url = this.api + (this.api.indexOf('?') > 0 ? '&' :'?');
       // register parameters value
-      this.parameters = Object.assign(this.parameters, this.$route.query)
-      url += Object.keys(this.parameters).map(function (prop) {
+       url += Object.keys(this.parameters).map(function (prop) {
         return prop + '=' + self.parameters[prop]
       }).join('&');
       this.$emit('registerValues', {depth: depth, parameters: this.parameters})
@@ -184,56 +184,56 @@ export default {
     },
    
     // remove groupOwner if only one group choose in app parameters
-    treatmentDimension (dimensions) {
-      if (this.$store.state.group.length === 1) {
-        if (!dimensions) {
-          dimensions = []
-        } else if (!Array.isArray(dimensions)) {
-          dimensions = [dimensions]
-        }
-        var find = dimensions.findIndex(function (dimension) {
-          return dimension['@name'] === 'groupOwner'
-        })
-        if (find >= 0) {
-          dimensions.splice(find, 1)
-        }
-      }
-    },
-    searchGnStep2Parameters (dimension) {
-      if (this.first) {
-        // register dimension in store
-        if (this.depth === 0) {
-          this.$store.commit('gnParametersChange', {step:1, dimension: dimension})
-        }
-        // this.$store.commit('gnParametersChange', {step:2, dimension:[]})
-        // search summary for all record (including child dataset) for step 2
-        if (this.$store.state.summaryType.step1 !== this.$store.state.summaryType.step2) {
+//     treatmentDimension (dimensions) {
+//       if (this.$store.state.group.length === 1) {
+//         if (!dimensions) {
+//           dimensions = []
+//         } else if (!Array.isArray(dimensions)) {
+//           dimensions = [dimensions]
+//         }
+//         var find = dimensions.findIndex(function (dimension) {
+//           return dimension['@name'] === 'groupOwner'
+//         })
+//         if (find >= 0) {
+//           dimensions.splice(find, 1)
+//         }
+//       }
+//     },
+//     searchGnStep2Parameters (dimension) {
+//       if (this.first) {
+//         // register dimension in store
+//         if (this.depth === 0) {
+//           this.$store.commit('gnParametersChange', {step:1, dimension: dimension})
+//         }
+//         // this.$store.commit('gnParametersChange', {step:2, dimension:[]})
+//         // search summary for all record (including child dataset) for step 2
+//         if (this.$store.state.summaryType.step1 !== this.$store.state.summaryType.step2) {
           
-          // var depth = (typeof this.parameters.depth != 'undefined') ? this.parameters.depth : this.depth
-          var headers =  {
-              'Accept': 'application/json, text/plain, */*',
-              'Accept-Language': this.$i18n.locale === 'fr' ? 'fre': 'eng'
-           }
-          var parameters = {
-              _content_type: 'json',
-              from:1,
-              to: 9,
-              type: 'dataset+or+series+or+publications',
-              resultType: this.$store.state.summaryType.step2
-          }
-          var url = this.srv + 'q?' + Object.keys(parameters).map(function (prop) {
-            return prop + '=' + parameters[prop]
-          }).join('&');
-          this.$http.get(url, {headers: headers}).then(
-            response => {  this.addGnParameters(response.body);}
-          )
-          this.first = false
-        }
-      }
-    },
-    addGnParameters(data) {
-      this.$store.commit('gnParametersChange', {step:2, dimension:data.summary.dimension})
-    },
+//           // var depth = (typeof this.parameters.depth != 'undefined') ? this.parameters.depth : this.depth
+//           var headers =  {
+//               'Accept': 'application/json, text/plain, */*',
+//               'Accept-Language': this.$i18n.locale === 'fr' ? 'fre': 'eng'
+//            }
+//           var parameters = {
+//               _content_type: 'json',
+//               from:1,
+//               to: 9,
+//               type: 'dataset+or+series+or+publications',
+//               resultType: this.$store.state.summaryType.step2
+//           }
+//           var url = this.srv + 'q?' + Object.keys(parameters).map(function (prop) {
+//             return prop + '=' + parameters[prop]
+//           }).join('&');
+//           this.$http.get(url, {headers: headers}).then(
+//             response => {  this.addGnParameters(response.body);}
+//           )
+//           this.first = false
+//         }
+//       }
+//     },
+//     addGnParameters(data) {
+//       this.$store.commit('gnParametersChange', {step:2, dimension:data.summary.dimension})
+//     },
 //     updateGeonetworkContacts (data) {
 //       data.responsibleParty.forEach( function (contact)  {
 //           var fields = contact.split('|');

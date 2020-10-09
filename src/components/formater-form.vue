@@ -214,15 +214,15 @@ export default {
       } else {
         this.fulltextSearch = newroute.query.any
       }
-      if (!newroute.query.extTo) {
+      if (!newroute.query.end) {
         this.temp.to = null
       } else {
-        this.temp.to = newroute.query.extTo
+        this.temp.to = newroute.query.end
       }
-      if (!newroute.query.extFrom) {
+      if (!newroute.query.start) {
         this.temp.from = null
       } else {
-        this.temp.from = newroute.query.extFrom
+        this.temp.from = newroute.query.start
       }
   
     },
@@ -233,16 +233,16 @@ export default {
       }
       if (event.detail.name === "extto") {
         if (event.detail.value && event.detail.value !== 'Invalid date') {
-          query.extTo = event.detail.value
+          query.end = event.detail.value
         } else {
-          delete query.extTo
+          delete query.send
         }
       } 
       if (event.detail.name === "extfrom") {
          if( event.detail.value && event.detail.value !== 'Invalid date') {
-	        query.extFrom = event.detail.value
+	        query.start = event.detail.value
 	      } else {
-	        delete query.extFrom
+	        delete query.start
 	      }
       }
       this.$router.push({name: this.$route.name, params: this.$route.params, query: query})

@@ -134,8 +134,8 @@ export default {
   },
   methods:{
     initBbox (query) {
-      if (query.bbox) {
-        var split = query.bbox.split(',')
+      if (query.box) {
+        var split = query.box.split(',')
         this.north = split[3]
         this.east = split[2]
         this.south = split[1]
@@ -254,9 +254,9 @@ export default {
 	      this.south = Math.round(e.detail.south * 10000) / 10000;
 	      this.east = Math.round(e.detail.east * 10000) / 10000;
 	      this.west = Math.round(e.detail.west * 10000) / 10000;
-        query.bbox = this.west + ',' + this.south + ',' + this.east + ',' + this.north
+        query.box = this.west + ',' + this.south + ',' + this.east + ',' + this.north
       } else {
-        delete query.bbox
+        delete query.box
       }
       if (this.isFmtMetadata) {
         this.$store.commit('selectAreaChange', e.detail)
