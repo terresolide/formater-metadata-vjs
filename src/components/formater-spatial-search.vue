@@ -228,8 +228,8 @@ export default {
       if (this.isFmtMetadata) {
          this.$store.commit('selectAreaChange', null)
       } 
-      var event = new CustomEvent( 'fmt:bboxChange', { detail: this.bbox()});
-      document.dispatchEvent( event);
+//       var event = new CustomEvent( 'fmt:bboxChange', { detail: this.bbox()});
+//       document.dispatchEvent( event);
     
     },
     handleResetLocal: function () {

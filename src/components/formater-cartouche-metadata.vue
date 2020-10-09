@@ -114,19 +114,14 @@ export default {
     displayMetadata () {
       console.log(this.meta)
       var query = {}
-      var _this = this
-//       ['bbox', 'extFrom', 'extTo' ].forEach(function (prop) {
-//         console.log(prop)
-//         console.log(_this.$route.query)
-// //         if (_this.$route.query[prop] !== 'undefined') {
-// //           query[prop] = _this.$route.query[prop]
-// //         }
-//       })
-     if (this.$route.query.bbox) {
-       query.bbox = this.$route.query.bbox
+     if (this.$route.query.box) {
+       query.box = this.$route.query.box
      }
-      if (this.$route.query.extFrom) {
-        query.extFrom = this.$route.query.extFrom
+      if (this.$route.query.start) {
+        query.start = this.$route.query.start
+      }
+      if (this.$route.query.end) {
+        query.end = this.$route.query.end
       }
       this.$router.push({name:'Metadata', params: {uuid: this.meta.id}, query: query})
 //       var event = new CustomEvent('fmt:metadataEvent', {detail: {meta:this.meta, depth: this.depth } })

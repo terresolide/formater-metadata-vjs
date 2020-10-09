@@ -122,6 +122,7 @@ export default {
     metadata: {
       immediate: true,
       handler (newvalue) {
+        this.setHasChild(false)
         this.computeHasChild(newvalue)
       }
     }
@@ -242,6 +243,7 @@ export default {
             
           // this.getRecords()
         } else {
+          this.currentTab = 'main'
           this.disableType = 'noChild'
         	 // this.$emit('parametersChange', {osParameters: [], mapping: [], type: 'noChild', depth: this.depth})
 

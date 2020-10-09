@@ -63,22 +63,22 @@ export default {
       }
     }
   },
-  watch: {
-    searchArea (newvalue) {
-      this.initBoundsLayer()
-      var bounds = this.getBounds()
-      var bbox = null
-      if (bounds.isValid()) {
-         bbox = {
-           north: bounds.getNorth(),
-           east: bounds.getEast(),
-           west: bounds.getWest(),
-           south: bounds.getSouth()
-         }
-      }
-     // this.selectAreaChange({detail: bbox})
-    }
-  },
+//   watch: {
+//     searchArea (newvalue) {
+//       this.initBoundsLayer()
+//       var bounds = this.getBounds()
+//       var bbox = null
+//       if (bounds.isValid()) {
+//          bbox = {
+//            north: bounds.getNorth(),
+//            east: bounds.getEast(),
+//            west: bounds.getWest(),
+//            south: bounds.getSouth()
+//          }
+//       }
+//      // this.selectAreaChange({detail: bbox})
+//     }
+//  },
   
   created: function() {
     this.$i18n.locale = this.lang
@@ -88,7 +88,6 @@ export default {
 
     // open and close
     this.drawStartListener = this.open.bind(this)
-    document.addEventListener('fmt:selectAreaDrawStart', this.drawStartListener)
     document.addEventListener('fmt:selectAreaDrawStart', this.drawStartListener)
     this.drawEndListener = this.close.bind(this)
     document.addEventListener('fmt:selectAreaDrawEnd', this.drawEndListener)
@@ -168,10 +167,10 @@ export default {
       if (this.boundsLayer) {
         this.boundsLayer.remove()
         this.boundsLayer = null
-        if (this.intersection) {
-          this.intersection.remove()
-          this.intersection = null
-        }
+//         if (this.intersection) {
+//           this.intersection.remove()
+//           this.intersection = null
+//         }
       }
     },
     initBoundsLayer () {
@@ -215,10 +214,11 @@ export default {
         let layer = e.layer
         let bounds = e.layer.getBounds()
         self.bbox = self.drawValidBbox(bounds)
+        self.updateUrl()
       //  self.drawIntersection()
         // trigger event fmt:selectAreaChange
-        let event = new CustomEvent('fmt:selectAreaChange', {detail: self.bbox})
-        document.dispatchEvent(event)
+//         let event = new CustomEvent('fmt:selectAreaChange', {detail: self.bbox})
+//         document.dispatchEvent(event)
       })
     
       this.map.on(L.Draw.Event.EDITED, function (e) {
@@ -227,10 +227,11 @@ export default {
           bounds = layer.getBounds()
         })
          self.bbox = self.drawValidBbox(bounds)
+         self.updateUrl()
         // self.drawIntersection()
         // trigger event fmt:selectAreaChange
-        let event = new CustomEvent('fmt:selectAreaChange', {detail: self.bbox})
-        document.dispatchEvent(event)
+//         let event = new CustomEvent('fmt:selectAreaChange', {detail: self.bbox})
+//         document.dispatchEvent(event)
       })
     
       this.map.on(L.Draw.Event.DELETED , function (e) {
@@ -242,11 +243,29 @@ export default {
         }
         // self.bbox is null
         self.bbox = self.drawValidBbox(null)
+        self.updateUrl()
        // self.drawIntersection()
         // trigger event fmt:selectAreaChange
-        let event = new CustomEvent('fmt:selectAreaChange', {detail: returnedBbox})
-        document.dispatchEvent(event)
+//         let event = new CustomEvent('fmt:selectAreaChange', {detail: returnedBbox})
+//         document.dispatchEvent(event)
       })
+    },
+    updateUrl() {
+      var query = {}
+      for (var prop in this.$route.query) {
+        query[prop] = this.$route.query[prop]
+      }
+      if (this.bbox && this.bbox.west) {
+        for(var key in this.bbox) {
+          this.bbox[key] = Math.round(this.bbox[key] * 10000) / 10000
+        }
+        query.box = this.bbox.west + ',' + this.bbox.south + ',' + this.bbox.east + ',' + this.bbox.north
+        
+      } else {
+        delete query.bbox
+      }
+       this.$router.push({name: this.$route.name, params: this.$route.params, query: query})
+
     },
     initMap () {
       if (this.map) {
@@ -305,24 +324,24 @@ export default {
         this.bbox = this.drawValidBbox(bounds)
         // this.drawIntersection()
     
-        let e = new CustomEvent('fmt:selectAreaChange', {detail: this.bbox})
-        document.dispatchEvent(e)
-      } else {
-        this.drawLayers.clearLayers()
-        this.bbox = null
-      }
-      if (!bounds) {
-      	if (this.searchArea) {
-      	  var bounds = this.boundsLayer.getBounds()
-      	} else if (this.$store){
-      	  var bounds = L.latLngBounds(this.$store.state.spatialExtent)
-      	} else {
-      	  var bounds = this.defaultBounds
-      	}
-      } else if (this.searchArea && this.boundsLayer) {
-        bounds.extend(this.boundsLayer.getBounds())
-      }
-      this.map.fitBounds(bounds, {padding: [20, 20]})
+//         let e = new CustomEvent('fmt:selectAreaChange', {detail: this.bbox})
+//         document.dispatchEvent(e)
+	      } else {
+	        this.drawLayers.clearLayers()
+	        this.bbox = null
+	      }
+	      if (!bounds) {
+	      	if (this.searchArea) {
+	      	  var bounds = this.boundsLayer.getBounds()
+	      	} else if (this.$store){
+	      	  var bounds = L.latLngBounds(this.$store.state.spatialExtent)
+	      	} else {
+	      	  var bounds = this.defaultBounds
+	      	}
+	      } else if (this.searchArea && this.boundsLayer) {
+	        bounds.extend(this.boundsLayer.getBounds())
+	      }
+	      this.map.fitBounds(bounds, {padding: [20, 20]})
 //       if (this.intersection) {
 //         this.map.fitBounds(this.intersection.getBounds(), {padding: [30,30]})
 //       } else if( this.drawLayers.getLayers().length > 0 && !this.searchArea) {
@@ -386,11 +405,12 @@ export default {
       // draw or redraw if bbox change
       var bounds = [[bbox.south, bbox.west], [bbox.north, bbox.east]]
       var rectangle = L.rectangle(bounds, {color: '#ff0000'})
+      this.drawLayers.clearLayers()
       this.drawLayers.addLayer(rectangle)
       bounds = this.drawLayers.getBounds()
-      if (this.searchArea) {
-        bounds.extend(this.boundsLayer.getBounds())
-      }
+//       if (this.searchArea) {
+//         bounds.extend(this.boundsLayer.getBounds())
+//       }
       this.map.fitBounds(bounds, {padding: [20, 20]})
       return bbox;
     },

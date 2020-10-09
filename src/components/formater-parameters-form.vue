@@ -46,10 +46,11 @@ export default {
     }
   },
   watch: {
-//     $route (newroute) {
-//       this.initValues(newroute.query)
-//       this.$forceUpdate()
-//     }
+    $route (newroute) {
+      this.initValues(newroute.query)
+      console.log('PARAMETER FORM ROUTE CHANGE')
+      this.$forceUpdate()
+    }
   },
   data () {
     return {
@@ -75,9 +76,6 @@ export default {
   },
   created () {
     this.initValues(this.$route.query)
-    
-    console.log(this.$route.params)
-    console.log(this.parameters)
     this.textColor = this.$store.state.style.primary
     this.handleTheme(this.$store.state.style.emphasis)
 //   	this.aerisSearchListener = this.handleSearch.bind(this)
@@ -98,12 +96,12 @@ export default {
       this.parameters.forEach(function (parameter) {
         if(!parameter.options) {
           if (query.hasOwnProperty(parameter.name)) {
-            _this.values[parameter.name] = query[parameter.name]
+            _this.$set(_this.values, parameter.name, query[parameter.name])
           } else {
-            _this.values[parameter.name] = parameter.value ? parameter.value : null
+            _this.$set(_this.values, parameter.name, parameter.value || null)   
           }
          } else {
-           _this.values[parameter.name] = query[parameter.name] || null
+           _this.$set(_this.values, parameter.name, query[parameter.name] || '---') 
          }
        })
     },
