@@ -372,7 +372,6 @@ export default {
 //       return this.type
 //    },
    receiveMetadata(event) {
-     console.log(event)
      if (event.detail && event.detail.meta  && event.detail.feature) {
 //        if (event.detail.meta.geoBox) {
 // 	       var box = event.detail.meta.geoBox.split('|')
@@ -387,6 +386,7 @@ export default {
        this.bounds[1] = bounds
        // @todo passer cette variable comme local ? utilité
        // this.$store.commit('setDefaultSpatialExtent', bounds)
+     
        this.map.fitBounds(bounds)
         // this.selectBbox(event)
      }
@@ -658,7 +658,7 @@ export default {
      // layer.setStyle(this.selectedOptions)
    },
    handleReset (event) {
-     this.depth = event.detail.depth
+     // this.depth = event.detail.depth
      // this.unselectBbox()
      for (var i in this.bboxLayer){
        this.bboxLayer[i].remove()

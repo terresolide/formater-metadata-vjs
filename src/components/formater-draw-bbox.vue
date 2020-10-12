@@ -307,7 +307,6 @@ export default {
         return
       }
       var bbox = event.detail
-      console.log(bbox)
       var bounds = L.latLngBounds(this.$store.state.spatialExtent)
       if (bbox && bbox.north !== "" && bbox.south !== "" && bbox.east !== "" && bbox.west !== "") {
         for(var key in bbox){

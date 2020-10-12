@@ -21,7 +21,6 @@ export default {
   },
   watch: {
     $route (newroute, old) {
-      console.log(newroute)
       this.getRecords(newroute)
       
     }
@@ -55,7 +54,6 @@ export default {
     if (this.$store.state.geonetwork) {
         this.srv = this.$store.state.geonetwork +  'srv/' + (this.$i18n.locale === 'fr'? 'fre' : 'eng') + '/'
     }
-    console.log('CREATE FORMATER REQUESTER')
     this.getRecords(this.$route)
     
 
@@ -125,7 +123,6 @@ export default {
     }, 
     getRecords (event) {
       
-         console.log('GET RECORDS')
 //       if (this.$store.state.metadata && this.first) {
 //         this.first = false
 //         this.searchSimpleMetadata()
@@ -199,7 +196,6 @@ export default {
 
 //      // delete e.detail.depth
 //       delete e.detail.recordPerPage
-      console.log(route.name)
      
       if (route.name === 'Metadata') {
        this.parameters.resultType = this.$store.state.summaryType.step2
@@ -332,7 +328,6 @@ export default {
         delete this.parameters.sortOrder
         // this.parameters.sortOrder = 'reverse'
       }
-      console.log(this.parameters)
       // this.$router.push({name: 'FormaterCatalogue', query:this.parameters})
       // this.parameters.sortOrder =  this.parameters.sortBy === 'title' ? 'ordering': 'reverse';
       var url = this.srv + 'q?' + Object.keys(this.parameters).map(function (prop) {
@@ -632,7 +627,6 @@ export default {
 //     },
     fill (data, depth) {
       data.depth = this.depth
-      console.log('DISPATHC mt:metadataListEvent')
       var event = new CustomEvent('fmt:metadataListEvent', {detail:  data})
       document.dispatchEvent(event)
     },

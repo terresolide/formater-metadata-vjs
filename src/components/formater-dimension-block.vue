@@ -52,7 +52,6 @@ export default {
   },
   watch:{
     dimension (newvalue) {
-      console.log(newvalue)
       this.fill()
     }
   },

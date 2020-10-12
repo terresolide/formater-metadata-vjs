@@ -101,17 +101,16 @@ export default {
       previousRoutes: []
     }
   },
-  beforeRouteEnter(to, from, next) {
-    next(vm => {
-      console.log('BEFORE ROUTE ENTER')
-      if (from.params.uuid !== to.params.uuid) {
-        vm.previousRoutes.push(from)
-      }
-    })
-  },
   watch: {
     $route (newroute, old) {
+//       if (old.params.uuid !== newroute.params.uuid) {
+//         this.previousRoutes.push(old)
+//       }
       this.uuid = newroute.params.uuid
+      var previous = this.$store.getters['previousRoute']
+      if (previous.params.uuid === this.uuid) {
+        this.$store.commit('backChild')
+      }
       this.getMetadata()
     }
   },
@@ -186,11 +185,9 @@ export default {
         response => { console.log(response.body)})
     },
     treatmentMeta(data) {
-      console.log(data)
       this.metadata = this.$gn.treatmentMetadata(data.metadata ,this.uuid)
-      console.log(this.metadata)
       var feature = this.$gn.extractBbox(data.metadata.geoBox, this.uuid)
-       var event = new CustomEvent('fmt:metadataEvent', {detail:  {meta: this.metadata, feature:feature}})
+      var event = new CustomEvent('fmt:metadataEvent', {detail:  {meta: this.metadata, feature:feature}})
       document.dispatchEvent(event)
     },
     initTemporalExtent () {
@@ -237,15 +234,10 @@ export default {
      // this.$router.push({name: 'FormaterCatalogue', query:{uuid:event.detail.meta.id, depth: this.metadatas.length}})
     },
     close () {
-      console.log(this.previousRoutes)
-      if (this.previousRoutes.length > 0) {
-        var route = this.previousRoutes.pop() 
-        console.log(route)
+      var route = this.$store.getters['previousRoute'] 
         this.$router.push({name: route.name, params: route.params, query: route.query})
-      } else {
-        this.$router.push({name: 'FormaterCatalogue'})
-      }
-      // 
+        this.$store.commit('services/resetCurrent')
+        this.$store.commit('backChild')
     },
     back () {
       //e.preventDefault()

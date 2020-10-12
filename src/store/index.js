@@ -130,7 +130,8 @@ export default function makeStore( config ) {
       },
       searching: false,
       error: null,
-      selectedMetadata: null
+      selectedMetadata: null,
+      previousRoutes: []
   }
   var finalConfig = Object.assign(defaultConfig, config)
   return new Vuex.Store( {
@@ -234,16 +235,20 @@ export default function makeStore( config ) {
           }
         })
       },
+      newRoute (state, route) {
+        this.state.previousRoutes.push(route)
+      },
+      backChild (state) {
+        this.state.previousRoutes.pop()
+      },
       sizeChange(state, appWidth) {
         var width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
         width = Math.min(appWidth, width)
         width -= 330
-        console.log(width)
         var count = parseInt(width/334)
         state.size.capsuleWidth = parseInt(width / count - 10)
         state.size.recordByLine = count
         state.size.nbRecord = count * state.size.nbLine
-        console.log(state.size)
       },
       currentUuidChange(state, id) {
         state.currentUuid = id
@@ -265,6 +270,13 @@ export default function makeStore( config ) {
       }
     },
     getters: {
+      previousRoute (state, getters) {
+        if (state.previousRoutes.length > 0) {
+        return state.previousRoutes[state.previousRoutes.length - 1]
+        } else {
+          return {name: 'FormaterCatalogue', params: {}, query: {}}
+        }
+      },
     },
     modules: {
       user: user,

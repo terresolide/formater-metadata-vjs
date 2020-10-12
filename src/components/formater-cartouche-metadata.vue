@@ -96,7 +96,6 @@ export default {
     }
   },
   created () {
-
    moment.locale(this.$i18n.locale)
    this.meta = this.metadata
    if (!this.meta.treatment) {
@@ -107,23 +106,24 @@ export default {
      this.hasBboxLayer = true
    }
   },
-  mounted () {
-    console.log(this.width)
-  },
   methods: {
     displayMetadata () {
-      console.log(this.meta)
-      var query = {}
-     if (this.$route.query.box) {
-       query.box = this.$route.query.box
-     }
-      if (this.$route.query.start) {
-        query.start = this.$route.query.start
+      if (this.type === 'geonetwork') {
+	      var query = {}
+	      if (this.$route.query.box) {
+	       query.box = this.$route.query.box
+	      }
+	      if (this.$route.query.start) {
+	        query.start = this.$route.query.start
+	      }
+	      if (this.$route.query.end) {
+	        query.end = this.$route.query.end
+	      }
+	      this.$store.commit('newRoute', this.$route)
+        this.$router.push({name:'Metadata', params: {uuid: this.meta.id}, query: query})
+      } else {
+        this.$store.commit('selectMetadata', this.meta)
       }
-      if (this.$route.query.end) {
-        query.end = this.$route.query.end
-      }
-      this.$router.push({name:'Metadata', params: {uuid: this.meta.id}, query: query})
 //       var event = new CustomEvent('fmt:metadataEvent', {detail: {meta:this.meta, depth: this.depth } })
 //       document.dispatchEvent(event)
     }

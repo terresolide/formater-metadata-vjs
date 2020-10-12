@@ -46,7 +46,6 @@ export default {
   },
   methods: {
 	selectPlatform (index) {
-		console.log(this.platforms[index])
 		this.$store.commit('selectMetadata', this.platforms[index])
 	},
 	completePlatforms ()  {

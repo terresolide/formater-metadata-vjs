@@ -291,8 +291,6 @@ export default {
 //     },
 
     fill (e) {
-      console.log(this.$route)
-      console.log('receive fill')
       if (!e.detail.summary) {
         this.first = false
         return

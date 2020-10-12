@@ -81,7 +81,9 @@
         <hr v-if="type === 'metadata'" /> 
     </div>
     <div v-if="download && download.length === 1 && type === 'cartouche'">
-       <a v-if="download[0].type && download[0].type === 'WWW:DOWNLOAD-1.0-link--download'" :href="download[0].url" target="_blank" :style="{backgroundColor: primary}" class="mtdt-related-type fa fa-download" :title="$t('download_data')">
+       <a v-if="download[0].type && download[0].type === 'WWW:DOWNLOAD-1.0-link--download'"
+        :href="download[0].url" target="_blank" :style="{backgroundColor: primary}" 
+        class="mtdt-related-type fa fa-download" :title="$t('download_data')">
        </a>
                
        <a v-else-if="token && token !== -1" class="mtdt-related-type fa fa-download" 
@@ -89,12 +91,15 @@
        :style="{backgroundColor: primary}" :title="$t('download_data')">
          
       </a> 
-        <a v-else class="mtdt-related-type fa fa-download" :class="{disabled:download[0].disabled || !token}" :style="{backgroundColor: primary}" :title="$t('download_data')" @click="triggerDownload(0)">
+        <a v-else class="mtdt-related-type fa fa-download" 
+        :class="{disabled:download[0].disabled || !token}" :style="{backgroundColor: primary}" 
+        :title="$t('download_data')" @click="triggerDownload(0)">
          
       </a> 
     </div>
     <div v-if="download && (download.length >1 || (type === 'metadata' && download.length > 0))">
-       <div class="mtdt-related-type fa fa-download" :class="{disabled: !token}" :style="{backgroundColor: primary}" :title="$t('download_data')">
+       <div class="mtdt-related-type fa fa-download" :class="{disabled: !token}" :style="{backgroundColor: primary}" 
+       :title="$t('download_data')">
          <span v-if="type === 'cartouche'" class="fa fa-caret-down"></span>
       </div> 
       <div v-if="type === 'metadata'"></div>

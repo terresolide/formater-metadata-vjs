@@ -51,7 +51,7 @@
         <div  v-if="depth >= 0 " v-show="currentTab === 'search' && hasChild">
            
            <formater-paging  :uuid="uuid"  :depth="depth" order-by="changeDate" :type="describe ? 'opensearch': 'geonetwork'"></formater-paging>
-           <formater-list-metadata :depth="depth" @hasChild="setHasChild"></formater-list-metadata>
+           <formater-list-metadata :depth="depth"  @hasChild="setHasChild"></formater-list-metadata>
       </div>
       <!--  others tab -->
       <div v-if="currentTab === 'main'" style="margin-top:20px;">
@@ -160,7 +160,6 @@ export default {
        this.uuid = this.metadata.id
        this.type = 'opensearch'
     }
-    console.log(this.describe)
 
     this.popstateListener = this.close.bind(this)
     document.addEventListener('popstate', this.popstateListener)
@@ -227,7 +226,6 @@ export default {
         this.setHasChild(true)
       },
       setHasChild(value) {
-        console.log(value)
         if (this.depth === -1) {
           return
         }

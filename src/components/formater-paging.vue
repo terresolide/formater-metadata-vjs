@@ -144,12 +144,9 @@ export default {
   
   methods: {
    receiveTotalRecord (event) {
-     console.log(this.depth)
-     console.log(event.detail.depth)
-     console.log(event)
-     if (event.detail.depth !=  this.depth ){
-       return;
-     }
+//      if (event.detail.depth !=  this.depth ){
+//        return;
+//      }
      if (!event.detail.metadata) {
        this.count = 0
        this.from = 1
