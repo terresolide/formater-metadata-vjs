@@ -133,6 +133,7 @@ export default {
       state.refreshToken = tokens.refresh_token
       var obj = jwt_decode(tokens.id_token)
       if (obj.nonce === state.nonce) {
+        console.log(obj)
         state.user = {
             email: obj.email,
             username: obj.preferred_username,

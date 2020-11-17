@@ -22,7 +22,7 @@
  <div class="mtdt-metadata mtdt-capsule" :class="{'fmt-free': depth === -1}">
     <formater-requester  v-if="depth >= 0 && !describe" :depth="depth"  ></formater-requester>
       
-      <formater-opensearch v-if="depth >= 0 && describe"  :describe="describe" :uuid="uuid" :depth="depth" @parametersChange="setParameters" @failed="removeDescribe"></formater-opensearch>
+      <formater-opensearch v-if="depth >= 0 && describe"  :service="service" :describe="describe" :uuid="uuid" :depth="depth" @parametersChange="setParameters" @failed="removeDescribe"></formater-opensearch>
     
    <span v-if="metadata && !metadata.appRoot" class="mtdt-metadata-close fa fa-close" @click="close"></span>
    <div v-if="metadata">
@@ -145,6 +145,7 @@ export default {
      keydownListener: null,
      describe: null,
      serviceId: -1,
+     service: null,
      type: 'geonetwork',
      aerisSearchListener: null,
      aerisResetListener: null
@@ -219,6 +220,8 @@ export default {
           var url = new URL(osParameters.api)
     	    this.$store.commit('services/add', {domain: url.hostname, api: osParameters.api})
     	    this.serviceId = this.$store.getters['services/current']
+          this.service = this.$store.getters['services/byId'](this.serviceId)
+          console.log(this.service)
         }
         this.disableType =  this.describe ? 'opensearch' : 'geonetwork'
         this.$emit('parametersChange', {osParameters: this.osParameters, mapping: this.mapping, type: this.disableType, depth: this.depth})

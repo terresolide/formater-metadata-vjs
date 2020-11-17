@@ -17,10 +17,10 @@ export default {
    current (state, getters) {
      return state.current
    },
-   byDomain (state, getters, domain) {
+   byDomain: (state) => (domain) => {
      return state.services.find(obj => obj.domain === domain)
    },
-   byId (state, getters, id) {
+   byId: (state) => (id) => {
      return state.services[id]
    },
    getToken: (state) => (domain) => {

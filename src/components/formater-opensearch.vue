@@ -30,6 +30,10 @@ export default {
     depth: {
       type: Number,
       default: null
+    },
+    service: {
+      type: Object,
+      default: null
     }
   },
   created () {
@@ -97,7 +101,11 @@ export default {
         case 'relativeOrbitNumber':
           obj.title = obj.title || 'Ex: 123'
           break;
-        
+        case 'processingLevel':
+          if (this.service && this.service.type === 'resto2') {
+             return;
+          }
+          break;
       }
       
       var pattern = parameterNode.getAttribute('pattern')

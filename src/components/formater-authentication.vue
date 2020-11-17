@@ -43,10 +43,6 @@ export default {
     FormaterService
   },
   props: {
-    api: {
-      type: String,
-      default: null
-    }
   },
   computed: {
     email () {
@@ -117,6 +113,9 @@ export default {
      } else if (e.data === 'logout') {
        this.resetUser()
      }
+   },
+   getUserRoles () {
+     // https://sso.aeris-data.fr/auth/realms/test/protocol/openid-connect/userinfo?schema=openid
    },
    getTokens () {
      if (this.$store.getters['user/code']) {
