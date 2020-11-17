@@ -36,6 +36,14 @@ export default {
       default: null
     }
   },
+  watch: {
+    service (newvalue) {
+      if (newvalue.domain.indexOf('flatsim') >= 0) {
+        this.osParameters = this.osParameters.filter(param => param.name !== 'processingLevel')
+        this.$emit('parametersChange', {api: this.api, parameters:this.osParameters, mapping: this.mappingParameters})
+      }
+    }
+  },
   created () {
     // this.searchEventListener = this.handleSearch.bind(this) 
   	// document.addEventListener('aerisSearchEvent', this.searchEventListener);
@@ -102,7 +110,6 @@ export default {
 //           obj.title = obj.title || 'Ex: 123'
 //           break;
         case 'processingLevel':
-          console.log(this.service.domain)
           if (this.service && this.service.domain.indexOf('flatsim')>= 0) {
              return;
           }
