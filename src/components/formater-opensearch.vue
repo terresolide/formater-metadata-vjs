@@ -98,11 +98,12 @@ export default {
       }
       // particular cas
       switch(name) {
-        case 'relativeOrbitNumber':
-          obj.title = obj.title || 'Ex: 123'
-          break;
+//         case 'relativeOrbitNumber':
+//           obj.title = obj.title || 'Ex: 123'
+//           break;
         case 'processingLevel':
-          if (this.service && this.service.type === 'resto2') {
+          console.log(this.service.domain)
+          if (this.service && this.service.domain.indexOf('flatsim')>= 0) {
              return;
           }
           break;
