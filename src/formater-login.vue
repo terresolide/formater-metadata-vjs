@@ -21,7 +21,7 @@
         )
       }
 
-      window.close()
+    //  window.close()
     }
   }
   </script>

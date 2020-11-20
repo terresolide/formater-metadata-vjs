@@ -203,7 +203,13 @@ export default {
           'Accept': 'application.json'
          }
       })
-      .then(resp => this.setToken(resp.body), resp => {this.searching = false})
+      .then(
+         resp => this.setToken(resp.body), 
+         resp => {
+           alert('xxx')
+           this.searching = false
+         }
+      )
     },
     setToken (data) {
       this.searching = false

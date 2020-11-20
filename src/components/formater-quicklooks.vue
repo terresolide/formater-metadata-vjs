@@ -50,6 +50,7 @@ export default {
    max-height:296px;
    line-height:180px;
    margin:auto;
+   padding:0;
    width: 340px;
 }
 .mtdt-quicklooks div.wrapper > div{

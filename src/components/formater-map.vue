@@ -580,7 +580,6 @@ export default {
      // } 
      this.controlLayer.setBboxLayer(this.bboxLayer)
      this.seeAllLayers()
-     console.log('depth = ', this.depth)
      if (this.bounds) {
        this.map.fitBounds(this.bounds[this.depth])
      }
@@ -588,7 +587,6 @@ export default {
    searchBboxBoundsById (id) {
      var self = this
      var bounds = null
-     console.log('depth = ', this.depth)
      this.bboxLayer.eachLayer(function(layer) {
        if (layer.options.id === id || (layer.feature && layer.feature.id === id)) {
          var bds = layer.getBounds()
@@ -604,8 +602,8 @@ export default {
    },
    findBboxById (id) {
      var bboxLayer = L.layerGroup()
-     if (this.bboxLayer[this.depth]) {
-        this.bboxLayer[this.depth].eachLayer(function(layer) {
+     if (this.bboxLayer) {
+        this.bboxLayer.eachLayer(function(layer) {
           if (layer.options.id === id || (layer.feature && layer.feature.id === id)) {
             bboxLayer.addLayer(layer)
             // self.setSelected(layer)

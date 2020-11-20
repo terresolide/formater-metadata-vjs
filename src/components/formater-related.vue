@@ -543,7 +543,19 @@
 .mtdt-related-metadata .mtdt-links.mtdt-expand{
   display:block;
 }
-
+.mtdt-links a {
+  padding: 1px 3px;
+  cursor:pointer;
+  display: inline-block;
+  width: 100%;
+}
+.mtdt-links a:hover {
+  background: darkred;
+  color:white;
+}
+.mtdt-layers li:hover {
+  color: darkred;
+}
 .mtdt-related-cartouche .mtdt-related-type + .mtdt-expand{
     display:none;
     position:absolute;
@@ -629,12 +641,15 @@ max-width:92%;
    vertical-align:top;
    word-break: break-all;
 }
+ .mtdt-related-cartouche ul.mtdt-layers li i.fa {
+   margin-right: 3px;
+ }
  .mtdt-related-cartouche ul.mtdt-layers li div{
 
     text-overflow: clip;
     margin:0;
     padding:0;
-    width: calc(100% - 32px);
+    width: calc(100% - 35px);
     overflow: hidden;
     word-break: break-all;
     vertical-align: top;

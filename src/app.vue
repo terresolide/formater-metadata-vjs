@@ -94,12 +94,35 @@ export default {
 <style src="formater-commons-components-vjs/src/assets/css/formater-icon.css"></style>
 
 <style>
+
 .mtdt-app {
   margin:auto;
-  font-family: "Roboto", Arial, sans-serif;
+  font-family: inherit;
   font-size: 16px;
+}
+.mtdt-app strong {
+  font-family: inherit;
+}
+.mtdt-app a:hover{
+  background:none;
+}
+.mtdt-app div, 
+.mtdt-app span {
+  letter-spacing:0px;
+  box-sizing: content-box;
+} 
+.mtdt-app a,
+.mtdt-app p,
+.mtdt-app em,
+.mtdt-app dl,
+.mtdt-app dd,
+.mtdt-app strong,
+.mtdt-app th,
+.mtdt-app td {
   letter-spacing:0px;
 }
+/* h1, h2, h3, h4, h5, h6, p, em, img, strong, b, u, i, dl, dt, dd, ol, ul, li, form, label, legend, table, tbody, tfoot, thead, tr, th, td
+*/
 .mtdt-app div[id="page"] {
   padding:0;
 }
@@ -134,7 +157,6 @@ export default {
   position:relative;
 }
 .mtdt-catalogue{
-  font-family: "Times New Roman", Times, serif;
   color: #000000;
   font-size: 15px;
   line-height: 16px;
@@ -149,9 +171,10 @@ export default {
   .mtdt-catalogue h2,
   .mtdt-catalogue h3  {
     border:none;
-    font-family: "Times New Roman", Times, serif;
+    font-family: inherit;
     font-weight:700;
     color: inherit;
+    text-transform:none;
   }
   .mtdt-catalogue h4,
   .mtdt-catalogue h5 {

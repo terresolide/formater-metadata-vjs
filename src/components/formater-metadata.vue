@@ -291,6 +291,9 @@ export default {
   overflow: hidden;
  
 }
+.mtdt-metadata h1 {
+  margin: 15px 0;
+}
 .mtdt-metadata.fmt-free{
   background: #f6f6f6;
   border-color:black;
@@ -320,8 +323,14 @@ export default {
 }
 .mtdt-metadata h1.mtdt-metadata-header div{
   float:left;
-  max-width:calc(100% - 150px);
+  max-width:calc(100% - 140px);
   display:inline-block;
+  margin-bottom:10px;
+  line-height:1em;
+  word-break:break-word;
+}
+.mtdt-metadata.fmt-free h1.mtdt-metadata-header div {
+  max-width: calc(100% - 50px);
 }
 .mtdt-metadata h1.mtdt-metadata-header i.fa{
   float:left;
