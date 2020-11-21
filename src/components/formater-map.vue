@@ -91,7 +91,7 @@ export default {
      removeLayerListener: null,
      bboxLayer: null,
      layers: new Map(),
-     selected: [], // selected bbox
+     single: {bbox: null, layers: [], bounds: null}, // selected bbox
      // bounds of all records display for a depth
      bounds: null,
      // bounds for the displayed record
@@ -192,6 +192,7 @@ export default {
      var layer = event.detail.layer
      var metaId = event.detail.id
      var token = event.detail.token
+     var zoom = event.detail.zoom
      var bounds = this.searchBboxBoundsById(metaId)
      var newLayer = null
      switch (layer.type) {
@@ -199,7 +200,7 @@ export default {
      case 'OGC:WMS':
        var regex = new RegExp(/GetCapabilities/i)
        if (regex.test(layer.href)) {
-         this.beforeAddWMS(layer, metaId)
+         this.beforeAddWMS(layer, metaId, zoom)
          return
        }
        if (!layer.options) {
@@ -217,7 +218,7 @@ export default {
            layer.options._bearer = token
          }
        }
-       this.addWMSLayer(layer, metaId)
+       this.addWMSLayer(layer, metaId, zoom)
        break;
      case 'XXX':
        var extract = layer.href.match(/^(.*\?).*$/)
@@ -252,7 +253,7 @@ export default {
              const parser = new DOMParser();
              const kml = parser.parseFromString(response.body, 'text/xml');
              var newLayer = new L.KML(kml)
-             this.addLayerToMap(layer.id, metaId, newLayer)
+             this.addLayerToMap(layer.id, metaId, newLayer, zoom)
            }
        )
        break;
@@ -265,7 +266,7 @@ export default {
              const parser = new DOMParser();
              const kml = parser.parseFromString(response.body, 'text/xml');
              var newLayer = new L.KML(kml)
-             this.addLayerToMap(layer.id, metaId, newLayer)
+             this.addLayerToMap(layer.id, metaId, newLayer, zoom)
            }
        )
        break;
@@ -276,24 +277,25 @@ export default {
      }
      
    },
-   beforeAddWMS (layer, metaId) {
-     this.reader.loadInfo(layer, {opacity:0.5} , metaId, this.addWMSLayer)
+   beforeAddWMS (layer, metaId, zoom) {
+     this.reader.loadInfo(layer, {opacity:0.5, zoom: zoom} , metaId, this.addWMSLayer)
    },
-   addWMSLayer(layerObj, metaId) {
+   addWMSLayer(layerObj, metaId, zoom) {
      // add bearer if necessary
      // layerObj.options._bearer = 'mon bearer'
      var newLayer = L.tileLayer.wms(layerObj.href, layerObj.options)
-     this.addLayerToMap(layerObj.options.id, metaId, newLayer)
+     this.addLayerToMap(layerObj.options.id, metaId, newLayer, zoom)
      // Add legend if there is specific legend with the layer
      if (layerObj.options.legend && layerObj.id.indexOf(this.$store.state.currentUuid) >= 0) {
        this.legendControl.addLegend(this.$store.state.currentUuid, layerObj.id, layerObj.options.legend.src)
      }
    },
-   addLayerToMap(id, groupId, newLayer) {
+   addLayerToMap(id, groupId, newLayer, zoom) {
      console.log(id)
      if (newLayer) {
        newLayer.addTo(this.map)
        newLayer.bringToFront()
+       this.$store.commit('layers/addLayer', id)
 //        if (!this.layers[this.depth]) {
 //          this.layers[this.depth] = new Map()
 //        }
@@ -302,16 +304,16 @@ export default {
        if (newLayer._kml) {
          bounds = newLayer.getBounds()
        }
-       if( bounds ) { 
+       if( bounds && zoom) { 
          this.map.fitBounds(bounds, {animate: true,  padding: [30,30]})
        }
      }
-     console.log(this.layers)
    },
    removeLayer (event) {
      var layer = this.layers.get(event.detail.id)
      if (layer) {
        layer.remove()
+       this.$store.commit('layers/removeLayer', event.detail.id)
        if (layer.options.legend) {
          // remove legend attached to one layer (not legend attached to metadata)
          this.legendControl.removeLegend(event.detail.id)
@@ -319,8 +321,8 @@ export default {
      }
      this.layers.delete(event.detail.id)
    },
+   // @todo remove
    seeOnlyCurrent(currentId) {
-     var depth = this.depth
      var bounds = this.selectBboxById(currentId)
      if (bounds) {
        this.controlLayer.setBboxLayer(L.rectangle(bounds, this.currentOptions))
@@ -372,14 +374,58 @@ export default {
 //       }
 //       return this.type
 //    },
+   receiveSingleMeta (event) {
+     console.log('RECEIVE SINGLE METADATA')
+     // HIDE GLOBAL BBOX AND LAYERS
+       this.hideBboxLayers()
+       this.hideLayers()
+     // SHOW SINGLE BBOX 
+      console.log(event)
+       if (event.detail.meta.geoBox) {
+         this.single.bbox = L.polygon(
+             this.$gn.bboxString2Array(event.detail.meta.geoBox),
+             {style: this.getOptionsLayer()}
+         )
+         this.single.bounds = this.single.bbox.getBounds()
+//          this.single.bbox.addTo(this.map)
+//          console.log(this.single.bbox)
+       } else if (event.detail.meta.id) {
+         // this.single.bbox = L.geoJSON(event.detail.feature, {style:this.getOptionsLayer()}) 
+         this.single.bbox = this.findBboxById(event.detail.meta.id)
+         var bounds = null
+         this.single.bbox.eachLayer(function (layer) {
+           if (!bounds) {
+             bounds = layer.getBounds()
+           } else {
+             bounds.extend(layer.getBounds())
+           }
+         })
+         this.single.bounds = bounds
+       }
+       
+       this.single.bbox.addTo(this.map)
+       this.map.fitBounds(this.single.bounds)
+   },
    receiveMetadata(event) {
   
      console.log('receive lonely metadata')
+     // case selectMeta in same page depth === 2
+     // hide bboxLayer and layers
+     if (event.detail.depth && event.detail.depth === 2) {
+       this.receiveSingleMeta(event)
+       return
+     }
+     // else that's simple metadata
      this.legendControl.removeAll()
+     this.clearLayers();
      // if (this.depth === event.detail.depth   && this.bboxLayer[this.depth]) {
      if (this.bboxLayer) {
+       
+       this.bboxLayer.eachLayer(function (layer) {
+         layer.remove()
+       })
        this.bboxLayer.clearLayers();
-       this.updateLayers(event.detail.metadata)
+       // this.updateLayers(event.detail.metadata)
       // this.layers[this.depth] = new Map()
        this.bounds = null
      }    
@@ -397,7 +443,7 @@ export default {
        this.bounds = bounds
        // @todo passer cette variable comme local ? utilité
        // this.$store.commit('setDefaultSpatialExtent', bounds)
-     
+      this.controlLayer.setBboxLayer(this.bboxLayer)
        this.map.fitBounds(bounds)
         // this.selectBbox(event)
      }
@@ -415,7 +461,7 @@ export default {
          }
        })
      }
-     this.seeOnlyCurrent(event.detail.meta.id)
+     // this.seeOnlyCurrent(event.detail.meta.id)
 
    },
    receiveMetadatas (event) {
@@ -424,16 +470,17 @@ export default {
 //          layer.remove()
 //        })
 //      }
+     this.clearLayers();
     if (!event.detail.metadata) {
       // no child
       return
     }
-    console.log(event.detail)
      this.legendControl.removeAll()
      // if (this.depth === event.detail.depth   && this.bboxLayer[this.depth]) {
      if (this.bboxLayer) {
        this.bboxLayer.clearLayers();
-	     this.updateLayers(event.detail.metadata)
+      
+	     // this.updateLayers(event.detail.metadata)
 	    // this.layers[this.depth] = new Map()
 	     this.bounds = null
      }     
@@ -443,7 +490,7 @@ export default {
 //        // this.depth = event.detail.depth;
 //      }
      this.type = event.detail.type
-     this.filterBboxWithSelectedBounds(event.detail.features)
+     // this.filterBboxWithSelectedBounds(event.detail.features)
      this.bboxLayer = L.geoJSON(event.detail.features, {style:this.getOptionsLayer()})  
      this.bounds = this.bboxLayer.getBounds()
 //      this.bboxLayer[this.depth].addTo(this.map);
@@ -541,48 +588,59 @@ export default {
       }
       this.selected = []
    },
-   clearLayers (depth) {
-     if (!this.layers[depth]) {
+   clearLayers () {
+     if (!this.layers) {
        return
      }
-     this.layers[depth].forEach(function (layer) {
+     this.layers.forEach(function (layer) {
        layer.remove()
      })
-     this.layers[depth].clear()
+     this.layers.clear()
    },
    back (event) {
      console.log('back')
-     var bounds = null
-     if (this.metadataBoundsList.length > 0) {
-        this.metadataBoundsList.pop()
-        var bounds = this.metadataBoundsList.length > 0 ? this.metadataBoundsList[this.metadataBoundsList.length - 1] : null
-        
+     if (this.single.bbox) {
+       this.single.bbox.remove()
+       this.single.bbox = null
+       this.single.bounds = null
      }
-     this.$store.commit('searchAreaChange', bounds)
-     this.legendControl.back(this.$store.state.currentUuid)
-     this.unselectBbox()
-    // if (this.depth > event.detail.depth) {
-//         if (this.bboxLayer[this.depth]) {
-//           this.controlLayer.removeLayer(this.bboxLayer[this.depth])
-//           // this.bboxLayer[this.depth].remove()
-//         }
-
-        this.bboxLayer = null
-        this.bounds = null
-        this.clearLayers()
-        
-        this.resetControl.setBounds(this.bounds[this.depth])
-
-        var self = this
-        this.bboxLayer.eachLayer(function (layer) {
-          layer.setStyle({fillColor: self.colors[self.depth], color: self.colors[self.depth]})
-        })
-     // } 
-     this.controlLayer.setBboxLayer(this.bboxLayer)
      this.seeAllLayers()
+     this.showBboxLayers()
      if (this.bounds) {
-       this.map.fitBounds(this.bounds[this.depth])
+       this.map.fitBounds(this.bounds)
      }
+//      return
+//      var bounds = null
+//      if (this.metadataBoundsList.length > 0) {
+//         this.metadataBoundsList.pop()
+//         var bounds = this.metadataBoundsList.length > 0 ? this.metadataBoundsList[this.metadataBoundsList.length - 1] : null
+        
+//      }
+//      this.$store.commit('searchAreaChange', bounds)
+//      this.legendControl.back(this.$store.state.currentUuid)
+//      this.unselectBbox()
+//     // if (this.depth > event.detail.depth) {
+// //         if (this.bboxLayer[this.depth]) {
+// //           this.controlLayer.removeLayer(this.bboxLayer[this.depth])
+// //           // this.bboxLayer[this.depth].remove()
+// //         }
+
+//         this.bboxLayer = null
+//         this.bounds = null
+//         this.clearLayers()
+        
+//         this.resetControl.setBounds(this.bounds)
+
+//         var self = this
+//         this.bboxLayer.eachLayer(function (layer) {
+//           layer.setStyle({fillColor: self.colors[self.depth], color: self.colors[self.depth]})
+//         })
+//      // } 
+//      this.controlLayer.setBboxLayer(this.bboxLayer)
+//      this.seeAllLayers()
+//      if (this.bounds) {
+//        this.map.fitBounds(this.bounds[this.depth])
+//      }
    },
    searchBboxBoundsById (id) {
      var self = this

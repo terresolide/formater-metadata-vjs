@@ -34,7 +34,7 @@
     
     </div>
     <div v-if="layers && layers.length === 1 && type === 'cartouche'">
-      <div class="mtdt-related-type fa fa-globe" @click="changeLayer(layers[0])" :style="{backgroundColor: layerAdded ? '#8c0209' : primary}" :title="$t('display_layer')">
+      <div class="mtdt-related-type fa fa-globe" @click="changeLayer(layers[0], true)" :style="{backgroundColor: layerAdded ? '#8c0209' : primary}" :title="$t('display_layer')">
           
     </div> 
    </div>
@@ -45,7 +45,7 @@
        </div>
        <div class="mtdt-expand">
             <ul class="mtdt-layers">
-            <li v-for="(layer, index) in layers" :class="{disabled: !token}" :key="index" @click="changeLayer(layer);">
+            <li v-for="(layer, index) in layers" :class="{disabled: !token}" :key="index" @click="changeLayer(layer, true);">
              <i class="fa" :class="{'fa-square-o': !layer.checked,'fa-check-square-o': layer.checked}"  :data-layer="index"></i>
              <div  :title="layer.description">{{layer.name}}</div>
            </li>
@@ -116,8 +116,7 @@
     </div>
     <!-- order -->
     <div v-if="order && order.length === 1 && type === 'cartouche'">
-       <a  class="mtdt-related-type fa fa-pencil-square-o" target="_blank" :style="{backgroundColor: primary}" :title="$t('order_data')" :href="order[0].url">
-         
+       <a class="mtdt-related-type fa fa-pencil-square-o" target="_blank" :style="{backgroundColor: primary}" :title="$t('order_data')" :href="order[0].url">
       </a> 
     </div>
     <div v-if="order && (order.length >1 || (type === 'metadata' && order.length > 0))">
@@ -221,7 +220,9 @@
       },
       layerAdded () {
         var layerAdded = false
+        var _this = this
         this.layers.forEach(function (layer) {
+          console.log(_this.$store.getters['layers/isAdded'](layer.id))
           layerAdded = layerAdded || layer.checked
         })
         return layerAdded
@@ -279,7 +280,17 @@
         }
       }
     },
-
+    mounted () {
+      var _this = this
+      if (!this.layers) {
+        return
+      }
+      this.layers.forEach(function (layer) {
+        if (_this.$store.getters['layers/isAdded'](layer.id)) {
+          _this.changeLayer(layer, false)
+        }
+      })
+    },
     methods: {
       abortRequest () {
         this.abort = true
@@ -295,14 +306,14 @@
           this.empty = false
         }
       },
-      changeLayer (layer) {
+      changeLayer (layer, zoom) {
         // console.log(index)
          // this.$set(this.meta.layers[index], 'checked', !this.meta.layers[index].checked)
          this.$set(layer, 'checked', !layer.checked)
            //   this.meta.layers[index].checked = !this.meta.layers[index].checked
 
          if (layer.checked) {
-           var event = new CustomEvent('fmt:addLayerEvent', {detail: {layer: layer, id: this.id, token: this.token}})
+           var event = new CustomEvent('fmt:addLayerEvent', {detail: {layer: layer, id: this.id, token: this.token, zoom: zoom}})
            document.dispatchEvent(event)
            // this.layerAdded = true
          } else {

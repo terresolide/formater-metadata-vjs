@@ -10,7 +10,7 @@
 <template>
 <span >
  <h4 :style="{color:$store.state.style.primary}">{{$tc('platform', platforms.length)}}</h4>
-           <ul class="mtdt-layers">
+           <ul class="mtdt-links">
 
            <li v-for="(platform, index) in platforms" :key="index"  >
               <a class="mtdt-link"  :title="platform.abstract" @click="selectPlatform(index)">{{platform.title[lang] || platform.title}}</a>
@@ -46,6 +46,8 @@ export default {
   },
   methods: {
 	selectPlatform (index) {
+	  var event = new CustomEvent('fmt:metadataEvent', {detail: {meta: this.platforms[index], depth: 2 } })
+    document.dispatchEvent(event)
 		this.$store.commit('selectMetadata', this.platforms[index])
 	},
 	completePlatforms ()  {

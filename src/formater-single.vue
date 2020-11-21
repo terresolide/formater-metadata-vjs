@@ -37,7 +37,7 @@
         <!-- independant metadata -->
         <div class="mtdt-free-capsule" v-if="$store.state.selectedMetadata" >
           <div >
-            <formater-metadata :metadata="$store.state.selectedMetadata" :depth="-1" @close="$store.commit('resetSelectedMetadata')"></formater-metadata>
+            <formater-metadata :metadata="$store.state.selectedMetadata" :depth="-1" @close="closeSingle"></formater-metadata>
           </div>
         </div>
        <formater-metadata v-if="metadata" :metadata="metadata" @parametersChange="setParameters" @close="close" :depth="1"></formater-metadata>
@@ -197,6 +197,11 @@ export default {
       if(this.$store.temporalExtent && this.$store.temporalExtent.max) {
         this.temporalExtent.max = this.$store.temporalExtent.max
       }
+    },
+    closeSingle () {
+      var event = new CustomEvent('fmt:closeMetadataEvent', {detail: {depth: 2}})
+      document.dispatchEvent(event)
+      this.$store.commit('resetSelectedMetadata')
     },
     receiveMetadata (event) {
       if (this.$store.state.metadata && this.first) {

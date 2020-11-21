@@ -36,7 +36,7 @@
         <!-- independant metadata -->
         <div class="mtdt-free-capsule" v-if="$store.state.selectedMetadata" >
           <div >
-            <formater-metadata :metadata="$store.state.selectedMetadata" :depth="-1" @close="$store.commit('resetSelectedMetadata')"></formater-metadata>
+            <formater-metadata :metadata="$store.state.selectedMetadata" :depth="-1" @close="closeSingle()"></formater-metadata>
           </div>
         </div>
         <!-- list of all records with page navigation -->
@@ -130,8 +130,8 @@ export default {
     
     this.initTemporalExtent()
    //  this.$gn.init(this.$i18n.locale, this.$store.state.geonetwork, this.$http, this.$store)
-    this.metadataListener = this.receiveMetadata.bind(this)
-    document.addEventListener('fmt:metadataEvent', this.metadataListener);
+//     this.metadataListener = this.receiveMetadata.bind(this)
+//     document.addEventListener('fmt:metadataEvent', this.metadataListener);
 //     this.aerisSearchListener = this.handleSearch.bind(this)
 //     document.addEventListener('aerisSearchEvent', this.aerisSearchListener)
 //     this.aerisResetListener = this.handleReset.bind(this)
@@ -159,8 +159,8 @@ export default {
     this.$store.commit('parametersChange', {parameters: [], mapping: [], type: null})
   },
   destroyed () {
-    document.removeEventListener('fmt:metadataEvent', this.metadataListener);
-    this.metadataListener = null;
+//     document.removeEventListener('fmt:metadataEvent', this.metadataListener);
+//     this.metadataListener = null;
     document.removeEventListener('aerisSearchEvent', this.aerisSearchListener)
     this.aerisSearchListener = null
     document.removeEventListener('aerisResetEvent', this.aerisResetListener)
@@ -182,41 +182,46 @@ export default {
         this.temporalExtent.max = this.$store.temporalExtent.max
       }
     },
-    receiveMetadata (event) {
-      if (this.$store.state.metadata && this.first) {
-        this.first = false
-        this.metadataUui = event.detail.meta.id
-      }
-      this.metadatas.push(event.detail.meta)
-      this.currentUuid = event.detail.meta.id
-      this.$store.commit('currentUuidChange', this.currentUuid)
-      var min = null
-      var max = null
-      var numBegins = 0
-      
-      if (typeof event.detail.meta.tempExtentBegin === 'string') {
-        min = event.detail.meta.tempExtentBegin.substring(0, 10)
-        numBegins = 1
-      } else if (typeof event.detail.meta.tempExtentBegin === 'object') {
-        var begins = event.detail.meta.tempExtentBegin.map(function (begin) { return begin.substring(0, 10)})
-        begins.sort()
-        min = begins[0]
-        numBegins = begins.length
-      } 
-      if (typeof event.detail.meta.tempExtentEnd === 'string' && numBegins === 1) {
-        max = event.detail.meta.tempExtentEnd.substring(0, 10)
-      } else if (typeof event.detail.meta.tempExtentEnd === 'object' && event.detail.meta.tempExtentEnd.length === numBegins) {
-        var ended = event.detail.meta.tempExtentEnd.map(function(end) { return end.substring(0, 10)})
-        ended.sort()
-        max = ended[ended.length - 1]
-      }
-      var temp = {
-          min: min ? min : this.temporalExtent.min,
-          max: max ? max : this.temporalExtent.max
-      }
-      this.$store.commit('temporalChange', temp)
-      this.$router.push({name: 'FormaterCatalogue', query:{uuid:event.detail.meta.id, depth: this.metadatas.length}})
+    closeSingle () {
+      var event = new CustomEvent('fmt:closeMetadataEvent', {detail: {depth: 2}})
+      document.dispatchEvent(event)
+      this.$store.commit('resetSelectedMetadata')
     },
+//     receiveMetadata (event) {
+//       if (this.$store.state.metadata && this.first) {
+//         this.first = false
+//         this.metadataUui = event.detail.meta.id
+//       }
+//       this.metadatas.push(event.detail.meta)
+//       this.currentUuid = event.detail.meta.id
+//       this.$store.commit('currentUuidChange', this.currentUuid)
+//       var min = null
+//       var max = null
+//       var numBegins = 0
+      
+//       if (typeof event.detail.meta.tempExtentBegin === 'string') {
+//         min = event.detail.meta.tempExtentBegin.substring(0, 10)
+//         numBegins = 1
+//       } else if (typeof event.detail.meta.tempExtentBegin === 'object') {
+//         var begins = event.detail.meta.tempExtentBegin.map(function (begin) { return begin.substring(0, 10)})
+//         begins.sort()
+//         min = begins[0]
+//         numBegins = begins.length
+//       } 
+//       if (typeof event.detail.meta.tempExtentEnd === 'string' && numBegins === 1) {
+//         max = event.detail.meta.tempExtentEnd.substring(0, 10)
+//       } else if (typeof event.detail.meta.tempExtentEnd === 'object' && event.detail.meta.tempExtentEnd.length === numBegins) {
+//         var ended = event.detail.meta.tempExtentEnd.map(function(end) { return end.substring(0, 10)})
+//         ended.sort()
+//         max = ended[ended.length - 1]
+//       }
+//       var temp = {
+//           min: min ? min : this.temporalExtent.min,
+//           max: max ? max : this.temporalExtent.max
+//       }
+//       this.$store.commit('temporalChange', temp)
+//       this.$router.push({name: 'FormaterCatalogue', query:{uuid:event.detail.meta.id, depth: this.metadatas.length}})
+//     },
     close () {
       this.$router.go(-1)
     },

@@ -161,7 +161,7 @@ export default {
        this.uuid = this.metadata.id
        this.type = 'opensearch'
     }
-
+    console.log(this.uuid)
     this.popstateListener = this.close.bind(this)
     document.addEventListener('popstate', this.popstateListener)
   },
@@ -323,7 +323,7 @@ export default {
 }
 .mtdt-metadata h1.mtdt-metadata-header div{
   float:left;
-  max-width:calc(100% - 140px);
+  max-width:calc(100% - 150px);
   display:inline-block;
   margin-bottom:10px;
   line-height:1em;

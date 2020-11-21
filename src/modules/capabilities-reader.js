@@ -58,7 +58,7 @@ const reader = {
         id: layer.id,
         ESPG: this.getESPG(root, layerXml, nsResolver),
         format: this.getFormat(root, nsResolver),
-        opacity: 0.5,
+        opacity: options.opacity,
         layers: layer.name,
         legend: this.getLegend(root, layerXml, nsResolver)
       }
@@ -70,7 +70,7 @@ const reader = {
 //      options.id = layer.id
       // search crs and legend and bbox
       if (typeof callback !== 'undefined') {
-        callback(layer, metaId)
+        callback(layer, metaId, options.zoom)
       }
     },
     getUrlGetMap( root, resolver) {

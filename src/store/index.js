@@ -6,7 +6,7 @@ import Vuex from 'vuex'
 import user from './modules/user'
 // import basket from './modules/basket'
 import services from './modules/services'
-
+import layers from './modules/layers'
 export default function makeStore( config ) {
   if (config.proxyUrl) {
     var proxy = {
@@ -280,7 +280,8 @@ export default function makeStore( config ) {
     },
     modules: {
       user: user,
-      services: services
+      services: services,
+      layers: layers
     }
   });
 }
