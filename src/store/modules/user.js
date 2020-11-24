@@ -83,6 +83,13 @@ export default {
         return null
       }
     },
+    infoUrl (state, getters) {
+      if (state.ssoUrl) {
+        return  state.ssoUrl + '/realms/' + state.realm + '/protocol/openid-connect/userinfo'
+      } else {
+        return null
+      }
+    },
     clientId (state, getters) {
       return state.clientId
     },
@@ -111,6 +118,7 @@ export default {
     },
     set (state, jwtToken) {
       var obj = jwt_decode(jwtToken)
+      console.log(obj)
       if (obj.nonce === state.nonce) {
         state.user = {
             email: obj.email,
@@ -131,6 +139,8 @@ export default {
     setTokens (state, tokens) {
       state.token = tokens.access_token
       state.refreshToken = tokens.refresh_token
+//      var obj1 = jwt_decode(state.toke)
+//      console.log(obj1)
       var obj = jwt_decode(tokens.id_token)
       if (obj.nonce === state.nonce) {
         console.log(obj)

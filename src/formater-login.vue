@@ -20,8 +20,7 @@
           document.location.origin
         )
       }
-
-    //  window.close()
+      window.close()
     }
   }
   </script>

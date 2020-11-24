@@ -15,6 +15,7 @@
     <formater-service v-show="currentService === index"
      v-for="(service, index) in services" :key="index" :service="service">
      </formater-service>
+   <iframe   v-show="false" src="https://sso.aeris-data.fr/auth/realms/test/protocol/openid-connect/login-status-iframe.html" ></iframe>
     <div v-if="!$store.state.metadata" class="mtdt-user" :class="{searching: searching}"> 
       <span   v-if="email">{{email}}</span>
 		  <span   v-if="email">
@@ -36,7 +37,7 @@
 </template>
 <script>
 import FormaterService from '@/components/formater-service.vue'
-// import jwt_decode from 'jwt-decode'
+import jwt_decode from 'jwt-decode'
 export default {
   name: 'FormaterAuthentication',
   components: {
@@ -59,6 +60,9 @@ export default {
     },
     loginUrl () {
       return this.$store.getters['user/loginUrl']
+    },
+    userInfoUrl () {
+      return this.$store.getters['user/infoUrl']
     },
     logoutUrl () {
       return this.$store.getters['user/logoutUrl']
@@ -85,7 +89,8 @@ export default {
     return {
       codeListener: null,
       searching: false,
-      popup: null
+      popup: null //,
+     // iframe: null
     }
   },
   created () {
@@ -115,7 +120,24 @@ export default {
      }
    },
    getUserRoles () {
+       console.log(this.userInfoUrl)
+       console.log(this.$store.getters['user/token'])
+       this.$http.get(this.userInfoUrl,
+           {
+             credentials: true,
+             headers: {
+               'Accept': 'application/json',
+               'Authorization': 'Bearer ' + this.$store.getters['user/token']
+             }
+           }
+       ).then(function (resp) {
+         console.log(resp)
+       })
      // https://sso.aeris-data.fr/auth/realms/test/protocol/openid-connect/userinfo?schema=openid
+   },
+   loaded () {
+     console.log('loaded')
+     this.getTokens()
    },
    getTokens () {
      if (this.$store.getters['user/code']) {
@@ -126,11 +148,18 @@ export default {
          redirect_uri: this.$store.getters['user/redirectUri']
            
        }
+      
+//        postdata = 'code=' + this.$store.getters['user/code']
+//        postdata += '&grant_type=authorization_code'
+//        postdata += '&client_id=' + this.clientId
+//        postdata += '&redirect_uri=' + encodeURIComponent(this.$store.getters['user/redirectUri'])
        this.$http.post(this.tokenUrl, 
            postdata, 
            {
              credentials: true,
-             emulateJSON: true
+             emulateJSON: true,
+             headers: {'Accept': 'application/json'}
+             // headers: {'Content-type': 'application/x-www-form-urlencoded'}
            }
          )
        .then(function (resp) {
@@ -147,6 +176,7 @@ export default {
    setTokens (data) {
      this.searching = false
      this.$store.commit('user/setTokens', data)
+     this.getUserRoles()
    },
    updateTokens () {
      console.log('UPDATE TOKENS')
