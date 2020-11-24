@@ -361,9 +361,11 @@ export default {
        this.bboxLayer.addTo(this.map)
      }
    },
-   getOptionsLayer () {
-     console.log(this.depth)
-     var options = Object.assign(this.defaultRectangleOptions, {fillColor: this.colors[this.depth], color: this.colors[this.depth]})
+   getOptionsLayer (depth) {
+     if (!depth) {
+       depth = 0
+     }
+     var options = Object.assign(this.defaultRectangleOptions, {fillColor: this.colors[depth], color: this.colors[depth]})
      return options
    },
 //    getType (data) {
@@ -384,7 +386,7 @@ export default {
        if (event.detail.meta.geoBox) {
          this.single.bbox = L.polygon(
              this.$gn.bboxString2Array(event.detail.meta.geoBox),
-             {style: this.getOptionsLayer()}
+             {style: this.getOptionsLayer(1)}
          )
          this.single.bounds = this.single.bbox.getBounds()
 //          this.single.bbox.addTo(this.map)
@@ -437,17 +439,17 @@ export default {
 //        }
      // } else {
        console.log('do bbox layer')
-       this.bboxLayer = L.geoJSON(event.detail.feature, {style:this.getOptionsLayer()}) 
+       this.bboxLayer = L.geoJSON(event.detail.feature, {style:this.getOptionsLayer(1)}) 
        this.bboxLayer.addTo(this.map)
        var bounds = this.bboxLayer.getBounds()
        this.bounds = bounds
        // @todo passer cette variable comme local ? utilité
-       // this.$store.commit('setDefaultSpatialExtent', bounds)
-      this.controlLayer.setBboxLayer(this.bboxLayer)
+      //  this.$store.commit('setDefaultSpatialExtent', bounds)
+       this.controlLayer.setBboxLayer(this.bboxLayer)
        this.map.fitBounds(bounds)
         // this.selectBbox(event)
      }
-     this.$store.commit('searchAreaChange', bounds)
+     this.$store.commit('searchAreaChange', this.bounds)
      if (event.detail && event.detail.meta && event.detail.meta.legend) {
        // case global legend in meta (the same for all layers attached to metadata) 
        // case flatsim
@@ -474,7 +476,10 @@ export default {
     if (!event.detail.metadata) {
       // no child
       return
-    }
+    } 
+     if (this.$route.name === 'FormaterCatalogue') {
+       this.$store.commit('searchAreaChange', null)
+     }
      this.legendControl.removeAll()
      // if (this.depth === event.detail.depth   && this.bboxLayer[this.depth]) {
      if (this.bboxLayer) {
@@ -491,7 +496,7 @@ export default {
 //      }
      this.type = event.detail.type
      // this.filterBboxWithSelectedBounds(event.detail.features)
-     this.bboxLayer = L.geoJSON(event.detail.features, {style:this.getOptionsLayer()})  
+     this.bboxLayer = L.geoJSON(event.detail.features, {style:this.getOptionsLayer(0)})  
      this.bounds = this.bboxLayer.getBounds()
 //      this.bboxLayer[this.depth].addTo(this.map);
 //      if (this.bboxLayer[this.depth]) {
@@ -569,7 +574,7 @@ export default {
  
    unselectBbox () {
      var self = this
-     var options = this.getOptionsLayer()
+     var options = this.getOptionsLayer(0)
      for(var i in this.selected) {
        this.selected[i].eachLayer(function (lr) {
          lr.setStyle({

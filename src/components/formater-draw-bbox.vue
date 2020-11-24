@@ -175,6 +175,7 @@ export default {
     },
     initBoundsLayer () {
       this.removeBoundsLayer()
+      console.log(this.searchArea)
       if (this.searchArea) {
         this.boundsLayer = L.rectangle(this.searchArea, {color:'#cccccc', fillOpacity: 0.2, weight: 1})
         this.boundsLayer.addTo(this.map)
@@ -307,7 +308,7 @@ export default {
         return
       }
       var bbox = event.detail
-      var bounds = L.latLngBounds(this.$store.state.spatialExtent)
+      var bounds = L.latLngBounds(this.searchArea || this.$store.state.spatialExtent)
       if (bbox && bbox.north !== "" && bbox.south !== "" && bbox.east !== "" && bbox.west !== "") {
         for(var key in bbox){
           bbox[key] = parseFloat(bbox[key]);

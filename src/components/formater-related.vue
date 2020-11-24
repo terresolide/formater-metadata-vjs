@@ -81,20 +81,19 @@
         <hr v-if="type === 'metadata'" /> 
     </div>
     <div v-if="download && download.length === 1 && type === 'cartouche'">
-       <a v-if="download[0].type && download[0].type === 'WWW:DOWNLOAD-1.0-link--download'"
-        :href="download[0].url" target="_blank" :style="{backgroundColor: primary}" 
-        class="mtdt-related-type fa fa-download" :title="$t('download_data')">
-       </a>
+      <a v-if="download[0].type && download[0].type === 'WWW:DOWNLOAD-1.0-link--download'"
+        :href="download[0].url" target="_blank"  :title="$t('download_data')">
+        <span class="mtdt-related-type fa fa-download" :style="{backgroundColor: primary}" ></span>
+      </a>
                
-       <a v-else-if="token && token !== -1" class="mtdt-related-type fa fa-download" 
+      <a v-else-if="token && token !== -1" 
        :href="download[0].url + '?_bearer=' + token" :class="{disabled:download[0].disabled || !token}" 
-       :style="{backgroundColor: primary}" :title="$t('download_data')">
-         
+        :title="$t('download_data')">
+        <span class="mtdt-related-type fa fa-download" :style="{backgroundColor: primary}" ></span>
       </a> 
-        <a v-else class="mtdt-related-type fa fa-download" 
-        :class="{disabled:download[0].disabled || !token}" :style="{backgroundColor: primary}" 
+      <a v-else  :class="{disabled:download[0].disabled || !token}" 
         :title="$t('download_data')" @click="triggerDownload(0)">
-         
+         <span class="mtdt-related-type fa fa-download" :style="{backgroundColor: primary}" ></span>
       </a> 
     </div>
     <div v-if="download && (download.length >1 || (type === 'metadata' && download.length > 0))">
@@ -116,7 +115,8 @@
     </div>
     <!-- order -->
     <div v-if="order && order.length === 1 && type === 'cartouche'">
-       <a class="mtdt-related-type fa fa-pencil-square-o" target="_blank" :style="{backgroundColor: primary}" :title="$t('order_data')" :href="order[0].url">
+       <a  target="_blank"  :title="$t('order_data')" :href="order[0].url">
+        <span class="mtdt-related-type fa fa-pencil-square-o" :style="{backgroundColor: primary}" ></span>
       </a> 
     </div>
     <div v-if="order && (order.length >1 || (type === 'metadata' && order.length > 0))">
@@ -540,7 +540,8 @@
    cursor:pointer;
    opacity:0.9
 }
-.mtdt-related-cartouche .mtdt-related-type.disabled{
+.mtdt-related-cartouche .mtdt-related-type.disabled,
+.mtdt-related-cartouche a.disabled {
   pointer-events:none;
   opacity:0.5;
 }
