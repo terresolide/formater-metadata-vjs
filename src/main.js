@@ -24,13 +24,7 @@ Vue.use(GeonetworkPlugin)
 import ToolsPlugin from '@/modules/tools.js'
 Vue.use(ToolsPlugin)
 
-// import Keycloak  from 'keycloak-js'
-//export let keycloak = Keycloak({
-//  url: process.env.SSO_URL,
-//  realm: process.env.SSO_REALM,
-//  clientId: process.env.SSO_CLIENT_ID
-//})
-// import makeAuth from './auth.js'
+
 import makeStore from './store'
 
 let config = {}
@@ -90,7 +84,8 @@ if (config.lang) {
         this.$store.commit('user/initAuth', {
           clientId: process.env.SSO_CLIENT_ID, 
           ssoUrl: process.env.SSO_URL,
-          realm: process.env.SSO_REALM
+          realm: process.env.SSO_REALM,
+          formaterRole: process.env.FORMATER_ROLE
         })
         this.$store.commit('services/init', process.env.SSO_NAME)
         

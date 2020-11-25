@@ -9,7 +9,8 @@ export default {
       username: null,
       lastname: null,
       givenName: null,
-      email: null
+      email: null,
+      roles: []
     },
     token: null,
     code: null,
@@ -19,7 +20,8 @@ export default {
     ssoUrl: null,
     clientId: null,
     realm: null,
-    redirectUri: null
+    redirectUri: null,
+    formaterRole: null
   },
   getters: {
     code (state, getters) {
@@ -32,11 +34,20 @@ export default {
         return null
       }
     },
-    nonce (state, getters) {
-      return state.nonce
-    },
     getState (state, getters) {
       return state.state
+    },
+    hasRole: (state) => (role) => {
+      return state.user.roles.indexOf(role) >= 0
+    },
+    isFormater (state, getters) {
+      return state.user.roles.indexOf(state.formaterRole) >= 0
+    },
+    formaterRole (state, getters) {
+      return state.formaterRole
+    },
+    nonce (state, getters) {
+      return state.nonce
     },
     token (state, getters) {
      return state.token
@@ -109,23 +120,24 @@ export default {
       var date = new Date()
       var y = date.getYear() + ''
       var str = obj.clientId + date.getMonth() + '_' + date.getDate()
-      console.log(str)
+      state.formaterRole = obj.formaterRole
       state.ssoUrl = obj.ssoUrl
       state.clientId = obj.clientId
       state.realm = obj.realm
       state.nonce = btoa(str).replace(/=|\+|\//gm, '0')
       state.state = btoa(state.clientId).replace(/=|\+|\//gm, '0')
+      
     },
     set (state, jwtToken) {
       var obj = jwt_decode(jwtToken)
-      console.log(obj)
       if (obj.nonce === state.nonce) {
         state.user = {
             email: obj.email,
             username: obj.preferred_username,
             familyName: obj.family_name,
             name: obj.name,
-            givenName: obj.given_name
+            givenName: obj.given_name,
+            roles: obj.realm_roles
         }
       }
       
@@ -149,7 +161,8 @@ export default {
             username: obj.preferred_username,
             familyName: obj.family_name,
             name: obj.name,
-            givenName: obj.given_name
+            givenName: obj.given_name,
+            roles: obj.realm_roles
         }
       }
     },

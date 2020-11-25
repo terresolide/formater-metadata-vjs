@@ -1,25 +1,29 @@
 <i18n>
 {
   "fr": {
-   "need_log": "Pour accéder à toutes les données du service <b>{domain}</b>, vous devez<br /> - vous connecter <br /> - puis autoriser ce service à accéder à vos données.",
-   "need_authorize": "Pour accéder à toutes les données du service <b>{domain}</b>, vous devez l'autoriser à accéder à vos données.",
-   "log_service": "Pour accéder à toutes les données du service <b>{domain}</b>, vous devez vous y connecter.",
-   "authorize": "Autoriser",
-   "login": "Se connecter",
-   "logout": "Se déconnecter",
-   "log_to": "Se connecter au service {domain}",
+    "authorize": "Autoriser",
+    "insufficient_right": "Vos droits sont insuffisants\npour accéder aux services\nde visualisation et téléchargement",
+    "limited_access_to": "Accès limité à {domain}",
+    "log_service": "Pour accéder à toutes les données du service <b>{domain}</b>, vous devez vous y connecter.",
+    "log_to": "Se connecter au service {domain}",
+    "login": "Se connecter",
+    "logout": "Se déconnecter",
+    "need_authorize": "Pour accéder à toutes les données du service <b>{domain}</b>, vous devez l'autoriser à accéder à vos données.",
+    "need_log": "Pour accéder à toutes les données du service <b>{domain}</b>, vous devez<ul><li>vous connecter</li><li>puis, si vous avez <b>les droits suffisants</b>, autoriser ce service à accéder à vos données.</li>",
     "session_expire": "Votre session auprès de <b>{domain}</b> a expiré.<br />Vous devez vous reconnecter."
-   },
-   "en": {
-   "need_log": "To access data of <b>{domain}</b>  service,<br /> you must login in then authorize this service to access your personnal data.",
-   "need_authorize": "To access data of <b>{domain}</b> service,<br /> you must authorize this service to access your personnal data.",
-    "log_service": "To access data of <b>{domain}</b>  service,<br /> you must login to this service.",
+  },
+  "en": {
     "authorize": "Authorize",
+    "insufficient_right": "Your rights are insufficient\nto access the viewing\nand downloading services",
+    "limited_access_to": "Limited access to {domain}",
+    "log_service": "To access data of <b>{domain}</b>  service,<br /> you must login to this service.",
+    "log_to": "Sign in the {domain} service",
     "login": "Sign in",
     "logout": "Se déconnecter",
-    "log_to": "Sign in the {domain} service",
+    "need_authorize": "To access data of <b>{domain}</b> service,<br /> you must authorize this service to access your personnal data.",
+    "need_log": "To access data of <b>{domain}</b>  service,<br /> you must login in then, if you have sufficient rights, you must authorize this service to access your personnal data.",
     "session_expire": "Your session width <b>{domain}</b> has expired.<br /> You need to log back in."
-   }
+  }
 }
 </i18n>
 <template>
@@ -51,10 +55,15 @@
       {{$t('authorize')}} {{service.domain}}
       <i  class="fa fa-check-square-o"></i>
    </a>
-   <a v-if="!service.token" class="mtdt-menu-item" :class="{searching: searching}"
+   <a v-if="!service.token && isFormater" class="mtdt-menu-item" :class="{searching: searching}"
    @click="searchCode" :style="{'--color': $store.state.style.primary}">
       {{$t('authorize')}} {{service.domain}}
       <i  class="fa fa-square-o"></i>
+   </a>
+   <a v-if="!service.token && !isFormater" class="mtdt-menu-item" :class="{searching: searching}"
+    :style="{'--color': $store.state.style.primary}" :title="$t('insufficient_right')">
+      {{$t('limited_access_to', {domain: service.domain})}} 
+      <i  class="fa fa-ban"></i>
    </a>
 </div>
 <div class="mtdt-service-button" v-if="$store.state.metadata"
@@ -88,6 +97,9 @@ export default {
   computed: {
     email () {
       return this.$store.getters['user/email']
+    },
+    isFormater () {
+      return this.$store.getters['user/isFormater']
     },
     redirectUri () {
       if (this.$store.state.ssoLogin) {
@@ -141,7 +153,9 @@ export default {
       this.$http.get(url).then(function (response) {
         if (response.body && response.body.clientId) {
           this.clientId = response.body.clientId
-          this.msg = true
+          if (!(this.email && !this.isFormater)) {
+            this.msg = true
+          }
           this.$store.commit('services/setClientId', {id: this.service.id, clientId: this.clientId})
           this.state = 'php' + btoa(this.clientId + this.service.domain).replace(/=|\+|\//gm, '0')
         }

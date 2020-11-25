@@ -15,11 +15,11 @@
     <formater-service v-show="currentService === index"
      v-for="(service, index) in services" :key="index" :service="service">
      </formater-service>
-   <iframe   v-show="false" src="https://sso.aeris-data.fr/auth/realms/test/protocol/openid-connect/login-status-iframe.html" ></iframe>
-    <div v-if="!$store.state.metadata" class="mtdt-user" :class="{searching: searching}"> 
+     <div v-if="!$store.state.metadata" class="mtdt-user" :class="{searching: searching}"> 
       <span   v-if="email">{{email}}</span>
 		  <span   v-if="email">
-		  
+		     <a v-if="!isFormater && !alreadyAsk"   :style="{'--color': $store.state.style.primary}" style="margin-right:10px;" @click="askFormater"><i class="fa fa-key"></i> Demander accès formater</a>
+     
 		    <a   @click="logout"   :title="$t('logout')" :style="{'--color': $store.state.style.primary}">
 		    <i class="fa fa-sign-out" ></i> 
 		    {{$t('logout')}}</a>
@@ -89,15 +89,12 @@ export default {
     return {
       codeListener: null,
       searching: false,
-      popup: null //,
+      popup: null,
+      alreadyAsk: false
      // iframe: null
     }
   },
   created () {
-    // this.$i18n.locale = this.$store.state.lang
-     // logout in iframe
-//     this.logoutUrl = this.root + '/realms/' + this.realm + '/protocol/openid-connect/logout'
-//     this.loginUrl = this.root + '/realms/' + this.realm + '/protocol/openid-connect/auth'
     this.codeListener = this.getMessage.bind(this)
     window.addEventListener('message', this.codeListener)
     // case already connected
@@ -108,6 +105,13 @@ export default {
     this.codeListener = null
   },
   methods: {
+   askFormater () {
+     var postdata = {
+         email: this.email,
+         app: null,
+         role: this.$store.getters['user/formaterRole']
+     }
+   },
    loginParams (redirectUrl) {
      return this.$store.getters['user/loginParams'](redirectUrl, true)
    },
@@ -120,8 +124,6 @@ export default {
      }
    },
    getUserRoles () {
-       console.log(this.userInfoUrl)
-       console.log(this.$store.getters['user/token'])
        this.$http.get(this.userInfoUrl,
            {
              credentials: true,
@@ -133,13 +135,9 @@ export default {
        ).then(function (resp) {
          console.log(resp)
        })
-     // https://sso.aeris-data.fr/auth/realms/test/protocol/openid-connect/userinfo?schema=openid
-   },
-   loaded () {
-     console.log('loaded')
-     this.getTokens()
    },
    getTokens () {
+     
      if (this.$store.getters['user/code']) {
        var postdata = {
          code: this.$store.getters['user/code'],
@@ -148,22 +146,19 @@ export default {
          redirect_uri: this.$store.getters['user/redirectUri']
            
        }
-      
-//        postdata = 'code=' + this.$store.getters['user/code']
-//        postdata += '&grant_type=authorization_code'
-//        postdata += '&client_id=' + this.clientId
-//        postdata += '&redirect_uri=' + encodeURIComponent(this.$store.getters['user/redirectUri'])
        this.$http.post(this.tokenUrl, 
            postdata, 
            {
              credentials: true,
              emulateJSON: true,
              headers: {'Accept': 'application/json'}
-             // headers: {'Content-type': 'application/x-www-form-urlencoded'}
            }
          )
        .then(function (resp) {
          this.setTokens(resp.body)
+         if (this.$store.getters['user/hasRole']('NATIONAL_SCIENTIST')) {
+           console.log('IS FORMATER')
+         }
          var expires = resp.body.expires_in - 50
          var _this = this
          var next = function () {
@@ -176,7 +171,6 @@ export default {
    setTokens (data) {
      this.searching = false
      this.$store.commit('user/setTokens', data)
-     this.getUserRoles()
    },
    updateTokens () {
      console.log('UPDATE TOKENS')
@@ -234,6 +228,8 @@ export default {
      var url = this.loginUrl + '?' + this.loginParams(redirectUri)  
      this.$store.commit('user/setRedirectUri', redirectUri)
      this.openPopup(url)
+     // this.iframe = 'https://sso.aeris-data.fr/auth/realms/test/protocol/openid-connect/login-status-iframe.html'
+     // wn.postMessage(this.clientId + ' ' + this.$store.getters['user/getState'], 'http://localhost:8080')
      // window.open(url, "_blank", "height=750, width=850, status=yes, toolbar=no, menubar=no, location=no,addressbar=no");
    },
    resetUser () {
