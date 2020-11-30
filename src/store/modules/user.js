@@ -59,6 +59,9 @@ export default {
     token (state, getters) {
      return state.token
     },
+    realm (state, getter) {
+      return state.realm
+    },
     refreshToken (state, getter) {
       return state.refreshToken
     },

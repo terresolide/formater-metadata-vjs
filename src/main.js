@@ -81,7 +81,6 @@ if (config.lang) {
         }
         
         var location = this.$custURL(window.location.href)
-        console.log(process.env)
         this.$store.commit('user/initAuth', {
           clientId: process.env.SSO_CLIENT_ID, 
           ssoUrl: process.env.SSO_URL,
