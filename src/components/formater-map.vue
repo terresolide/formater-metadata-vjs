@@ -407,6 +407,7 @@ export default {
        
        this.single.bbox.addTo(this.map)
        this.map.fitBounds(this.single.bounds)
+       
    },
    receiveMetadata(event) {
   

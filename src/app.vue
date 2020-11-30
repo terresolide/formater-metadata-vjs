@@ -68,6 +68,7 @@ export default {
       this.$gn.init(this.$i18n.locale, this.$store.state.geonetwork, this.$http, this.$store)
       this.resizeListener = this.resize.bind(this)
       window.addEventListener('resize', this.resizeListener);
+     
      // this.resize()
     },
     mounted () {
@@ -77,6 +78,7 @@ export default {
       }
       // need soustract 10px because of scroll bar?
       this.$store.commit('sizeChange', this.$el.clientWidth - 10)
+      
     },
     destroyed () {
       window.removeEventListener('resize', this.resizeListener)

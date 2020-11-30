@@ -220,6 +220,7 @@ export default {
       .then(
          resp => this.setToken(resp.body), 
          resp => {
+           console.log(resp)
            alert('xxx')
            this.searching = false
          }

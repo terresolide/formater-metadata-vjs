@@ -2,22 +2,24 @@
 {
   "en": {
     "access_rights": "Your access rights",
-    "access_to_formater": "Access to ForM@Ter data is reserved for the <b>French scientific community</b>. To be able to access it, you must make a request by clicking on <b> register </b> above",
+    "access_to_formater": "Access to ForM@Ter data is reserved for the <b>French scientific community</b>. To be able to access it, you must make a request by clicking on <b>&laquo;register&raquo;</b>.",
     "download": "Download",
     "email": "Email",
     "formater_data": "ForM@Ter data",
     "preview": "Preview",
     "public_data": "Public data",
+    "register": "Register",
     "wait_validation": "Your request has been registered with our services. An email has been sent to you. It will be treated as quickly as possible"
   },
   "fr": {
     "access_rights": "Vos droits d'accès",
-    "access_to_formater": "L'accès aux données dites ForM@Ter est réservé à la <b>communauté scientifique française</b>. Pour pouvoir y accéder, vous devez faire une demande en cliquant sur <b>s'inscrire</b> ci-dessus.",
+    "access_to_formater": "L'accès aux données ForM@Ter est réservé à la <b>communauté scientifique française</b>. Pour pouvoir y accéder, vous devez faire une demande en cliquant sur <b>&laquo;s'inscrire&raquo;</b>.",
     "download": "Téléchargement",
     "email": "Email",
     "formater_data": "Données ForM@Ter",
     "preview": "Visualisation",
     "public_data": "Données publiques",
+    "register": "S'inscrire",
     "wait_validation": "Votre demande a bien été enregistrée auprès de nos services. Un email vous a été envoyé. Elle sera traité le plus rapidement possible."
   }
 }
@@ -69,7 +71,8 @@
         <td class="fmt-center">
           <i class="fa" :class="{'fa-square-o': !isFormater, 'fa-check-square-o': isFormater} "></i>
         </td>
-        <td><span v-if="!isFormater && !alreadyAsk && hasCheckSSO" @click="accessRequest">S'inscrire</span></td>
+        <td><span v-if="!isFormater && !alreadyAsk && hasCheckSSO" 
+        class="fmt-button" :style="{background: $store.state.style.primary}" @click="accessRequest">S'inscrire</span></td>
       </tr>
    </tbody>
    </table>
@@ -78,7 +81,7 @@
    <p v-if="!isFormater && !alreadyAsk" v-html="$t('access_to_formater')" style="font-size:0.9em;font-style:italic;line-height:1;"></p>
   </div>
  </div>
- <a class="fa fa-user" @click="show=true" :style="{'--color': $store.state.style.primary}" title="Your account">
+ <a class="fa fa-user" @click="show=true" :style="{'--color': $store.state.style.primary}" :title="$t('access_rights')">
   {{user.email}}
 </a>
 
@@ -119,7 +122,7 @@ export default {
   },
   methods: {
     accessRequest () {
-      if (!this.hasCheckSSO) {
+      if (!this.hasCheckSSO || this.isFormater) {
         return
       }
       var postdata = {
@@ -135,11 +138,10 @@ export default {
           this.alreadyAsk = true
         }
         this.displayWait = true
-        console.log(this.alreadyAsk)
       })
     },
     checkAccessRequest () {
-      if (!this.hasCheckSSO) {
+      if (!this.hasCheckSSO || this.isFormater) {
         return
       }
       var postdata = {
@@ -154,6 +156,9 @@ export default {
         if (resp.body.success) {
           this.alreadyAsk = resp.body.exists
         }
+        if (!this.alreadyAsk) {
+          this.show = true
+        }
       })
     },
     close () {
@@ -165,6 +170,18 @@ export default {
 <style >
 .fmt-center {
   text-align:center;
+}
+span.fmt-button {
+  background: darkred;
+  color: white;
+  padding: 5px 8px;
+  border-radius:5px;
+  cursor: pointer;
+  opacity: 0.9;
+  box-shadow: 0 1px 5px rgba(0,0,0,.65);
+}
+span.fmt-button:hover {
+  opacity:1;
 }
 .mtdt-user-box {
 background: #fefefe;

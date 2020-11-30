@@ -169,7 +169,15 @@ export default {
 //     displayMeta(obj) {
 //       console.log(obj.body) 
 //     },
+    getFileMetadata () {
+      this.$http.get(this.$store.state.metadata)
+      .then(response => { this.treatmentSingle(response.body)})
+    },
     getMetadata () {
+     if (this.$store.state.metadata) {
+       this.getFileMetadata()
+       return
+     }
       var headers =  {
           'Accept': 'application/json, text/plain, */*',
           'Accept-Language': this.$store.state.lang === 'fr' ? 'fre': 'eng'
@@ -183,6 +191,13 @@ export default {
       this.$http.get(url, {headers: headers}).then(
         response => { this.treatmentMeta(response.body)},
         response => { console.log(response.body)})
+    },
+    treatmentSingle(data) {
+      var uuid = data['geonet:info'].uuid
+      this.metadata = this.$gn.treatmentMetadata(data, uuid)
+      var feature = this.$gn.extractBbox(data.geoBox, uuid)
+      var event = new CustomEvent('fmt:metadataEvent', {detail:  {meta: this.metadata, feature:feature}})
+      document.dispatchEvent(event)
     },
     treatmentMeta(data) {
       this.metadata = this.$gn.treatmentMetadata(data.metadata ,this.uuid)

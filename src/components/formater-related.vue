@@ -168,6 +168,10 @@
         type: String,
         default: null
       },
+      depth: {
+        type: Number,
+        default: 0
+      },
       type: {
         type: String,
         default: 'cartouche'
@@ -202,6 +206,7 @@
 //       if (this.related && this.related.siblings) {
 //     	  this.siblings = this.related.siblings
 //       }
+      console.log(this.depth)
       this.checkEmpty()
     },
     destroyed () {
@@ -218,11 +223,18 @@
       emphasis() {
         return this.$store.state.style.emphasis
       },
+      isSelected () {
+        if (this.$store.state.selectedMetadata === this.id && this.type === 'metadata') {
+          return true
+        } else {
+          return false
+        }
+      },
       layerAdded () {
         var layerAdded = false
         var _this = this
+        console.log('LAYER ADDED')
         this.layers.forEach(function (layer) {
-          console.log(_this.$store.getters['layers/isAdded'](layer.id))
           layerAdded = layerAdded || layer.checked
         })
         return layerAdded
@@ -241,6 +253,19 @@
       },
       token () {
         return this.$store.getters['services/token']
+      }
+    },
+    watch: {
+      isSelected (newvalue) {
+        if (newvalue) {
+          console.log(this.layers)
+          this.layers.forEach(function (layer) {
+            console.log(layer)
+            if (_this.$store.getters['layers/isAdded'](layer.id)) {
+              _this.changeLayer(layer, false)
+            }
+          })
+        }
       }
     },
     data () {

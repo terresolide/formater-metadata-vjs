@@ -121,6 +121,11 @@ export default {
     }
   },
   created () {
+    if (this.$store.state.metadata) {
+      console.log('has metadata')
+      this.$router.replace({name: 'Metadata', params: {uuid: '0-serie'}})
+      return
+    }
     // this.$router.push({name: 'FormaterCatalogue'})
     if (this.$route.query.sortBy) {
       this.sortBy = this.$route.query.sortBy

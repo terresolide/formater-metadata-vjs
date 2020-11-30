@@ -44,7 +44,7 @@
 
 <h1 :style="{color:$store.state.style.primary}">{{$t('about_resource')}}</h1>
  <div style="float:right;background:#eee;margin-left:5px;max-width:300px;min-width:200px;width:25%;" v-if="hasRelated">
- <formater-related type="metadata" :download="metadata.download" :id="metadata.id"
+ <formater-related type="metadata" :depth="depth" :download="metadata.download" :id="metadata.id"
          :layers="metadata.layers"  :links="metadata.links" :related="metadata.related" :order="metadata.order" :siblings="metadata.siblings"></formater-related>
     
 </div>
@@ -141,6 +141,10 @@ export default {
     metadata: {
       type: Object,
       default: null
+    },
+    depth: {
+      type: Number,
+      default: 0
     },
     type: {
       type: String,
