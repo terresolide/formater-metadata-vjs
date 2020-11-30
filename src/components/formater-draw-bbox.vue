@@ -263,7 +263,7 @@ export default {
         query.box = this.bbox.west + ',' + this.bbox.south + ',' + this.bbox.east + ',' + this.bbox.north
         
       } else {
-        delete query.bbox
+        delete query.box
       }
        this.$router.push({name: this.$route.name, params: this.$route.params, query: query})
 

@@ -7,7 +7,7 @@ export default {
   state: {
     user: {
       username: null,
-      lastname: null,
+      familyName: null,
       givenName: null,
       email: null,
       roles: []
@@ -30,6 +30,13 @@ export default {
     email (state, getters) {
       if (state.user && state.user.email) {
         return state.user.email
+      } else {
+        return null
+      }
+    },
+    get (state, getters) {
+      if (state.user.email) {
+        return state.user
       } else {
         return null
       }
@@ -120,6 +127,7 @@ export default {
       var date = new Date()
       var y = date.getYear() + ''
       var str = obj.clientId + date.getMonth() + '_' + date.getDate()
+      console.log('formaterRole = ', obj.formaterRole)
       state.formaterRole = obj.formaterRole
       state.ssoUrl = obj.ssoUrl
       state.clientId = obj.clientId

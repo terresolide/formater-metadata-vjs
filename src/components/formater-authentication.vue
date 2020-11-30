@@ -2,24 +2,27 @@
 {
   "en": {
     "login": "Sign in",
-    "logout": "Sign out"
+    "logout": "Sign out",
+    "limited_access":"Limited access"
   },
   "fr": {
     "login": "Se connecter",
-    "logout": "Se déconnecter"
+    "logout": "Se déconnecter",
+    "limited_access":"Accès limité"
   }
 }
 </i18n>
 <template>
  <span class="mtdt-authentication">
+
     <formater-service v-show="currentService === index"
      v-for="(service, index) in services" :key="index" :service="service">
      </formater-service>
      <div v-if="!$store.state.metadata" class="mtdt-user" :class="{searching: searching}"> 
-      <span   v-if="email">{{email}}</span>
+      <formater-user v-if="email"></formater-user>
 		  <span   v-if="email">
-		     <a v-if="!isFormater && !alreadyAsk"   :style="{'--color': $store.state.style.primary}" style="margin-right:10px;" @click="askFormater"><i class="fa fa-key"></i> Demander accès formater</a>
-     
+		   <!--   <a v-if="!isFormater && !alreadyAsk"   :style="{'--color': $store.state.style.primary}" style="margin-right:10px;" @click="msg = true"><i class="fa fa-key"></i> {{$t('limited_access')}}</a>
+      -->
 		    <a   @click="logout"   :title="$t('logout')" :style="{'--color': $store.state.style.primary}">
 		    <i class="fa fa-sign-out" ></i> 
 		    {{$t('logout')}}</a>
@@ -37,11 +40,13 @@
 </template>
 <script>
 import FormaterService from '@/components/formater-service.vue'
+import FormaterUser from '@/components/formater-user.vue'
 import jwt_decode from 'jwt-decode'
 export default {
   name: 'FormaterAuthentication',
   components: {
-    FormaterService
+    FormaterService,
+    FormaterUser
   },
   props: {
   },
@@ -81,6 +86,9 @@ export default {
     currentService () {
       return this.$store.getters['services/current']
     },
+    isFormater () {
+      return this.$store.getters['user/isFormater']
+    },
     services () {
       return this.$store.getters['services/all']
     }
@@ -90,7 +98,8 @@ export default {
       codeListener: null,
       searching: false,
       popup: null,
-      alreadyAsk: false
+      alreadyAsk: false,
+      msg: false
      // iframe: null
     }
   },
@@ -105,13 +114,6 @@ export default {
     this.codeListener = null
   },
   methods: {
-   askFormater () {
-     var postdata = {
-         email: this.email,
-         app: null,
-         role: this.$store.getters['user/formaterRole']
-     }
-   },
    loginParams (redirectUrl) {
      return this.$store.getters['user/loginParams'](redirectUrl, true)
    },
@@ -247,6 +249,7 @@ export default {
 .mtdt-authentication  i {
   vertical-align:middle;
 }*/
+
 .mtdt-authentication .mtdt-user {
   display: inline-block;
   pointer-events:auto;
