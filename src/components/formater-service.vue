@@ -32,7 +32,7 @@
  <div  style="text-align:right;" ><i class="fa fa-close" style="cursor: pointer;" @click="close"></i></div>
  <div class="mtdt-msg-title" >Important!</div>
  
-  <div v-if="$store.state.geonetwork && !email" 
+ <!--   <div v-if="$store.state.geonetwork && !email" 
   v-html="$t('need_log', {domain: service.domain})"></div>
    <div v-else-if="hasExpired" v-html="$t('session_expire', {domain: service.domain})">
   </div>
@@ -41,14 +41,23 @@
   
   <div v-else="$store.state.metadata" 
     v-html="$t('log_service', {domain: service.domain})"></div>
-  
+  -->
+  <div v-if="!email" 
+  v-html="$t('need_log', {domain: service.domain})"></div>
+   <div v-else-if="hasExpired" v-html="$t('session_expire', {domain: service.domain})">
+  </div>
+  <div v-else="email && isFormater"
+   v-html="$t('need_authorize', {domain: service.domain})">
+   </div>
    <div class="mtdt-service-button" :class="{searching: searching}" v-show="clientId && service.token === null"
      @click="searchCode" >
-   <span v-if="$store.state.metadata">{{$t('login')}}</span>
-   <span v-else-if="email">{{$t('authorize')}}</span>
-</div>
+	   <!--  <span v-if="$store.state.metadata">{{$t('login')}}</span> -->
+	   <span v-if="email && isFormater">{{$t('authorize')}}</span>
+   </div>
  </div>
- <div v-if="!$store.state.metadata && email" class="mtdt-service-button" :class="{searching: searching}" v-show="clientId">
+ <!--  <div v-if="!$store.state.metadata && email" class="mtdt-service-button" :class="{searching: searching}" v-show="clientId">
+  -->
+ <div v-if="email" class="mtdt-service-button" :class="{searching: searching}" v-show="clientId">
 
    <a v-if="service.token" class="mtdt-menu-item" 
    @click="logout" :style="{'--color': $store.state.style.primary}">
@@ -66,7 +75,7 @@
       <i  class="fa fa-ban"></i>
    </a>
 </div>
-<div class="mtdt-service-button" v-if="$store.state.metadata"
+<!--  <div class="mtdt-service-button" v-if="$store.state.metadata"
 :class="{searching: searching}" >
   <span v-if="identity">{{identity.email}}</span>
    <a  v-if="!service.token" @click="searchCode" 
@@ -79,7 +88,7 @@
 	 <i class="fa fa-sign-out" style="font-size:1.5rem;"></i>
 	  {{$t('logout')}} 
 	 </a>
- </div>
+ </div>-->
 </span>
 </template>
 <script>

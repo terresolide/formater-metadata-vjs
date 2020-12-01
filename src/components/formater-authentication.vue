@@ -18,7 +18,8 @@
     <formater-service v-show="currentService === index"
      v-for="(service, index) in services" :key="index" :service="service">
      </formater-service>
-     <div v-if="!$store.state.metadata" class="mtdt-user" :class="{searching: searching}"> 
+   <!--    <div v-if="!$store.state.metadata" class="mtdt-user" :class="{searching: searching}"> -->
+     <div  class="mtdt-user" :class="{searching: searching}"> 
       <formater-user v-if="email"></formater-user>
 		  <span   v-if="email">
 		   <!--   <a v-if="!isFormater && !alreadyAsk"   :style="{'--color': $store.state.style.primary}" style="margin-right:10px;" @click="msg = true"><i class="fa fa-key"></i> {{$t('limited_access')}}</a>
@@ -27,12 +28,12 @@
 		    <i class="fa fa-sign-out" ></i> 
 		    {{$t('logout')}}</a>
 		  </span>
-		  <span  v-else>
+		 <span  v-else>
 		    <a @click="login"   title="login" :style="{'--color': $store.state.style.primary}">
 		    <i class="fa fa-sign-in" style="font-size:1.2rem;vertical-align:middle;"></i> 
 		    {{$t('login')}}
 		    </a>
-	     </span>
+	    </span>
 	  </div>
 	 <!--  <i class="fa fa-user" :style="{color:$store.state.style.primary}"></i>  -->
  </span>
