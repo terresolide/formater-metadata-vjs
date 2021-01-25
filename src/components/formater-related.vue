@@ -309,8 +309,6 @@
       if (!this.layers) {
         return
       }
-      console.log(this.$store.getters['layers/all'])
-      console.log(this.depth)
       if (this.depth !== -1) {
 	      this.layers.forEach(function (layer) {
 	        if (_this.$store.getters['layers/isAdded'](layer.id)) {

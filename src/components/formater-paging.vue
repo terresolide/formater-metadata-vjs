@@ -77,12 +77,16 @@ export default {
     $route (newvalue) {
       if (newvalue.query.from && newvalue.query.to) {
         this.recordPerPage = newvalue.query.to - newvalue.query.from + 1
+        this.updateRecordsPerPage(this.recordByLine)
       } else {
         this.recordPerPage = this.$store.state.size.nbRecord
       }
     }
   },
   created: function() {
+//     if (this.$route.query.from) {
+//       this.recordPerPage = this.$route.query.to - this.$route.query.from + 1
+//     }
     this.updateRecordsPerPage(this.recordByLine)
     if (this.$route && this.$route.query.from && this.$route.query.to) {
       this.recordPerPage = parseInt(this.$route.query.to) - parseInt(this.$route.query.from) + 1
@@ -182,7 +186,8 @@ export default {
      }
    },
    updateRecordsPerPage (recordsByLine) {
-    // var isCurrent = (this.$store.state.currentUuid === this.uuid)
+    // var isCurrent = (this.$store.state.currentUuid === this.uuid
+    // var line = this.recordPerPage / recordsByLine
      var options = {}
      var i = 1
      var nbRecords = recordsByLine * i
@@ -191,9 +196,9 @@ export default {
          // keep the value in list of options
          options[this.recordPerPage] = this.recordPerPage + ' ' + this.$t('per_page')
        }
-		options[nbRecords] = nbRecords + ' ' + this.$t('per_page')
-		i++
-		nbRecords = recordsByLine * i
+			options[nbRecords] = nbRecords + ' ' + this.$t('per_page')
+			i++
+			nbRecords = recordsByLine * i
      }
     // if (isCurrent) {
        // change the record per page only for the current metadata

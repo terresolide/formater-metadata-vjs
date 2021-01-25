@@ -134,6 +134,9 @@ export default {
       return L.latLngBounds(
           [this.$store.state.selectArea.south, this.$store.state.selectArea.west],
           [this.$store.state.selectArea.north, this.$store.state.selectArea.east])
+    },
+    currentUuid () {
+      return this.$route.params.uuid
     }
   },
   methods: {
@@ -285,8 +288,8 @@ export default {
      // layerObj.options._bearer = 'mon bearer'
      var newLayer = L.tileLayer.wms(layerObj.href, layerObj.options)
      this.addLayerToMap(layerObj.options.id, metaId, newLayer, zoom)
-     // Add legend if there is specific legend with the layer
-     if (layerObj.options.legend && layerObj.id.indexOf(this.$store.state.currentUuid) >= 0) {
+     // Add legend if there is specific legend with the layer and only one metadata
+     if (layerObj.options.legend && this.currentUuid && layerObj.id.indexOf(this.currentUuid) >= 0) {
        this.legendControl.addLegend(this.$store.state.currentUuid, layerObj.id, layerObj.options.legend.src)
      }
    },
@@ -462,19 +465,23 @@ export default {
         // this.selectBbox(event)
      }
      this.$store.commit('searchAreaChange', this.bounds)
-     if (event.detail && event.detail.meta && event.detail.meta.legend) {
-       // case global legend in meta (the same for all layers attached to metadata) 
-       // case flatsim
-       this.legendControl.addLegend(event.detail.meta.id, '0', event.detail.meta.legend)
-     } else {
-      var _this = this
-      this.layers.forEach( function (layer, index) {
-         // case one legend for each layer 
-         if (index.indexOf(event.detail.meta.id) >= 0 && layer.options.legend) {
-           _this.legendControl.addLegend(event.detail.meta.id, index, layer.options.legend.src)
-         }
-       })
-     }
+//      if (event.detail && event.detail.meta && event.detail.meta.legend) {
+//        // case global legend in meta (the same for all layers attached to metadata) 
+//        // case flatsim
+//        console.log('FLATSIM')
+//        this.legendControl.addLegend(event.detail.meta.id, '0', event.detail.meta.legend)
+//      } else {
+//       var _this = this
+//       console.log('SHOM')
+//       console.log(this.layers)
+//       this.layers.forEach( function (layer, index, map) {
+//          // case one legend for each layer 
+//          console.log(layer)
+//          if (index.indexOf(event.detail.meta.id) >= 0 && layer.options.legend) {
+//            _this.legendControl.addLegend(event.detail.meta.id, index, layer.options.legend.src)
+//          }
+//        })
+//     }
      // this.seeOnlyCurrent(event.detail.meta.id)
 
    },
@@ -484,7 +491,8 @@ export default {
 //          layer.remove()
 //        })
 //      }
-     this.clearLayers();
+    this.legendControl.removeAll()
+    this.clearLayers();
     if (!event.detail.metadata) {
       // no child
       return
