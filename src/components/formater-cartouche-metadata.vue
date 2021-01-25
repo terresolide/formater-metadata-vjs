@@ -122,7 +122,7 @@ export default {
 	      this.$store.commit('newRoute', this.$route)
         this.$router.push({name:'Metadata', params: {uuid: this.meta.id}, query: query})
       } else {
-        var event = new CustomEvent('fmt:metadataEvent', {detail: {meta:this.meta, depth: 2 } })
+        var event = new CustomEvent('fmt:metadataEvent', {detail: {meta:this.meta, depth: -1 } })
         document.dispatchEvent(event)
         this.$store.commit('selectMetadata', this.meta)
       }

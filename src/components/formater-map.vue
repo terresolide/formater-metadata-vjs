@@ -377,11 +377,27 @@ export default {
 //    },
    receiveSingleMeta (event) {
      console.log('RECEIVE SINGLE METADATA')
-     // HIDE GLOBAL BBOX AND LAYERS
+     // LAYERS : show only this metadata layers, remove the others
+       this.legendControl.removeAll()
+       if (event.detail && event.detail.meta && event.detail.meta.legend) {
+	       // case global legend in meta (the same for all layers attached to metadata) 
+	       // case flatsim
+	       this.legendControl.addLegend(event.detail.meta.id, '0', event.detail.meta.legend)
+       }
+       this.layers.forEach(function (layer, key, map) {
+          var find = event.detail.meta.layers.find(ly => ly.id === key)
+          if (!find) {
+            layer.remove()
+          } else {
+            console.log(find)
+            console.log(layer)
+          }
+       })
+       
+     // HIDE GLOBAL BBOX 
        this.hideBboxLayers()
-       this.hideLayers()
+       
      // SHOW SINGLE BBOX 
-      console.log(event)
        if (event.detail.meta.geoBox) {
          this.single.bbox = L.polygon(
              this.$gn.bboxString2Array(event.detail.meta.geoBox),
@@ -403,7 +419,6 @@ export default {
          })
          this.single.bounds = bounds
        }
-       
        this.single.bbox.addTo(this.map)
        this.map.fitBounds(this.single.bounds)
        
@@ -413,7 +428,7 @@ export default {
      console.log('receive lonely metadata')
      // case selectMeta in same page depth === 2
      // hide bboxLayer and layers
-     if (event.detail.depth && event.detail.depth === 2) {
+     if (event.detail.depth && event.detail.depth === -1) {
        this.receiveSingleMeta(event)
        return
      }

@@ -233,7 +233,6 @@
       layerAdded () {
         var layerAdded = false
         var _this = this
-        console.log('LAYER ADDED')
         this.layers.forEach(function (layer) {
           layerAdded = layerAdded || layer.checked
         })
@@ -259,8 +258,8 @@
       isSelected (newvalue) {
         if (newvalue) {
           console.log(this.layers)
+          console.log(this.$store.getters['layers/all'])
           this.layers.forEach(function (layer) {
-            console.log(layer)
             if (_this.$store.getters['layers/isAdded'](layer.id)) {
               _this.changeLayer(layer, false)
             }
@@ -310,11 +309,15 @@
       if (!this.layers) {
         return
       }
-      this.layers.forEach(function (layer) {
-        if (_this.$store.getters['layers/isAdded'](layer.id)) {
-          _this.changeLayer(layer, false)
-        }
-      })
+      console.log(this.$store.getters['layers/all'])
+      console.log(this.depth)
+      if (this.depth !== -1) {
+	      this.layers.forEach(function (layer) {
+	        if (_this.$store.getters['layers/isAdded'](layer.id)) {
+	          _this.changeLayer(layer, false)
+	        }
+	      })
+      }
     },
     methods: {
       abortRequest () {

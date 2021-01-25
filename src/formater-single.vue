@@ -215,7 +215,7 @@ export default {
       }
     },
     closeSingle () {
-      var event = new CustomEvent('fmt:closeMetadataEvent', {detail: {depth: 2}})
+      var event = new CustomEvent('fmt:closeMetadataEvent', {detail: {depth: -1}})
       document.dispatchEvent(event)
       this.$store.commit('resetSelectedMetadata')
     },

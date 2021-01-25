@@ -14,7 +14,8 @@ export default {
       } else {
         return false
       }
-    }
+    },
+    all: (state) => { return state.layers}
   },
   mutations: {
     addLayer (state, layerId) {

@@ -230,7 +230,10 @@ export default {
          resp => this.setToken(resp.body), 
          resp => {
            console.log(resp)
-           alert('xxx')
+           switch (resp.status) {
+           
+           }
+           alert('SERVER RESPONSE ' + resp.status + ' - ' + resp.statusText)
            this.searching = false
          }
       )

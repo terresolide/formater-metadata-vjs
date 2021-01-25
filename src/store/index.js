@@ -264,10 +264,10 @@ export default function makeStore( config ) {
         state.error = null
       },
       selectMetadata (state, metadata) {
-    	state.selectedMetadata = metadata
+    	  state.selectedMetadata = metadata
       },
       resetSelectedMetadata (state) {
-    	state.selectedMetadata = null
+    	  state.selectedMetadata = null
       }
     },
     getters: {
