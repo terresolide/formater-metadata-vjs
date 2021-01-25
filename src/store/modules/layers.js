@@ -28,6 +28,9 @@ export default {
 //      if (Object.keys(state.layers[obj.metaId]).length === 0) {
 //        delete state.layers[obj.metaId]
 //      }
+    },
+    init (state) {
+      state.layers = {}
     }
   }
 }

@@ -195,6 +195,7 @@ export default {
     treatmentSingle(data) {
       var uuid = data['geonet:info'].uuid
       this.metadata = this.$gn.treatmentMetadata(data, uuid)
+      this.metadata.appRoot = true
       var feature = this.$gn.extractBbox(data.geoBox, uuid)
       this.$router.replace({name: this.$route.name, params: {uuid: uuid}, query: this.$route.query})
       var event = new CustomEvent('fmt:metadataEvent', {detail:  {meta: this.metadata, feature:feature}})

@@ -137,6 +137,9 @@ export default {
     },
     currentUuid () {
       return this.$route.params.uuid
+    },
+    selectedMetadata () {
+      return this.$store.state.selectedMetadata
     }
   },
   methods: {
@@ -291,6 +294,8 @@ export default {
      // Add legend if there is specific legend with the layer and only one metadata
      if (layerObj.options.legend && this.currentUuid && layerObj.id.indexOf(this.currentUuid) >= 0) {
        this.legendControl.addLegend(this.$store.state.currentUuid, layerObj.id, layerObj.options.legend.src)
+     } else if (this.selectedMetadata && this.selectedMetadata.legend) {
+       this.legendControl.addLegend(this.selectedMetadata.id,'0', this.selectedMetadata.legend)
      }
    },
    addLayerToMap(id, groupId, newLayer, zoom) {
@@ -382,17 +387,20 @@ export default {
      console.log('RECEIVE SINGLE METADATA')
      // LEGEND remove all
       this.legendControl.removeAll()
+      var _this = this
      // LAYERS : show only this metadata layers, remove the others
+     var countLayer = 0
       this.layers.forEach(function (layer, key, map) {
          var find = event.detail.meta.layers.find(ly => ly.id === key)
          if (!find) {
            layer.remove()
          } else {
-           // ADD LEGEND ASSOCIATED TO LAYER
-           console.log(find)
-           console.log(layer)
+           countLayer++
          }
       })
+      if (countLayer > 0 && event.detail.meta.legend) {
+        this.legendControl.addLegend(event.detail.meta.id, '0', event.detail.meta.legend)
+      }
      // LEGEND ADD GLOBAL 
      // HIDE GLOBAL BBOX 
        this.hideBboxLayers()
@@ -465,12 +473,13 @@ export default {
         // this.selectBbox(event)
      }
      this.$store.commit('searchAreaChange', this.bounds)
-//      if (event.detail && event.detail.meta && event.detail.meta.legend) {
-//        // case global legend in meta (the same for all layers attached to metadata) 
-//        // case flatsim
-//        console.log('FLATSIM')
-//        this.legendControl.addLegend(event.detail.meta.id, '0', event.detail.meta.legend)
-//      } else {
+     if (event.detail && event.detail.meta && event.detail.meta.legend) {
+       // case global legend in meta (the same for all layers attached to metadata) 
+       // case flatsim
+       console.log('FLATSIM')
+       this.legendControl.addLegend(event.detail.meta.id, '0', event.detail.meta.legend)
+     } 
+//      else {
 //       var _this = this
 //       console.log('SHOM')
 //       console.log(this.layers)
@@ -629,6 +638,7 @@ export default {
        this.single.bbox = null
        this.single.bounds = null
      }
+     this.legendControl.removeAll()
      this.seeAllLayers()
      this.showBboxLayers()
      if (this.bounds) {

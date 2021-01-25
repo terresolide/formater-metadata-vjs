@@ -46,7 +46,7 @@ export default {
   },
   methods: {
 	selectPlatform (index) {
-	  var event = new CustomEvent('fmt:metadataEvent', {detail: {meta: this.platforms[index], depth: 2 } })
+	  var event = new CustomEvent('fmt:metadataEvent', {detail: {meta: this.platforms[index], depth: -1 } })
     document.dispatchEvent(event)
 		this.$store.commit('selectMetadata', this.platforms[index])
 	},

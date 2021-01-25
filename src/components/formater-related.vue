@@ -257,8 +257,6 @@
     watch: {
       isSelected (newvalue) {
         if (newvalue) {
-          console.log(this.layers)
-          console.log(this.$store.getters['layers/all'])
           this.layers.forEach(function (layer) {
             if (_this.$store.getters['layers/isAdded'](layer.id)) {
               _this.changeLayer(layer, false)
