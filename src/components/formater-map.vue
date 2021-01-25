@@ -377,23 +377,19 @@ export default {
 //    },
    receiveSingleMeta (event) {
      console.log('RECEIVE SINGLE METADATA')
+     // LEGEND remove all
+      this.legendControl.removeAll()
      // LAYERS : show only this metadata layers, remove the others
-       this.legendControl.removeAll()
-       if (event.detail && event.detail.meta && event.detail.meta.legend) {
-	       // case global legend in meta (the same for all layers attached to metadata) 
-	       // case flatsim
-	       this.legendControl.addLegend(event.detail.meta.id, '0', event.detail.meta.legend)
-       }
-       this.layers.forEach(function (layer, key, map) {
-          var find = event.detail.meta.layers.find(ly => ly.id === key)
-          if (!find) {
-            layer.remove()
-          } else {
-            console.log(find)
-            console.log(layer)
-          }
-       })
-       
+      this.layers.forEach(function (layer, key, map) {
+         var find = event.detail.meta.layers.find(ly => ly.id === key)
+         if (!find) {
+           layer.remove()
+         } else {
+           console.log(find)
+           console.log(layer)
+         }
+      })
+     // LEGEND ADD GLOBAL 
      // HIDE GLOBAL BBOX 
        this.hideBboxLayers()
        
