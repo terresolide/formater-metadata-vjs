@@ -20,7 +20,7 @@
     "preview": "Visualisation",
     "public_data": "Données publiques",
     "register": "S'inscrire",
-    "wait_validation": "Votre demande a bien été enregistrée auprès de nos services. Un email vous a été envoyé. Elle sera traité le plus rapidement possible."
+    "wait_validation": "Votre demande a bien été enregistrée auprès de nos services. Un email vous a été envoyé. Elle sera traitée le plus rapidement possible."
   }
 }
 </i18n>

@@ -21,7 +21,7 @@ L.Control.Fullscreen = require('../modules/leaflet.control.fullscreen.js')
 L.Control.Legend = require('../modules/leaflet.control.legend.js')
 
 const getReader = () => import('../modules/capabilities-reader.js')
-const getProj4 = () => import('proj4')
+// const getProj4 = () => import('proj4')
 
 
 // import {Map, Control, LatLng, tileLayer, TileLayer} from 'leaflet'
@@ -248,14 +248,14 @@ export default {
        url += '&outputFormat=' +encodeURIComponent('application/vnd.google-earth.kml+xml')
 
 
-       this.$http.get('http://api.formater/interface-services/kmlFeature.php?url=' + encodeURIComponent(url)).then(
-           response => {
-             const parser = new DOMParser();
-             const kml = parser.parseFromString(response.body, 'text/xml');
-             var newLayer = new L.KML(kml)
-             this.addLayerToMap(layer.id, metaId, newLayer, zoom)
-           }
-       )
+//        this.$http.get('http://api.formater/interface-services/kmlFeature.php?url=' + encodeURIComponent(url)).then(
+//            response => {
+//              const parser = new DOMParser();
+//              const kml = parser.parseFromString(response.body, 'text/xml');
+//              var newLayer = new L.KML(kml)
+//              this.addLayerToMap(layer.id, metaId, newLayer, zoom)
+//            }
+//        )
        break;
      case 'OGC:KML':
      case 'OGC:OWS':
@@ -291,7 +291,6 @@ export default {
      }
    },
    addLayerToMap(id, groupId, newLayer, zoom) {
-     console.log(id)
      if (newLayer) {
        newLayer.addTo(this.map)
        newLayer.bringToFront()

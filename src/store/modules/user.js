@@ -130,7 +130,6 @@ export default {
       var date = new Date()
       var y = date.getYear() + ''
       var str = obj.clientId + date.getMonth() + '_' + date.getDate()
-      console.log('formaterRole = ', obj.formaterRole)
       state.formaterRole = obj.formaterRole
       state.ssoUrl = obj.ssoUrl
       state.clientId = obj.clientId

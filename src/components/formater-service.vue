@@ -8,7 +8,7 @@
     "log_to": "Se connecter au service {domain}",
     "login": "Se connecter",
     "logout": "Se déconnecter",
-    "need_authorize": "Pour accéder à toutes les données du service <b>{domain}</b>, vous devez l'autoriser à accéder à vos données.",
+    "need_authorize": "Pour accéder à toutes les données du service <b>{domain}</b>, vous devez l'autoriser à accéder à vos données (email, nom, rôles).",
     "need_log": "Pour accéder à toutes les données du service <b>{domain}</b>, vous devez<ul><li>vous connecter</li><li>puis, si vous avez <b>les droits suffisants</b>, autoriser ce service à accéder à vos données.</li>",
     "session_expire": "Votre session auprès de <b>{domain}</b> a expiré.<br />Vous devez vous reconnecter."
   },
@@ -20,7 +20,7 @@
     "log_to": "Sign in the {domain} service",
     "login": "Sign in",
     "logout": "Se déconnecter",
-    "need_authorize": "To access data of <b>{domain}</b> service,<br /> you must authorize this service to access your personnal data.",
+    "need_authorize": "To access data of <b>{domain}</b> service,<br /> you must authorize this service to access your personnal data (email, name, roles).",
     "need_log": "To access data of <b>{domain}</b>  service,<br /> you must login in then, if you have sufficient rights, you must authorize this service to access your personnal data.",
     "session_expire": "Your session width <b>{domain}</b> has expired.<br /> You need to log back in."
   }
