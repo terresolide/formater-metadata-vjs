@@ -385,6 +385,7 @@ export default {
          if (!find) {
            layer.remove()
          } else {
+           // ADD LEGEND ASSOCIATED TO LAYER
            console.log(find)
            console.log(layer)
          }
