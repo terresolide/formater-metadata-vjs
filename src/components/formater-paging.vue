@@ -276,8 +276,8 @@ export default {
    emitChange() {
      var to = this.from + this.recordPerPage - 1
      var detail = {
-         from: this.from,
-         to: to
+         from: Math.round(this.from),
+         to: Math.round(to)
      }
      if (this.type === 'geonetwork') {
        detail.sortBy = this.sortBy
