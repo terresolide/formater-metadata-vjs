@@ -70,10 +70,18 @@ export default {
   },
   methods: {
      load() {
+       console.log(this.describe)
        this.$http.get(this.describe)
        .then(
            response => { this.extractDescribeParameters(response.body);},
-           response => { this.loadWithProxy()}
+           response => { 
+             if (response.status === 403 || response.status === 401 || response.status === 400) {
+               console.log('CAN NOT GET ' + this.describe)
+               this.$emit('failed')
+               return
+             }
+             this.loadWithProxy()
+           }
         )
     },
     loadWithProxy() {
