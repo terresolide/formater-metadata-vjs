@@ -2,7 +2,8 @@
 {
   "en": {
     "access_rights": "Your access rights",
-    "access_to_formater": "Access to ForM@Ter data is reserved for the <b>French scientific community</b>. To be able to access it, you must make a request by clicking on <b>&laquo;register&raquo;</b>.",
+    "access_request": "Access request",
+    "access_to_formater": "Access to ForM@Ter data is reserved for the <b>French scientific community</b>. To be able to access it, you must make a request by clicking on <b>&laquo;Access request&raquo;</b>.",
     "download": "Download",
     "email": "Email",
     "formater_data": "ForM@Ter data",
@@ -13,7 +14,8 @@
   },
   "fr": {
     "access_rights": "Vos droits d'accès",
-    "access_to_formater": "L'accès aux données ForM@Ter est réservé à la <b>communauté scientifique française</b>. Pour pouvoir y accéder, vous devez faire une demande en cliquant sur <b>&laquo;s'inscrire&raquo;</b>.",
+    "access_request": "Demande d'accès",
+    "access_to_formater": "L'accès aux données ForM@Ter est réservé à la <b>communauté scientifique française</b>. Pour pouvoir y accéder, vous devez faire une demande en cliquant sur <b>&laquo;Demande d'accès&raquo;</b>.",
     "download": "Téléchargement",
     "email": "Email",
     "formater_data": "Données ForM@Ter",
@@ -41,11 +43,11 @@
    
    </h4>-->
    
-   <table style="border:none;" cellspacing="0" cellpadding="0">
+   <table style="border:none;" cellspacing="0" cellpadding="5">
    <thead>
      <th></th>
-     <th>{{$t('preview')}}</th>
-     <th>{{$t('download')}}</th>
+     <th style="padding:0 4px;">{{$t('preview')}}</th>
+     <th style="padding:0 4px;">{{$t('download')}}</th>
      <th></th>
    </thead>
    <tbody>
@@ -54,10 +56,10 @@
 	     {{$t('public_data')}}
 	     </td>
 	     <td class="fmt-center">
-	       <i class="fa fa-check-square-o"></i>
+	       <i class="fa fa-check"></i>
 	     </td>
        <td class="fmt-center">
-         <i class="fa fa-check-square-o"></i>
+         <i class="fa fa-check"></i>
        </td>
 	     <td></td>
       </tr>
@@ -66,13 +68,13 @@
          {{$t('formater_data')}}
         </td>
         <td class="fmt-center">
-          <i class="fa" :class="{'fa-square-o': !isFormater, 'fa-check-square-o': isFormater} "></i>
+          <i class="fa" :class="{'fa-close': !isFormater, 'fa-check': isFormater} "></i>
         </td>
         <td class="fmt-center">
-          <i class="fa" :class="{'fa-square-o': !isFormater, 'fa-check-square-o': isFormater} "></i>
+          <i class="fa" :class="{'fa-close': !isFormater, 'fa-check': isFormater} "></i>
         </td>
         <td><span v-if="!isFormater && !alreadyAsk && hasCheckSSO" 
-        class="fmt-button" :style="{background: $store.state.style.primary}" @click="accessRequest">S'inscrire</span></td>
+        class="fmt-button" :style="{background: $store.state.style.primary}" @click="accessRequest">{{$t('access_request')}}</span></td>
       </tr>
    </tbody>
    </table>
