@@ -73,10 +73,11 @@ const GeonetworkPlugin = {
              var links = this.strToArray(linkArr)
              var self = this
              var response = {}
+             console.log(local)
              // keep length 7 if 
              links.forEach(function (link, index) {
                // length === 7 for the translation
-               if (!local || (link.length === 6 && local )) {
+               if ((!local && link.length > 6) || (link.length === 6 && local )) {
                switch (link[3]) {
                  case 'OpenSearch':
                    response.api = {}
@@ -90,13 +91,15 @@ const GeonetworkPlugin = {
                  case 'OGC:OWS':
                  case 'OGC:OWS-C':
                  case 'GLG:KML-2.0-http-get-map':
-                   if (link.length < 7) {
+                    if ((!local && link.length >=7) || (local && link.length === 6)) {
                      if (!response.layers) {
                        response.layers = []
                      }
                      var id = metaId + '_' + index
                      response.layers.push(self.linkToLayer(link, id))
-                   }
+                    }
+                   break;
+                 case 'application/vnd.google-earth.kml+xml':
                    break;
                  case 'WWW:DOWNLOAD-1.0-link--download':
                  case 'telechargement':

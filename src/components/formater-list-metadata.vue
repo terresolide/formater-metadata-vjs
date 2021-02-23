@@ -81,9 +81,10 @@ export default {
        this.$store.commit('searchingChange', true)
         var headers =  {
           'Accept': 'application/json, text/plain, */*',
+          // 'Accept-Language': 'eng'
           'Accept-Language': this.$i18n.locale === 'fr' ? 'fre': 'eng'
         }
-        var url = this.$store.state.geonetwork + 'srv/api/related?type=children&type=parent&type=associated&type=siblings'
+        var url = this.$store.state.geonetwork + 'srv/api/related?type=associated&type=siblings'
         url += '&uuid=' + Object.keys(this.metadatas).join('&uuid=')
         var self = this
         this.$http.get(url, {
@@ -104,6 +105,8 @@ export default {
              }
            }
            if (count > 0) {
+             console.log(key)
+             console.log(related[key])
              this.$set(this.metadatas[key],'related', related[key])
            }
          }

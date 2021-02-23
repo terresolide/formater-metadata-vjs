@@ -600,6 +600,7 @@
     z-index:100;
     height:auto;
     min-width:200px;
+    max-width:320px;
     background:white;
     padding:5px;
     border-radius:3px;
@@ -631,6 +632,9 @@
 .mtdt-related-metadata .mtdt-expand ul {
   display:inline;
 }
+  .mtdt-related-cartouche .mtdt-expand ul li {
+     word-break: break-word;
+  }
  .mtdt-related-metadata .mtdt-expand ul li {
  word-break: break-word;
   padding: 2px;

@@ -2,7 +2,7 @@
 <template>
   <span class="mtdt-keywords" >
   <span>
-    <span class="mtdt-keyword" v-for="(item, key) in keywords">{{item}}</span>
+    <span class="mtdt-keyword" v-for="(item, key) in words">{{item.split('|')[0]}}</span>
   </span>
   </span>
 </template>
@@ -13,7 +13,18 @@ export default{
       type: Array,
       default: () => []
     }
+  },
+  computed: {
+    words () {
+      var list = []
+      this.keywords.forEach(function (item) {
+        var tab = item.split('|')
+        list.push(tab[tab.length - 1])
+      })
+      return list
+    }
   }
+  
 }
 </script>
 <style>
