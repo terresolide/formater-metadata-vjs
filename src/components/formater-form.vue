@@ -7,6 +7,7 @@
      "groupOwners": "Data center",
      "gemetKeywords": "Inspire Gemet Keywords",
      "formaterVariable": "Variables",
+     "formaterPlatform": "Platforms",
      "parameters": "Parameters"
    },
    "fr":{
@@ -17,6 +18,7 @@
       "groupOwners": "Centre de données",
       "gemetKeywords": "Inspire Gemet Keywords",
       "formaterVariable": "Variables",
+      "formaterPlatform": "Plateformes",
       "parameters": "Paramètres"
    }
 }
@@ -88,6 +90,7 @@ var iconClass = {
     facetFormater: 'fa fa-thermometer-half',
     facetFormaterFre: 'fa fa-thermometer-half',
     facetPlatform: 'fa fa-rocket',
+    facetPlatformFre: 'fa fa-rocket',
     facetInstrument: 'fa fa-calculator'
 }
 // import {FormaterSearchBox} from 'formater-commons-components-vjs'
