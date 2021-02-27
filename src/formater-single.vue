@@ -186,6 +186,7 @@ export default {
 //       fast: 'index', // more quick
 //    //  'facet.q': '',
 //      bucket: 's101',
+// get json https://demo.formater/geonetwork/srv/eng/md.format.json?uuid=86a28260-dc26-4b40-8433-9d06e9b9e628&xsl=jsonld&schema=iso19139
       var url = this.$store.state.geonetwork +  'srv/' + (this.$i18n.locale === 'fr'? 'fre' : 'eng') + '/'
       url +=  'q?fast=index&bucket=s101&resultType=step1&_content_type=json&uuid=' + this.uuid
       this.$http.get(url, {headers: headers}).then(
