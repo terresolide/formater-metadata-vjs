@@ -299,7 +299,7 @@ export default {
         return
       }
       var  newdimensions = this.initializeDimensions(e.detail.summary.dimension)
-      this.updateDimensions(this.dimensions, newdimensions)  
+      this.updateDimensions(this.dimensions, newdimensions, true)  
       if (e.detail.depth === 0) {
         // remove all step2 dimension
         this.removeStep2Dimensions()
@@ -340,7 +340,7 @@ export default {
       })
       return dimension
     },
-    updateDimensions (dimensions, newdimensions) {
+    updateDimensions (dimensions, newdimensions, root) {
       if (!dimensions) {
         return null
       }
@@ -348,7 +348,6 @@ export default {
         newdimensions = [newdimensions]
       }
       var _this = this
-      
       dimensions.forEach(function (dimension, index) {
         var found = newdimensions.find( function (obj) {
           if (obj['@name']) {
@@ -362,13 +361,16 @@ export default {
         } else {
           _this.$set(dimensions[index], '@count', found['@count'])
         }
-        if (dimensions[index].category) {
+        if (dimensions[index].category || (typeof found !== 'undefined' && found.category)) {
 	        var subDimension = []
-	        if ( typeof found !== 'undefined' && found.category) {
+	        if (typeof found !== 'undefined' && found.category) {
 	          subDimension = found.category
 	        }
+	        if (typeof dimensions[index].category === 'undefined') {
+	          dimensions[index].category = []
+	        }
 	        dimensions[index].category = _this.updateDimensions(dimensions[index].category, subDimension, false)
-        }
+        } 
       })
       newdimensions.forEach(function (newdimension, index) {
         var found = dimensions.find( function (obj) {
@@ -378,7 +380,7 @@ export default {
             return obj['@value'] === newdimension['@value'] 
           } 
         })
-        if (!found) {
+        if (!found || (found['@count'] === 'undefined' && root)) {
           dimensions.push(newdimension)
         } 
       })

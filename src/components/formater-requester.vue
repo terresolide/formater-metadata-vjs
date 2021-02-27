@@ -52,7 +52,8 @@ export default {
   },
   created () {
     if (this.$store.state.geonetwork) {
-        this.srv = this.$store.state.geonetwork +  'srv/' + (this.$i18n.locale === 'fr'? 'fre' : 'eng') + '/'
+       this.srv = this.$store.state.geonetwork +  'srv/' + (this.$i18n.locale === 'fr'? 'fre' : 'eng') + '/'
+       // this.srv = this.$store.state.geonetwork +  'srv/fre/'
     }
     this.getRecords(this.$route)
     

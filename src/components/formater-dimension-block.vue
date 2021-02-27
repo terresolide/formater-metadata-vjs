@@ -3,7 +3,7 @@
  <div class="mtdt-dimension-block">
       	
 	      	<formater-dimension :ref="filteredName" :disable="disable" :value="item.value" :checked="item.checked"
-	      	 v-for="(item,index) in dimension" :dimension="item" :key="index" :name="filteredName" @change="change"></formater-dimension>
+	      	 v-for="(item,index) in values" :dimension="item" :key="index" :name="filteredName" @change="change"></formater-dimension>
  </div>
 </template>
 <script>
@@ -69,6 +69,13 @@ export default {
         dimension.checked = checked.indexOf(dimension.value) >= 0
         dimensions.push(dimension)
       }
+      dimensions.sort(function (a, b) {
+        if (a['@label'] < b['@label']) {
+          return -1
+        } else {
+          return 1
+        }
+      })
       this.values = dimensions
     },
     change (event) {

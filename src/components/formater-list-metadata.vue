@@ -105,8 +105,6 @@ export default {
              }
            }
            if (count > 0) {
-             console.log(key)
-             console.log(related[key])
              this.$set(this.metadatas[key],'related', related[key])
            }
          }
