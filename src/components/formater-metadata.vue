@@ -4,7 +4,7 @@
      "complement": "Others informations",
      "temporal_extent": "Temporal extent",
      "search": "Search",
-     "full": "Complete",
+     "full": "Complete view",
      "platform": "Platform"
    },
    "fr":{
@@ -12,7 +12,7 @@
        "complement": "Informations complémentaires",
       "temporal_extent": "Etendue temporelle",
       "search": "Rechercher",
-      "full": "Complète",
+      "full": "Vue complète",
      "platform": "Plateforme"
       
    }
@@ -71,6 +71,7 @@
          :layers="metadata.layers"  :links="metadata.links" :related="metadata.related" :order="metadata.order" :siblings="metadata.siblings"></formater-related>
       </div>-->
       </div>
+      
 
       <div v-show="currentTab === 'full'" >
              <formater-full-metadata :uuid="uuid"></formater-full-metadata>
@@ -134,7 +135,7 @@ export default {
      tabs: {
        search: false,
        main: true,
-       full: false
+       full: true
      },
      uuid: null,
      currentTab: 'main',
