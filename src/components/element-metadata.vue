@@ -1,22 +1,24 @@
 <template>
-<span class="element-metadata" v-if="metadata && Object.keys(metadata).length > 0">
+<span class="element-metadata" style="color:blue;" v-if="metadata && Object.keys(metadata).length > 0">
 
  + &lt;{{name}}<span  v-for="(meta, key) in attr" style="color:red;" > {{key}}="{{meta}}"</span> &gt;
-  <div class="meta-child" > {{text}}</div>
-  <div class="meta-child" v-for="(meta, key) in metadata"  v-if="meta && typeof meta === 'object' && typeof key === 'string'">
-  <element-metadata  :metadata="meta" :name="key"></element-metadata>
-  </div>
-  <div class="meta-child" v-for="(meta, key) in metadata"  v-if="meta && typeof meta === 'object' && typeof key === 'number'">
-    <element-metadata  :metadata="Object.values(meta)[0]" :name="Object.keys(meta)[0]" ></element-metadata>
+  <div class="meta-child" style="color:#333;"> {{text}}</div>
+  <div class="meta-child" v-for="(meta, key) in metadata"  v-if="meta && typeof meta === 'object'">
+    <element-metadata v-if="typeof key === 'string'" :metadata="meta" :name="key"></element-metadata>
+     <element-metadata v-else :metadata="Object.values(meta)[0]" :name="Object.keys(meta)[0]" ></element-metadata>
   </div>
  </span>
 </span>
 </span>
 </template>
 <script>
+const ElementMetadata = () => import('./element-metadata.vue')
 
 export default{
   name: 'ElementMetadata',
+  components: {
+    ElementMetadata
+  },
   props:{
     name: {
       type: String,
@@ -27,16 +29,21 @@ export default{
       default: null
     }
   },
-  watch: {
-    metadata (newvalue) {
-      this.initMeta(newvalue)
-    }
+  computed: {
+//     text () {
+//       return this.metadata.hasOwnProperty['#text'] ? this.metadata['#text'] : null
+//     }
   },
+//   watch: {
+//     metadata (newvalue) {
+//       this.initMeta(newvalue)
+//     }
+//   },
   data () {
     return {
        attr: {},
        text: null,
-       childs: [],
+       childs: {},
        list: []
     }
   },
@@ -44,24 +51,25 @@ export default{
     if (!this.metadata) {
       return
     }
-    if (Object.keys(this.metadata))
-    this.initMeta(this.metadata)
+//     if (Object.keys(this.metadata))
+//     this.initMeta(this.metadata)
 //     var _this = this
-//     for(var key in this.metadata) {
-//       if (typeof key === 'string') {
-// 	      if (key === '#text') {
-// 	        this.text = this.metadata[key]
-// 	      }else if  (key.substring(0, 1) === '@') {
-// 	        if (key.substring(0,6) !== '@xmlns') {
-// 	        this.attr[key.substring(1)] = this.metadata[key]
-// 	        }
-// 	      } else {
-// 	        this.childs[key] = this.metadata[key]
-// 	      }
-//       } else {
-//         this.list.push(this.metadata[key])
-//       }
-//     }
+    for(var key in this.metadata) {
+      if (typeof key === 'string') {
+	      if (key === '#text') {
+	        this.text = this.metadata[key]
+	      }else if  (key.substring(0, 1) === '@') {
+	        if (key.substring(0,6) !== '@xmlns') {
+	        this.attr[key.substring(1)] = this.metadata[key]
+	        }
+	      } else {
+	        this.childs[key] = this.metadata[key]
+	      }
+      } else {
+       // this.list.push(this.metadata[key])
+      }
+    }
+    // console.log(this.text)
 //     if (this.list.length > 0) {
 //        console.log(this.list)
 //     }
@@ -75,7 +83,7 @@ export default{
             this.text = newmeta[key]
           }else if  (key.substring(0, 1) === '@') {
             if (key.substring(0,6) !== '@xmlns') {
-                this.attr[key.substring(1)] = newmeta[key]
+               this.$set(this.attr, key.substring(1), newmeta[key])
             }
           } else {
             this.childs[key] = newmeta[key]
