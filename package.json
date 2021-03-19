@@ -27,6 +27,7 @@
     "easy-promise-queue": "^0.5.7",
     "formater-commons-components-vjs": "github:terresolide/formater-commons-components-vjs",
     "formater-geotiff-visualizer-vjs": "github:terresolide/formater-geotiff-visualizer-vjs",
+    "jsonpath": "^1.1.0",
     "jwt-decode": "^2.2.0",
     "keycloak-js": "^9.0.3",
     "leaflet": "^1.7.1",

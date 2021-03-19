@@ -1,11 +1,15 @@
 <template>
 <span class="fmt-full-metadata">
-@todo xslt A CREER DANS GEONETWORK
-  <div v-html="html"></div>
+  <element-metadata :metadata="metadata"></element-metadata>
 </span>
 </template>
 <script>
+import ElementMetadata from './element-metadata.vue'
 export default{
+  name: 'FormaterFullMetadata',
+  components: {
+    ElementMetadata
+  },
   props:{
     uuid: {
       type: String,
@@ -14,7 +18,7 @@ export default{
   },
   data () {
     return {
-      html: ''
+      metadata: null
     }
   },
   created () {
@@ -31,7 +35,10 @@ export default{
       }
       var url = this.$store.state.geonetwork +  'srv/api/0.1/records/' + this.uuid + '/formatters/json?withInfo=true&attachment=false'
       this.$http.get(url, {headers: headers}).then(
-          response => { console.log(response.body)},
+          response => { 
+            this.metadata = response.body
+            console.log(this.metadata)
+          },
           response => { console.log(response.body)})
      // var url = this.$store.state.geonetwork + 'srv/api/'+  this.$store.state.apiVersion + '/records/' + this.uuid +'/formatters/formater-view?output=xml'
      // this.$http.get(url).then( response => this.display(response.body))

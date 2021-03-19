@@ -135,7 +135,7 @@ export default {
      tabs: {
        search: false,
        main: true,
-       full: true
+       full: false
      },
      uuid: null,
      currentTab: 'main',
@@ -156,8 +156,8 @@ export default {
     moment.locale(this.$i18n.locale)
     if (this.metadata['geonet:info']) {
        this.uuid = this.metadata['geonet:info'].uuid
-       // @todo attendre d'avoir une fiche complete dans geonetwork
-       // this.tabs.full = true
+       // full view for geonetwork metadata
+       this.tabs.full = true
     } else {
        this.uuid = this.metadata.id
        this.type = 'opensearch'
