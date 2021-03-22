@@ -1,3 +1,5 @@
+const JSONPATH = require('jsonpath')
+
 const GeonetworkPlugin = {
     install(Vue, options) {
        Vue.prototype.$gn = {
@@ -19,6 +21,47 @@ const GeonetworkPlugin = {
         	   if (this.facets.indexOf(facet) < 0) {
         	     this.facets.push(facet)
         	   }
+           },
+           extractContacts (json, langs) {
+             return 'machin'
+           },
+           extractDataInfo (metadata, json, idLang) {
+             console.log(json)
+              metadata.title = this.extractFromLangs(
+                   JSONPATH.query(json, "$..['gmd:citation']['gmd:CI_Citation']['gmd:title']"),
+                   idLang)
+              metadata.abstract = this.extractFromLangs(
+                  JSONPATH.query(json, "$..['gmd:abstract']"),
+                  idLang)
+              metadata.identifier = JSONPATH.query(json, "$..['gmd:identifier']..['gco:CharacterString']['#text']")[0]
+//              // var title = JSONPATH.query(json, "$..['gmd:Citation']['gdm:CI_Citation']['gmd:title']['gmd:PT_FreeText']['gmd:textGroup'][?(@.@locale==='#" + idLang +"')]")
+//               var titles = JSONPATH.query(json, "$..['gmd:citation']['gmd:CI_Citation']['gmd:title']..['gmd:LocalisedCharacterString']")
+//               titles.forEach(function (node) {
+//                 if (node['@locale'] === '#' + idLang && node['#text']) {
+//                   metadata.title = node['#text']
+//                 }
+//               })
+//              
+//               console.log(titles)
+//             }
+             metadata.info = 'data infos'
+           },
+           extractFromLangs(json, idLang) {
+             var value = null
+             if (idLang) {
+               var values = JSONPATH.query(json, "$..['gmd:LocalisedCharacterString']")
+               if (values.length > 0) {
+                 values.forEach(function (node) {
+                   if (node['@locale'] === '#' + idLang && node['#text']) {
+                     value = node['#text']
+                   }
+                 })
+               }
+             }
+             if (!value) {
+               value = JSONPATH.query(json, "$..['gco:CharacterString']['#text']")[0]
+             }
+             return value
            },
            getTranslation () {
              if (!this.geonetwork) {

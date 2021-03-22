@@ -61,7 +61,7 @@ import FormaterPaging from './components/formater-paging.vue';
 import FormaterDrawBbox from './components/formater-draw-bbox.vue';
 import AerisTheme from 'aeris-commons-components-vjs/src/aeris-theme/aeris-theme.vue'
 
-
+const JSONPATH = require('jsonpath')
 // prevent previous and next page for browser
 // function disableBack() { window.history.forward() }
 // window.onload = function () {
@@ -117,7 +117,7 @@ export default {
   created () {
     
     this.uuid = this.$route.params.uuid
-    this.getMetadata()
+    this.getFullMetadata()
     // this.$router.push({name: 'FormaterCatalogue'})
     if (this.$route.query.sortBy) {
       this.sortBy = this.$route.query.sortBy
@@ -180,7 +180,7 @@ export default {
       }
       var url = this.$store.state.geonetwork +  'srv/api/0.1/records/' + this.uuid + '/formatters/json?withInfo=true&attachment=false'
       this.$http.get(url, {headers: headers}).then(
-          response => { console.log(response.body)},
+          response => { this.treatmentFull(response.body)},
           response => { console.log(response.body)})
     },
     getMetadata () {
@@ -217,6 +217,51 @@ export default {
       var feature = this.$gn.extractBbox(data.metadata.geoBox, this.uuid)
       var event = new CustomEvent('fmt:metadataEvent', {detail:  {meta: this.metadata, feature:feature}})
       document.dispatchEvent(event)
+    },
+    treatmentFull(data) {
+      var metadata = {
+      }
+      var langs = {}
+      var result = JSONPATH.query(data, '$..["gmd:language"]["gmd:LanguageCode"]')
+      console.log(result)
+      // search main language code
+      var _locale = data['gmd:language']['gmd:LanguageCode']['@codeListValue']
+      metadata.mdLanguage = [_locale]
+      // search if translation
+      var others = data['gmd:locale']
+      var _idLang = null
+      var _this = this
+      if (others.length > 0) {
+        others.forEach(function (locale) {
+          var lg = locale['gmd:PT_Locale']['gmd:languageCode']['gmd:LanguageCode']['@codeListValue'] === 'fre' ? 'fr' : 'en'
+          if (lg === _this.$store.state.lang) {
+            _idLang = locale['gmd:PT_Locale']['@id']
+          }
+          langs[lg] = locale['gmd:PT_Locale']['@id']
+        })
+      }
+      console.log(langs)
+      console.log(_idLang)
+      for(var key in data) {
+        switch(key) {
+         case 'gmd:fileIdentifier':
+           metadata.id = data[key]['gco:CharacterString']['#text']
+           break
+         case 'gmd:hierarchyLevel':
+           metadata.type = data[key]['gmd:MD_ScopeCode']['@codeListValue']
+           break
+         case 'gmd:contact':
+           metadata.contacts = {metadata: this.$gn.extractContacts(data[key]['gmd:CI_ResponsibleParty'])}
+           break
+         case 'gmd:identificationInfo':
+           this.$gn.extractDataInfo(metadata, data[key]['gmd:MD_DataIdentification'], _idLang )
+        }
+      }
+      console.log(metadata)
+//       this.metadata = this.$gn.treatmentFull(data.metadata ,this.uuid)
+//       var feature = this.$gn.extractBbox(data.metadata.geoBox, this.uuid)
+//       var event = new CustomEvent('fmt:metadataEvent', {detail:  {meta: this.metadata, feature:feature}})
+//       document.dispatchEvent(event)
     },
     initTemporalExtent () {
       if(this.$store.state.temporalExtent && this.$store.state.temporalExtent.min) {
