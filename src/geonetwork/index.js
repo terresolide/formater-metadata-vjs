@@ -62,8 +62,11 @@ const GeonetworkPlugin = {
              this.extractExtent(metadata, json['gmd:extent'])
            },
            extractBboxJson (json) {
-             console.log(json)
-             return null
+             var latmin = json['gmd:southBoundLatitude']['gco:Decimal']['#text']
+             var latmax = json['gmd:northBoundLatitude']['gco:Decimal']['#text']
+             var lngmin = json['gmd:westBoundLongitude']['gco:Decimal']['#text']
+             var lngmax = json['gmd:eastBoundLongitude']['gco:Decimal']['#text']
+             return [lngmin, latmin, lngmax, latmax].join('|')
            },
            extractConstraints (json, idLang) {
              if (!json) {
@@ -126,13 +129,13 @@ const GeonetworkPlugin = {
            extractExtent (metadata, json) {
              var geographics = JSONPATH.query(json, "$..['gmd:EX_GeographicBoundingBox']")
              var _this = this
-             if (geographics.length > 0) {
+             if (geographics.length > 1) {
                metadata.geobox = []
                geographics.forEach(function (boxjson) {
                  metadata.geobox.push(_this.extractBboxJson(boxjson))
                })
              } else {
-               metadata.geobox = this.extractBboxJson(geographics)
+               metadata.geobox = this.extractBboxJson(geographics[0])
              }
            },
            extractFormat (metadata, json, idLang) {

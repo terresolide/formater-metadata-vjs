@@ -175,6 +175,7 @@ export default {
       .then(response => { this.treatmentSingle(response.body)})
     },
     getFullMetadata () {
+      this.metadata = null
       // curl -X GET "http://localhost:8280/geonetwork/srv/api/0.1/records/86a28260-dc26-4b40-8433-9d06e9b9e628/formatters/json?withInfo=true&attachment=false" -H  "accept: application/json;charset=utf-8" -H  "Accept: application/json" -H  "X-XSRF-TOKEN: null"
       var headers =  {
           'accept': 'application/json;charset=utf-8',
@@ -227,6 +228,7 @@ export default {
       var langs = {}
       var result = JSONPATH.query(data, '$..["gmd:language"]["gmd:LanguageCode"]')
       console.log(result)
+      metadata['geonet:info'] = {uuid: this.uuid}
       // search main language code
       var _locale = data['gmd:language']['gmd:LanguageCode']['@codeListValue']
       metadata.mdLanguage = [_locale]
@@ -282,8 +284,8 @@ export default {
       console.log(metadata)
       this.metadata = metadata
 //       this.metadata = this.$gn.treatmentFull(data.metadata ,this.uuid)
-      // var feature = this.$gn.extractBbox(metadata.geoBox, this.uuid)
-      var feature = {}
+      var feature = this.$gn.extractBbox(metadata.geobox, this.uuid)
+      console.log(feature)
       var event = new CustomEvent('fmt:metadataEvent', {detail:  {meta: this.metadata, feature:feature}})
       document.dispatchEvent(event)
     },
