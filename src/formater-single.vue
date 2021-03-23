@@ -112,6 +112,7 @@ export default {
         this.$store.commit('backChild')
       }
       this.getFullMetadata()
+     // this.getMetadata()
     }
   },
   created () {

@@ -137,6 +137,16 @@ const GeonetworkPlugin = {
              } else {
                metadata.geobox = this.extractBboxJson(geographics[0])
              }
+             var start = JSONPATH.query(json, "$..['gml:beginPosition']")
+             if (start.length > 0) {
+               metadata.tempExtentBegin = start[0]
+             }
+             var end = JSONPATH.query(json, "$..['gml:endPosition']")
+             if (end.length > 0) {
+               metadata.tempExtentEnd = end[0]
+             }
+             console.log(end)
+             
            },
            extractFormat (metadata, json, idLang) {
              var formats = []
