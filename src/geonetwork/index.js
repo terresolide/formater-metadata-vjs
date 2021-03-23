@@ -22,32 +22,125 @@ const GeonetworkPlugin = {
         	     this.facets.push(facet)
         	   }
            },
-           extractContacts (json, langs) {
-             return 'machin'
-           },
            extractDataInfo (metadata, json, idLang) {
-             console.log(json)
-              metadata.title = this.extractFromLangs(
-                   JSONPATH.query(json, "$..['gmd:citation']['gmd:CI_Citation']['gmd:title']"),
-                   idLang)
-              metadata.abstract = this.extractFromLangs(
-                  JSONPATH.query(json, "$..['gmd:abstract']"),
+             metadata.title = this.extractFromLangs(
+                  JSONPATH.query(json, "$..['gmd:citation']['gmd:CI_Citation']['gmd:title']"),
                   idLang)
-              metadata.identifier = JSONPATH.query(json, "$..['gmd:identifier']..['gco:CharacterString']['#text']")[0]
-//              // var title = JSONPATH.query(json, "$..['gmd:Citation']['gdm:CI_Citation']['gmd:title']['gmd:PT_FreeText']['gmd:textGroup'][?(@.@locale==='#" + idLang +"')]")
-//               var titles = JSONPATH.query(json, "$..['gmd:citation']['gmd:CI_Citation']['gmd:title']..['gmd:LocalisedCharacterString']")
-//               titles.forEach(function (node) {
-//                 if (node['@locale'] === '#' + idLang && node['#text']) {
-//                   metadata.title = node['#text']
-//                 }
-//               })
-//              
-//               console.log(titles)
-//             }
-             metadata.info = 'data infos'
+             var description = this.extractFromLangs(
+                 JSONPATH.query(json, "$..['gmd:abstract']"),
+                 idLang)
+             metadata.description = description.replace(/(?:\\[rn]|[\r\n])/g, '<br />')
+             metadata.status = JSONPATH.query(json,"$..['gmd:status']['gmd:MD_ProgressCode']['@codeListValue']")[0]
+             metadata.identifier = JSONPATH.query(json, "$..['gmd:identifier']..['gco:CharacterString']['#text']")[0]
+            // metadata.dataCenter =
+             metadata.topicCat = json['gmd:topicCategory']['gmd:MD_TopicCategoryCode']
+             metadata.keyword = this.extractKeywords(json['gmd:descriptiveKeywords'], idLang)
+             metadata.images = this.extractImages(json['gmd:graphicOverview'], idLang)
+             var constraints = this.extractConstraints(
+                 JSONPATH.query(json, "$..['gmd:resourceConstraints']..['gmd:MD_LegalConstraints']"),
+                 idLang)
+             if (constraints) {
+               metadata.legalConstraints = constraints
+             }
+             var constraints = this.extractConstraints(
+                 JSONPATH.query(json, "$..['gmd:resourceConstraints']..['gmd:MD_Constraints']"),
+                 idLang)
+             if (constraints) {
+               metadata.constraints = constraints
+             }
+             var contacts = this.extractContacts(
+                 JSONPATH.query(json, "$..['gmd:CI_ResponsibleParty']"),
+                 'resource',
+                 idLang)
+             contacts.forEach(function (contact) {
+               if (metadata.contacts.resource[contact[0]]) {
+                 metadata.contacts.resource[contact[0]].push(contact)
+               } else {
+                 metadata.contacts.resource[contact[0]] = [contact]
+               }
+             })
+           },
+           extractConstraints (json, idLang) {
+             if (!json) {
+               return null
+             }
+             var constraints = []
+             if (!json || json.length === 0) {
+               return null
+             }
+             var _this = this
+             json.forEach (function (node) {
+               var list = node['gmd:otherConstraints']
+               if (list ) {
+                 var list = !list.forEach ? [list] : list
+                 list.forEach(function (constraint) {
+                   constraints.push(_this.extractFromLangs(constraint, idLang))
+                 })
+               }
+               var list = node['gmd:useLimitation']
+               if (list ) {
+                 var list = !list.forEach ? [list] : list
+                 list.forEach(function (constraint) {
+                   constraints.push(_this.extractFromLangs(constraint, idLang))
+                 })
+               }
+             })
+             return constraints
+           },
+           extractContacts (json, type, idLang) {
+             var contacts = []
+             if (!json) {
+               return contacts
+             }
+             if (json.length > 0) {
+               var _this = this
+               json.forEach (function (jsoncontact) {
+                  contacts.push(_this.extractContact(jsoncontact, type, idLang))
+               })
+             } else {
+               contacts.push(this.extractContact(json, type, idLang))
+             }
+             return contacts
+           },
+           extractContact (json, type, idLang) {
+            
+             var role = JSONPATH.query(json, "$..['gmd:CI_RoleCode']['@codeListValue']")[0]
+             var organisation = this.extractFromLangs(
+                 JSONPATH.query(json, "$..['gmd:organisationName']" )[0],
+                 idLang)
+             var name = JSONPATH.query(json, "$..['gmd:individualName']['gco:CharacterString']" )[0]
+             var email = JSONPATH.query(json, "$..['gmd:electronicMailAddress']..['#text']")[0]
+             var address = null
+             var position = null
+             return [role, type, organisation, name, email, position, null, address]
+           },
+           extractDistributionInfo (metadata, json, idLang) {
+             this.extractFormat(metadata, json['gmd:MD_Distribution']['gmd:distributionFormat'], idLang)
+             this.extractLinks (metadata, json, idLang) 
+           },
+           extractExtent (json, idLang) {
+             
+           },
+           extractFormat (metadata, json, idLang) {
+             var formats = []
+             var _this = this
+             var nodes = JSONPATH.query(json, "$..['gmd:MD_Format']")
+             if (nodes === undefined) {
+               return null
+             }
+             if (!nodes.forEach) {
+               nodes = [nodes]
+             }
+             nodes.forEach(function (format) {
+                formats.push(_this.extractFromLangs(format['gmd:name'], idLang))
+             })
+             metadata.format = formats
            },
            extractFromLangs(json, idLang) {
              var value = null
+             if (json === undefined) {
+               return null
+             }
              if (idLang) {
                var values = JSONPATH.query(json, "$..['gmd:LocalisedCharacterString']")
                if (values.length > 0) {
@@ -59,9 +152,125 @@ const GeonetworkPlugin = {
                }
              }
              if (!value) {
-               value = JSONPATH.query(json, "$..['gco:CharacterString']['#text']")[0]
+               json = json.length > 0 ? json[0] : json
+               value = json['gco:CharacterString']? json['gco:CharacterString']['#text'] : (json['gmx:Anchor'] ? json['gmx:Anchor']['#text'] : null)
              }
              return value
+           },
+           extractImages (json, idLang) {
+             var images = []
+             var _this = this
+             if (json === undefined) {
+               return null
+             }
+             if (!json.forEach) {
+               json = [json]
+             }
+             json.forEach(function (image) {
+               var file = image['gmd:MD_BrowseGraphic']['gmd:fileName']['gco:CharacterString']['#text']
+               var description = _this.extractFromLangs(image['gmd:MD_BrowseGraphic']['gmd:fileDescription'], idLang)
+               console.log(description)
+               images.push(['overview', file, description])
+             })
+             return images
+           },
+           extractKeywords (json, idLang) {
+
+             var keywords = []
+             var _this = this
+             json.forEach(function (keynode) {
+               var list = keynode['gmd:MD_Keywords']['gmd:keyword']
+               if (!list.forEach) {
+                 list = [list]
+               }
+               list.forEach (function (node) {
+                 keywords.push(_this.extractFromLangs(node, idLang))
+               })
+             })
+             return keywords
+           }, 
+           extractLineage(metadata, json, idLang) {
+             metadata.lineage = 'un tesst curiosité'
+             var statements = JSONPATH.query(json, "$..['gmd:statement']")
+             var sentences = []
+             var _this = this
+             statements.forEach(function (statement) {
+               sentences.push(_this.extractFromLangs(statement, idLang))
+             })
+             metadata.lineage = sentences.join('<br />')
+           },
+           extractLinks (metadata, json, idLang) {
+             var links = JSONPATH.query(json, "$..['gmd:CI_OnlineResource']")
+             var _this = this
+             links.forEach(function (online, index) {
+               var protocol = online['gmd:protocol']['gco:CharacterString']['#text']
+               var url = online['gmd:linkage']['gmd:URL']
+               var name = _this.extractFromLangs(online['gmd:name'], idLang)
+               var description = _this.extractFromLangs(online['gmd:description'], idLang)
+               var link = {
+                   id: index,
+                   title: name,
+                   description: description,
+                   url: url,
+                   type: protocol
+                 }
+               switch(protocol) {
+               case 'UKST':
+               case 'OpenSearch':
+                 metadata.api = {
+                   http: url,
+                   name: name
+                 }
+                 break;
+               case 'OGC:WMS': 
+               case 'OGC:WFS':
+               case 'OGC:WFS-G':
+               case 'OGC:KML':
+               case 'OGC:OWS':
+               case 'OGC:OWS-C':
+               case 'GLG:KML-2.0-http-get-map':
+                   if (!metadata.layers) {
+                     metadata.layers = []
+                   }
+                   var id = metadata.id + '_' + index
+                   link.id = id
+                   link.href = link.url
+                   link.name = link.title
+                   link.checked = false
+                   delete link.url
+                   delete link.title
+                   metadata.layers.push(link)
+                 break;
+               case 'application/vnd.google-earth.kml+xml':
+                 break;
+               case 'WWW:DOWNLOAD-1.0-link--download':
+               case 'telechargement':
+                 if (!metadata.download) {
+                   metadata.download = []
+                 }
+                 link.name = link.title
+                 delete link.title
+                 metadata.download.push(link)
+                 break;
+               case 'WWW:DOWNLOAD-1.0-link--order':
+               case 'order':
+                 if (!metadata.order) {
+                   metadata.order = []
+                 }
+                 metadata.order.push(link)
+                 break;
+               
+               case 'WWW:LINK-1.0-http--link':
+               default:
+                 if (!metadata.links) {
+                   metadata.links = []
+                 }
+                 link.href = link.url
+                 delete link.url
+                 metadata.links.push(link)
+                 break;
+               }
+             })
            },
            getTranslation () {
              if (!this.geonetwork) {

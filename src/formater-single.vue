@@ -111,13 +111,14 @@ export default {
       if (previous.params.uuid === this.uuid) {
         this.$store.commit('backChild')
       }
-      this.getMetadata()
+      this.getFullMetadata()
     }
   },
   created () {
     
     this.uuid = this.$route.params.uuid
     this.getFullMetadata()
+   // this.getMetadata()
     // this.$router.push({name: 'FormaterCatalogue'})
     if (this.$route.query.sortBy) {
       this.sortBy = this.$route.query.sortBy
@@ -206,6 +207,7 @@ export default {
     treatmentSingle(data) {
       var uuid = data['geonet:info'].uuid
       this.metadata = this.$gn.treatmentMetadata(data, uuid)
+     
       this.metadata.appRoot = true
       var feature = this.$gn.extractBbox(data.geoBox, uuid)
       this.$router.replace({name: this.$route.name, params: {uuid: uuid}, query: this.$route.query})
@@ -214,6 +216,7 @@ export default {
     },
     treatmentMeta(data) {
       this.metadata = this.$gn.treatmentMetadata(data.metadata ,this.uuid)
+      // console.log(JSON.stringify(this.metadata))
       var feature = this.$gn.extractBbox(data.metadata.geoBox, this.uuid)
       var event = new CustomEvent('fmt:metadataEvent', {detail:  {meta: this.metadata, feature:feature}})
       document.dispatchEvent(event)
@@ -231,7 +234,7 @@ export default {
       var others = data['gmd:locale']
       var _idLang = null
       var _this = this
-      if (others.length > 0) {
+      if (others && others.length > 0) {
         others.forEach(function (locale) {
           var lg = locale['gmd:PT_Locale']['gmd:languageCode']['gmd:LanguageCode']['@codeListValue'] === 'fre' ? 'fr' : 'en'
           if (lg === _this.$store.state.lang) {
@@ -242,6 +245,7 @@ export default {
       }
       console.log(langs)
       console.log(_idLang)
+      metadata.contacts = {metadata: {}, resource: {}}
       for(var key in data) {
         switch(key) {
          case 'gmd:fileIdentifier':
@@ -251,17 +255,37 @@ export default {
            metadata.type = data[key]['gmd:MD_ScopeCode']['@codeListValue']
            break
          case 'gmd:contact':
-           metadata.contacts = {metadata: this.$gn.extractContacts(data[key]['gmd:CI_ResponsibleParty'])}
+           var contacts = this.$gn.extractContacts(data[key]['gmd:CI_ResponsibleParty'], 'metadata', _idLang)
+           contacts.forEach (function (contact) {
+             if (metadata.contacts.metadata[contact[0]]) {
+                 metadata.contacts.metadata[contact[0]].push(contact)
+               } else {
+                 metadata.contacts.metadata[contact[0]] = [contact]
+               }
+           })
            break
          case 'gmd:identificationInfo':
            this.$gn.extractDataInfo(metadata, data[key]['gmd:MD_DataIdentification'], _idLang )
+           break
+         case 'gmd:distributionInfo':
+           this.$gn.extractDistributionInfo(metadata, data[key], _idLang)
+           break
+         case 'gmd:dataQualityInfo':
+           this.$gn.extractLineage(metadata, data[key], _idLang)
+           break
         }
       }
+      metadata.exportLinks = {
+        xml:  this.$store.state.geonetwork + 'srv/api/records/' + metadata.id + '/formatters/xml?attachment=true',
+        pdf:  this.$store.state.geonetwork + 'srv/api/records/' + metadata.id + '/formatters/xsl-view?root=div&output=pdf'
+      }
       console.log(metadata)
+      this.metadata = metadata
 //       this.metadata = this.$gn.treatmentFull(data.metadata ,this.uuid)
-//       var feature = this.$gn.extractBbox(data.metadata.geoBox, this.uuid)
-//       var event = new CustomEvent('fmt:metadataEvent', {detail:  {meta: this.metadata, feature:feature}})
-//       document.dispatchEvent(event)
+      // var feature = this.$gn.extractBbox(metadata.geoBox, this.uuid)
+      var feature = {}
+      var event = new CustomEvent('fmt:metadataEvent', {detail:  {meta: this.metadata, feature:feature}})
+      document.dispatchEvent(event)
     },
     initTemporalExtent () {
       if(this.$store.state.temporalExtent && this.$store.state.temporalExtent.min) {
