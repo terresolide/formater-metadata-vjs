@@ -59,6 +59,11 @@ const GeonetworkPlugin = {
                  metadata.contacts.resource[contact[0]] = [contact]
                }
              })
+             this.extractExtent(metadata, json['gmd:extent'])
+           },
+           extractBboxJson (json) {
+             console.log(json)
+             return null
            },
            extractConstraints (json, idLang) {
              if (!json) {
@@ -118,8 +123,17 @@ const GeonetworkPlugin = {
              this.extractFormat(metadata, json['gmd:MD_Distribution']['gmd:distributionFormat'], idLang)
              this.extractLinks (metadata, json, idLang) 
            },
-           extractExtent (json, idLang) {
-             
+           extractExtent (metadata, json) {
+             var geographics = JSONPATH.query(json, "$..['gmd:EX_GeographicBoundingBox']")
+             var _this = this
+             if (geographics.length > 0) {
+               metadata.geobox = []
+               geographics.forEach(function (boxjson) {
+                 metadata.geobox.push(_this.extractBboxJson(boxjson))
+               })
+             } else {
+               metadata.geobox = this.extractBboxJson(geographics)
+             }
            },
            extractFormat (metadata, json, idLang) {
              var formats = []
