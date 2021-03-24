@@ -66,10 +66,8 @@ const GeonetworkPlugin = {
              if (json === undefined) {
                return null
              }
-             console.log(json)
              var address = []
              for (var key in json) {
-               console.log(json[key])
                if (key !== 'gmd:electronicMailAddress' && json[key]['gco:CharacterString'] &&
                    json[key]['gco:CharacterString']['#text']) {
                  address.push(json[key]['gco:CharacterString']['#text'])
@@ -82,6 +80,9 @@ const GeonetworkPlugin = {
              return address.join(',')
            },
            extractBboxJson (json) {
+             if (json === undefined) {
+               return null
+             }
              var latmin = json['gmd:southBoundLatitude']['gco:Decimal']['#text']
              var latmax = json['gmd:northBoundLatitude']['gco:Decimal']['#text']
              var lngmin = json['gmd:westBoundLongitude']['gco:Decimal']['#text']
@@ -143,13 +144,10 @@ const GeonetworkPlugin = {
              return [role, type, organisation, name, email, position, null, address]
            },
            extractDates (metadata, json) {
-             console.log(json)
              if (!json || json === 'undefined' || json.length === 0) {
                return
              }
-             
              json.forEach(function (jsonDate) {
-               console.log(jsonDate)
                var key = jsonDate['gmd:dateType']['gmd:CI_DateTypeCode']['@codeListValue']
                var value = jsonDate['gmd:date']['gco:Date'] ? jsonDate['gmd:date']['gco:Date']['#text'] : jsonDate['gmd:date']['gco:DateTime']['#text']
                metadata[key + 'Date'] = value
@@ -160,16 +158,7 @@ const GeonetworkPlugin = {
              this.extractLinks (metadata, json, idLang) 
            },
            extractExtent (metadata, json) {
-             var geographics = JSONPATH.query(json, "$..['gmd:EX_GeographicBoundingBox']")
              var _this = this
-             if (geographics.length > 1) {
-               metadata.geobox = []
-               geographics.forEach(function (boxjson) {
-                 metadata.geobox.push(_this.extractBboxJson(boxjson))
-               })
-             } else {
-               metadata.geobox = this.extractBboxJson(geographics[0])
-             }
              var start = JSONPATH.query(json, "$..['gml:beginPosition']")
              if (start.length > 0) {
                metadata.tempExtentBegin = start[0]
@@ -178,8 +167,18 @@ const GeonetworkPlugin = {
              if (end.length > 0) {
                metadata.tempExtentEnd = end[0]
              }
-             console.log(end)
-             
+             var geographics = JSONPATH.query(json, "$..['gmd:EX_GeographicBoundingBox']")
+             if (geographics.length === 0) {
+               return
+             }
+             if (geographics.length > 1) {
+               metadata.geobox = []
+               geographics.forEach(function (boxjson) {
+                 metadata.geobox.push(_this.extractBboxJson(boxjson))
+               })
+             } else {
+               metadata.geobox = this.extractBboxJson(geographics[0])
+             }
            },
            extractFormat (metadata, json, idLang) {
              var formats = []
@@ -229,7 +228,6 @@ const GeonetworkPlugin = {
              json.forEach(function (image) {
                var file = image['gmd:MD_BrowseGraphic']['gmd:fileName']['gco:CharacterString']['#text']
                var description = _this.extractFromLangs(image['gmd:MD_BrowseGraphic']['gmd:fileDescription'], idLang)
-               console.log(description)
                images.push(['overview', file, description ? description : ''])
              })
              return images
@@ -240,6 +238,14 @@ const GeonetworkPlugin = {
              var _this = this
              json.forEach(function (keynode) {
                var list = keynode['gmd:MD_Keywords']['gmd:keyword']
+               var thesaurus = keynode['gmd:thesaurusName']
+               var isDataCenter = false
+               if (keynode['gmd:MD_Keywords']['gmd:thesaurusName']) {
+                 var name = JSONPATH.query(keynode['gmd:MD_Keywords']['gmd:thesaurusName'], "$..['gmd:title']..['#text']")
+                 if (name && name[0] && name[0].indexOf('Data Center') >= 0) {
+                   isDataCenter = true
+                 }
+               }
 //               var type = keynode['gmd:MD_Keywords']['gmd:type']['gmd:MD_KeywordTypeCode']['@codeListValue']
 //               console.log(type)
                if (!list.forEach) {
@@ -250,6 +256,13 @@ const GeonetworkPlugin = {
                }
                list.forEach (function (node) {
                  keywords.push(_this.extractFromLangs(node, idLang))
+                 if (isDataCenter) {
+                   // extract link
+                   var link = JSONPATH.query(node, "$..['gmx:Anchor']['@xlink:href']")
+                   if (link.length > 0) {
+                     metadata.dataCenter = link[0]
+                   }
+                 }
                })
              })
              metadata.keyword = keywords
@@ -268,7 +281,7 @@ const GeonetworkPlugin = {
              var links = JSONPATH.query(json, "$..['gmd:CI_OnlineResource']")
              var _this = this
              links.forEach(function (online, index) {
-               var protocol = online['gmd:protocol']['gco:CharacterString']['#text']
+               var protocol = online['gmd:protocol']['gco:CharacterString'] ? online['gmd:protocol']['gco:CharacterString']['#text'] : online['gmd:protocol']['gmx:Anchor']['#text']
                var url = online['gmd:linkage']['gmd:URL']
                var name = _this.extractFromLangs(online['gmd:name'], idLang)
                var description = _this.extractFromLangs(online['gmd:description'], idLang)
@@ -390,7 +403,6 @@ const GeonetworkPlugin = {
              var links = this.strToArray(linkArr)
              var self = this
              var response = {}
-             console.log(local)
              // keep length 7 if 
              links.forEach(function (link, index) {
                // length === 7 for the translation

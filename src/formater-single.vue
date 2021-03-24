@@ -242,7 +242,8 @@ export default {
       metadata.mdLanguage = [_locale]
       // search if translation
       var others = data['gmd:locale']
-      var _idLang = null
+      var langs = {'fr': 'FR', 'en': 'EN'}
+      var _idLang = langs[this.$store.state.lang]
       var _this = this
       if (others && others.length > 0) {
         others.forEach(function (locale) {
