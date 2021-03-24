@@ -206,7 +206,6 @@
 //       if (this.related && this.related.siblings) {
 //     	  this.siblings = this.related.siblings
 //       }
-      console.log(this.depth)
       this.checkEmpty()
     },
     destroyed () {

@@ -279,9 +279,12 @@ const GeonetworkPlugin = {
            },
            extractLinks (metadata, json, idLang) {
              var links = JSONPATH.query(json, "$..['gmd:CI_OnlineResource']")
+             if (links[0] && links[0].length > 0) {
+               links = links[0]
+             }
              var _this = this
              links.forEach(function (online, index) {
-               var protocol = online['gmd:protocol']['gco:CharacterString'] ? online['gmd:protocol']['gco:CharacterString']['#text'] : online['gmd:protocol']['gmx:Anchor']['#text']
+               var protocol = protocol = online['gmd:protocol']['gco:CharacterString'] ? online['gmd:protocol']['gco:CharacterString']['#text'] : online['gmd:protocol']['gmx:Anchor']['#text']
                var url = online['gmd:linkage']['gmd:URL']
                var name = _this.extractFromLangs(online['gmd:name'], idLang)
                var description = _this.extractFromLangs(online['gmd:description'], idLang)

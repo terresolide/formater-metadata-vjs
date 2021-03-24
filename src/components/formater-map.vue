@@ -765,7 +765,9 @@ export default {
      // this.depth = event.detail.depth
      // this.unselectBbox()
      for (var i in this.bboxLayer){
-       this.bboxLayer[i].remove()
+       if (this.bboxLayer[i].remove) {
+         this.bboxLayer[i].remove()
+       }
       // this.controlLayer.removeLayer(this.bboxLayer[i])
      }
      this.bboxLayer = []
