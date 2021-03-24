@@ -15,7 +15,14 @@
      "now": "Now",
      "identifier": "Identifier",
      "about_resource": "About the resource",
-     "about_metadata": "About the metadata"
+     "about_metadata": "About the metadata",
+     "completed": "Completed",
+     "historicalArchive": "Historical archive",
+     "obsolete": "Obsolete",
+     "onGoing": "On going",
+     "planned": "Planned",
+     "required": "Required",
+     "underDevelopment": "Under development"
      
 
    },
@@ -35,7 +42,14 @@
       "now": "Aujourd'hui",
       "identifier": "Identifiant",
       "about_resource": "A propos des données",
-     "about_metadata": "A propos des métadonnées"
+     "about_metadata": "A propos des métadonnées",
+     "completed": "Finalisé",
+     "historicalArchive": "Archivé",
+     "obsolete": "Obsolète",
+     "onGoing": "En cours",
+     "planned": "Planifié",
+     "required": "Création ou mise à jour requis",
+     "underDevelopment": "En cours de création"
    }
 }
 </i18n>
@@ -70,6 +84,12 @@
       <div v-for="key in $store.state.dateList" v-if="metadata[key]">
            {{date2str(metadata[key])}} ({{$t(key)}})
       </div>
+   </dd>
+</dl>
+<dl v-if="metadata.status" class="mtdt-main-parameter">
+   <dt :style="dtStyle()">Status </dt>
+   <dd style="font-weight:600;">
+      {{$t(metadata.status)}}
    </dd>
 </dl>
 <dl v-if="countContactResource > 0 " class="mtdt-main-parameter">

@@ -74,7 +74,7 @@
       
 
       <div v-show="currentTab === 'full'" >
-             <formater-full-metadata :uuid="uuid"></formater-full-metadata>
+             <formater-full-metadata :uuid="uuid" :metadata="full"></formater-full-metadata>
       </div>
       
    
@@ -111,6 +111,10 @@ export default {
   },
   props: {
     metadata: {
+      type: Object,
+      default: null
+    },
+    full: {
       type: Object,
       default: null
     },

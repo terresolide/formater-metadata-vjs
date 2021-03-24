@@ -3,12 +3,28 @@
    "en":{
      "distributor": "Distributor",
      "owner": "Owner",
-     "point of contact": "Point of contact"
+     "originator": "Originator",
+     "pointofcontact": "Point of contact",
+      "principalInvestigator": "Principal investigator",
+     "processor": "Processor",
+     "publisher": "Publisher",
+     "author": "Author",
+     "resourceProvider": "Resource provider",
+     "custodian": "Custodian",
+     "user": "User"
    },
    "fr":{
-      "distributor": "Distributeur",
+     "distributor": "Distributeur",
      "owner": "Propriétaire",
-     "point of contact": "Point de contact"
+     "originator": "A l'origine de",
+     "pointofcontact": "Point de contact",
+     "principalInvestigator": "Point de recherche",
+     "processor": "Exécutant",
+     "publisher": "Editeur (publication)",
+     "author": "Auteur",
+     "resourceProvider": "Fournisseur",
+     "custodian": "Gestionnaire",
+     "user": "Utilisateur"
    }
 }
 </i18n>

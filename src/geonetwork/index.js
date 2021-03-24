@@ -34,7 +34,7 @@ const GeonetworkPlugin = {
              metadata.identifier = JSONPATH.query(json, "$..['gmd:identifier']..['gco:CharacterString']['#text']")[0]
             // metadata.dataCenter =
              metadata.topicCat = json['gmd:topicCategory']['gmd:MD_TopicCategoryCode']
-             metadata.keyword = this.extractKeywords(json['gmd:descriptiveKeywords'], idLang)
+             this.extractKeywords(metadata, json['gmd:descriptiveKeywords'], idLang)
              metadata.images = this.extractImages(json['gmd:graphicOverview'], idLang)
              var constraints = this.extractConstraints(
                  JSONPATH.query(json, "$..['gmd:resourceConstraints']..['gmd:MD_LegalConstraints']"),
@@ -60,6 +60,26 @@ const GeonetworkPlugin = {
                }
              })
              this.extractExtent(metadata, json['gmd:extent'])
+             this.extractDates(metadata,  JSONPATH.query(json, "$..['gmd:CI_Date']"))
+           },
+           extractAddress (json) {
+             if (json === undefined) {
+               return null
+             }
+             console.log(json)
+             var address = []
+             for (var key in json) {
+               console.log(json[key])
+               if (key !== 'gmd:electronicMailAddress' && json[key]['gco:CharacterString'] &&
+                   json[key]['gco:CharacterString']['#text']) {
+                 address.push(json[key]['gco:CharacterString']['#text'])
+               }
+             }
+             if (address.length == 0) {
+               return null
+             } 
+             // var cp = JSONPATH.query(json, "$..['gmd")
+             return address.join(',')
            },
            extractBboxJson (json) {
              var latmin = json['gmd:southBoundLatitude']['gco:Decimal']['#text']
@@ -118,9 +138,22 @@ const GeonetworkPlugin = {
                  idLang)
              var name = JSONPATH.query(json, "$..['gmd:individualName']['gco:CharacterString']" )[0]
              var email = JSONPATH.query(json, "$..['gmd:electronicMailAddress']..['#text']")[0]
-             var address = null
+             var address = this.extractAddress(JSONPATH.query(json, "$..['gmd:CI_Address']")[0])
              var position = null
              return [role, type, organisation, name, email, position, null, address]
+           },
+           extractDates (metadata, json) {
+             console.log(json)
+             if (!json || json === 'undefined' || json.length === 0) {
+               return
+             }
+             
+             json.forEach(function (jsonDate) {
+               console.log(jsonDate)
+               var key = jsonDate['gmd:dateType']['gmd:CI_DateTypeCode']['@codeListValue']
+               var value = jsonDate['gmd:date']['gco:Date'] ? jsonDate['gmd:date']['gco:Date']['#text'] : jsonDate['gmd:date']['gco:DateTime']['#text']
+               metadata[key + 'Date'] = value
+             })
            },
            extractDistributionInfo (metadata, json, idLang) {
              this.extractFormat(metadata, json['gmd:MD_Distribution']['gmd:distributionFormat'], idLang)
@@ -197,24 +230,29 @@ const GeonetworkPlugin = {
                var file = image['gmd:MD_BrowseGraphic']['gmd:fileName']['gco:CharacterString']['#text']
                var description = _this.extractFromLangs(image['gmd:MD_BrowseGraphic']['gmd:fileDescription'], idLang)
                console.log(description)
-               images.push(['overview', file, description])
+               images.push(['overview', file, description ? description : ''])
              })
              return images
            },
-           extractKeywords (json, idLang) {
+           extractKeywords (metadata, json, idLang) {
 
              var keywords = []
              var _this = this
              json.forEach(function (keynode) {
                var list = keynode['gmd:MD_Keywords']['gmd:keyword']
+//               var type = keynode['gmd:MD_Keywords']['gmd:type']['gmd:MD_KeywordTypeCode']['@codeListValue']
+//               console.log(type)
                if (!list.forEach) {
                  list = [list]
+//                 if (type === 'dataCentre') {
+//                   metadata.dataCentre = _this.extractFromLangs(list, idLang)
+//                 }
                }
                list.forEach (function (node) {
                  keywords.push(_this.extractFromLangs(node, idLang))
                })
              })
-             return keywords
+             metadata.keyword = keywords
            }, 
            extractLineage(metadata, json, idLang) {
              metadata.lineage = 'un tesst curiosité'

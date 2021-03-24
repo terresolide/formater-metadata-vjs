@@ -40,7 +40,7 @@
             <formater-metadata :metadata="$store.state.selectedMetadata" :depth="-1" @close="closeSingle"></formater-metadata>
           </div>
         </div>
-       <formater-metadata v-if="metadata" :metadata="metadata" @parametersChange="setParameters" @close="close" :depth="1"></formater-metadata>
+       <formater-metadata v-if="metadata" :metadata="metadata" :full="fullMetadata" @parametersChange="setParameters" @close="close" :depth="1"></formater-metadata>
      
         <!-- view of one record -->
        <!--   <div>
@@ -83,6 +83,7 @@ export default {
   data() {
     return {
       metadata: null,
+      fullMetadata: null,
       uuid: null,
       first: true,
       sortBy: '',
@@ -110,8 +111,11 @@ export default {
       var previous = this.$store.getters['previousRoute']
       if (previous.params.uuid === this.uuid) {
         this.$store.commit('backChild')
+        return
       }
-      this.getFullMetadata()
+      if (old.params.uuid !== newroute.params.uuid) {
+        this.getFullMetadata()
+      }
      // this.getMetadata()
     }
   },
@@ -229,7 +233,10 @@ export default {
       var langs = {}
       var result = JSONPATH.query(data, '$..["gmd:language"]["gmd:LanguageCode"]')
       console.log(result)
-      metadata['geonet:info'] = {uuid: this.uuid}
+      metadata['geonet:info'] = data['geonet:info']
+      metadata['geonet:info'].uuid = this.uuid
+      delete data['geonet:info']
+      metadata.id = this.uuid
       // search main language code
       var _locale = data['gmd:language']['gmd:LanguageCode']['@codeListValue']
       metadata.mdLanguage = [_locale]
@@ -251,9 +258,6 @@ export default {
       metadata.contacts = {metadata: {}, resource: {}}
       for(var key in data) {
         switch(key) {
-         case 'gmd:fileIdentifier':
-           metadata.id = data[key]['gco:CharacterString']['#text']
-           break
          case 'gmd:hierarchyLevel':
            metadata.type = data[key]['gmd:MD_ScopeCode']['@codeListValue']
            break
@@ -284,6 +288,7 @@ export default {
       }
       console.log(metadata)
       this.metadata = metadata
+      this.fullMetadata = data
 //       this.metadata = this.$gn.treatmentFull(data.metadata ,this.uuid)
       var feature = this.$gn.extractBbox(metadata.geobox, this.uuid)
       console.log(feature)
