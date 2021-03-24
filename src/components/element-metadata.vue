@@ -1,12 +1,16 @@
 <template>
-<span class="element-metadata" style="color:blue;" v-if="metadata && Object.keys(metadata).length > 0">
+<span class="element-metadata" style="color:#154360;" v-if="metadata && Object.keys(metadata).length > 0">
 
- + &lt;{{name}}<span  v-for="(meta, key) in attr" style="color:red;" > {{key}}="{{meta}}"</span> &gt;
-  <div class="meta-child" style="color:#333;"> {{text}}</div>
-  <div class="meta-child" v-for="(meta, key) in metadata"  v-if="meta && typeof meta === 'object'">
-    <element-metadata v-if="typeof key === 'string'" :metadata="meta" :name="key"></element-metadata>
-     <element-metadata v-else :metadata="Object.values(meta)[0]" :name="Object.keys(meta)[0]" ></element-metadata>
+ <span @click="expand=!expand">{{ expand ? '-' : '+'}}</span>
+  &lt;{{name}}<span  v-for="(meta, key) in attr" style="color:#333;" > {{key}}=<span style="color:darkgreen;">"{{meta}}"</span></span> &gt;
+  <div class="element-content" :class="{expand: expand}">
+	  <div class="meta-child" style="color:#333;"> {{text}}</div>
+	  <div class="meta-child" v-for="(meta, key) in metadata"  v-if="meta && typeof meta === 'object'">
+	    <element-metadata v-if="typeof key === 'string'" :metadata="meta" :name="key" :depth="depth +1"></element-metadata>
+	     <element-metadata v-else :metadata="Object.values(meta)[0]" :name="Object.keys(meta)[0]" :depth="depth + 1"></element-metadata>
+	  </div>
   </div>
+  <span v-if="expand">&lt;/{{name}}&gt;</span>
  </span>
 </span>
 </span>
@@ -27,6 +31,10 @@ export default{
     metadata: {
       type: Object|Array,
       default: null
+    },
+    depth: {
+      type: Number,
+      default: 0
     }
   },
   computed: {
@@ -44,13 +52,15 @@ export default{
        attr: {},
        text: null,
        childs: {},
-       list: []
+       list: [],
+       expand: true
     }
   },
   created () {
     if (!this.metadata) {
       return
     }
+    this.expand = this.depth > 0 ? false : true
 //     if (Object.keys(this.metadata))
 //     this.initMeta(this.metadata)
 //     var _this = this
@@ -99,5 +109,11 @@ export default{
 <style>
 .meta-child {
   margin-left:10px;
+}
+.element-metadata .element-content {
+  display:none;
+}
+.element-metadata .element-content.expand {
+  display:block;
 }
 </style>

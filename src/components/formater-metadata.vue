@@ -4,7 +4,7 @@
      "complement": "Others informations",
      "temporal_extent": "Temporal extent",
      "search": "Search",
-     "full": "Complete view",
+     "full": "ISO19139 view",
      "platform": "Platform"
    },
    "fr":{
@@ -12,7 +12,7 @@
        "complement": "Informations complémentaires",
       "temporal_extent": "Etendue temporelle",
       "search": "Rechercher",
-      "full": "Vue complète",
+      "full": "Vue ISO19139",
      "platform": "Plateforme"
       
    }
@@ -73,7 +73,7 @@
       </div>
       
 
-      <div v-show="currentTab === 'full'" >
+      <div v-show="currentTab === 'full'" style="margin:20px;">
              <formater-full-metadata :uuid="uuid" :metadata="full"></formater-full-metadata>
       </div>
       

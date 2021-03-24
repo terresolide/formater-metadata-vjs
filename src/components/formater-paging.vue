@@ -4,6 +4,7 @@
      "title": "Title",
      "relevance": "Relevance",
      "changeDate": "Change date",
+     "popularity": "Popularity",
      "sortBy": "Order by",
      "per_page": "per page"
    },
@@ -12,6 +13,7 @@
      "title": "Titre",
      "relevance": "Pertinence",
      "changeDate": "Mise à jour",
+     "popularity": "Popularité",
      "sortBy": "Trier par",
      "per_page": "par page"
    }
