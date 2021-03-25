@@ -22,13 +22,19 @@
          <div class="mtdt-block-parameters">
           <dl class="mtdt-content mtdt-parameter-title" style="padding-bottom:5px;" v-if="type === 'metadata' & countParameters > 0"><dt :style="{color:primary}">{{$t('parameters')}}</dt><dd></dd></dl>
          <dl v-for="(item, key) in metadata" :key="key" v-if="$store.state.osFields[type].acquisition.indexOf(key) >=0" class="mtdt-simple-parameter">
-           <dt style="text-transform:capitalize;" :style="{color:primary}">{{key}}</dt> <dd>{{item}}</dd>
+           <dt style="text-transform:capitalize;" :style="{color:primary}">{{key}}</dt> 
+           <dd v-if="Array.isArray(item)">{{item.join(', ')}}</dd>
+           <dd v-else>{{item}}</dd>
          </dl>
          <dl v-for="(item, key) in metadata" :key="key" v-if="$store.state.osFields[type].quality.indexOf(key) >=0" class="mtdt-simple-parameter">
-           <dt style="text-transform:capitalize;" :style="{color:primary}">{{key}}</dt> <dd>{{item}}</dd>
+           <dt style="text-transform:capitalize;" :style="{color:primary}">{{key}}</dt>
+           <dd v-if="Array.isArray(item)">{{item.join(', ')}}</dd>
+           <dd v-else>{{item}}</dd>
          </dl>
          <dl v-for="(item, key) in metadata" :key="key" v-if="$store.state.osFields[type].process.indexOf(key) >=0" class="mtdt-simple-parameter">
-           <dt style="text-transform:capitalize;" :style="{color:primary}">{{key}}</dt> <dd>{{item}}</dd>
+           <dt style="text-transform:capitalize;" :style="{color:primary}">{{key}}</dt>
+           <dd v-if="Array.isArray(item)">{{item.join(', ')}}</dd>
+           <dd v-else>{{item}}</dd>
          </dl>
          </div>
      </div>

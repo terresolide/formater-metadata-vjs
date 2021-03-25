@@ -75,20 +75,20 @@ export default function makeStore( config ) {
       osFields: {
         cartouche: {
           identifier: ['productType'],
-          quality: ['resolution', 'productValidity'],
+          quality: ['resolution', 'representation', 'format', 'productValidity'],
           acquisition:  [ 'platform', 'instrument', 'sensorMode', 'polarisation',  'relativeOrbitNumber', 'orbitDirection', 'subswath'],
           process:  ['processingLevel', 'processingMode',  'correction', 'version']
         },
         metadata: {
-          identifier: ['productIdentifier', 'parentIdentifier', 'productType'],
-          quality: [ 'resolution', 'nbCols', 'nbRows', 'waterCover', 'snowCover', 'cloudCover', 'productValidity'],
+          identifier: ['productIdentifier', 'productType'],
+          quality: [ 'resolution', 'representation', 'format', 'nbCols', 'nbRows', 'waterCover', 'snowCover', 'cloudCover', 'productValidity'],
           acquisition: [ 'platform', 'instrument','sensorMode', 'polarisation', 
             'orbitNumber', 'relativeOrbitNumber', 'orbitDirection', 'subswath'],
           process: ['processingLevel', 'processingMode', 'processingContext',  'correction', 'version']
         }
       },
       // default date & constraint list
-      dateList: ['changeDate', 'createDate', 'publicationDate', 'revisionDate'],
+      dateList: ['changeDate', 'createDate', 'creationDate', 'publicationDate', 'revisionDate'],
       constraintList: ['constraints', 'legalConstraints', 'securityConstraints', 'resourceConstraints'],
       // default map bounds  [latS, lngW], [latN, lngE]
       spatialExtent: [[-60,-120],[75,130]],

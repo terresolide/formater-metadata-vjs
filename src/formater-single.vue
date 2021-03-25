@@ -269,6 +269,10 @@ export default {
                }
            })
            break
+         case 'gmd:parentIdentifier':
+           console.log(data[key])
+           metadata.parentIdentifier = data[key]['gco:CharacterString']['#text'] ? data[key]['gco:CharacterString']['#text'] : data[key]['gco:CharacterString'] 
+           break
          case 'gmd:identificationInfo':
            this.$gn.extractDataInfo(metadata, data[key]['gmd:MD_DataIdentification'], _idLang )
            break

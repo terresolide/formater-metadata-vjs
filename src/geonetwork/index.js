@@ -67,6 +67,8 @@ const GeonetworkPlugin = {
              this.extractExtent(metadata, json['gmd:extent'])
              this.extractDates(metadata,  JSONPATH.query(json, "$..['gmd:citation']..['gmd:CI_Date']"))
              this.extractAssociation(metadata, json['gmd:aggregationInfo'])
+             this.extractResolution(metadata, json['gmd:spatialResolution'])
+             this.extractSpatialRepresentation(metadata, json['gmd:spatialRepresentationType'])
            },
            extractAddress (json) {
              if (json === undefined) {
@@ -184,6 +186,7 @@ const GeonetworkPlugin = {
                var value = jsonDate['gmd:date']['gco:Date'] ? jsonDate['gmd:date']['gco:Date']['#text'] : jsonDate['gmd:date']['gco:DateTime']['#text']
                metadata[key + 'Date'] = value
              })
+             console.log(metadata)
            },
            extractDistributionInfo (metadata, json, idLang) {
              this.extractFormat(metadata, json['gmd:MD_Distribution']['gmd:distributionFormat'], idLang)
@@ -393,6 +396,29 @@ const GeonetworkPlugin = {
                  break;
                }
              })
+           },
+           extractResolution (metadata, json) {
+             if (json === undefined) {
+               return
+             }
+             var dist = JSONPATH.query(json, "$..['gco:Distance']")
+             if (dist.length > 0) {
+               metadata.resolution = dist[0]['#text'] + ' ' + dist[0]['@uom']
+             } else {
+               var denominator = JSONPATH.query(json, "$..['gmd:denominator']['gco:Integer']")
+               if (denominator.length > 0) {
+                 metadata.resolution = '1 / ' + denominator[0]['#text']
+               }
+             }
+             
+           },
+           extractSpatialRepresentation (metadata, json) {
+             if (json === undefined) {
+               return
+             }
+             if (json['gmd:MD_SpatialRepresentationTypeCode'] && json['gmd:MD_SpatialRepresentationTypeCode']['@codeListValue']) {
+               metadata.representation = json['gmd:MD_SpatialRepresentationTypeCode']['@codeListValue']
+             }
            },
            getTranslation () {
              if (!this.geonetwork) {

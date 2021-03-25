@@ -125,6 +125,8 @@
       </div> 
       <div v-if="type === 'metadata'"></div>
       <div class="mtdt-expand mtdt-links" >
+      <h4 v-if="type === 'metadata'" 
+      :style="{color:$store.state.style.primary}">{{$t('order_data')}}</h4>
            <ul >
            <li v-for="(file, index) in order" :key="index" >
               <a  :title="file.description"  :href="file.url" target="_blank">{{file.name? file.name: $t('order_data')}}</a>

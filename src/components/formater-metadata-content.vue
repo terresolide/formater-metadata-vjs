@@ -2,6 +2,7 @@
    "en":{
      "date": "Date | Dates",
      "createDate": "create",
+     "creationDate": "create",
      "changeDate": "update",
      "publicationDate": "publication",
      "revisionDate": "revision",
@@ -32,6 +33,7 @@
    "fr":{
      "date": "Date | Dates",
      "createDate": "création",
+     "creationDate": "création",
      "changeDate": "mise à jour",
      "publicationDate": "publication",
      "revisionDate": "mise à jour",
@@ -82,8 +84,16 @@
              <dt :style="dtStyle()">{{$t('identifier')}}</dt>
               <dd style="max-width:calc(100% - 380px);">{{metadata.identifier}}</dd>
        </dl>
+       <dl v-if="metadata.parentIdentifier" style="max-width:calc(100% - 305px);">
+			   <dt :style="dtStyle()">Parent</dt>
+			   <dd style="max-width:calc(100% - 380px);">
+			     <span v-if="metadata['geonet:info']" class="mtdt-link" @click="goTo(metadata.parentIdentifier)">{{metadata.parentIdentifier}}</span>
+			     <span v-else>{{metadata.parentIdentifier}}</span>
+			   </dd>
+			</dl>
        <formater-parameters type="metadata" :metadata="metadata" ></formater-parameters>
 </div>
+
 <dl v-if="countDate > 0" class="mtdt-main-parameter">
    <dt :style="dtStyle()">{{$tc('date', countDate)}} </dt>
    <dd>
@@ -249,6 +259,9 @@ export default {
     },
     dtStyle () {
       return {color: this.$store.state.style.primary}
+    },
+    goTo (uuid) {
+      this.$router.push({name:'Metadata', params: {uuid: uuid}})
     },
     toHTML (str) {
       return str.replace(/(?:\r\n|\r|\n)/g, '<br />');
