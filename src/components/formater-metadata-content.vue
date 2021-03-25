@@ -54,7 +54,7 @@
      "planned": "Planifié",
      "required": "Création ou mise à jour requis",
      "underDevelopment": "En cours de création",
-      "credit": "Reconnaissance",
+      "credit": "Crédit",
      "purpose": "Objectif"
    }
 }
