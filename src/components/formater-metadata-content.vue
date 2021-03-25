@@ -2,6 +2,7 @@
    "en":{
      "date": "Date | Dates",
      "createDate": "create",
+     "changeDate": "update",
      "publicationDate": "publication",
      "revisionDate": "revision",
      "contact": "Contact | Contacts",
@@ -31,6 +32,7 @@
    "fr":{
      "date": "Date | Dates",
      "createDate": "création",
+     "changeDate": "mise à jour",
      "publicationDate": "publication",
      "revisionDate": "mise à jour",
      "contact": "Contact | Contacts",

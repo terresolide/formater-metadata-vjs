@@ -65,7 +65,7 @@ const GeonetworkPlugin = {
                }
              })
              this.extractExtent(metadata, json['gmd:extent'])
-             this.extractDates(metadata,  JSONPATH.query(json, "$..['gmd:CI_Date']"))
+             this.extractDates(metadata,  JSONPATH.query(json, "$..['gmd:citation']..['gmd:CI_Date']"))
              this.extractAssociation(metadata, json['gmd:aggregationInfo'])
            },
            extractAddress (json) {

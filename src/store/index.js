@@ -88,7 +88,7 @@ export default function makeStore( config ) {
         }
       },
       // default date & constraint list
-      dateList: ['createDate', 'publicationDate', 'revisionDate'],
+      dateList: ['changeDate', 'createDate', 'publicationDate', 'revisionDate'],
       constraintList: ['constraints', 'legalConstraints', 'securityConstraints', 'resourceConstraints'],
       // default map bounds  [latS, lngW], [latN, lngE]
       spatialExtent: [[-60,-120],[75,130]],
