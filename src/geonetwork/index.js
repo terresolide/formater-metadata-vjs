@@ -186,7 +186,6 @@ const GeonetworkPlugin = {
                var value = jsonDate['gmd:date']['gco:Date'] ? jsonDate['gmd:date']['gco:Date']['#text'] : jsonDate['gmd:date']['gco:DateTime']['#text']
                metadata[key + 'Date'] = value
              })
-             console.log(metadata)
            },
            extractDistributionInfo (metadata, json, idLang) {
              this.extractFormat(metadata, json['gmd:MD_Distribution']['gmd:distributionFormat'], idLang)

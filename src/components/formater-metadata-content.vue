@@ -261,7 +261,7 @@ export default {
       return {color: this.$store.state.style.primary}
     },
     goTo (uuid) {
-      this.$router.push({name:'Metadata', params: {uuid: uuid}})
+      this.$router.push({name:'Metadata', params: {uuid: uuid}, query: {}})
     },
     toHTML (str) {
       return str.replace(/(?:\r\n|\r|\n)/g, '<br />');

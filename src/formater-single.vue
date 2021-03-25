@@ -109,11 +109,11 @@ export default {
 //       }
       this.uuid = newroute.params.uuid
       var previous = this.$store.getters['previousRoute']
-      if (previous.params.uuid === this.uuid) {
-        this.$store.commit('backChild')
-        return
-      }
-      if (old.params.uuid !== newroute.params.uuid) {
+//       if (previous.params.uuid === this.uuid) {
+//         this.$store.commit('backChild')
+//         return
+//       }
+      if (old.path !== newroute.path) {
         this.getFullMetadata()
       }
      // this.getMetadata()
@@ -270,7 +270,6 @@ export default {
            })
            break
          case 'gmd:parentIdentifier':
-           console.log(data[key])
            metadata.parentIdentifier = data[key]['gco:CharacterString']['#text'] ? data[key]['gco:CharacterString']['#text'] : data[key]['gco:CharacterString'] 
            break
          case 'gmd:identificationInfo':
