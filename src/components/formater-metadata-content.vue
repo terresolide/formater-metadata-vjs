@@ -22,7 +22,9 @@
      "onGoing": "On going",
      "planned": "Planned",
      "required": "Required",
-     "underDevelopment": "Under development"
+     "underDevelopment": "Under development",
+     "credit": "Credit",
+     "purpose": "Purpose"
      
 
    },
@@ -38,10 +40,10 @@
      "legalConstraints": "légales",
      "securityConstraints": "de sécurité",
      "resourceConstraints": "sur les données",
-      "temporal_extent": "Etendue temporelle",
-      "now": "Aujourd'hui",
-      "identifier": "Identifiant",
-      "about_resource": "A propos des données",
+     "temporal_extent": "Etendue temporelle",
+     "now": "Aujourd'hui",
+     "identifier": "Identifiant",
+     "about_resource": "A propos des données",
      "about_metadata": "A propos des métadonnées",
      "completed": "Finalisé",
      "historicalArchive": "Archivé",
@@ -49,7 +51,9 @@
      "onGoing": "En cours",
      "planned": "Planifié",
      "required": "Création ou mise à jour requis",
-     "underDevelopment": "En cours de création"
+     "underDevelopment": "En cours de création",
+      "credit": "Crédit",
+     "purpose": "Objectif"
    }
 }
 </i18n>
@@ -92,6 +96,7 @@
       {{$t(metadata.status)}}
    </dd>
 </dl>
+
 <dl v-if="countContactResource > 0 " class="mtdt-main-parameter">
   <dt :style="dtStyle()">{{$tc('contact', countContactResource)}}</dt>
   <dd> <formater-list-contact   :contacts="metadata.contacts.resource" type="resource" ></formater-list-contact></dd>
@@ -105,6 +110,17 @@
   <dd>
      <formater-temporal-extent :start="metadata.tempExtentBegin"  :end="metadata.tempExtentEnd" />
   </dd>
+</dl>
+<dl v-if="metadata.credit" class="mtdt-main-parameter">
+   <dt :style="dtStyle()">{{$t('credit')}} </dt>
+   <dd >
+      {{$t(metadata.credit)}}
+   </dd>
+</dl>
+<dl v-if="metadata.purpose" class="mtdt-main-parameter">
+   <dt :style="dtStyle()">{{$t('purpose')}} </dt>
+   <dd v-html="metadata.purpose">
+   </dd>
 </dl>
 <dl v-if="metadata.lineage" class="mtdt-main-parameter">
     <dt :style="dtStyle()">{{$t('lineage')}}</dt>
@@ -213,9 +229,12 @@ export default {
       return n
     },
     hasRelated () {
-      return this.metadata.download || this.metadata.layers || this.metadata.links || this.metadata.related
+      return this.metadata.download || this.metadata.layers || this.metadata.links || this.metadata.related || this.metadata.order
     }
 
+  },
+  created () {
+    console.log(this.metadata.keyword)
   },
   methods:{
 

@@ -8,11 +8,11 @@
      "platform": "Platform"
    },
    "fr":{
-      "main": "Description",
-       "complement": "Informations complémentaires",
-      "temporal_extent": "Etendue temporelle",
-      "search": "Rechercher",
-      "full": "Vue ISO19139",
+     "main": "Description",
+     "complement": "Informations complémentaires",
+     "temporal_extent": "Etendue temporelle",
+     "search": "Rechercher",
+     "full": "Vue ISO19139",
      "platform": "Plateforme"
       
    }
@@ -27,11 +27,8 @@
    <span v-if="metadata && !metadata.appRoot" class="mtdt-metadata-close fa fa-close" @click="close"></span>
    <div v-if="metadata">
       <h1 class="mtdt-metadata-header" :style="{color:$store.state.style.primary}">
-           <a v-if="metadata.groupWebsite" :href="metadata.groupWebsite" :title="$gn.t('group-'+ metadata.groupOwner)" starget="_blank" class="mtdt-group-logo">
-             <img :src="metadata.logo"/>
-          </a>
-          <a v-else href="#" :alt="$gn.t('group-'+ metadata.groupOwner)" :title="$gn.t('group-'+ metadata.groupOwner)" class="mtdt-group-logo">
-              <img :src="metadata.logo"  />
+           <a v-if="dataCenter" :href="dataCenter.href" :title="dataCenter.title[$store.state.lang]" target="_blank" class="mtdt-group-logo">
+             <img :src="dataCenter.logo"/>
           </a>
           <i  class="fa" :class="{'fa-files-o':metadata.type === 'series', 'fa-file': metadata.type === 'dataset', 'fa-map-marker': metadata.type === 'feature'}"  v-if="['dataset','series', 'feature'].indexOf(metadata.type) >= 0"></i>
           <div>
@@ -74,6 +71,7 @@
       
 
       <div v-show="currentTab === 'full'" style="margin:20px;">
+           <!-- <div ><input type="button" class="small-button" value="deployer" /> <span class="button">fermer</span></div>  -->  
              <formater-full-metadata :uuid="uuid" :metadata="full"></formater-full-metadata>
       </div>
       
@@ -123,6 +121,14 @@ export default {
       default:0
     }
   },
+  computed: {
+    dataCenter () {
+      if (!this.metadata.dataCenter) {
+        return false
+      }
+      return this.$store.getters['dataCenters/byId'](this.metadata.dataCenter)
+    }
+  },
   watch: {
     metadata: {
       immediate: true,
@@ -161,7 +167,9 @@ export default {
     if (this.metadata['geonet:info']) {
        this.uuid = this.metadata['geonet:info'].uuid
        // full view for geonetwork metadata
-       this.tabs.full = true
+       if (this.full) {
+         this.tabs.full = true
+       }
     } else {
        this.uuid = this.metadata.id
        this.type = 'opensearch'

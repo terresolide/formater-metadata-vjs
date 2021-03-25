@@ -31,7 +31,7 @@
  import AerisTheme from 'aeris-commons-components-vjs/src/aeris-theme/aeris-theme.vue'
  import FormaterService from '@/components/formater-service.vue'
  import FormaterAuthentication from '@/components/formater-authentication.vue'
- 
+ import dataCenter from '@/assets/json/dataCenter.json'
 //prevent previous and next page for browser
 // function disableBack() { window.history.forward() }
 // window.onload = function () {
@@ -68,7 +68,9 @@ export default {
       this.$gn.init(this.$i18n.locale, this.$store.state.geonetwork, this.$http, this.$store)
       this.resizeListener = this.resize.bind(this)
       window.addEventListener('resize', this.resizeListener);
-     
+      this.$store.commit('dataCenters/init', dataCenter)
+//       var center = this.$store.getters['dataCenters/byId']('https://w3id.org/formater/data-center/CNES')
+//       console.log(center)
      // this.resize()
     },
     mounted () {

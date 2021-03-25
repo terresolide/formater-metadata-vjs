@@ -119,7 +119,7 @@
         <span class="mtdt-related-type fa fa-pencil-square-o" :style="{backgroundColor: primary}" ></span>
       </a> 
     </div>
-    <div v-if="order && (order.length >1 || (type === 'metadata' && order.length > 0))">
+    <div v-if="order && (order.length >1 || type === 'metadata')">
        <div class="mtdt-related-type fa fa-pencil-square-o"  :style="{backgroundColor: primary}" :title="$t('order_data')">
          <span v-if="type === 'cartouche'" class="fa fa-caret-down"></span>
       </div> 
@@ -326,6 +326,8 @@
         } else if (this.links &&  this.links.length >0) {
           this.empty = false
         } else if (this.platforms && this.platforms.length > 0) {
+          this.empty = false
+        } else if (this.order && this.order.length > 0) {
           this.empty = false
         }
       },

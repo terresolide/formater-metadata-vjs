@@ -1,0 +1,27 @@
+{
+
+  "https://w3id.org/formater/data-center/CDGP": {
+    "logo": "https://cdgp.u-strasbg.fr/img/logo_cdgp.png",
+    "href": "https://cdgp.u-strasbg.fr/",
+    "title": {
+      "fr": "CDGP - Centre de Données de Géothermie Profonde",
+      "en": "CDGP - Data Center for Deep Geothermal Energy"
+    }
+  }, 
+  "https://w3id.org/formater/data-center/CNES": {
+    "logo": "https://service.poleterresolide.fr/geonetwork/images/harvesting/200px-CNES.png",
+    "href": "https://cnes.fr/",
+    "title": {
+      "fr": "CNES - Centre National d'Etudes Spatiales",
+      "en": "CNES - Centre National d'Etudes Spatiales"
+    }
+  },
+   "https://w3id.org/formater/data-center/SHOM": {
+    "logo": "https://service.poleterresolide.fr/geonetwork/images/harvesting/shom-data.png",
+    "href": "https://data.shom.fr/",
+    "title": {
+      "fr": "SHOM - Service hydrographique et océanographique de la Marine",
+      "en": "SHOM - Hydrographic and Oceanographic Service of the French Marine"
+    }
+  }
+}

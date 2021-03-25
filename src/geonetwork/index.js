@@ -30,6 +30,11 @@ const GeonetworkPlugin = {
                  JSONPATH.query(json, "$..['gmd:abstract']"),
                  idLang)
              metadata.description = description.replace(/(?:\\[rn]|[\r\n])/g, '<br />')
+             metadata.credit = this.extractFromLangs(json['gmd:credit'], idLang)
+             metadata.purpose = this.extractFromLangs(json['gmd:purpose'], idLang)
+             if (metadata.purpose) {
+               metadata.purpose = metadata.purpose.replace(/(?:\\[rn]|[\r\n])/g, '<br />')
+             }
              metadata.status = JSONPATH.query(json,"$..['gmd:status']['gmd:MD_ProgressCode']['@codeListValue']")[0]
              metadata.identifier = JSONPATH.query(json, "$..['gmd:identifier']..['gco:CharacterString']['#text']")[0]
             // metadata.dataCenter =
@@ -61,6 +66,7 @@ const GeonetworkPlugin = {
              })
              this.extractExtent(metadata, json['gmd:extent'])
              this.extractDates(metadata,  JSONPATH.query(json, "$..['gmd:CI_Date']"))
+             this.extractAssociation(metadata, json['gmd:aggregationInfo'])
            },
            extractAddress (json) {
              if (json === undefined) {
@@ -78,6 +84,29 @@ const GeonetworkPlugin = {
              } 
              // var cp = JSONPATH.query(json, "$..['gmd")
              return address.join(',')
+           },
+           extractAssociation (metadata, json) {
+             if (!json || json === undefined) {
+               return
+             }
+             if (!metadata.related) {
+               metadata.related = { siblings: []}
+             }
+             if (!metadata.related.siblings) {
+               metadata.related.siblings =[]
+             }
+             json.forEach(function (node) {
+               var initiative = node['gmd:MD_AggregateInformation']['gmd:initiativeType']['gmd:DS_InitiativeTypeCode']['@codeListValue']
+               var identifiers = JSONPATH.query(node, "$..['gmd:MD_Identifier']..['#text']")
+               if (identifiers.length > 0) {
+                 metadata.related.siblings.push(
+                   {
+                     initiativeType: initiative,
+                     title: identifiers[0],
+                     id: identifiers[0]
+                   })
+                 }
+             })
            },
            extractBboxJson (json) {
              if (json === undefined) {
@@ -255,12 +284,15 @@ const GeonetworkPlugin = {
 //                 }
                }
                list.forEach (function (node) {
-                 keywords.push(_this.extractFromLangs(node, idLang))
-                 if (isDataCenter) {
-                   // extract link
-                   var link = JSONPATH.query(node, "$..['gmx:Anchor']['@xlink:href']")
-                   if (link.length > 0) {
-                     metadata.dataCenter = link[0]
+                 var keywd = _this.extractFromLangs(node, idLang)
+                 if (keywd) {
+                   keywords.push(_this.extractFromLangs(node, idLang))
+                   if (isDataCenter) {
+                     // extract link
+                     var link = JSONPATH.query(node, "$..['gmx:Anchor']['@xlink:href']")
+                     if (link.length > 0) {
+                       metadata.dataCenter = link[0]
+                     }
                    }
                  }
                })
@@ -280,7 +312,11 @@ const GeonetworkPlugin = {
            extractLinks (metadata, json, idLang) {
              var links = JSONPATH.query(json, "$..['gmd:CI_OnlineResource']")
              if (links[0] && links[0].length > 0) {
-               links = links[0]
+               var aux = []
+               links.forEach(function (link) {
+                 aux = aux.concat(link)
+               })
+               links = aux
              }
              var _this = this
              links.forEach(function (online, index) {
@@ -338,6 +374,8 @@ const GeonetworkPlugin = {
                  if (!metadata.order) {
                    metadata.order = []
                  }
+                 link.name = link.title
+                 delete link.title
                  metadata.order.push(link)
                  break;
                

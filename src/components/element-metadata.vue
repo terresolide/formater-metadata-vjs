@@ -1,9 +1,9 @@
 <template>
 <span class="element-metadata" style="color:#154360;" v-if="metadata && Object.keys(metadata).length > 0">
 
- <span @click="expand=!expand">{{ expand ? '-' : '+'}}</span>
+ <span @click="expand=!expand" style="cursor:pointer;margin-left:-10px;" >{{ expand ? '-' : '+'}}</span>
   &lt;{{name}}<span  v-for="(meta, key) in attr" style="color:#333;" > {{key}}=<span style="color:darkgreen;">"{{meta}}"</span></span> &gt;
-  <div class="element-content" :class="{expand: expand}">
+  <div class="element-content" v-if="expand && (text || Object.keys(metadata).length > 0)" :class="{expand: expand}">
 	  <div class="meta-child" style="color:#333;"> {{text}}</div>
 	  <div class="meta-child" v-for="(meta, key) in metadata"  v-if="meta && typeof meta === 'object'">
 	    <element-metadata v-if="typeof key === 'string'" :metadata="meta" :name="key" :depth="depth +1"></element-metadata>
@@ -69,7 +69,7 @@ export default{
 	      if (key === '#text') {
 	        this.text = this.metadata[key]
 	      }else if  (key.substring(0, 1) === '@') {
-	        if (key.substring(0,6) !== '@xmlns') {
+	        if (key.substring(0,6) !== '@xmlns' && key.substring(0, 4) !== '@xsi') {
 	        this.attr[key.substring(1)] = this.metadata[key]
 	        }
 	      } else {
@@ -108,7 +108,9 @@ export default{
 </script>
 <style>
 .meta-child {
-  margin-left:10px;
+  margin-left:0px;
+  padding-left:25px;
+  border-left: 1px dotted grey;
 }
 .element-metadata .element-content {
   display:none;
