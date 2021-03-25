@@ -233,9 +233,6 @@ export default {
     }
 
   },
-  created () {
-    console.log(this.metadata.keyword)
-  },
   methods:{
 
     date2str (date) {

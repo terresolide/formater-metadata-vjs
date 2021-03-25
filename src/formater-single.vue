@@ -232,7 +232,6 @@ export default {
       }
       var langs = {}
       var result = JSONPATH.query(data, '$..["gmd:language"]["gmd:LanguageCode"]')
-      console.log(result)
       metadata['geonet:info'] = data['geonet:info']
       metadata['geonet:info'].uuid = this.uuid
       delete data['geonet:info']
@@ -254,8 +253,6 @@ export default {
           langs[lg] = locale['gmd:PT_Locale']['@id']
         })
       }
-      console.log(langs)
-      console.log(_idLang)
       metadata.contacts = {metadata: {}, resource: {}}
       for(var key in data) {
         switch(key) {
@@ -287,12 +284,10 @@ export default {
         xml:  this.$store.state.geonetwork + 'srv/api/records/' + metadata.id + '/formatters/xml?attachment=true',
         pdf:  this.$store.state.geonetwork + 'srv/api/records/' + metadata.id + '/formatters/xsl-view?root=div&output=pdf'
       }
-      console.log(metadata)
       this.metadata = metadata
       this.fullMetadata = data
 //       this.metadata = this.$gn.treatmentFull(data.metadata ,this.uuid)
       var feature = this.$gn.extractBbox(metadata.geobox, this.uuid)
-      console.log(feature)
       var event = new CustomEvent('fmt:metadataEvent', {detail:  {meta: this.metadata, feature:feature}})
       document.dispatchEvent(event)
     },

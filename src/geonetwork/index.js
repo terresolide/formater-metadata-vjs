@@ -95,6 +95,9 @@ const GeonetworkPlugin = {
              if (!metadata.related.siblings) {
                metadata.related.siblings =[]
              }
+             if (json && !json.forEach) {
+               json = [json]
+             }
              json.forEach(function (node) {
                var initiative = node['gmd:MD_AggregateInformation']['gmd:initiativeType']['gmd:DS_InitiativeTypeCode']['@codeListValue']
                var identifiers = JSONPATH.query(node, "$..['gmd:MD_Identifier']..['#text']")

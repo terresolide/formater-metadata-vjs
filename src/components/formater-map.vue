@@ -45,8 +45,8 @@ export default {
     document.addEventListener('fmt:unselectBboxEvent', this.unselectBboxListener)
     this.closeMetadataListener = this.back.bind(this)
     document.addEventListener('fmt:closeMetadataEvent', this.closeMetadataListener);
-    this.aerisResetListener = this.handleReset.bind(this)
-    document.addEventListener('aerisResetEvent', this.aerisResetListener)
+//     this.aerisResetListener = this.handleReset.bind(this)
+//     document.addEventListener('aerisResetEvent', this.aerisResetListener)
     this.addLayerListener = this.addLayer.bind(this)
     document.addEventListener('fmt:addLayerEvent', this.addLayerListener)
     this.removeLayerListener = this.removeLayer.bind(this)
@@ -63,8 +63,8 @@ export default {
     this.unselectBboxListener = null
     document.removeEventListener('fmt:closeMetadataEvent', this.closeMetadataListener);
     this.closeMetadataListener = null
-    document.removeEventListener('aerisResetEvent', this.aerisResetListener)
-    this.aerisResetListener = null
+//     document.removeEventListener('aerisResetEvent', this.aerisResetListener)
+//     this.aerisResetListener = null
     document.removeEventListener('fmt:addLayerEvent', this.addLayerListener)
     this.addLayerListener = null
     document.removeEventListener('fmt:removeLayerEvent', this.removeLayerListener)
@@ -511,7 +511,7 @@ export default {
      }
      this.legendControl.removeAll()
      // if (this.depth === event.detail.depth   && this.bboxLayer[this.depth]) {
-     if (this.bboxLayer) {
+     if (this.bboxLayer && this.bboxLayer.clearLayers) {
        this.bboxLayer.clearLayers();
       
 	     // this.updateLayers(event.detail.metadata)
@@ -534,7 +534,7 @@ export default {
       this.controlLayer.setBboxLayer(this.bboxLayer)
 
      if (this.bounds && this.bounds._southWest) {
-      this.map.fitBounds(this.bounds)
+     // this.map.fitBounds(this.bounds)
       this.resetControl.setBounds(this.bounds)
      }
      // this.bboxLayer[this.depth].addTo(this.map)
@@ -765,7 +765,7 @@ export default {
      // this.depth = event.detail.depth
      // this.unselectBbox()
      for (var i in this.bboxLayer){
-       if (this.bboxLayer[i].remove) {
+       if (this.bboxLayer[i] && this.bboxLayer[i].remove) {
          this.bboxLayer[i].remove()
        }
       // this.controlLayer.removeLayer(this.bboxLayer[i])
