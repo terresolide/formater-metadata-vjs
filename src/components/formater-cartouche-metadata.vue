@@ -42,7 +42,7 @@
               <img :src="meta.logo"  />
           </a>
        </div>
-       <formater-related type="cartouche"  :id="meta.id" :download="meta.download" :order="meta.order" :has-bbox-layer="hasBboxLayer" :layers="meta.layers"  :links="meta.links" :related="meta.related"></formater-related>
+       <formater-related type="cartouche"  :id="meta.id" :cds="dataCenter" :download="meta.download" :order="meta.order" :has-bbox-layer="hasBboxLayer" :layers="meta.layers"  :links="meta.links" :related="meta.related"></formater-related>
      </div>
  </div>
 </template>
@@ -65,6 +65,10 @@ export default {
       type: Object,
       default: null
     },
+    cds: {
+      type: String,
+      default: null
+    },
     depth: {
       type: Number,
       default: 0
@@ -74,7 +78,6 @@ export default {
       default: null
     }
   },
-  
   computed: {
     width() {
       var depth = this.depth ? 3 : 0
@@ -91,6 +94,7 @@ export default {
     return {
      meta: {},
      uuid: null,
+     dataCenter: null,
      hasBboxLayer: false,
      layerAdded: false
     }
@@ -104,6 +108,13 @@ export default {
    this.meta.treatment.layerAdded = false
    if (this.meta.geoBox  || this.meta.id) {
      this.hasBboxLayer = true
+   }
+   if (!this.cds) {
+     if (this.metadata.groupOwner) {
+       this.dataCenter = this.$gn.t('group-'+ this.metadata.groupOwner)
+     }
+   } else {
+     this.dataCenter = this.cds
    }
   },
   methods: {

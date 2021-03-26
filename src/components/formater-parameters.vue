@@ -3,12 +3,12 @@
   "en": {
     "parentIdentifier": "Parent Id.",
     "productType": "Product type",
-    "parameters": "Parameters"
+    "parameters": "Data informations"
   },
   "fr": {
     "parentIdentifier": "Parent Id.",
     "productType": "Type de produit",
-    "parameters": "Paramètres"
+    "parameters": "Informations sur les données"
   }
 }
 </i18n>
@@ -20,7 +20,9 @@
            <dd style="max-width:300px;">{{item}}</dd>
          </dl>
          <div class="mtdt-block-parameters">
-          <dl class="mtdt-content mtdt-parameter-title" style="padding-bottom:5px;" v-if="type === 'metadata' & countParameters > 0"><dt :style="{color:primary}">{{$t('parameters')}}</dt><dd></dd></dl>
+          <dl class="mtdt-content mtdt-parameter-title" style="padding-bottom:5px;" v-if="type === 'metadata' & countParameters > 0">
+            <dt style="width:99%;" :style="{color:primary}">{{$t('parameters')}}</dt>
+            <dd style="width:0px;"></dd></dl>
          <dl v-for="(item, key) in metadata" :key="key" v-if="$store.state.osFields[type].acquisition.indexOf(key) >=0" class="mtdt-simple-parameter">
            <dt style="text-transform:capitalize;" :style="{color:primary}">{{key}}</dt> 
            <dd v-if="Array.isArray(item)">{{item.join(', ')}}</dd>

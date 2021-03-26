@@ -10,7 +10,7 @@
 <template>
  <div class="mtdt-list" >
     <div v-if="!metadatas" style="width:calc(100% - 150px);">{{$t('no_result')}}</div>
-    <formater-cartouche-metadata  :depth="depth" :type="type" v-for="(meta, index) in metadatas" :key="index" :metadata="meta"  v-if="meta" ></formater-cartouche-metadata>
+    <formater-cartouche-metadata  :depth="depth" :cds="cds" :type="type" v-for="(meta, index) in metadatas" :key="index" :metadata="meta"  v-if="meta" ></formater-cartouche-metadata>
   </div>
 </template>
 <script>
@@ -29,6 +29,10 @@ export default {
 //       type: String,
 //       default: null
 //     },
+    cds: {
+      type: String,
+      default: null
+    },
     depth: {
       type: Number,
       default: 0

@@ -48,7 +48,7 @@
         <div  v-if="depth >= 0 " v-show="currentTab === 'search' && hasChild">
            
            <formater-paging  :uuid="uuid"  :depth="depth" order-by="changeDate" :type="describe ? 'opensearch': 'geonetwork'"></formater-paging>
-           <formater-list-metadata :depth="depth"  @hasChild="setHasChild"></formater-list-metadata>
+           <formater-list-metadata :depth="depth"  :cds="metadata.cds" @hasChild="setHasChild"></formater-list-metadata>
       </div>
       <!--  others tab -->
       <div v-if="currentTab === 'main'" style="margin-top:20px;">

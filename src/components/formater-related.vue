@@ -82,13 +82,13 @@
     </div>
     <div v-if="download && download.length === 1 && type === 'cartouche'">
       <a v-if="download[0].type && download[0].type === 'WWW:DOWNLOAD-1.0-link--download'"
-        :href="download[0].url" target="_blank"  :title="$t('download_data')">
+        :href="download[0].url" target="_blank"  :title="$t('download_data')" @click="record(download[0].url, 'download')">
         <span class="mtdt-related-type fa fa-download" :style="{backgroundColor: primary}" ></span>
       </a>
                
       <a v-else-if="token && token !== -1" 
        :href="download[0].url + '?_bearer=' + token" :class="{disabled:download[0].disabled || !token}" 
-        :title="$t('download_data')">
+        :title="$t('download_data')" @click="record(download[0].url, 'download')">
         <span class="mtdt-related-type fa fa-download" :style="{backgroundColor: primary}" ></span>
       </a> 
       <a v-else  :class="{disabled:download[0].disabled || !token}" 
@@ -105,8 +105,12 @@
       <div class="mtdt-expand mtdt-links" >
            <ul >
            <li v-for="(file, index) in download" :key="index"  :class="{disabled: file.disabled || !token}">
-              <a  v-if="file.type && file.type === 'WWW:DOWNLOAD-1.0-link--download'" :href="file.url" :title="file.description" target="_blank">{{file.name? file.name: $t('download_data')}}</a>
-              <a  v-else-if="token && token !== -1" :title="file.description" :href="file.url + '?_bearer=' + token">{{file.name? file.name: $t('download_data')}}</a>
+              <a  v-if="file.type && file.type === 'WWW:DOWNLOAD-1.0-link--download'" :href="file.url" :title="file.description" target="_blank" @click="record(file.url, 'download')">
+              {{file.name? file.name: $t('download_data')}}
+              </a>
+              <a  v-else-if="token && token !== -1" :title="file.description" :href="file.url + '?_bearer=' + token"
+               @click="record(file.url, 'download')">
+               {{file.name? file.name: $t('download_data')}}</a>
               <a  v-else :title="file.description" @click="triggerDownload(index);">{{file.name? file.name: $t('download_data')}}</a>
           </li>
           </ul>    
@@ -115,7 +119,7 @@
     </div>
     <!-- order -->
     <div v-if="order && order.length === 1 && type === 'cartouche'">
-       <a  target="_blank"  :title="$t('order_data')" :href="order[0].url">
+       <a  target="_blank"  :title="$t('order_data')" :href="order[0].url" @click="record(order[0].url, 'order')">
         <span class="mtdt-related-type fa fa-pencil-square-o" :style="{backgroundColor: primary}" ></span>
       </a> 
     </div>
@@ -129,7 +133,8 @@
       :style="{color:$store.state.style.primary}">{{$t('order_data')}}</h4>
            <ul >
            <li v-for="(file, index) in order" :key="index" >
-              <a  :title="file.description"  :href="file.url" target="_blank">{{file.name? file.name: $t('order_data')}}</a>
+              <a  :title="file.description"  :href="file.url" @click="record(file.url, 'order')" 
+              target="_blank">{{file.name? file.name: $t('order_data')}}</a>
           </li>
           </ul>    
       </div> 
@@ -196,6 +201,10 @@
       },
       links: {
         type: Array,
+        default: null
+      },
+      cds: {
+        type: String,
         default: null
       },
       related: {
@@ -356,7 +365,23 @@
        changePlatform (newvalue) {
     	   this.platformAdded = newvalue
        },
+       record (url, type) {
+         if (!this.$store.state.recordUrl) {
+           return
+         }
+         var data = {
+             email: this.$store.getters['user/email'],
+             cds: this.cds,
+             fullpath: this.$route.fullPath,
+             path: this.$route.path,
+             uuid: this.id,
+             link: url,
+             type: type
+         }
+         this.$http.post(this.$store.state.recordUrl, data, {emulateJSON: true})
+       },
        triggerDownload (index) {
+         this.record(this.download[0].url, 'download')
          if (this.download[index].disabled) {
            return
          }

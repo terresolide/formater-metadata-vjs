@@ -297,6 +297,7 @@ const GeonetworkPlugin = {
                      var link = JSONPATH.query(node, "$..['gmx:Anchor']['@xlink:href']")
                      if (link.length > 0) {
                        metadata.dataCenter = link[0]
+                       metadata.cds = link[0].substring(link[0].lastIndexOf('/') + 1)
                      }
                    }
                  }
