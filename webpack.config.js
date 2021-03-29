@@ -112,13 +112,14 @@ module.exports = {
   },
   devtool: '#eval-source-map'
 }
-module.exports.plugins = (module.exports.plugins || []).concat([
-  new webpack.DefinePlugin({
-    'process.env': config.dev.env
-  }),
-  new VueLoaderPlugin()
-])
+
 if (process.env.NODE_ENV === 'development') {
+  module.exports.plugins = (module.exports.plugins || []).concat([
+    new webpack.DefinePlugin({
+      'process.env': config.dev.env
+    }),
+    new VueLoaderPlugin()
+  ])
   module.exports.mode = 'development'
 	module.exports.output.filename='build.js'
 	  module.exports.plugins = (module.exports.plugins || []).concat([
@@ -129,6 +130,12 @@ if (process.env.NODE_ENV === 'development') {
 
 }
 if (process.env.NODE_ENV === 'production') {
+  module.exports.plugins = (module.exports.plugins || []).concat([
+    new webpack.DefinePlugin({
+      'process.env': config.build.env
+    }),
+    new VueLoaderPlugin()
+  ])
   module.exports.mode = 'production'
   module.exports.devtool = '#source-map';
   module.exports.output.publicPath = prodUrl;
@@ -150,6 +157,12 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 if (process.env.NODE_ENV === 'preproduction') {
+  module.exports.plugins = (module.exports.plugins || []).concat([
+    new webpack.DefinePlugin({
+      'process.env': config.pre.env
+    }),
+    new VueLoaderPlugin()
+  ])
     module.exports.mode = 'production'
     module.exports.devtool = '#source-map';
     module.exports.output.path =  path.resolve(__dirname, './webcomponents'),
