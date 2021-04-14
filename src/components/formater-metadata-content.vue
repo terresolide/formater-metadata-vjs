@@ -52,7 +52,7 @@
      "completed": "Finalisé",
      "historicalArchive": "Archivé",
      "obsolete": "Obsolète",
-     "onGoing": "En cours",
+     "onGoing": "Mise à jour continue",
      "planned": "Planifié",
      "required": "Création ou mise à jour requis",
      "underDevelopment": "En cours de création",

@@ -110,8 +110,8 @@ export default {
     this.codeListener = this.getMessage.bind(this)
     window.addEventListener('message', this.codeListener)
     // case already connected
-    // this.getTokens()
-    this.testLoginSso()
+    this.getTokens()
+   // this.testLoginSso()
   },
   destroyed () {
     window.removeEventListener('message', this.codeListener)
