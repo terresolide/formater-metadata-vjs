@@ -11,7 +11,7 @@
 <template>
 <div class="mtdt-app" >
  <aeris-theme :primary="$store.state.style.primary" :active="true" :emphasis="$store.state.style.emphasis"></aeris-theme>
- <header v-if="authEnabled" >
+ <header v-if="authEnabled && $route.name !== 'FormaterLogin' && $route.name !== 'FormaterLogout'" >
     <formater-authentication v-if="authEnabled" ></formater-authentication>
     <!--  <i class="fa fa-shopping-cart" style="font-size:1.5rem;opacity:0.6" :style="{color: $store.state.style.primary}"></i>-->
  </header>      

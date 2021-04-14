@@ -35,6 +35,7 @@
 		    </a>
 	    </span>
 	  </div>
+	  <iframe style="display:none;" :src="iframeUrl"></iframe>
 	 <!--  <i class="fa fa-user" :style="{color:$store.state.style.primary}"></i>  -->
  </span>
 
@@ -100,7 +101,8 @@ export default {
       searching: false,
       popup: null,
       alreadyAsk: false,
-      msg: false
+      msg: false,
+      iframeUrl: null
      // iframe: null
     }
   },
@@ -108,7 +110,8 @@ export default {
     this.codeListener = this.getMessage.bind(this)
     window.addEventListener('message', this.codeListener)
     // case already connected
-    this.getTokens()
+    // this.getTokens()
+    this.testLoginSso()
   },
   destroyed () {
     window.removeEventListener('message', this.codeListener)
@@ -234,6 +237,15 @@ export default {
      // this.iframe = 'https://sso.aeris-data.fr/auth/realms/test/protocol/openid-connect/login-status-iframe.html'
      // wn.postMessage(this.clientId + ' ' + this.$store.getters['user/getState'], 'http://localhost:8080')
      // window.open(url, "_blank", "height=750, width=850, status=yes, toolbar=no, menubar=no, location=no,addressbar=no");
+   },
+   testLoginSso () {
+     var redirectUri = this.$store.state.ssoLogin ? this.$store.state.ssoLogin : this.baseUrl + '/login?'
+         
+     var url = this.loginUrl + '?' + this.loginParams(redirectUri)
+     this.$store.commit('user/setRedirectUri', redirectUri)
+     this.iframeUrl = url
+//      this.$http.get(url, {credentials: true})
+//      .then(resp => console.log(resp), resp => console.log(browser.cookies.get({name: 'KEYCLOAK_IDENTITY' })))
    },
    resetUser () {
      this.searching = false

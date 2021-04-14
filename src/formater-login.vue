@@ -19,8 +19,15 @@
           },
           document.location.origin
         )
-      }
-      window.close()
+        window.close()
+        // window.opener.postMessage({machin: 'truc'}, document.location.href)
+      } else if (parent) {
+        parent.postMessage( {
+          code:location.authParams['code'],
+          state: location.authParams['state'],
+          url: window.location.href
+        })
+      } 
     }
   }
   </script>

@@ -3,12 +3,12 @@
   "en": {
     "parentIdentifier": "Parent Id.",
     "productType": "Product type",
-    "parameters": "Data informations"
+    "parameters": "Parameters"
   },
   "fr": {
     "parentIdentifier": "Parent Id.",
     "productType": "Type de produit",
-    "parameters": "Informations sur les données"
+    "parameters": "Paramètres"
   }
 }
 </i18n>

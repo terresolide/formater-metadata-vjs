@@ -83,7 +83,8 @@
    <p v-if="!isFormater && !alreadyAsk" v-html="$t('access_to_formater')" style="font-size:0.9em;font-style:italic;line-height:1;"></p>
   </div>
  </div>
- <a class="fa fa-user" @click="show=true" :style="{'--color': $store.state.style.primary}" :title="$t('access_rights')">
+ <a  @click="show=true" :style="{'--color': $store.state.style.primary}" :title="$t('access_rights')">
+ <i class="fa fa-user" style="margin-right:3px;"></i>
   {{user.email}}
 </a>
 
