@@ -5,7 +5,13 @@
      "localize": "Localize on the map",
      "display_layer": "Display the layer on the map",
      "download_data": "Download data",
-     "now": "Now"
+     "now": "Now",
+     "obsolete": "Obsolete",
+     "completed": "Completed",
+     "historicalArchive": "Archived",
+     "planned": "Planned",
+     "onGoing": "On going",
+     "underDevelopment": "Under development"
    },
    "fr":{
      "contact": "Contact | Contacts",
@@ -13,7 +19,13 @@
      "localize": "Localiser sur la carte, cliquer pour garder la position",
      "display_layer": "Afficher sur la carte",
      "download_data": "Télécharger les données",
-     "now": "Maintenant"
+     "now": "Maintenant",
+     "obsolete": "Obsolète",
+     "completed": "Finalisé",
+     "historicalArchive": "Archivé",
+     "planned": "Planifié",
+     "onGoing": "Mise à jour continue",
+     "underDevelopment": "En cours de création"
    }
 }
 </i18n>
@@ -24,8 +36,16 @@
         <div>{{meta.title ? meta.title: meta.defaultTitle}}</div>
      </div>
      <div class="mtdt-description">
+        <div v-if="meta.thumbnail || meta.status" style="display:block;float:left;max-width:120px;">
         <img :src="meta.thumbnail" v-if="meta.thumbnail"/>
-        <formater-temporal-extent :start="meta.tempExtentBegin" :end="meta.tempExtentEnd"></formater-temporal-extent>
+         <div class="mtdt-status" v-if="meta.status"  
+         :style="{color: $store.state.style.primary, borderColor: $store.state.style.primary}">
+         {{$t(meta.status)}}
+         </div>
+       
+        </div>
+         <formater-temporal-extent :start="meta.tempExtentBegin" :end="meta.tempExtentEnd"></formater-temporal-extent>
+         
          <div v-if="meta.description" v-html="meta.description" style="padding:5px 0"></div>
          <formater-parameters type="cartouche" :metadata="meta"></formater-parameters>
      </div>
@@ -272,11 +292,11 @@ export default {
 }
 .mtdt-cartouche-metadata div.mtdt-description img {
   position: relative;
-   float:left;
    max-width: 110px;
    max-height:80px;
+   display:block;
    background: #ddd;
-   margin: 0px 15px 10px 0;
+   margin: 0px 15px 3px 0;
 }
 .mtdt-cartouche-metadata .mtdt-cartouche-elt{
    margin-bottom: 0px;
@@ -309,6 +329,15 @@ export default {
 .mtdt-cartouche-metadata .mtdt-resource:hover {
   max-height:none;
 }
-
-
+.mtdt-cartouche-metadata .mtdt-status {
+     display:inline-block;
+     padding:2px 5px;
+     border:1px solid black;
+     border-radius:3px;
+     box-sizing:border-box;
+     margin-right:10px;
+     text-align:center;
+     font-size:0.9em;
+     background:#F3F3F3;
+}
 </style>

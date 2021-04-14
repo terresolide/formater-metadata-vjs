@@ -10,11 +10,11 @@
 </i18n>
 <template>
 <div  class="mtdt-cartouche-elt">
-  <div  v-if="startDate">
+  <span  v-if="startDate">
     <span>{{date2str(startDate)}}</span>
     <i class="fa fa-long-arrow-right" :style="{color:$store.state.style.primary}" ></i>
     <span >{{date2str(endDate)}}</span>
-  </div>
+  </span>
 </div>
 </template>
 <script>
@@ -60,3 +60,9 @@ export default{
   }
 }
 </script>
+<style>
+span.mtdt-cartouche-elt{
+ display:inline-block;
+ text-align:left;
+}
+</style>

@@ -71,7 +71,10 @@
     
 </div>
  <div class="mtdt-description" style="display:block;">
-       <formater-quicklooks :quicklooks="metadata.images"></formater-quicklooks>
+       <div class="mtdt-content-quicklook" v-if="metadata.images || metadata.status">
+	       <formater-quicklooks :quicklooks="metadata.images"></formater-quicklooks>
+	       <div class="mtdt-status" :style="{color: $store.state.style.primary, borderColor: $store.state.style.primary}">{{$t(metadata.status)}}</div>
+       </div>
        <dl  class="mtdt-identifier" v-if="metadata.identifier && !metadata.description">
              <dt :style="dtStyle()">{{$t('identifier')}}</dt>
               <dd :style="{width:  'calc(100% - 700px)', minWidth: '300px'}">
@@ -102,12 +105,7 @@
       </div>
    </dd>
 </dl>
-<dl v-if="metadata.status" class="mtdt-main-parameter">
-   <dt :style="dtStyle()">Status </dt>
-   <dd style="font-weight:600;">
-      {{$t(metadata.status)}}
-   </dd>
-</dl>
+
 
 <dl v-if="countContactResource > 0 " class="mtdt-main-parameter">
   <dt :style="dtStyle()">{{$tc('contact', countContactResource)}}</dt>
@@ -327,7 +325,33 @@ background-image: linear-gradient(to right, #ccc, #333, #ccc);
 .mtdt-metadata .mtdt-content .mtdt-description ul {
   padding-left:12px;
 }
-
+.mtdt-metadata .mtdt-status {
+     display:inline-block;
+     padding:5px 8px;
+     border:1px solid black;
+     border-radius:3px;
+     box-sizing:border-box;
+     margin-right:10px;
+     text-align:center;
+     background:#F3F3F3;
+}
+.mtdt-content-quicklook {
+   float:left;
+   text-align:center;
+   max-width:200px;
+   margin: 0px 15px 10px 0;
+}
+@media screen and (min-width:1100px) {
+  .mtdt-content-quicklook{
+   max-width: 250px;
+  }
+}
+@media screen and (min-width:1500px) {
+  .mtdt-content-quicklook{
+   max-width: 340px;
+  }
+}
+  
 /*.mtdt-metadata .mtdt-content dd div,
 .mtdt-metadata .mtdt-content dd span{
   display: inline-block;
