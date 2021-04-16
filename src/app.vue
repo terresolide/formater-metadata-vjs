@@ -303,7 +303,7 @@ export default {
   margin: 10px auto;
   min-width:800px;
   width:99%;
-  max-width:1000px;
+  max-width:1200px;
 }
 .clearfix:after {
   content: "";

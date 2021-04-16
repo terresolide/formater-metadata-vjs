@@ -4,12 +4,12 @@
     "authorize": "Autoriser",
     "insufficient_right": "Vos droits sont insuffisants\npour accéder aux services\nde visualisation et téléchargement",
     "limited_access_to": "Accès limité à {domain}",
-    "log_service": "Pour accéder à toutes les données du service <b>{domain}</b>, vous devez vous y connecter.",
+    "log_service": "Pour visualiser ou télécharger les données de <b>{domain}</b>, vous devez vous y connecter.",
     "log_to": "Se connecter au service {domain}",
     "login": "Se connecter",
     "logout": "Se déconnecter",
-    "need_authorize": "Pour accéder à toutes les données du service <b>{domain}</b>, vous devez l'autoriser à accéder à vos données (email, nom, rôles).",
-    "need_log": "Pour accéder à toutes les données du service <b>{domain}</b>, vous devez<ul><li>vous connecter</li><li>puis, si vous avez <b>les droits suffisants</b>, autoriser ce service à accéder à vos données.</li>",
+    "need_authorize": "Pour visualiser ou télécharger les données de <b>{domain}</b>, vous devez autoriser ce service à accéder à vos données personnelles (email, nom, rôles).",
+    "need_log": "Pour accéder à toutes les données du service <b>{domain}</b>, vous devez vous connecter puis, si vous avez <b>les droits suffisants</b>, autoriser ce service à accéder à vos données.",
     "session_expire": "Votre session auprès de <b>{domain}</b> a expiré.<br />Vous devez vous reconnecter."
   },
   "en": {
@@ -20,7 +20,7 @@
     "log_to": "Sign in the {domain} service",
     "login": "Sign in",
     "logout": "Se déconnecter",
-    "need_authorize": "To access data of <b>{domain}</b> service,<br /> you must authorize this service to access your personnal data (email, name, roles).",
+    "need_authorize": "To visualize and download data of <b>{domain}</b>,<br /> you must authorize this service to access your personnal data (email, name, roles).",
     "need_log": "To access data of <b>{domain}</b>  service,<br /> you must login in then, if you have sufficient rights, you must authorize this service to access your personnal data.",
     "session_expire": "Your session width <b>{domain}</b> has expired.<br /> You need to log back in."
   }
@@ -115,8 +115,7 @@ export default {
       }
       var found = window.location.href.match(/^(.*\/)#/)
       if (found && found.length > 1) {
-        console.log(found[1])
-       return found[1]
+       return found[1] + '#/'
       } else {
         return null
       }
@@ -166,9 +165,9 @@ export default {
       this.$http.get(url).then(function (response) {
         if (response.body && response.body.clientId) {
           this.clientId = response.body.clientId
-//           if (!(this.email && !this.isFormater)) {
-//             this.msg = true
-//           }
+          if (!(this.email && !this.isFormater)) {
+            this.msg = true
+          }
           this.$store.commit('services/setClientId', {id: this.service.id, clientId: this.clientId})
           this.state = 'php' + btoa(this.clientId + this.service.domain).replace(/=|\+|\//gm, '0')
         }
@@ -214,7 +213,6 @@ export default {
       }
     },
     getToken (code) {
-      console.log('GET TOKEN')
       var url = this.service.authUrl
       var params = {
         code: code,
@@ -232,10 +230,6 @@ export default {
       .then(
          resp => this.setToken(resp.body), 
          resp => {
-           console.log(resp)
-           switch (resp.status) {
-           
-           }
            alert('SERVER RESPONSE ' + resp.status + ' - ' + resp.statusText)
            this.searching = false
          }
@@ -282,9 +276,6 @@ export default {
 	      )
 	      .then(function (resp) {
 	        if (resp.body.token) {
-	          if (resp.body.token === this.service.token) {
-	            console.log('MEME TOKEN')
-	          }
 	          this.$store.commit('services/setToken', {id: this.service.id, token: resp.body.token})
 	          var obj = jwt_decode(resp.body.token)
 	          var now = new Date()

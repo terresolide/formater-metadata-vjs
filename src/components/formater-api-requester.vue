@@ -25,9 +25,7 @@ export default {
   },
   watch: {
     $route (newroute, old) {
-      console.log(newroute)
       this.getRecords(newroute)
-      
     }
   },
   data() {
@@ -54,8 +52,6 @@ export default {
      }
   },
   created () {
-    
-    console.log('CREATE API REQUESTER')
     this.getRecords(this.$route)
   },
   destroyed () {
@@ -63,35 +59,25 @@ export default {
   mounted () {
 //     this.facet.facetFormaterFre = []
 //     this.facet.facetFormaterFre.push('https%3A%2F%2Fw3id.org%2Fformater%2Fvariable%2Fsolid_earth/https%3A%2F%2Fw3id.org%2Fformater%2Fvariable%2Fgeothermal/https%3A%2F%2Fw3id.org%2Fformater%2Fvariable%2Fgeothermal-geothermal_temperature')
-//     this.facet.facetFormaterFre.push( 'https%3A%2F%2Fw3id.org%2Fformater%2Fvariable%2Fsolid_earth/https%3A%2F%2Fw3id.org%2Fformater%2Fvariable%2Fnon_solid/https%3A%2F%2Fw3id.org%2Fformater%2Fvariable%2Fnon_solid-hydrogen_gas')
-   
+//     this.facet.facetFormaterFre.push( 'https%3A%2F%2Fw3id.org%2Fformater%2Fvariable%2Fsolid_earth/https%3A%2F%2Fw3id.org%2Fformater%2Fvariable%2Fnon_solid/https%3A%2F%2Fw3id.org%2Fformater%2Fvariable%2Fnon_solid-hydrogen_gas')  
     // url="http://demo.formater/geonetwork/srv/fre/qi?_content_type=json&bucket=2365825987452666&fast=index&from=1&to=41"
   },
   methods: {
     initParameters () {
-      
-        this.parameters = {
-          index: 1,
-          maxRecords: this.$store.state.size.nbRecord
-        }
+      this.parameters = {
+        index: 1,
+        maxRecords: this.$store.state.size.nbRecord
+      }
     }, 
     getRecords (newroute) {
-      
-         console.log('GET RECORDS')
-     this.$store.commit('searchingChange', true)
-
-
+      this.$store.commit('searchingChange', true)
       this.prepareRequest(newroute)
       this.requestApi(event)
     },
- 
    prepareRequest(newroute) {
       this.initParameters()
-           
       this.parameters = Object.assign(this.parameters, newroute.query)
-     
       this.mapParameters()
-
     },
     mapParameters() {
       // transform the name of parameter from this application to the opensearch api for the predefined parameter
@@ -109,7 +95,6 @@ export default {
         }
       }
       for(var name in this.parameters){
-        
         if (typeof mappingParameters[name] !== 'undefined') {
           this.parameters.renameProperty(name, mappingParameters[name])
         } else  {
@@ -124,8 +109,6 @@ export default {
         } 
       }
     },
- 
-  
     requestApi (depth) {
 		  if (!this.api) {
 		    this.$store.commit('searchingChange', false)
@@ -385,7 +368,6 @@ export default {
 //     },
     fill (data, depth) {
       data.depth = this.depth
-      console.log('DISPATHC mt:metadataListEvent')
       var event = new CustomEvent('fmt:metadataListEvent', {detail:  data})
       document.dispatchEvent(event)
     },

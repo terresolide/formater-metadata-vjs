@@ -73,7 +73,7 @@
  <div class="mtdt-description" style="display:block;">
        <div class="mtdt-content-quicklook" v-if="metadata.images || metadata.status">
 	       <formater-quicklooks :quicklooks="metadata.images"></formater-quicklooks>
-	       <div class="mtdt-status" :style="{color: $store.state.style.primary, borderColor: $store.state.style.primary}">{{$t(metadata.status)}}</div>
+	       <div v-if="metadata.status" class="mtdt-status" :style="{color: $store.state.style.primary, borderColor: $store.state.style.primary}">{{$t(metadata.status)}}</div>
        </div>
        <dl  class="mtdt-identifier" v-if="metadata.identifier && !metadata.description">
              <dt :style="dtStyle()">{{$t('identifier')}}</dt>

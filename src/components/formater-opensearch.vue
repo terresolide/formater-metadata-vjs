@@ -70,7 +70,6 @@ export default {
   },
   methods: {
      load() {
-       console.log(this.describe)
        this.$http.get(this.describe)
        .then(
            response => { this.extractDescribeParameters(response.body);},
@@ -107,7 +106,6 @@ export default {
         this.mappingParameters[appName] = name
         return
       }
-      
       var obj= {
           name: name,
           title: parameterNode.getAttribute('title')
@@ -204,7 +202,6 @@ export default {
       }
      // this.recordService()
       this.$emit('parametersChange', {api: this.api, parameters:this.osParameters, mapping: this.mappingParameters})
-      
     },
     // record this service
 //     recordService() {

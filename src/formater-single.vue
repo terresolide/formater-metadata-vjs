@@ -291,6 +291,11 @@ export default {
       this.fullMetadata = data
 //       this.metadata = this.$gn.treatmentFull(data.metadata ,this.uuid)
       var feature = this.$gn.extractBbox(metadata.geobox, this.uuid)
+      var temp = {
+          min: metadata.tempExtentBegin ? metadata.tempExtentBegin : this.temporalExtent.min,
+          max: metadata.tempExtentEnd ? metadata.tempExtentEnd : this.temporalExtent.max
+      }
+      this.$store.commit('temporalChange', temp)
       var event = new CustomEvent('fmt:metadataEvent', {detail:  {meta: this.metadata, feature:feature}})
       document.dispatchEvent(event)
     },
@@ -344,9 +349,11 @@ export default {
     },
     close () {
       var route = this.$store.getters['previousRoute'] 
-        this.$router.push({name: route.name, params: route.params, query: route.query})
-        this.$store.commit('services/resetCurrent')
-        this.$store.commit('backChild')
+      this.$store.commit('services/resetCurrent')
+      this.$store.commit('backChild')
+      this.$store.commit('temporalChange', this.$store.state.defaultTemporal)
+      this.$router.push({name: route.name, params: route.params, query: route.query})
+        
     },
     back () {
       //e.preventDefault()

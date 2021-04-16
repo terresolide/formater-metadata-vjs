@@ -174,7 +174,6 @@ export default {
        this.uuid = this.metadata.id
        this.type = 'opensearch'
     }
-    console.log(this.uuid)
     this.popstateListener = this.close.bind(this)
     document.addEventListener('popstate', this.popstateListener)
   },

@@ -65,6 +65,10 @@ export default function makeStore( config ) {
         min: "1920-12-01",
         max: "now"
       },
+      defaultTemporal: {
+        min: "1920-12-01",
+        max: "now"
+      },
       proxy: proxy,
       // default order
       orderBy: 'changeDate',

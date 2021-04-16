@@ -179,7 +179,7 @@ export default {
     this.controlLayer.addTo(this.map)
     this.legendControl = new L.Control.Legend(this.$i18n.locale, this.$gn.uuidToDomId)
 
-    var fullscreen = new L.Control.Fullscreen('fmtLargeMap', {lang: this.$i18n.locale})
+    var fullscreen = new L.Control.Fullscreen('fmtLargeMap', {lang: this.$i18n.locale, mouseWheel: true})
     fullscreen.addTo(this.map)
     this.legendControl.addTo(this.map)
 
