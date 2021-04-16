@@ -48,6 +48,9 @@ export default {
       return state.user.roles.indexOf(role) >= 0
     },
     isFormater (state, getters) {
+      if (!state.user || !state.user.roles) {
+        return false
+      }
       return state.user.roles.indexOf(state.formaterRole) >= 0
     },
     formaterRole (state, getters) {
@@ -75,6 +78,13 @@ export default {
     loginUrl (state, getters) {
       if (state.ssoUrl) {
         return  state.ssoUrl + '/realms/' + state.realm + '/protocol/openid-connect/auth'
+      } else {
+        return null
+      }
+    },
+    iframeUrl (state, getters) {
+      if (state.ssoUrl) {
+        return  state.ssoUrl + '/realms/' + state.realm + '/protocol/openid-connect/login-status-iframe.html'
       } else {
         return null
       }

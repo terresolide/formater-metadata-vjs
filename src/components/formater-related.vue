@@ -34,17 +34,36 @@
     
     </div>
     <div v-if="layers && layers.length === 1 && type === 'cartouche'">
-      <div class="mtdt-related-type fa fa-globe" @click="changeLayer(layers[0], true)" :style="{backgroundColor: layerAdded ? '#8c0209' : primary}" :title="$t('display_layer')">
-          
-    </div> 
+      <div v-if="token" class="mtdt-related-type fa fa-globe" @click="changeLayer(layers[0], true)" 
+      :style="{backgroundColor: layerAdded ? '#8c0209' : primary}" :title="$t('display_layer')">
+      </div>
+      <div v-else-if="isFormater" class="mtdt-related-type fa fa-globe" @click="authorize"
+     :style="{backgroundColor: layerAdded ? '#8c0209' : primary, opacity:0.8}" :title="$t('display_layer')">
+      </div>
+      <div v-else  class="mtdt-related-type fa fa-globe disabled" 
+      :style="{backgroundColor: layerAdded ? '#8c0209' : primary}" :title="$t('display_layer')">
+      </div> 
    </div>
    <div v-if="type === 'metadata'"></div>
     <div v-if="layers && (layers.length > 1 || (type === 'metadata' && layers.length > 0))">
-      <div class="mtdt-related-type fa fa-globe" :class="{disabled: !token}" :style="{backgroundColor: layerAdded ? '#8c0209' : primary}" :title="$t('display_layer')">
+      <div v-if="!token && isFormater" class="mtdt-related-type fa fa-globe"  @click="authorize" @mouseover="$event.preventDefault()"
+      :style="{backgroundColor: layerAdded ? '#8c0209' : primary, opacity:0.8}" :title="$t('display_layer')">
           <span class="fa fa-caret-down" v-if="type === 'cartouche'"></span>
        </div>
-       <div class="mtdt-expand">
-            <ul class="mtdt-layers">
+      <div v-else class="mtdt-related-type fa fa-globe" :class="{disabled: !token && !isFormater}" 
+      :style="{backgroundColor: layerAdded ? '#8c0209' : primary}" :title="$t('display_layer')">
+          <span class="fa fa-caret-down" v-if="type === 'cartouche'"></span>
+       </div>
+       <div class="mtdt-expand" v-if="token || type === 'metadata'">
+            <ul v-if="!token && isFormater" class="mtdt-layers" >
+            
+            <li v-for="(layer, index) in layers"  :key="index" @click="authorize">
+             <i class="fa" :class="{'fa-square-o': !layer.checked,'fa-check-square-o': layer.checked}"  :data-layer="index"></i>
+             <div  :title="layer.description">{{layer.name}}</div>
+           </li>
+           </ul>  
+            <ul v-if="token || !isFormater" class="mtdt-layers" >
+            
             <li v-for="(layer, index) in layers" :class="{disabled: !token}" :key="index" @click="changeLayer(layer, true);">
              <i class="fa" :class="{'fa-square-o': !layer.checked,'fa-check-square-o': layer.checked}"  :data-layer="index"></i>
              <div  :title="layer.description">{{layer.name}}</div>
@@ -91,27 +110,33 @@
         :title="$t('download_data')" @click="record(download[0].url, 'download')">
         <span class="mtdt-related-type fa fa-download" :style="{backgroundColor: primary}" ></span>
       </a> 
+      <a v-else-if="!token && isFormater" @click="authorize"> 
+        <span class="mtdt-related-type fa fa-download" :style="{backgroundColor: primary, opacity:0.8}" ></span>
+      </a>
       <a v-else  :class="{disabled:download[0].disabled || !token}" 
         :title="$t('download_data')" @click="triggerDownload(0)">
          <span class="mtdt-related-type fa fa-download" :style="{backgroundColor: primary}" ></span>
       </a> 
     </div>
     <div v-if="download && (download.length >1 || (type === 'metadata' && download.length > 0))">
-       <div class="mtdt-related-type fa fa-download" :class="{disabled: !token}" :style="{backgroundColor: primary}" 
-       :title="$t('download_data')">
+       <div class="mtdt-related-type fa fa-download" :class="{disabled: !token && !isFormater}" :style="{backgroundColor: primary}" 
+       :title="$t('download_data')" @click="authorize">
          <span v-if="type === 'cartouche'" class="fa fa-caret-down"></span>
       </div> 
       <div v-if="type === 'metadata'"></div>
       <div class="mtdt-expand mtdt-links" >
            <ul >
-           <li v-for="(file, index) in download" :key="index"  :class="{disabled: file.disabled || !token}">
+           <li v-for="(file, index) in download" :key="index"  :class="{disabled: file.disabled || (!token && !isFormater)}">
               <a  v-if="file.type && file.type === 'WWW:DOWNLOAD-1.0-link--download'" :href="file.url" :title="file.description" target="_blank" @click="record(file.url, 'download')">
               {{file.name? file.name: $t('download_data')}}
               </a>
               <a  v-else-if="token && token !== -1" :title="file.description" :href="file.url + '?_bearer=' + token"
                @click="record(file.url, 'download')">
                {{file.name? file.name: $t('download_data')}}</a>
-              <a  v-else :title="file.description" @click="triggerDownload(index);">{{file.name? file.name: $t('download_data')}}</a>
+             <a v-else-if="!token && isFormater" @click="authorize">
+                {{file.name? file.name: $t('download_data')}}
+             </a>
+             <a  v-else :title="file.description" @click="triggerDownload(index);" >{{file.name? file.name: $t('download_data')}}</a>
           </li>
           </ul>    
       </div> 
@@ -262,6 +287,9 @@
       },
       token () {
         return this.$store.getters['services/token']
+      },
+      isFormater () {
+        return this.$store.getters['user/isFormater']
       }
     },
     watch: {
@@ -328,6 +356,14 @@
     methods: {
       abortRequest () {
         this.abort = true
+      },
+      authorize () {
+        if (!this.isFormater || this.token) {
+          return
+        }
+        var event = new CustomEvent('fmt:needAuthorize')
+        document.dispatchEvent(event)
+        
       },
       checkEmpty () {
         if (this.download && this.download.length > 0) {

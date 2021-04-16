@@ -36,6 +36,7 @@ export default function makeStore( config ) {
       currentUuid: null,
       geonetwork: null,
       metadata: null,
+      ssoLogin: null,
       summaryType:{
         step1: 'details',
         step2: 'details'

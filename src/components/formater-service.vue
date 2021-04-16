@@ -58,7 +58,6 @@
  <!--  <div v-if="!$store.state.metadata && email" class="mtdt-service-button" :class="{searching: searching}" v-show="clientId">
   -->
  <div v-if="email" class="mtdt-service-button" :class="{searching: searching}" v-show="clientId">
-
    <a v-if="service.token" class="mtdt-menu-item" 
    @click="logout" :style="{'--color': $store.state.style.primary}">
       {{$t('authorize')}} {{service.domain}}
@@ -140,17 +139,22 @@ export default {
       identity: null,
       expire: null,
       hasExpired: false,
-      timer: null
+      timer: null,
+      needAuthorize: null
     }
   },
   created () {
     this.getClientId()
     this.codeListener = this.getMessage.bind(this)
-    window.addEventListener('message', this.codeListener)    
+    window.addEventListener('message', this.codeListener) 
+    this.needAuthorize = this.openPopupAuthorize.bind(this)
+    document.addEventListener('fmt:needAuthorize', this.needAuthorize)
   },
   destroyed () {
     window.removeEventListener('message', this.codeListener)
     this.codeListener = null
+    document.addEventListener('fmt:needAuthorize', this.needAuthorize)
+    this.needAuthorize = null
   },
   methods: {
     close () {
@@ -162,9 +166,9 @@ export default {
       this.$http.get(url).then(function (response) {
         if (response.body && response.body.clientId) {
           this.clientId = response.body.clientId
-          if (!(this.email && !this.isFormater)) {
-            this.msg = true
-          }
+//           if (!(this.email && !this.isFormater)) {
+//             this.msg = true
+//           }
           this.$store.commit('services/setClientId', {id: this.service.id, clientId: this.clientId})
           this.state = 'php' + btoa(this.clientId + this.service.domain).replace(/=|\+|\//gm, '0')
         }
@@ -211,7 +215,6 @@ export default {
     },
     getToken (code) {
       console.log('GET TOKEN')
-      console.log(code)
       var url = this.service.authUrl
       var params = {
         code: code,
@@ -238,6 +241,12 @@ export default {
          }
       )
     },
+    openPopupAuthorize (event) {
+      var currentId = this.$store.getters['services/current']
+      if (this.service.id === currentId) {
+        this.msg = true
+      }
+    },
     setToken (data) {
       this.searching = false
       if (this.timer) {
@@ -251,16 +260,49 @@ export default {
           var now = new Date()
           this.expire = obj.exp * 1000 // - now.getTime() 
           // if (this.expire > 2000) {
-          this.timer = setInterval(this.validToken, 6000)
+          this.timer = setInterval(this.refreshToken, 6000)
           // }
         // }
       }  else {
         this.logout()
       }   
     },
-    validToken () {
+    refreshToken () {
       var now = new Date()
       if (this.expire - now.getTime() < 180000) {
+	      this.$http.get(this.service.refreshUrl,    
+	      // this.$http.get(this.service.refreshUrl + '?_tk=' + this.service.token,
+	          {
+	             headers: {
+	               "Authorization": "Bearer " + this.service.token
+	//               'Content-Type': 'application/json',
+	//               'Accept': 'application.json',
+	              }
+	          }
+	      )
+	      .then(function (resp) {
+	        if (resp.body.token) {
+	          if (resp.body.token === this.service.token) {
+	            console.log('MEME TOKEN')
+	          }
+	          this.$store.commit('services/setToken', {id: this.service.id, token: resp.body.token})
+	          var obj = jwt_decode(resp.body.token)
+	          var now = new Date()
+	          this.expire = obj.exp * 1000
+	        } else {
+	          this.hasExpired = true
+	          this.msg = true
+	          this.logout()
+	        }
+	        if (resp.body.status === 'error') {
+	          
+	        }
+	      }, resp => this.logout())
+      }
+    },
+    validToken () {
+     var now = new Date()
+     if (this.expire - now.getTime() < 180000) {
 	      this.$http.get(this.service.validationUrl + '?_tk=' + this.service.token,
 	          {
 	            headers: {
@@ -322,7 +364,7 @@ border-radius: 5px;
 position: fixed; 
 top:30%; 
 left:30%;
-z-index:10;
+z-index:1000;
 text-align: left;
 box-shadow: 2px 3px 3px 3px rgba(0, 0, 0, 0.5);
 }
