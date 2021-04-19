@@ -23,6 +23,9 @@ export default function makeStore( config ) {
   } else {
     var proxy = {url: null, regex: ''}
   }
+  if (config.temporalExtent) {
+    config.defaultTemporal = config.temporalExtent
+  }
 //  var isSameStep = true
 //  if (config.summaryType) {
 //  	if (config.summaryType.step1 !== config.summaryType.step2) {

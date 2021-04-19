@@ -16,6 +16,14 @@
       "en": "CNES - Centre National d'Etudes Spatiales"
     }
   },
+  "https://w3id.org/formater/data-center/ISGI": {
+    "logo": "https://service.poleterresolide.fr/geonetwork/images/harvesting/logo_ISGI_2.png",
+    "href": "http://isgi.unistra.fr/",
+    "title": {
+      "fr": "SIIG - Service International des Indices Géomagnétiques",
+      "en": "ISGI - International Service of Geomagnetic Indices"
+    }
+  }, 
    "https://w3id.org/formater/data-center/SHOM": {
     "logo": "https://service.poleterresolide.fr/geonetwork/images/harvesting/shom-data.png",
     "href": "https://data.shom.fr/",

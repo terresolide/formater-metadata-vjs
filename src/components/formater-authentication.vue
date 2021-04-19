@@ -111,7 +111,7 @@ export default {
     window.addEventListener('message', this.codeListener)
     // case already connected
     this.getTokens()
-    // this.testLoginSso()
+    this.testLoginSso()
   },
   destroyed () {
     window.removeEventListener('message', this.codeListener)
@@ -242,7 +242,8 @@ export default {
      var redirectUri = this.$store.state.ssoLogin ? this.$store.state.ssoLogin : this.baseUrl + '/login?'
      console.log(this.$store.state.ssoLogin)
      console.log(this.baseUrl)
-     var url = this.loginUrl + '?' + this.loginParams(redirectUri)
+     var url = this.loginUrl + '?prompt=none&' + this.loginParams(redirectUri)
+        
 //     var url = this.$store.getters['user/iframeUrl']
 //     url += '?client_id=' + this.$store.getters['user/clientId'] + '&origin=http://localhost:8080'
      this.$store.commit('user/setRedirectUri', redirectUri)
