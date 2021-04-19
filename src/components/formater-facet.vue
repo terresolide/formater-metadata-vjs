@@ -217,6 +217,7 @@ export default {
 .mtdt-facet-title{
   display: inline-block;
   max-width:calc(100% - 80px);
+  text-align:left;
   line-height:12px;
 }
 </style>

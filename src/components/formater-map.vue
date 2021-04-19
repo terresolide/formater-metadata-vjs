@@ -534,7 +534,7 @@ export default {
       this.controlLayer.setBboxLayer(this.bboxLayer)
 
      if (this.bounds && this.bounds._southWest) {
-     // this.map.fitBounds(this.bounds)
+      this.map.fitBounds(this.bounds)
       this.resetControl.setBounds(this.bounds)
      }
      // this.bboxLayer[this.depth].addTo(this.map)
