@@ -252,7 +252,7 @@ export default {
   font-weight:600;
   font-size: 1.1em;
   min-height:34px;
-  max-height:36px;
+  max-height:34px;
   padding: 5px;
   cursor: pointer;
   overflow: hidden;
@@ -268,7 +268,7 @@ export default {
     margin-left: 7px;
     
     overflow: hidden;
-    max-height:34px;
+    max-height:33px;
     word-break: break-all;
 }
 .mtdt-cartouche-metadata div.mtdt-header i + div {
