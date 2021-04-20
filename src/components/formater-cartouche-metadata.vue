@@ -24,7 +24,7 @@
      "completed": "Finalisé",
      "historicalArchive": "Archivé",
      "planned": "Planifié",
-     "onGoing": "Mise à jour continue",
+     "onGoing": "En cours",
      "underDevelopment": "En cours de création"
    }
 }

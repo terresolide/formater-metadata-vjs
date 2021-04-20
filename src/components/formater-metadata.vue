@@ -70,10 +70,9 @@
       </div>
       
 
-      <div v-show="currentTab === 'full'" style="margin:20px;">
-           <!-- <div ><input type="button" class="small-button" value="deployer" /> <span class="button">fermer</span></div>  -->  
+   <!--    <div v-show="currentTab === 'full'" style="margin:20px;">
              <formater-full-metadata :uuid="uuid" :metadata="full"></formater-full-metadata>
-      </div>
+      </div> --> 
       
    
    </div>
@@ -87,7 +86,7 @@ const FormaterListMetadata = () => import('./formater-list-metadata.vue')
 const FormaterRequester = () => import('./formater-requester.vue')
 const FormaterOpensearch = () => import('./formater-opensearch.vue')
 // const FormaterService = () => import('./formater-service.vue')
-const FormaterFullMetadata = () => import('./formater-full-metadata.vue')
+// const FormaterFullMetadata = () => import('./formater-full-metadata.vue')
 // import FormaterRelated from './formater-related.vue';
 import FormaterMetadataContent from './formater-metadata-content.vue'
 // const FormaterParameters = () => import('./formater-parameters.vue')
@@ -103,7 +102,7 @@ export default {
     FormaterRequester,
   //  FormaterService,
   //  FormaterRelated,
-    FormaterFullMetadata ,
+  //  FormaterFullMetadata ,
     FormaterMetadataContent
    // FormaterParameters
   },
@@ -144,8 +143,7 @@ export default {
     return {
      tabs: {
        search: false,
-       main: true,
-       full: false
+       main: true
      },
      uuid: null,
      currentTab: 'main',
@@ -167,9 +165,9 @@ export default {
     if (this.metadata['geonet:info']) {
        this.uuid = this.metadata['geonet:info'].uuid
        // full view for geonetwork metadata
-       if (this.full) {
-         this.tabs.full = true
-       }
+//        if (this.full) {
+//          this.tabs.full = true
+//        }
     } else {
        this.uuid = this.metadata.id
        this.type = 'opensearch'

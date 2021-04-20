@@ -52,11 +52,11 @@
      "completed": "Finalisé",
      "historicalArchive": "Archivé",
      "obsolete": "Obsolète",
-     "onGoing": "Mise à jour continue",
+     "onGoing": "En cours",
      "planned": "Planifié",
      "required": "Création ou mise à jour requis",
      "underDevelopment": "En cours de création",
-      "credit": "Crédit",
+     "credit": "Crédit",
      "purpose": "Objectif"
    }
 }
