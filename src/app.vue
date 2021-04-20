@@ -107,8 +107,10 @@ export default {
 .mtdt-app strong {
   font-family: inherit;
 }
-.mtdt-app a:hover{
-  background:inherit;
+
+.wrapper-content .mtdt-app a:hover {
+   background:inherit;
+  color:#b8412c;
 }
 .mtdt-app div, 
 .mtdt-app span {
