@@ -1,6 +1,7 @@
 <i18n>
 {
   "fr": {
+    "access_to": "Accès à",
     "authorize": "Autoriser",
     "insufficient_right": "Vos droits sont insuffisants\npour accéder aux services\nde visualisation et téléchargement",
     "limited_access_to": "Accès limité à {domain}",
@@ -9,10 +10,11 @@
     "login": "Se connecter",
     "logout": "Se déconnecter",
     "need_authorize": "Pour visualiser ou télécharger les données de <b>{domain}</b>, vous devez autoriser ce service à accéder à vos données personnelles (email, nom, rôles).",
-    "need_log": "Pour accéder à toutes les données du service <b>{domain}</b>, vous devez vous connecter puis, si vous avez <b>les droits suffisants</b>, autoriser ce service à accéder à vos données (nom, email).",
+    "need_log": "Pour accéder à toutes les données du service <b>{domain}</b>, vous devez vous connecter puis, si vous avez <b>les droits suffisants</b> et suivant votre navigateur, autoriser ce service à accéder à vos données (nom, email).",
     "session_expire": "Votre session auprès de <b>{domain}</b> a expiré.<br />Vous devez vous reconnecter."
   },
   "en": {
+    "access_to": "Access to",
     "authorize": "Authorize",
     "insufficient_right": "Your rights are insufficient\nto access the viewing\nand downloading services",
     "limited_access_to": "Limited access to {domain}",
@@ -20,7 +22,7 @@
     "log_to": "Sign in the {domain} service",
     "login": "Sign in",
     "logout": "Se déconnecter",
-    "need_authorize": "To visualize and download data of <b>{domain}</b>,<br /> you must authorize this service to access your personnal data (email, name, roles).",
+    "need_authorize": "To visualize and download data of <b>{domain}</b> and your browser, you must authorize this service to access your personnal data (email, name, roles).",
     "need_log": "To access data of <b>{domain}</b>  service,<br /> you must login in then, if you have sufficient rights, you must authorize this service to access your personnal data (name, email).",
     "session_expire": "Your session width <b>{domain}</b> has expired.<br /> You need to log back in."
   }
@@ -61,12 +63,12 @@
  <div v-if="email" class="mtdt-service-button" :class="{searching: searching}" v-show="clientId">
    <a v-if="service.token" class="mtdt-menu-item" 
    @click="logout" :style="{'--color': $store.state.style.primary}">
-      {{$t('authorize')}} {{service.domain}}
+      {{$t('access_to')}} {{service.domain}}
       <i  class="fa fa-check-square-o"></i>
    </a>
    <a v-if="!service.token && isFormater" class="mtdt-menu-item" :class="{searching: searching}"
    @click="searchCode" :style="{'--color': $store.state.style.primary}">
-      {{$t('authorize')}} {{service.domain}}
+      {{$t('access_to')}} {{service.domain}}
       <i  class="fa fa-square-o"></i>
    </a>
    <a v-if="!service.token && !isFormater" class="mtdt-menu-item" :class="{searching: searching}"
@@ -107,8 +109,10 @@ export default {
     email () {
       return this.$store.getters['user/email']
     },
-    isFormater () {
-      return this.$store.getters['user/isFormater']
+    isFormater (newvalue) {
+      var isFormater = this.$store.getters['user/isFormater']
+      this.testLoginSso(this.email, isFormater)
+      return isFormater
     },
     redirectUri () {
       if (this.$store.state.ssoLogin) {
@@ -216,7 +220,10 @@ export default {
         this.searching = false
       }
     },
-    testLoginSso () {
+    testLoginSso (email, isFormater) {
+      if (!email || !isFormater) {
+        return
+      }
       var params = {
           redirect_uri: encodeURIComponent(this.redirectUri),
           response_type: 'code',

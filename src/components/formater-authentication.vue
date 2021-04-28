@@ -122,7 +122,6 @@ export default {
      return this.$store.getters['user/loginParams'](redirectUrl, true)
    },
    getMessage (e) {
-     console.log(e)
      if (e.data.code && e.data.state == this.$store.getters['user/getState']) {
        this.$store.commit('user/setCode', e.data.code)
        this.getTokens()

@@ -98,7 +98,7 @@ module.exports = {
     }
   },
   devServer: {
-    https: true,
+    // https: true,
     historyApiFallback: true,
     noInfo: true,
     headers: {
