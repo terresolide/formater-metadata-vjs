@@ -35,7 +35,7 @@
 		    </a>
 	    </span>
 	  </div>
-	  <iframe style="display:none;" :src="iframeUrl"></iframe>
+	  <iframe style="display:none;" :src="iframeUrl" ></iframe>
 	 <!--  <i class="fa fa-user" :style="{color:$store.state.style.primary}"></i>  -->
  </span>
 
@@ -122,6 +122,7 @@ export default {
      return this.$store.getters['user/loginParams'](redirectUrl, true)
    },
    getMessage (e) {
+     console.log(e)
      if (e.data.code && e.data.state == this.$store.getters['user/getState']) {
        this.$store.commit('user/setCode', e.data.code)
        this.getTokens()
@@ -240,8 +241,6 @@ export default {
    },
    testLoginSso () {
      var redirectUri = this.$store.state.ssoLogin ? this.$store.state.ssoLogin : this.baseUrl + '/login?'
-     console.log(this.$store.state.ssoLogin)
-     console.log(this.baseUrl)
      var url = this.loginUrl + '?prompt=none&' + this.loginParams(redirectUri)
         
 //     var url = this.$store.getters['user/iframeUrl']

@@ -9,7 +9,7 @@
     "login": "Se connecter",
     "logout": "Se déconnecter",
     "need_authorize": "Pour visualiser ou télécharger les données de <b>{domain}</b>, vous devez autoriser ce service à accéder à vos données personnelles (email, nom, rôles).",
-    "need_log": "Pour accéder à toutes les données du service <b>{domain}</b>, vous devez vous connecter puis, si vous avez <b>les droits suffisants</b>, autoriser ce service à accéder à vos données.",
+    "need_log": "Pour accéder à toutes les données du service <b>{domain}</b>, vous devez vous connecter puis, si vous avez <b>les droits suffisants</b>, autoriser ce service à accéder à vos données (nom, email).",
     "session_expire": "Votre session auprès de <b>{domain}</b> a expiré.<br />Vous devez vous reconnecter."
   },
   "en": {
@@ -21,7 +21,7 @@
     "login": "Sign in",
     "logout": "Se déconnecter",
     "need_authorize": "To visualize and download data of <b>{domain}</b>,<br /> you must authorize this service to access your personnal data (email, name, roles).",
-    "need_log": "To access data of <b>{domain}</b>  service,<br /> you must login in then, if you have sufficient rights, you must authorize this service to access your personnal data.",
+    "need_log": "To access data of <b>{domain}</b>  service,<br /> you must login in then, if you have sufficient rights, you must authorize this service to access your personnal data (name, email).",
     "session_expire": "Your session width <b>{domain}</b> has expired.<br /> You need to log back in."
   }
 }
@@ -57,6 +57,7 @@
  </div>
  <!--  <div v-if="!$store.state.metadata && email" class="mtdt-service-button" :class="{searching: searching}" v-show="clientId">
   -->
+    <iframe v-if="iframeUrl" style="display:none;" :src="iframeUrl" ></iframe>
  <div v-if="email" class="mtdt-service-button" :class="{searching: searching}" v-show="clientId">
    <a v-if="service.token" class="mtdt-menu-item" 
    @click="logout" :style="{'--color': $store.state.style.primary}">
@@ -139,7 +140,8 @@ export default {
       expire: null,
       hasExpired: false,
       timer: null,
-      needAuthorize: null
+      needAuthorize: null,
+      iframeUrl: null
     }
   },
   created () {
@@ -148,6 +150,7 @@ export default {
     window.addEventListener('message', this.codeListener) 
     this.needAuthorize = this.openPopupAuthorize.bind(this)
     document.addEventListener('fmt:needAuthorize', this.needAuthorize)
+   
   },
   destroyed () {
     window.removeEventListener('message', this.codeListener)
@@ -170,6 +173,7 @@ export default {
           }
           this.$store.commit('services/setClientId', {id: this.service.id, clientId: this.clientId})
           this.state = 'php' + btoa(this.clientId + this.service.domain).replace(/=|\+|\//gm, '0')
+          this.testLoginSso()
         }
 	    }, resp => console.log('NO_CLIENT_ID'))
     },
@@ -211,6 +215,26 @@ export default {
       } else {
         this.searching = false
       }
+    },
+    testLoginSso () {
+      var params = {
+          redirect_uri: encodeURIComponent(this.redirectUri),
+          response_type: 'code',
+          client_id: this.clientId,
+          scope: 'openid',
+          state: this.state,
+          prompt: 'none'
+      }
+      this.searching = true
+      var url = this.authUrl + '?'
+      var paramsStr = Object.keys(params).map(function (key) {
+        return key + '=' + params[key]
+      }).join('&')
+      url += paramsStr
+      this.iframeUrl = url
+      // window.postMessage(this.$store.getters['user/clientId'] + ' ' + 'blabla', 'https://sso.aeris-data.fr')
+//       this.$http.get(url, {credentials: true})
+//       .then(resp => console.log(resp), resp => console.log(browser.cookies.get({name: 'KEYCLOAK_IDENTITY' })))
     },
     getToken (code) {
       var url = this.service.authUrl
