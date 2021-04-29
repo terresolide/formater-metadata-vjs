@@ -623,6 +623,7 @@
  padding:3px 5px;
  color:white;
  margin-right:3px;
+ box-sizing: content-box;
 }
 .mtdt-related-cartouche .mtdt-related-type{
    cursor:pointer;

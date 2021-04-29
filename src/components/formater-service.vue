@@ -129,6 +129,14 @@ export default {
       return this.$store.getters['user/loginUrl']
     }
   },
+  watch: {
+    email (newvalue) {
+      if (!newvalue) {
+        this.$store.commit('services/setToken', {id: this.service.id, token: null})
+        this.searching = false
+      }
+    }
+  },
   data() {
     return {
       src: null,
@@ -216,9 +224,10 @@ export default {
       if (e.data.code && e.data.state === this.state) {
         this.msg = false
         this.getToken(e.data.code)
-      } else {
-        this.searching = false
+        this.iframeUrl = null
       }
+      this.searching = false
+
     },
     testLoginSso (email, isFormater) {
       if (!email || !isFormater) {
@@ -359,8 +368,8 @@ export default {
    pointer-events: auto;
 }
 .mtdt-service-button.searching{
-  pointer-events: none;
-  }
+   pointer-events: none;
+}
   
 .mtdt-msg .mtdt-service-button {
  display: block;

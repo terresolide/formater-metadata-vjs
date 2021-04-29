@@ -1,20 +1,33 @@
 <i18n>
 {
   "en": {
+    "cancel": "Cancel",
     "login": "Sign in",
     "logout": "Sign out",
-    "limited_access":"Limited access"
+    "limited_access":"Limited access",
+    "not_logout_sso": "You are logged out of the application.<br />But you are not logged out of &laquo;ForM@Ter SSO&raquo;."
   },
   "fr": {
+    "cancel": "Annuler",
     "login": "Se connecter",
     "logout": "Se déconnecter",
-    "limited_access":"Accès limité"
+    "limited_access":"Accès limité",
+    "not_logout_sso": "Vous êtes déconnecté de l'application.<br />Mais vous n'êtes pas déconnecté du &laquo;SSO ForM@Ter&raquo;."
   }
 }
 </i18n>
 <template>
  <span class="mtdt-authentication">
-
+     <div v-if="ssoLogoutInfo" class="formater-logout-sso" >
+      <div>
+        <div class="fa fa-close" @click.self="closeLogout($event)"></div>
+        <div v-html="$t('not_logout_sso')"></div>
+        <div style="text-align:right;margin-top:20px;">
+            <input style="max-width:150px;" class="button" type="button" @click.self="closeLogout($event)" :value="$t('cancel')" />
+           <input style="max-width:150px;" type="button" @click="logoutSso()" :value="$t('logout')" />
+        </div>
+      </div>
+    </div>
     <formater-service v-show="currentService === index"
      v-for="(service, index) in services" :key="index" :service="service">
      </formater-service>
@@ -102,7 +115,8 @@ export default {
       popup: null,
       alreadyAsk: false,
       msg: false,
-      iframeUrl: null
+      iframeUrl: null,
+      ssoLogoutInfo: false
      // iframe: null
     }
   },
@@ -118,6 +132,13 @@ export default {
     this.codeListener = null
   },
   methods: {
+   closeLogout (event) {
+     console.log(event)
+     this.ssoLogoutInfo = false
+     event.stopPropagation()
+     event.preventDefault()
+     return false
+   },
    loginParams (redirectUrl) {
      return this.$store.getters['user/loginParams'](redirectUrl, true)
    },
@@ -125,6 +146,7 @@ export default {
      if (e.data.code && e.data.state == this.$store.getters['user/getState']) {
        this.$store.commit('user/setCode', e.data.code)
        this.getTokens()
+       this.iframeUrl = null
      } else if (e.data === 'logout') {
        this.resetUser()
      }
@@ -208,11 +230,20 @@ export default {
      }, this.resetUser)
    },
    logout () {
-     this.searching = true
+     this.resetUser()
+     this.iframeUrl = null
+     this.ssoLogoutInfo = true
+     this.searching = false
+           
+//      var url = this.logoutUrl + '?redirect_uri=' + redirectUri 
+//      this.openPopup(url)
+   },
+   logoutSso () {
+     
      var redirectUri = this.$store.state.ssoLogout ? this.$store.state.ssoLogout : this.baseUrl + '/logout?'
-         
      var url = this.logoutUrl + '?redirect_uri=' + redirectUri 
      this.openPopup(url)
+     this.ssoLogoutInfo = false
    },
    openPopup (url) {
      this.popup = window.open(url, "_blank", "height=750, width=850, status=yes, toolbar=no, menubar=no, location=no,addressbar=no");
@@ -265,7 +296,59 @@ export default {
 .mtdt-authentication  i {
   vertical-align:middle;
 }*/
-
+.mtdt-authentication input[type="button"] {
+    margin: 0 0 3px 7px;
+    padding: 3px 12px;
+    text-align: center;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 1px;
+    font-size: 16px;
+    line-height: 1.7;
+    border-color: #e5b171 #cb8025 #cb8025;
+    background:#754a15;
+    color: #fff;
+    text-decoration: none;
+    vertical-align: top;
+    cursor: pointer;
+    pointer-events: auto;
+    box-sizing: border-box;
+    box-shadow: 0 1px 5px rgba(0,0,0,.65);
+}
+.mtdt-authentication .fa-close {
+   position: absolute;
+   top: 0;
+   right: 0;
+   padding: 2px 5px;
+   border: 1px dotted white;
+   opacity:0.9;
+   cursor: pointer;
+}
+.mtdt-authentication .fa-close:hover {
+  opacity: 1;
+  border-color:grey;
+}
+.formater-logout-sso{
+  position:fixed;
+  top:5px;
+  width:100%;
+  left:0;
+  z-index:100;
+}
+.formater-logout-sso  > div {
+  position: relative;
+  max-width: 600px;
+  width:600px;
+  min-width: 500px;
+  margin:auto;
+ margin-top: 50vh; /* poussé de la moitié de hauteur de viewport */
+  transform: translateY(-50%); /* tiré de la moitié de sa propre hauteur */
+  padding:20px;
+  text-align:left;
+  background: white;
+  box-shadow: 2px 3px 3px 3px rgba(0, 0, 0, 0.5);
+  max-height:95vh;
+}
 .mtdt-authentication .mtdt-user {
   display: inline-block;
   pointer-events:auto;
