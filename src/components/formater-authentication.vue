@@ -18,7 +18,7 @@
 </i18n>
 <template>
  <span class="mtdt-authentication">
-     <div v-if="ssoLogoutInfo" class="formater-logout-sso" >
+   <!--    <div v-if="ssoLogoutInfo" class="formater-logout-sso" >
       <div>
         <div class="fa fa-close" @click.self="closeLogout($event)"></div>
         <div v-html="$t('not_logout_sso')"></div>
@@ -27,7 +27,7 @@
            <input style="max-width:150px;" type="button" @click="logoutSso()" :value="$t('logout')" />
         </div>
       </div>
-    </div>
+    </div> -->
     <formater-service v-show="currentService === index"
      v-for="(service, index) in services" :key="index" :service="service">
      </formater-service>
@@ -232,9 +232,9 @@ export default {
    logout () {
      this.resetUser()
      this.iframeUrl = null
-     this.ssoLogoutInfo = true
+     //this.ssoLogoutInfo = true
      this.searching = false
-           
+     this.logoutSso() 
 //      var url = this.logoutUrl + '?redirect_uri=' + redirectUri 
 //      this.openPopup(url)
    },
@@ -315,19 +315,19 @@ export default {
     box-sizing: border-box;
     box-shadow: 0 1px 5px rgba(0,0,0,.65);
 }
-.mtdt-authentication .fa-close {
-   position: absolute;
-   top: 0;
-   right: 0;
-   padding: 2px 5px;
-   border: 1px dotted white;
-   opacity:0.9;
-   cursor: pointer;
-}
-.mtdt-authentication .fa-close:hover {
-  opacity: 1;
-  border-color:grey;
-}
+/* .mtdt-authentication .fa-close { */
+/*    position: absolute; */
+/*    top: 0; */
+/*    right: 0; */
+/*    padding: 2px 5px; */
+/*    border: 1px dotted white; */
+/*    opacity:0.9; */
+/*    cursor: pointer; */
+/* } */
+/* .mtdt-authentication .fa-close:hover { */
+/*   opacity: 1; */
+/*   border-color:grey; */
+/* } */
 .formater-logout-sso{
   position:fixed;
   top:5px;

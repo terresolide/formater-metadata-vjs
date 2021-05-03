@@ -29,7 +29,11 @@
 <template>
  <span class="mtdt-user">
  <div class="mtdt-user-box" v-if="show" >
- <div  style="text-align:right;margin-right:-20px;" ><i class="fa fa-close" style="cursor: pointer;" @click="close"></i></div>
+ <div  style="text-align:right;margin-right:-20px;" @click="close">
+    <span @click="close" style="cursor: pointer;">
+       <i class="fa fa-close" style="cursor: pointer;"></i>
+    </span>
+ </div>
  <div class="mtdt-msg-title" :style="{color: $store.state.style.primary}"> 
 	 <i class="fa fa-user" style="font-size:1em;vertical-align:baseline;"></i>
 	 {{$t('access_rights')}}
@@ -144,6 +148,7 @@ export default {
       })
     },
     checkAccessRequest () {
+      console.log(this.isFormater)
       if (!this.hasCheckSSO || this.isFormater) {
         return
       }
@@ -165,6 +170,7 @@ export default {
       })
     },
     close () {
+      console.log('close')
       this.show = false
     }
   }
