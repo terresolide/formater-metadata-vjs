@@ -204,6 +204,7 @@ export default {
      switch (layer.type) {
      case 'WMS':
      case 'OGC:WMS':
+     case 'OGC Web Map Service':
        var regex = new RegExp(/GetCapabilities/i)
        if (regex.test(layer.href)) {
          this.beforeAddWMS(layer, metaId, zoom)

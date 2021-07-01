@@ -351,6 +351,7 @@ const GeonetworkPlugin = {
                case 'OGC:KML':
                case 'OGC:OWS':
                case 'OGC:OWS-C':
+               case 'OGC Web Map Service':
                case 'GLG:KML-2.0-http-get-map':
                    if (!metadata.layers) {
                      metadata.layers = []
@@ -489,6 +490,7 @@ const GeonetworkPlugin = {
                  case 'OGC:KML':
                  case 'OGC:OWS':
                  case 'OGC:OWS-C':
+                 case 'OGC Web Map Service':
                  case 'GLG:KML-2.0-http-get-map':
                     if ((!local && link.length >=7) || (local && link.length === 6)) {
                      if (!response.layers) {
