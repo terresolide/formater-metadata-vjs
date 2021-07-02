@@ -143,12 +143,6 @@ export default {
   margin-bottom:0px;
   padding-right: 10px;
   padding-top: 5px;
-  border-top: 3px double grey; 
-  /* border-bottom: 1px dotted lightgrey;*/
- 
- /* box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.2);*/
-
- 
   text-align:right;
 }
 .mtdt-app > header i {
