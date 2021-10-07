@@ -107,36 +107,36 @@
 </dl>
 
 
-<dl v-if="countContactResource > 0 " class="mtdt-main-parameter">
+<dl v-if="countContactResource > 0 " class="mtdt-main-parameter large">
   <dt :style="dtStyle()">{{$tc('contact', countContactResource)}}</dt>
   <dd> <formater-list-contact   :contacts="metadata.contacts.resource" type="resource" ></formater-list-contact></dd>
 </dl>
-<dl v-if="metadata.keyword.length > 0" class="mtdt-main-parameter">
+<dl v-if="metadata.keyword.length > 0" class="mtdt-main-parameter large">
   <dt :style="dtStyle()">{{$tc('keyword', metadata.keyword.length)}}</dt>
   <dd> <formater-keywords :keywords="metadata.keyword"></formater-keywords></dd>
 </dl>
-<dl  v-if="metadata.tempExtentBegin" class="mtdt-main-parameter">
+<dl  v-if="metadata.tempExtentBegin" class="mtdt-main-parameter large">
   <dt :style="dtStyle()">{{$t('temporal_extent')}}</dt>
   <dd>
      <formater-temporal-extent :start="metadata.tempExtentBegin"  :end="metadata.tempExtentEnd" />
   </dd>
 </dl>
-<dl v-if="metadata.credit" class="mtdt-main-parameter">
+<dl v-if="metadata.credit" class="mtdt-main-parameter large">
    <dt :style="dtStyle()">{{$t('credit')}} </dt>
    <dd >
       {{$t(metadata.credit)}}
    </dd>
 </dl>
-<dl v-if="metadata.purpose" class="mtdt-main-parameter">
+<dl v-if="metadata.purpose" class="mtdt-main-parameter large">
    <dt :style="dtStyle()">{{$t('purpose')}} </dt>
    <dd v-html="metadata.purpose">
    </dd>
 </dl>
-<dl v-if="metadata.lineage" class="mtdt-main-parameter">
+<dl v-if="metadata.lineage" class="mtdt-main-parameter large">
     <dt :style="dtStyle()">{{$t('lineage')}}</dt>
    <dd style="word-break:break-word;text-align:justify;" v-html="toHTML(metadata.lineage)"></dd>
 </dl>
-<dl v-if="countConstraint > 0" class="mtdt-main-parameter">
+<dl v-if="countConstraint > 0" class="mtdt-main-parameter large">
   <dt :style="dtStyle()"><i class="fa fa-warning"></i>{{$t('constraint')}}</dt>
   <dd :style="{borderColor: $store.state.style.primary}" style="border: 1px solid grey;border-radius:3px;padding: 3px 5px; margin: 0 -5px;">
      <div v-for="key in $store.state.constraintList" v-if="metadata[key]">
@@ -148,8 +148,8 @@
           
  <dl>         <hr /> </dl>
  <h1 :style="{color:$store.state.style.primary}">{{$t('about_metadata')}}</h1>
- <dl class="mtdt-main-parameter"><dt :style="dtStyle()">{{$t('identifier')}}</dt><dd>{{metadata.id}}</dd></dl>
- <dl v-if="countMetadataDate > 0" class="mtdt-main-parameter">
+ <dl class="mtdt-main-parameter large"><dt :style="dtStyle()">{{$t('identifier')}}</dt><dd>{{metadata.id}}</dd></dl>
+ <dl v-if="countMetadataDate > 0" class="mtdt-main-parameter large">
    <dt :style="dtStyle()">{{$tc('date', countDate)}} </dt>
    <dd>
       <div v-for="key in $store.state.dateList" v-if="metadata['geonet:info'][key]">
@@ -157,7 +157,7 @@
       </div>
    </dd>
 </dl>
- <dl v-if="Object.keys(metadata.contacts.metadata).length > 0" class="mtdt-main-parameter">
+ <dl v-if="Object.keys(metadata.contacts.metadata).length > 0" class="mtdt-main-parameter large">
    <dt :style="dtStyle()">Contacts</dt>
    <dd>
            <formater-list-contact   :contacts="metadata.contacts.metadata" type="metadata" ></formater-list-contact>
@@ -311,6 +311,10 @@ background-image: linear-gradient(to right, #ccc, #333, #ccc);
   clear: left;
    width: calc(100% - 305px);
 }
+.mtdt-metadata .mtdt-content dl.mtdt-main-parameter.large {
+    width: 100%;
+}
+
 .mtdt-metadata .mtdt-content dl.mtdt-main-parameter dd{
 
 }

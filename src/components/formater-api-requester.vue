@@ -123,7 +123,7 @@ export default {
       }).join('&');
       this.$emit('registerValues', {depth: depth, parameters: this.parameters})
      // this.$store.commit('addValueToParameters', this.parameters)
-      this.$http.get(url).then(
+     this.$http.get(url).then(
           response => {   this.treatmentGeojson(response.body, depth);},
           response => { this.treatmentError(response, url); })
     },
@@ -265,7 +265,13 @@ export default {
         delete properties.quicklook
       }
       if (properties.license) {
-        properties.legalConstraints = [properties.license.licenseId]
+        // @todo a effacer
+        console.log(properties.license)
+        if (properties.license.licenseId === 'unlicensed') {
+          properties.legalConstraints = ['license: https://creativecommons.org/licenses/by-nc/4.0/']
+        } else {
+          properties.legalConstraints = [properties.license.licenseId]
+        }
         delete properties.license
       }
       properties.osParameters = []

@@ -525,7 +525,7 @@ export default {
         delete properties.quicklook
       }
       if (properties.license) {
-        properties.legalConstraints = [properties.license.licenseId]
+       // properties.legalConstraints = [properties.license.licenseId]
         delete properties.license
       }
       properties.osParameters = []
