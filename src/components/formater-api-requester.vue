@@ -266,7 +266,6 @@ export default {
       }
       if (properties.license) {
         // @todo a effacer
-        console.log(properties.license)
         if (properties.license.licenseId === 'unlicensed') {
           properties.legalConstraints = ['license: https://creativecommons.org/licenses/by-nc/4.0/']
         } else {

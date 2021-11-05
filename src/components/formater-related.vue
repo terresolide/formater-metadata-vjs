@@ -100,7 +100,7 @@
         <hr v-if="type === 'metadata'" /> 
     </div>
     <div v-if="download && download.length === 1 && type === 'cartouche'">
-      <a v-if="download[0].type && download[0].type === 'WWW:DOWNLOAD-1.0-link--download'"
+      <a v-if="(download[0].type && download[0].type === 'WWW:DOWNLOAD-1.0-link--download') || download[0].auth === 'BASIC'"
         :href="download[0].url" target="_blank"  :title="$t('download_data')" @click="record(download[0].url, 'download')">
         <span class="mtdt-related-type fa fa-download" :style="{backgroundColor: primary}" ></span>
       </a>

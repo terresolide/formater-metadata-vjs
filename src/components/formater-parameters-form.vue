@@ -48,7 +48,7 @@ export default {
   watch: {
     $route (newroute) {
       this.initValues(newroute.query)
-      console.log('PARAMETER FORM ROUTE CHANGE')
+      // console.log('PARAMETER FORM ROUTE CHANGE')
       this.$forceUpdate()
     }
   },

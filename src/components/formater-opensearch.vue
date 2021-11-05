@@ -168,7 +168,7 @@ export default {
       urls.forEach(function (node) {
          if (node.tagName && node.tagName.toLowerCase() === 'url' && node.getAttribute('type').indexOf('json') >= 0) {
            var template = node.getAttribute('template')
-           var extract = template.match(/^(.*(?:(?:search.json\?)|(?:\?format=FLATSIM))).*$/)
+           var extract = template.match(/^([^?]*(?:\?)).*$/i)
            if( extract && extract[1] && extract[1] != ''){
                url = node;
            }
@@ -178,7 +178,7 @@ export default {
         return
       }
       var template = url.getAttribute('template')
-      var extract = template.match(/^(.*(?:(?:search.json\?)|(?:\?format=FLATSIM))).*$/)
+      var extract = template.match(/^([^?]*(?:\?)).*$/i)
       if (!extract[1]) {
         return
       } else {

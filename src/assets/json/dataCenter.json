@@ -31,5 +31,12 @@
       "fr": "SHOM - Service hydrographique et océanographique de la Marine",
       "en": "SHOM - Hydrographic and Oceanographic Service of the French Marine"
     }
+  },
+    "https://w3id.org/formater/data-center/ISDeform": {
+    "logo": "https://service.poleterresolide.fr/geonetwork/images/harvesting/isdeform.png",
+    "title": {
+      "fr": "ISDeform",
+      "en": "ISDeform"
+    }
   }
 }
