@@ -136,9 +136,10 @@ export default {
           email: this.user.email,
           app: null,
           realm: this.$store.getters['user/realm'],
-          role: this.$store.getters['user/formaterRole']
+          role: this.$store.getters['user/formaterRole'],
+          lang: this.$store.state.lang
       }
-      var url = this.$store.state.checkSSO + '/ask.php'
+      var url = this.$store.state.checkSSO + '/ask'
       this.$http.post(url, postdata, {emulateJSON: true})
       .then(resp => {
         if (resp.body.success) {
@@ -158,7 +159,7 @@ export default {
           realm: this.$store.getters['user/realm'],
           role: this.$store.getters['user/formaterRole']
       }
-      var url = this.$store.state.checkSSO + '/check.php'
+      var url = this.$store.state.checkSSO + '/check'
       this.$http.post(url, postdata, {emulateJSON: true})
       .then(resp => {
         if (resp.body.success) {
