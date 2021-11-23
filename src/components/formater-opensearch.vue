@@ -6,7 +6,7 @@
  **/
  
 <template>
-<formater-api-requester v-if="api" :api="api" :depth="depth"></formater-api-requester>
+<formater-api-requester v-if="api" :api="api" :cds="cds" :depth="depth"></formater-api-requester>
 </template>
 <script>
 import FormaterApiRequester from '@/components/formater-api-requester.vue'
@@ -20,6 +20,10 @@ export default {
   },
   props: {
     describe: {
+      type: String,
+      default: null
+    },
+    cds: {
       type: String,
       default: null
     },

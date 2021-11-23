@@ -99,25 +99,33 @@
       </div> 
         <hr v-if="type === 'metadata'" /> 
     </div>
+    <!--  DOWNLOAD 1 LINK -->
     <div v-if="download && download.length === 1 && type === 'cartouche'">
-      <a v-if="(download[0].type && download[0].type === 'WWW:DOWNLOAD-1.0-link--download') || download[0].auth === 'BASIC'"
-        :href="download[0].url" target="_blank"  :title="$t('download_data')" @click="record(download[0].url, 'download')">
-        <span class="mtdt-related-type fa fa-download" :style="{backgroundColor: primary}" ></span>
-      </a>
-               
-      <a v-else-if="token && token !== -1" 
+      <!--  case SHOM, OI2 open in new window -->
+      <span v-if="(download[0].type && download[0].type === 'WWW:DOWNLOAD-1.0-link--download') || download[0].auth === 'BASIC'"
+        :href="download[0].url" target="_blank"  :title="$t('download_data')" >
+        <span class="mtdt-related-type fa fa-download" :style="{backgroundColor: primary}" @click="record(download[0].url, 'download', $event)"></span>
+        <a style="display:none;"  :href="download[0].url" target="_blank" ></a>
+      </span>
+       <!--  case CNES -->
+       <span v-else-if="token && token !== -1" 
        :href="download[0].url + '?_bearer=' + token" :class="{disabled:download[0].disabled || !token}" 
-        :title="$t('download_data')" @click="record(download[0].url, 'download')">
-        <span class="mtdt-related-type fa fa-download" :style="{backgroundColor: primary}" ></span>
-      </a> 
-      <a v-else-if="!token && isFormater" @click="authorize"> 
+        :title="$t('download_data')" >
+        <span class="mtdt-related-type fa fa-download" :style="{backgroundColor: primary}" @click="record(download[0].url, 'download', $event)"></span>
+        <a style="display:none;" :href="download[0].url + '?_bearer=' + token" >
+        </a>
+      </span>
+      <!-- case CNES and user not authenticate on flatsim -->
+      <span v-else-if="!token && isFormater" @click="authorize"> 
         <span class="mtdt-related-type fa fa-download" :style="{backgroundColor: primary, opacity:0.8}" ></span>
-      </a>
-      <a v-else  :class="{disabled:download[0].disabled || !token}" 
+      </span>
+      <!--  other case @todo -->
+      <!--  <span v-else  :class="{disabled:download[0].disabled || !token}" 
         :title="$t('download_data')" @click="triggerDownload(0)">
-         <span class="mtdt-related-type fa fa-download" :style="{backgroundColor: primary}" ></span>
-      </a> 
+         <span class="mtdt-related-type fa fa-download" :style="{backgroundColor: primary}" @click="triggerDownload(0)"></span>
+      </span> -->
     </div>
+    <!-- DOWNLOAD FEW LINKS -->
     <div v-if="download && (download.length >1 || (type === 'metadata' && download.length > 0))">
        <div class="mtdt-related-type fa fa-download" :class="{disabled: !token && !isFormater}" :style="{backgroundColor: primary}" 
        :title="$t('download_data')" @click="authorize">
@@ -127,16 +135,27 @@
       <div class="mtdt-expand mtdt-links" >
            <ul >
            <li v-for="(file, index) in download" :key="index"  :class="{disabled: file.disabled || (!token && !isFormater)}">
-              <a  v-if="file.type && file.type === 'WWW:DOWNLOAD-1.0-link--download'" :href="file.url" :title="file.description" target="_blank" @click="record(file.url, 'download')">
-              {{file.name? file.name: $t('download_data')}}
-              </a>
-              <a  v-else-if="token && token !== -1" :title="file.description" :href="file.url + '?_bearer=' + token"
-               @click="record(file.url, 'download')">
-               {{file.name? file.name: $t('download_data')}}</a>
-             <a v-else-if="!token && isFormater" @click="authorize">
+              <!--  case SHOM -->
+              <span  v-if="file.type && file.type === 'WWW:DOWNLOAD-1.0-link--download'" >
+                <span :title="file.description"  @click="record(file.url, 'download', $event)">
+                    {{file.name? file.name: $t('download_data')}}
+                </span>
+                <a  :href="file.url"  target="_blank" style="display:none;"></a>
+              </span>
+              <!--  case FLATSIM -->
+              <span  v-else-if="token && token !== -1"  >
+                 <span :title="file.description"  @click="record(file.url, 'download', $event)">
+                   {{file.name? file.name: $t('download_data')}}
+                 </span>
+                 <a :href="file.url + '?_bearer=' + token" style="display:none;"></a>
+             </span>
+             <!--  case FLATSIM without authentication -->
+             <span v-else-if="!token && isFormater" @click="authorize">
                 {{file.name? file.name: $t('download_data')}}
-             </a>
-             <a  v-else :title="file.description" @click="triggerDownload(index);" >{{file.name? file.name: $t('download_data')}}</a>
+             </span>
+             <!--  other case @todo -->
+            <!--  <a  v-else :title="file.description" @click="triggerDownload(index);" >{{file.name? file.name: $t('download_data')}}</a>
+             -->
           </li>
           </ul>    
       </div> 
@@ -144,9 +163,10 @@
     </div>
     <!-- order -->
     <div v-if="order && order.length === 1 && type === 'cartouche'">
-       <a  target="_blank"  :title="$t('order_data')" :href="order[0].url" @click="record(order[0].url, 'order')">
-        <span class="mtdt-related-type fa fa-pencil-square-o" :style="{backgroundColor: primary}" ></span>
-      </a> 
+       <span :title="$t('order_data')" >
+        <span class="mtdt-related-type fa fa-pencil-square-o" :style="{backgroundColor: primary}" @click="record(order[0].url, 'order', $event)"></span>
+        <a  target="_blank" :href="order[0].url" style="display:none;" ></a> 
+       </span> 
     </div>
     <div v-if="order && (order.length >1 || type === 'metadata')">
        <div class="mtdt-related-type fa fa-pencil-square-o"  :style="{backgroundColor: primary}" :title="$t('order_data')">
@@ -154,12 +174,13 @@
       </div> 
       <div v-if="type === 'metadata'"></div>
       <div class="mtdt-expand mtdt-links" >
-      <h4 v-if="type === 'metadata'" 
-      :style="{color:$store.state.style.primary}">{{$t('order_data')}}</h4>
+      <h4 v-if="type === 'metadata'"  :style="{color:$store.state.style.primary}">{{$t('order_data')}}</h4>
            <ul >
            <li v-for="(file, index) in order" :key="index" >
-              <a  :title="file.description"  :href="file.url" @click="record(file.url, 'order')" 
-              target="_blank">{{file.name? file.name: $t('order_data')}}</a>
+              <span  :title="file.description" >
+                <span @click="record(file.url, 'order', $event)" >{{file.name? file.name: $t('order_data')}}</span>
+                <a  :href="file.url"  target="_blank" style="display:none;"></a>
+              </span>
           </li>
           </ul>    
       </div> 
@@ -401,7 +422,7 @@
        changePlatform (newvalue) {
     	   this.platformAdded = newvalue
        },
-       record (url, type) {
+       record (url, type, e) {
          if (!this.$store.state.recordUrl) {
            return
          }
@@ -414,7 +435,13 @@
              link: url,
              type: type
          }
+        
          this.$http.post(this.$store.state.recordUrl, data, {emulateJSON: true})
+         .then(
+             resp => { e.target.nextElementSibling.click()},
+             resp => { e.target.nextElementSibling.click()}
+         )
+        
        },
        triggerDownload (index) {
          this.record(this.download[0].url, 'download')
@@ -630,7 +657,8 @@
    opacity:0.9
 }
 .mtdt-related-cartouche .mtdt-related-type.disabled,
-.mtdt-related-cartouche a.disabled {
+.mtdt-related-cartouche a.disabled ,
+.mtdt-related-cartouche span.disabled {
   pointer-events:none;
   opacity:0.5;
 }
@@ -644,13 +672,15 @@
 .mtdt-related-metadata .mtdt-links.mtdt-expand{
   display:block;
 }
-.mtdt-links a {
+.mtdt-links a,
+.mtdt-links span {
   padding: 1px 3px;
   cursor:pointer;
   display: inline-block;
   width: 100%;
 }
-.mtdt-links a:hover {
+.mtdt-links a:hover,
+.mtdt-links span:hover {
   background: darkred;
   color:white;
 }

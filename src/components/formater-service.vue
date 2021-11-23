@@ -182,6 +182,8 @@ export default {
           this.clientId = response.body.clientId
           if (!(this.email && !this.isFormater)) {
             this.msg = true
+          } else {
+            console.log('no client Id')
           }
           this.$store.commit('services/setClientId', {id: this.service.id, clientId: this.clientId})
           this.state = 'php' + btoa(this.clientId + this.service.domain).replace(/=|\+|\//gm, '0')
@@ -190,9 +192,11 @@ export default {
 	    }, resp => console.log('NO_CLIENT_ID'))
     },
     searchCode () {
+      console.log(this.clientId)
       if (!this.clientId) {
         return null
       }
+      console.log(this.clientId)
       var params = {
           redirect_uri: encodeURIComponent(this.redirectUri),
           response_type: 'code',

@@ -75,8 +75,10 @@ if (config.lang) {
             var regex = new RegExp(/^(.*\/)\?(.*)#\/$/)
             var found = document.location.href.match(regex)
             // var found = document.location.href.match(/^(.*\/)\?(.*)#\/$/g)
-            location = found[1] + '#/login?' + found[2]
-            window.location.replace(location)
+            if (found && found.length > 2) {
+              location = found[1] + '#/login?' + found[2]
+              window.location.replace(location)
+            }
           }
           return
         }

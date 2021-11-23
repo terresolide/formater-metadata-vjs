@@ -18,6 +18,10 @@ export default {
       type: String,
       default: null
     },
+    cds: {
+      type: String,
+      default: null
+    },
     depth: {
       type: Number,
       default: 1
@@ -239,6 +243,7 @@ export default {
     mapToGeonetwork (properties) {
       var properties = Object.assign({}, properties)
       properties.fromOs = true
+      properties.cds = this.cds
       if (properties.productIdentifier) {
         properties.renameProperty('productIdentifier', 'identifier')
       }

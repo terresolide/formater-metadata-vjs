@@ -22,7 +22,7 @@
  <div class="mtdt-metadata mtdt-capsule" :class="{'fmt-free': depth === -1}">
     <formater-requester  v-if="depth >= 0 && !describe" :depth="depth"  ></formater-requester>
       
-      <formater-opensearch v-if="depth >= 0 && describe"  :service="service" :describe="describe" :uuid="uuid" :depth="depth" @parametersChange="setParameters" @failed="removeDescribe"></formater-opensearch>
+      <formater-opensearch v-if="depth >= 0 && describe"  :service="service" :cds="metadata.cds" :describe="describe" :uuid="uuid" :depth="depth" @parametersChange="setParameters" @failed="removeDescribe"></formater-opensearch>
     
    <span v-if="metadata && !metadata.appRoot" class="mtdt-metadata-close fa fa-close" @click="close"></span>
    <div v-if="metadata">
