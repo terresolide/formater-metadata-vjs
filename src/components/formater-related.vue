@@ -120,10 +120,10 @@
         <span class="mtdt-related-type fa fa-download" :style="{backgroundColor: primary, opacity:0.8}" ></span>
       </span>
       <!--  other case @todo -->
-      <!--  <span v-else  :class="{disabled:download[0].disabled || !token}" 
-        :title="$t('download_data')" @click="triggerDownload(0)">
-         <span class="mtdt-related-type fa fa-download" :style="{backgroundColor: primary}" @click="triggerDownload(0)"></span>
-      </span> -->
+      <span v-else  :class="{disabled:download[0].disabled || !token}" 
+        :title="$t('download_data')">
+         <span class="mtdt-related-type fa fa-download" :style="{backgroundColor: primary}" ></span>
+      </span> 
     </div>
     <!-- DOWNLOAD FEW LINKS -->
     <div v-if="download && (download.length >1 || (type === 'metadata' && download.length > 0))">
@@ -154,8 +154,7 @@
                 {{file.name? file.name: $t('download_data')}}
              </span>
              <!--  other case @todo -->
-            <!--  <a  v-else :title="file.description" @click="triggerDownload(index);" >{{file.name? file.name: $t('download_data')}}</a>
-             -->
+            <span  v-else :title="file.description"  >{{file.name? file.name: $t('download_data')}}</span>
           </li>
           </ul>    
       </div> 
