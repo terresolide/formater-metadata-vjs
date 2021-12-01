@@ -133,6 +133,7 @@ export default {
         return
       }
       var postdata = {
+          userId: this.user.id,
           email: this.user.email,
           app: null,
           realm: this.$store.getters['user/realm'],

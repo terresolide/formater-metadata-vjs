@@ -151,7 +151,9 @@ export default {
     set (state, jwtToken) {
       var obj = jwt_decode(jwtToken)
       if (obj.nonce === state.nonce) {
+        console.log(obj)
         state.user = {
+            id: obj.sub,
             email: obj.email,
             username: obj.preferred_username,
             familyName: obj.family_name,
@@ -176,6 +178,7 @@ export default {
       var obj = jwt_decode(tokens.id_token)
       if (obj.nonce === state.nonce) {
         state.user = {
+            id: obj.sub,
             email: obj.email,
             username: obj.preferred_username,
             familyName: obj.family_name,
