@@ -80,6 +80,19 @@
         <td><span v-if="!isFormater && !alreadyAsk && hasCheckSSO" 
         class="fmt-button" :style="{background: $store.state.style.primary}" @click="accessRequest">{{$t('access_request')}}</span></td>
       </tr>
+      <tr v-for="role in roles">
+        <td>
+         {{$t('formater_data')}}
+        </td>
+        <td class="fmt-center">
+          <i class="fa" :class="{'fa-close': !isFormater, 'fa-check': isFormater} "></i>
+        </td>
+        <td class="fmt-center">
+          <i class="fa" :class="{'fa-close': !isFormater, 'fa-check': isFormater} "></i>
+        </td>
+        <td><span v-if="!isFormater && !alreadyAsk && hasCheckSSO" 
+        class="fmt-button" :style="{background: $store.state.style.primary}" @click="accessRequest">{{$t('access_request')}}</span></td>
+      </tr>
    </tbody>
    </table>
     <p v-if="displayWait" v-html="$t('wait_validation')" style="font-size:0.9em;color:green;line-height:1;"></p>
@@ -111,6 +124,9 @@ export default {
     },
     hasCheckSSO () {
       return this.$store.state.checkSSO ? true: false
+    },
+    roles () {
+      return this.$store.getters['roles/get']
     }
   },
   data() {
@@ -151,12 +167,13 @@ export default {
     },
     checkAccessRequest () {
       console.log(this.isFormater)
-      if (!this.hasCheckSSO || this.isFormater) {
-        return
-      }
+//       if (!this.hasCheckSSO || this.isFormater) {
+//         return
+//       }
       var postdata = {
+          userId: this.user.id,
           email: this.user.email,
-          app: null,
+          app: 'catalog',
           realm: this.$store.getters['user/realm'],
           role: this.$store.getters['user/formaterRole']
       }

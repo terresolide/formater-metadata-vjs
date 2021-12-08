@@ -48,7 +48,7 @@
 		    </a>
 	    </span>
 	  </div>
-	  <iframe style="display:none;" :src="iframeUrl" ></iframe>
+	  <iframe v-if="iframeUrl" style="display:none;" :src="iframeUrl" ></iframe>
 	 <!--  <i class="fa fa-user" :style="{color:$store.state.style.primary}"></i>  -->
  </span>
 
