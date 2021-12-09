@@ -8,6 +8,7 @@ import user from './modules/user'
 import services from './modules/services'
 import layers from './modules/layers'
 import centers from './modules/dataCenters'
+import roles from './modules/roles'
 export default function makeStore( config ) {
   if (config.proxyUrl) {
     var proxy = {
@@ -292,7 +293,8 @@ export default function makeStore( config ) {
       user: user,
       services: services,
       layers: layers,
-      dataCenters: centers
+      dataCenters: centers,
+      roles: roles
     }
   });
 }
