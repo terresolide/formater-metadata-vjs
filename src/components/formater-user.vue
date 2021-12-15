@@ -67,16 +67,17 @@
 	     <label>{{$t('organization')}}</label>  {{user.organization}}
 	   </div>
 	    <div>
-	     <label>{{$t('organization_type')}}</label>  {{organizationTypes[user.organizationType]}}
+	     <label>{{$t('organization_type')}}</label>  {{getTypeName(user.organizationType)}}
 	   </div>
    </div>
    <div v-else>
      <div >
            <label>{{$t('organization')}}</label>
-             <input v-model="organization" list="organizations" required @input="updateType"> *
+             <input style="line-height:normal;min-width:350px;" v-model="organization" list="organizations" required 
+             @mousedown="$event.stopPropagation()" @input="updateType()" > *
              <em v-if="showOrganizationMessage" style="color:darkred;">{{$t('at_least_3')}}</em>
              <datalist id="organizations">
-                <option v-for="org in organizations" :data-value="org.o_uid" >{{org.o_name}}</option>
+                <option v-for="org in organizations" :data-value="org.o_uid" >{{org.o_name}}<span v-if="org.o_short"> ({{org.o_short}})</span></option>
              </datalist>
          </div>
          <div  >
@@ -210,7 +211,7 @@ export default {
       organizationTypes: null,
       showOrganizationMessage: false,
       organization: '',
-      organizations: {},
+      organizations: [],
       organizationId: null,
       organizationType: null,
       selected: false,
@@ -227,6 +228,9 @@ export default {
       this.checkAccessRequest()
       
       this.getOrganizationTypes()
+      if (!this.user.organization) {
+        this.getOrganizations()
+      }
       this.mousemoveListener = this.move.bind(this)
       document.addEventListener('mousemove', this.mousemoveListener)
       this.mouseupListener = this.moveEnd.bind(this)
@@ -262,6 +266,14 @@ export default {
         this.displayWait = true
       })
     },
+    getTypeName (typeId)
+    {
+      var find = this.organizationTypes.find(t => t.t_id===typeId)
+      if (find) {
+        return find.t_name  
+      }
+      return null
+    },
     checkAccessRequest () {
 //       if (!this.hasCheckSSO || this.isFormater) {
 //         return
@@ -283,22 +295,54 @@ export default {
         }
       })
     },
+    getOrganizations () {
+      var url = this.$store.state.checkSSO + '/api/organizations?nb=500&begin=' + this.organization
+      this.$http.get(url)
+      .then(resp => {
+        if (resp.body.organizations) {
+          this.organizations = resp.body.organizations
+        }
+      })
+    },
     getOrganizationTypes () {
       var url = this.$store.state.checkSSO + '/api/types?lang=' + this.$store.state.lang
       this.$http.get(url)
       .then(resp => {
         if (resp.body.types) {
-          var _this = this
-          this.organizationTypes = []
-//           resp.body.types.forEach(function (obj) {
-//             _this.organizationTypes[obj.t_id] = obj.t_name
-//           })
           this.organizationTypes = resp.body.types
         }
       })
     },
     updateType () 
     {
+      if (this.organization.length === 1) {
+        this.organizations = []
+      }
+      if (this.organization.length === 2) {
+        this.getOrganizations()
+      }
+      if (this.organization.length < 5) {
+        return
+      }
+     // this.info.message = null
+      this.organizationId = null
+      this.organizationType = null
+        // valid organism
+      this.showOrganismMessage = false
+      var regex = new RegExp(/^[A-z0-9À-ž\s\-'@()]{5,300}$/)
+      if (regex.test(this.organization)) {
+        var organism = this.organization.trim().toLowerCase()
+        var find = this.organizations.find(org => organism.indexOf(org.o_name.toLowerCase()) >= 0 )
+        if (find) {
+          this.organizationId = find.o_uid
+          console.log(this.organizationId)
+          this.organizationType = find.o_fk_type_id
+        } else {
+          this.organizationId = null
+        }
+      } else {
+        this.showOrganismMessage = true
+      }
       
     },
     close () {
