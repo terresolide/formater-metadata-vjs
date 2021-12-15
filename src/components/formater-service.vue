@@ -234,7 +234,7 @@ export default {
 
     },
     testLoginSso (email, isFormater) {
-      if (!email || !isFormater) {
+      if (!email || !isFormater || !this.clientId || !this.redirectUri) {
         return
       }
       var params = {

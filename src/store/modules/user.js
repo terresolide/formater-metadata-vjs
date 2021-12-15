@@ -148,22 +148,22 @@ export default {
       state.state = btoa(state.clientId).replace(/=|\+|\//gm, '0')
       
     },
-    set (state, jwtToken) {
-      var obj = jwt_decode(jwtToken)
-      if (obj.nonce === state.nonce) {
-        console.log(obj)
-        state.user = {
-            id: obj.sub,
-            email: obj.email,
-            username: obj.preferred_username,
-            familyName: obj.family_name,
-            name: obj.name,
-            givenName: obj.given_name,
-            roles: obj.realm_roles
-        }
-      }
-      
-    },
+//    set (state, jwtToken) {
+//      var obj = jwt_decode(jwtToken)
+//      if (obj.nonce === state.nonce) {
+//        console.log(obj)
+//        state.user = {
+//            id: obj.sub,
+//            email: obj.email,
+//            username: obj.preferred_username,
+//            familyName: obj.family_name,
+//            name: obj.name,
+//            givenName: obj.given_name,
+//            roles: obj.realm_roles
+//        }
+//      }
+//      
+//    },
     setCode (state, code) {
       state.code = code
     },
@@ -176,7 +176,13 @@ export default {
 //      var obj1 = jwt_decode(state.toke)
 //      console.log(obj1)
       var obj = jwt_decode(tokens.id_token)
+      console.log(obj)
       if (obj.nonce === state.nonce) {
+        var roles = obj.realm_roles
+        for (var client in obj.client_roles)
+        {
+          roles = roles.concat(obj.client_roles[client].roles)
+        }
         state.user = {
             id: obj.sub,
             email: obj.email,
@@ -184,7 +190,10 @@ export default {
             familyName: obj.family_name,
             name: obj.name,
             givenName: obj.given_name,
-            roles: obj.realm_roles
+            roles: roles,
+            organization: obj.fmt_organization,
+            organizationId: obj.fmt_organization_id,
+            organizationType: obj.fmt_organization_type
         }
       }
     },

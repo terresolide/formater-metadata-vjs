@@ -4,10 +4,15 @@
     "access_rights": "Your access rights",
     "access_request": "Access request",
     "access_to_formater": "To be able to access some data, you must select it and make a request by clicking on <b>&laquo;Access request&raquo;</b>.",
+    "account": "Your account",
     "add_message": "Add message to your request",
     "download": "Download",
     "email": "Email",
+    "firstname": "First Name",
     "formater_data": "ForM@Ter data",
+    "lastname": "Last Name",
+    "organization": "Organization",
+    "organization_type": "Organization type",
     "preview": "Preview",
     "public_data": "Public data",
     "register": "Register",
@@ -18,10 +23,15 @@
     "access_rights": "Vos droits d'accès",
     "access_request": "Demande d'accès",
     "access_to_formater": "Pour pouvoir accéder à certaines données, vous devez les sélectionner and faire une demande en cliquant sur <b>&laquo;Demande d'accès&raquo;</b>.",
+    "account": "Votre compte",
     "add_message": "Ajoutez un message à votre demande",
     "download": "Téléchargement",
     "email": "Email",
+    "firstname": "Prénom",
     "formater_data": "Données ForM@Ter",
+    "lastname": "Nom",
+    "organization": "Organisme",
+    "organization_type": "Type d'organisme",
     "preview": "Visualisation",
     "public_data": "Données publiques",
     "register": "S'inscrire",
@@ -32,17 +42,55 @@
 </i18n>
 <template>
  <span class="mtdt-user">
- <div class="mtdt-user-box" v-if="show" >
- <div  style="text-align:right;margin-right:-20px;" @click="close">
+ <div class="mtdt-user-box" v-if="show" @mousedown="movestart">
+ <div  style="float:right;margin-right:-20px;" @click="close">
     <span @click="close" style="cursor: pointer;">
        <i class="fa fa-close" style="cursor: pointer;"></i>
     </span>
  </div>
  <div class="mtdt-msg-title" :style="{color: $store.state.style.primary}"> 
 	 <i class="fa fa-user" style="font-size:1em;vertical-align:baseline;"></i>
-	 {{$t('access_rights')}}
+	 {{$t('account')}}
  </div>
- 
+ <div class="mtdt-user-info">
+   <div>
+     <label>Id</label> {{user.username}}
+   </div>
+   <div>
+      <label>{{$t('firstname')}}</label> {{user.givenName }}
+   </div>
+   <div>
+     <label>{{$t('lastname')}}</label> {{user.familyName}}
+   </div>
+   <div v-if="user.organization">
+	    <div>
+	     <label>{{$t('organization')}}</label>  {{user.organization}}
+	   </div>
+	    <div>
+	     <label>{{$t('organization_type')}}</label>  {{organizationTypes[user.organizationType]}}
+	   </div>
+   </div>
+   <div v-else>
+     <div >
+           <label>{{$t('organization')}}</label>
+             <input v-model="organization" list="organizations" required @input="updateType"> *
+             <em v-if="showOrganizationMessage" style="color:darkred;">{{$t('at_least_3')}}</em>
+             <datalist id="organizations">
+                <option v-for="org in organizations" :data-value="org.o_uid" >{{org.o_name}}</option>
+             </datalist>
+         </div>
+         <div  >
+           <label>Type</label>
+           <select v-model="organizationType" :disabled="organizationId" required >
+             <option value="">---</option>
+             <option v-for="type in organizationTypes" :value="type.t_id">{{type.t_name}}</option>
+           </select> *
+         </div>
+         <div><label></label><em style="margin-left:10px;">* {{$t('required')}}</em></div>
+   </div>
+  </div>
+   <h3 :style="{color:$store.state.style.primary}">{{$t('access_rights')}}</h3>
+  
   <div style="margin-left:30px;">
    <!--   <div v-for="key in ['username', 'givenName', 'lastname', 'email']">
     <label :style="{color: $store.state.style.primary}">{{$t(key)}}:</label> {{user[key]}}
@@ -50,7 +98,6 @@
    <h4 :style="{color: $store.state.style.primary, fontWeight: 800}">
    
    </h4>-->
-   
    <table style="border:none;" cellspacing="0" cellpadding="5">
    <thead>
      <th colspan="2"></th>
@@ -106,9 +153,10 @@
     </div>
  </div>
  <a  @click="show=true" :style="{'--color': $store.state.style.primary}" :title="$t('access_rights')">
- <i class="fa fa-user" style="margin-right:3px;"></i>
-  {{user.email}}
+ <i class="fa fa-user" style="margin-right:3px;"></i> {{$t('account')}} |
+  
 </a>
+{{user.email}}
 
 </span>
 </template>
@@ -158,12 +206,31 @@ export default {
       show: false,
       displayWait: false,
       checkedRoles: [],
-      message: null
+      message: null,
+      organizationTypes: null,
+      showOrganizationMessage: false,
+      organization: '',
+      organizations: {},
+      organizationId: null,
+      organizationType: null,
+      selected: false,
+      box:null,
+      mousemoveListener: null,
+      mouseupListener: null,
+      selected: false,
+      delta: {x: 0, y:0},
+      pos: {x:0, y:0},
     }
   },
   created () {
    // if (!this.isFormater) {
       this.checkAccessRequest()
+      
+      this.getOrganizationTypes()
+      this.mousemoveListener = this.move.bind(this)
+      document.addEventListener('mousemove', this.mousemoveListener)
+      this.mouseupListener = this.moveEnd.bind(this)
+      document.addEventListener('mouseup', this.mouseupListener)
    // }
   },
   destroyed () {
@@ -182,7 +249,7 @@ export default {
           role: this.checkedRoles,
           lang: this.$store.state.lang
       }
-      var url = this.$store.state.checkSSO + '/ask'
+      var url = this.$store.state.checkSSO + '/requests/ask'
       this.$http.post(url, postdata, {emulateJSON: true})
       .then(resp => {
         if (resp.body.success) {
@@ -205,7 +272,7 @@ export default {
           app: 'catalog',
           realm: this.$store.getters['user/realm']
       }
-      var url = this.$store.state.checkSSO + '/check'
+      var url = this.$store.state.checkSSO + '/requests/check'
       this.$http.post(url, postdata, {emulateJSON: true})
       .then(resp => {
         if (resp.body.success) {
@@ -215,6 +282,24 @@ export default {
           this.show = true
         }
       })
+    },
+    getOrganizationTypes () {
+      var url = this.$store.state.checkSSO + '/api/types?lang=' + this.$store.state.lang
+      this.$http.get(url)
+      .then(resp => {
+        if (resp.body.types) {
+          var _this = this
+          this.organizationTypes = []
+//           resp.body.types.forEach(function (obj) {
+//             _this.organizationTypes[obj.t_id] = obj.t_name
+//           })
+          this.organizationTypes = resp.body.types
+        }
+      })
+    },
+    updateType () 
+    {
+      
     },
     close () {
       console.log('close')
@@ -256,6 +341,26 @@ export default {
         }
       }
       return role.name
+    },
+    movestart (evt) {
+      this.box = this.$el.querySelector('.mtdt-user-box')
+
+      this.selected = true
+      this.delta = {
+          x: this.pos.x - this.box.offsetLeft,
+          y: this.pos.y - this.box.offsetTop
+      }
+    },
+    move (evt) {
+      this.pos.x = evt.clientX
+      this.pos.y = evt.clientY
+      if (this.selected) {
+        this.box.style.left = (this.pos.x - this.delta.x) + 'px'
+        this.box.style.top = (this.pos.y - this.delta.y) + 'px'
+      }
+    },
+    moveEnd () {
+      this.selected = false
     }
   }
 }
@@ -296,10 +401,11 @@ max-width: 650px;
 padding: 0 30px 20px 20px;
 border-radius: 5px;
 position: fixed; 
-top:30%; 
-left:30%;
+top: calc(50% - 150px);
+left:calc(50% - 310px);
 z-index:10;
 text-align: left;
+cursor: move;
 box-shadow: 2px 3px 3px 3px rgba(0, 0, 0, 0.5);
 }
 div.mtdt-msg-title {
@@ -308,11 +414,17 @@ div.mtdt-msg-title {
   margin-bottom:10px;
 }
 div.mtdt-user-box label {
-  min-width: 120px;
+  min-width: 150px;
   text-align:right;
   margin-right:10px;
   display:inline-block;
   font-weight:800;
+}
+div.mtdt-user-info > div {
+  line-height:1.1rem;
+}
+div.mtdt-user-info {
+  margin-bottom:20px;
 }
 div.mtdt-user-box table th, 
 div.mtdt-user-box table td {
@@ -334,7 +446,7 @@ div.fmt-tooltip {
   cursor: pointer;
   width: 150px;
   box-shadow: 2px 2px 3px rgba(0, 0, 0, 0.4);
-
+  z-index:1;
 }
 .tooltip-show + div.fmt-tooltip {
   display:block;
