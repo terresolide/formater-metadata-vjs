@@ -16,6 +16,7 @@
     "preview": "Preview",
     "public_data": "Public data",
     "register": "Register",
+    "required": "Required",
     "select_data": "Select",
     "wait_validation": "Your request has been registered with our services. An email has been sent to you. It will be treated as quickly as possible"
   },
@@ -35,6 +36,7 @@
     "preview": "Visualisation",
     "public_data": "Données publiques",
     "register": "S'inscrire",
+    "required": "Obligatoire",
     "select_data": "Sélectionnez",
     "wait_validation": "Votre demande a bien été enregistrée auprès de nos services. Un email vous a été envoyé. Elle sera traitée le plus rapidement possible."
   }
@@ -42,7 +44,7 @@
 </i18n>
 <template>
  <span class="mtdt-user">
- <div class="mtdt-user-box" v-if="show" @mousedown="movestart">
+ <div class="mtdt-user-box" v-show="show" @mousedown="movestart">
  <div  style="float:right;margin-right:-20px;" @click="close">
     <span @click="close" style="cursor: pointer;">
        <i class="fa fa-close" style="cursor: pointer;"></i>
@@ -74,7 +76,7 @@
      <div >
            <label>{{$t('organization')}}</label>
              <input style="line-height:normal;min-width:350px;" v-model="organization" list="organizations" required 
-             @mousedown="$event.stopPropagation()" @input="updateType()" > *
+             @mousedown="$event.stopPropagation()" @input="updateType($event)" > *
              <em v-if="showOrganizationMessage" style="color:darkred;">{{$t('at_least_3')}}</em>
              <datalist id="organizations">
                 <option v-for="org in organizations" :data-value="org.o_uid" >{{org.o_name}}<span v-if="org.o_short"> ({{org.o_short}})</span></option>
@@ -83,7 +85,7 @@
          <div  >
            <label>Type</label>
            <select v-model="organizationType" :disabled="organizationId" required >
-             <option value="">---</option>
+             <option style="min-width:325px;" value="">---</option>
              <option v-for="type in organizationTypes" :value="type.t_id">{{type.t_name}}</option>
            </select> *
          </div>
@@ -208,7 +210,7 @@ export default {
       displayWait: false,
       checkedRoles: [],
       message: null,
-      organizationTypes: null,
+      organizationTypes: [],
       showOrganizationMessage: false,
       organization: '',
       organizations: [],
@@ -226,16 +228,24 @@ export default {
   created () {
    // if (!this.isFormater) {
       this.checkAccessRequest()
-      
       this.getOrganizationTypes()
       if (!this.user.organization) {
-        this.getOrganizations()
+        var domain = this.user.username.substring(this.user.username.indexOf('@') + 1)
+        this.getOrganizations(domain)
       }
+      console.log('el=' ,this.$el)
       this.mousemoveListener = this.move.bind(this)
       document.addEventListener('mousemove', this.mousemoveListener)
       this.mouseupListener = this.moveEnd.bind(this)
       document.addEventListener('mouseup', this.mouseupListener)
    // }
+  },
+  mounted () {
+    console.log('mounted el=' ,this.$el)
+    if (this.$el && this.$el !== 'undefined') {
+    var position = this.$el.getBoundingClientRect()
+    this.$el.querySelector('.mtdt-user-box').style.top = (position.top + 30) + 'px'
+    }
   },
   destroyed () {
   },
@@ -295,12 +305,23 @@ export default {
         }
       })
     },
-    getOrganizations () {
-      var url = this.$store.state.checkSSO + '/api/organizations?nb=500&begin=' + this.organization
+    getOrganizations (domain) {
+      var url = this.$store.state.checkSSO + '/api/organizations?nb=500&orderBy=' + encodeURIComponent('o_name ASC');
+      if (this.organization) {
+        url += '&begin=' + this.organization
+      }
+      if (domain) {
+        url += '&domain=' + domain
+      }
       this.$http.get(url)
       .then(resp => {
         if (resp.body.organizations) {
           this.organizations = resp.body.organizations
+          if (domain && this.organizations.length === 1) {
+            this.organization = this.organizations[0].o_name
+            this.organizationId = this.organizations[0].o_uid
+            this.organizationType = this.organizations[0].o_fk_type_id
+          }
         }
       })
     },
@@ -313,10 +334,17 @@ export default {
         }
       })
     },
-    updateType () 
+    updateType (event) 
     {
-      if (this.organization.length === 1) {
+      this.organizationId = null
+      this.organizationType = null
+      
+      if (this.organization.length <= 1) {
         this.organizations = []
+      }
+      if (event.inputType && event.inputType.indexOf('delete') >=0)
+      {
+        return
       }
       if (this.organization.length === 2) {
         this.getOrganizations()
@@ -324,9 +352,9 @@ export default {
       if (this.organization.length < 5) {
         return
       }
+      
      // this.info.message = null
-      this.organizationId = null
-      this.organizationType = null
+      
         // valid organism
       this.showOrganismMessage = false
       var regex = new RegExp(/^[A-z0-9À-ž\s\-'@()]{5,300}$/)
@@ -491,6 +519,10 @@ div.fmt-tooltip {
   width: 150px;
   box-shadow: 2px 2px 3px rgba(0, 0, 0, 0.4);
   z-index:1;
+}
+datalist {
+    max-height: 500px;
+    overflow-y: auto;
 }
 .tooltip-show + div.fmt-tooltip {
   display:block;
