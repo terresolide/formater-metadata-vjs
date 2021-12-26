@@ -44,8 +44,12 @@ export default {
     getState (state, getters) {
       return state.state
     },
-    hasRole: (state) => (role) => {
-      return state.user.roles.indexOf(role) >= 0
+    hasRole: (state) => (client, role) => {
+      if (!state.user.roles[client])
+      {
+        return false
+      }
+      return state.user.roles[client].indexOf(role) >= 0
     },
     isFormater (state, getters) {
       if (!state.user || !state.user.roles) {
@@ -178,11 +182,14 @@ export default {
       var obj = jwt_decode(tokens.id_token)
       // console.log(obj)
       if (obj.nonce === state.nonce) {
-        var roles = obj.realm_roles
+        var roles = [ ]
         for (var client in obj.client_roles)
         {
-          roles = roles.concat(obj.client_roles[client].roles)
+          roles[client] = obj.client_roles[client].roles
         }
+        roles.global = obj.realm_roles
+
+        console.log(roles)
         state.user = {
             id: obj.sub,
             email: obj.email,

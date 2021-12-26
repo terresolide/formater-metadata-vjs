@@ -4,24 +4,25 @@
 export default {
   namespaced: true,
   state: {
-    roles: []
+    clients: []
   },
   getters: {
-    get: (state) => (name) => {
-      return state.roles.find(role => role.name === name)
+    get: (state) => (client, name) => {
+      return state.clients[client].find(role => role.name === name)
     },
-    getAll (state, getters) {
-      return state.roles
+    getClients (state, getters) {
+      return state.clients
     }
   },
   mutations: {
-    set (state, roles) {
-      state.roles = roles
+    set (state, clients) {
+      console.log(clients)
+      state.clients = clients
       
     },
     setStatus (state, obj) {
-      var index = state.roles.findIndex(role => role.name === obj.name)
-      state.roles[index].status = obj.status
+      var index = state.roles[obj.client].findIndex(role => role.name === obj.name)
+      state.clients[obj.client].roles[index].status = obj.status
     }
   }
 }

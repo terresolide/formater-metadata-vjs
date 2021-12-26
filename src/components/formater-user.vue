@@ -101,51 +101,50 @@
    <h4 :style="{color: $store.state.style.primary, fontWeight: 800}">
    
    </h4>-->
-   <table style="border:none;" cellspacing="0" cellpadding="5">
-   <thead>
-     <th colspan="2"></th>
-     <th style="padding:0 4px;">{{$t('preview')}}</th>
-     <th style="padding:0 4px;">{{$t('download')}}</th>
-     <th v-if="canAsk">{{$t('select_data')}}</th>
-   </thead>
-   <tbody>
-     <tr>
-	     <td>
-	     {{$t('public_data')}}
-	     </td>
-	     <td></td>
-	     <td class="fmt-center">
-	       <i class="fa fa-check"></i>
-	     </td>
-       <td class="fmt-center">
-         <i class="fa fa-check"></i>
-       </td>
-	     <td v-if="canAsk"></td>
-      </tr>
-      <tr v-for="role in roles">
-        <td>
-         {{title(role)}}
-        
-        </td>
-        <td class="fmt-center">
+   <div class="role-line" style="font-weight:800;">
+     <div></div>
+     <div></div>
+     <div >{{$t('preview')}}</div>
+     <div >{{$t('download')}}</div>
+     <div v-if="canAsk">{{$t('select_data')}}</div>
+   </div>
+   <div class="role-line">
+	   <div>
+	   {{$t('public_data')}}
+	   </div>
+	   <div></div>
+	   <div class="fmt-center">
+	     <i class="fa fa-check"></i>
+	   </div>
+     <div class="fmt-center">
+       <i class="fa fa-check"></i>
+     </div>
+	   <div v-if="canAsk"></div>
+   </div>
+   <div v-for="(client,clientName) in clients">
+   <!--   <div v-if="clientName !== 'global'" :title="description(client)"
+       style="cursor:pointer;weight:800;">
+       {{title(client)}}
+     </div> --> 
+     <div class="role-line" v-for="role in client.roles" v-if="role.parameters.display">
+        <div>{{title(role)}}</div>
+        <div class="fmt-center">
           <div v-if="role.description" style="position:relative;">
-            <span class="fmt-button fa fa-info" @click="showTooltip($event)"></span>
-            <div class="fmt-tooltip" @click="hideTooltip()" v-html="description(role)"></div>
-          </div>
-           
-        </td>
-        <td class="fmt-center">
-          <i class="fa" :class="{'fa-close': !role.access, 'fa-check': role.access} "></i>
-        </td>
-        <td class="fmt-center">
-          <i class="fa" :class="{'fa-close': !role.access, 'fa-check': role.access} "></i>
-        </td>
-        <td  v-if="canAsk" class="fmt-center">
-           <input v-if="!role.access && !role.status" type="checkbox" v-model="checkedRoles" :value="role.name" /> 
-        </td>
-      </tr>
-   </tbody>
-   </table>
+             <span class="fmt-button fa fa-info" @click="showTooltip($event)"></span>
+             <div class="fmt-tooltip" @click="hideTooltip()" v-html="description(role)"></div>
+          </div> 
+        </div>
+        <div class="fmt-center">
+           <i v-if="role.parameters.view" class="fa" :class="{'fa-close': !role.access, 'fa-check': role.access} "></i>
+        </div>
+        <div class="fmt-center">
+           <i v-if="role.parameters.download" class="fa" :class="{'fa-close': !role.access, 'fa-check': role.access} "></i>
+        </div>
+        <div  v-if="canAsk" class="fmt-center">
+         <input v-if="!role.access && !role.status" type="checkbox" v-model="checkedRoles" :value="clientName + '.' + role.name" />
+        </div>
+     </div>
+   </div>
    <div v-if="canAsk">
    <p  v-html="$t('access_to_formater')" style="font-size:0.9em;font-style:italic;line-height:1;"></p>
    <textarea style="width:100%" v-model="message" :placeholder="$t('add_message')"></textarea>
@@ -175,34 +174,38 @@ export default {
     user () {
       return this.$store.getters['user/get']
     },
-    isFormater () {
-      return this.$store.getters['user/isFormater']
-    },
+//     isFormater () {
+//       return this.$store.getters['user/isFormater']
+//     },
     hasCheckSSO () {
       return this.$store.state.checkSSO ? true: false
     },
     lang () {
       return this.$store.state.lang
     },
-    roles () {
-      var roles = this.$store.getters['roles/getAll']
+    clients () {
+      var clients = this.$store.getters['roles/getClients']
       var _this = this
-      roles.forEach(function (role) {
-        role.access = _this.hasRole(role.name)
-      })
-      return roles
+      for(var client in clients) {
+        clients[client].roles.forEach(function (role) {
+          role.access = _this.hasRole(client, role.name)
+        })
+      }
+      console.log(clients)
+      return clients
     },
     canAsk () {
       var can = false
-      this.roles.forEach(function (role) {
-        if (!role.access && !role.status) {
-          can = true
-          return can
-        }
-      })
+      for (var client in this.clients) {
+	      this.clients[client].roles.forEach(function (role) {
+	        if (!role.access && !role.status) {
+	          can = true
+	          return can
+	        }
+	      })
+      }
       return can
     }
-    
   },
   data() {
     return {
@@ -243,8 +246,8 @@ export default {
   mounted () {
     console.log('mounted el=' ,this.$el)
     if (this.$el && this.$el !== 'undefined') {
-    var position = this.$el.getBoundingClientRect()
-    this.$el.querySelector('.mtdt-user-box').style.top = (position.top + 30) + 'px'
+	    var position = this.$el.getBoundingClientRect()
+	    this.$el.querySelector('.mtdt-user-box').style.top = (position.top + 30) + 'px'
     }
   },
   destroyed () {
@@ -269,7 +272,8 @@ export default {
         if (resp.body.success) {
           var _this = this
           this.checkedRoles.forEach(function (role) {
-              _this.$store.commit('roles/setStatus', {name: role, status: 'WAITING'})
+              partrole = role.split('.')
+              _this.$store.commit('roles/setStatus', {client: partrole[0], name: partrole[1], status: 'WAITING'})
           })
           this.checkedRoles = []
         }
@@ -308,7 +312,7 @@ export default {
     getOrganizations (domain) {
       var url = this.$store.state.checkSSO + '/api/organizations?nb=500&orderBy=' + encodeURIComponent('o_name ASC');
       if (this.organization) {
-        url += '&begin=' + this.organization
+        url += '&q=' + this.organization
       }
       if (domain) {
         url += '&domain=' + domain
@@ -377,8 +381,8 @@ export default {
       console.log('close')
       this.show = false
     },
-    hasRole (name) {
-      return this.$store.getters['user/hasRole'](name)
+    hasRole (client, name) {
+      return this.$store.getters['user/hasRole'](client, name)
     },
     hideTooltip() {
       document.querySelectorAll('.tooltip-show').forEach(function (node) {
@@ -438,6 +442,22 @@ export default {
 }
 </script>
 <style >
+div.role-line {
+  display: grid;
+  grid-template-columns: minmax(100px,180px) 50px minmax(50px, 100px) minmax(50px, 100px) minmax(50px, 100px);
+  grid-gap: 5px;
+  text-align:center;
+}
+div.role-line > div {
+
+}
+div.role-line > div:first-child {
+  min-width: 100px;
+  max-width: 180px;
+  text-align: right;
+}
+
+
 .fmt-center {
   text-align:center;
 }
