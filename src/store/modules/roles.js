@@ -21,7 +21,7 @@ export default {
       
     },
     setStatus (state, obj) {
-      var index = state.roles[obj.client].findIndex(role => role.name === obj.name)
+      var index = state.clients[obj.client].roles.findIndex(role => role.name === obj.name)
       state.clients[obj.client].roles[index].status = obj.status
     }
   }

@@ -73,6 +73,7 @@
 	   </div>
    </div>
    <div v-else>
+     <form class="form-organization v-form">
      <div >
            <label>{{$t('organization')}}</label>
              <input style="line-height:normal;min-width:350px;" v-model="organization" list="organizations" required 
@@ -90,9 +91,12 @@
            </select> *
          </div>
          <div><label></label><em style="margin-left:10px;">* {{$t('required')}}</em></div>
+     </form>
    </div>
   </div>
-   <h3 :style="{color:$store.state.style.primary}">{{$t('access_rights')}}</h3>
+  <h3 :style="{color:$store.state.style.primary}">
+     <span class="fa fa-key"></span> {{$t('access_rights')}}
+  </h3>
   
   <div style="margin-left:30px;">
    <!--   <div v-for="key in ['username', 'givenName', 'lastname', 'email']">
@@ -147,11 +151,16 @@
    </div>
    <div v-if="canAsk">
    <p  v-html="$t('access_to_formater')" style="font-size:0.9em;font-style:italic;line-height:1;"></p>
-   <textarea style="width:100%" v-model="message" :placeholder="$t('add_message')"></textarea>
-   <span  class="fmt-button" :class="{disabled: checkedRoles.length === 0}" :style="{background: $store.state.style.primary}" @click="accessRequest">{{$t('access_request')}}</span>
+   <div style="position:relative;">
+     <div v-if="asking" style="position:absolute;left:50%;top:10%;font-size:30px;">
+       <span class="fa fa-spinner animated"></span>
+     </div>
+     <textarea style="width:100%" v-model="message" :placeholder="$t('add_message')"></textarea>
+   </div>
+   <span  class="fmt-button" :class="{disabled: checkedRoles.length === 0 || asking}" :style="{background: $store.state.style.primary}" @click="accessRequest">{{$t('access_request')}}</span>
    </div>
    <p v-if="displayWait" v-html="$t('wait_validation')" style="font-size:0.9em;color:green;line-height:1;"></p>
-  
+   <p v-if="errorAsk" style="color:darkred;">Erreur : {{errorAsk}}</p>
     </div>
  </div>
  <a  @click="show=true" :style="{'--color': $store.state.style.primary}" :title="$t('access_rights')">
@@ -198,7 +207,7 @@ export default {
       var can = false
       for (var client in this.clients) {
 	      this.clients[client].roles.forEach(function (role) {
-	        if (!role.access && !role.status) {
+	        if (!role.access && !role.status && role.parameters.display) {
 	          can = true
 	          return can
 	        }
@@ -226,6 +235,8 @@ export default {
       selected: false,
       delta: {x: 0, y:0},
       pos: {x:0, y:0},
+      errorAsk: null,
+      asking: false
     }
   },
   created () {
@@ -257,6 +268,14 @@ export default {
       if (this.checkedRoles.length === 0) {
         return
       }
+      if (!this.user.organization) {
+        var node = this.$el.querySelector('form.form-organization')
+        if (!node.checkValidity())
+        {
+          return
+        }
+      }
+      this.asking = true
       var postdata = {
           userId: this.user.id,
           email: this.user.email,
@@ -266,18 +285,27 @@ export default {
           role: this.checkedRoles,
           lang: this.$store.state.lang
       }
+      if (!this.user.organization) {
+        if (this.organizationId) {
+          postdata.organizationId = this.organizationId
+        }
+      }
       var url = this.$store.state.checkSSO + '/requests/ask'
       this.$http.post(url, postdata, {emulateJSON: true})
       .then(resp => {
         if (resp.body.success) {
           var _this = this
           this.checkedRoles.forEach(function (role) {
-              partrole = role.split('.')
+              var partrole = role.split('.')
               _this.$store.commit('roles/setStatus', {client: partrole[0], name: partrole[1], status: 'WAITING'})
           })
           this.checkedRoles = []
+          this.displayWait = true
+          this.errorAsk = null
+        } else {
+          this.errorAsk = resp.body.error || 'SERVER ERROR'
         }
-        this.displayWait = true
+        this.asking = false
       })
     },
     getTypeName (typeId)
@@ -457,7 +485,9 @@ div.role-line > div:first-child {
   text-align: right;
 }
 
-
+form.form-organization input:invalid {
+  border-color: red;
+}
 .fmt-center {
   text-align:center;
 }
