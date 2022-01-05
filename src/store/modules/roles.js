@@ -10,8 +10,29 @@ export default {
     get: (state) => (client, name) => {
       return state.clients[client].find(role => role.name === name)
     },
+    getClient: (state) => (clientName) => {
+      if (state.clients[clientName]) {
+        return state.clients[clientName]
+      } else {
+        return null
+      }
+    },
     getClients (state, getters) {
       return state.clients
+    },
+    hasAccess: (state) => (clientName) => {
+      if (!state.clients[clientName]) {
+        return false
+      }
+      var client = state.clients[clientName]
+      var canAccess = false
+      client.roles.forEach(function (role) {
+        console.log(role)
+        if (role.access) {
+          canAccess = true
+        }
+      })
+      return canAccess
     }
   },
   mutations: {

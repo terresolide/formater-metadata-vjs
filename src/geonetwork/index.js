@@ -345,6 +345,7 @@ const GeonetworkPlugin = {
                    name: name
                  }
                  break;
+               case 'WTS':
                case 'OGC:WMS': 
                case 'OGC:WFS':
                case 'OGC:WFS-G':
@@ -484,6 +485,7 @@ const GeonetworkPlugin = {
                    response.api.http = link[2]
                    response.api.name = link[0].length > 0 ? link[0] : link[1]
                    break;
+                 case 'WTS':
                  case 'OGC:WMS': 
                  case 'OGC:WFS':
                  case 'OGC:WFS-G':

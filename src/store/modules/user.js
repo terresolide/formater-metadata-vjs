@@ -152,6 +152,9 @@ export default {
       state.state = btoa(state.clientId).replace(/=|\+|\//gm, '0')
       
     },
+    hasAccess (state) {
+      return state.user.roles
+    },
 //    set (state, jwtToken) {
 //      var obj = jwt_decode(jwtToken)
 //      if (obj.nonce === state.nonce) {
@@ -170,6 +173,10 @@ export default {
 //    },
     setCode (state, code) {
       state.code = code
+    },
+    setOrganization (state, org) {
+      state.user.organization = org.organization
+      state.user.organizationType = org.organizationType
     },
     setRedirectUri (state, uri) {
       state.redirectUri = uri

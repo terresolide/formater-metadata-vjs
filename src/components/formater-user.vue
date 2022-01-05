@@ -200,7 +200,6 @@ export default {
           role.access = _this.hasRole(client, role.name)
         })
       }
-      console.log(clients)
       return clients
     },
     canAsk () {
@@ -288,6 +287,9 @@ export default {
       if (!this.user.organization) {
         if (this.organizationId) {
           postdata.organizationId = this.organizationId
+        } else if (this.organization) {
+          postdata.organization = this.organization
+          postdata.organizationType = this.organizationType
         }
       }
       var url = this.$store.state.checkSSO + '/requests/ask'
@@ -299,6 +301,9 @@ export default {
               var partrole = role.split('.')
               _this.$store.commit('roles/setStatus', {client: partrole[0], name: partrole[1], status: 'WAITING'})
           })
+          if (this.organization) {
+            this.$store.commit('user/setOrganization', {organization: this.organization, organizationType: this.organizationType})
+          }
           this.checkedRoles = []
           this.displayWait = true
           this.errorAsk = null

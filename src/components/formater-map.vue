@@ -227,6 +227,14 @@ export default {
        }
        this.addWMSLayer(layer, metaId, zoom)
        break;
+     case 'WTS':
+       layer.options = {
+         id: layer.id,
+         service: 'WTS',
+         layers: layer.name,
+       }
+       this.addWTSLayer(layer, metaId)
+       break;
      case 'XXX':
        var extract = layer.href.match(/^(.*\?).*$/)
        var url = extract[1]
@@ -286,6 +294,10 @@ export default {
    },
    beforeAddWMS (layer, metaId, zoom) {
      this.reader.loadInfo(layer, {opacity:0.5, zoom: zoom} , metaId, this.addWMSLayer)
+   },
+   addWTSLayer (layer, metaId) {
+     var tileLayer = L.tileLayer(layer.href, {opacity: 0.5})
+     this.addLayerToMap(layer.options.id, metaId, tileLayer)
    },
    addWMSLayer(layerObj, metaId, zoom) {
      // add bearer if necessary

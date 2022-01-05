@@ -48,13 +48,13 @@
   v-html="$t('need_log', {domain: service.domain})"></div>
    <div v-else-if="hasExpired" v-html="$t('session_expire', {domain: service.domain})">
   </div>
-  <div v-else="email && isFormater"
+  <div v-else="email && hasAccess"
    v-html="$t('need_authorize', {domain: service.domain})">
    </div>
    <div class="mtdt-service-button" :class="{searching: searching}" v-show="clientId && service.token === null"
      @click="searchCode" >
 	   <!--  <span v-if="$store.state.metadata">{{$t('login')}}</span> -->
-	   <span v-if="email && isFormater">{{$t('authorize')}}</span>
+	   <span v-if="email && hasAccess">{{$t('authorize')}}</span>
    </div>
  </div>
  <!--  <div v-if="!$store.state.metadata && email" class="mtdt-service-button" :class="{searching: searching}" v-show="clientId">
@@ -66,12 +66,12 @@
       {{$t('access_to')}} {{service.domain}}
       <i  class="fa fa-check-square-o"></i>
    </a>
-   <a v-if="!service.token && isFormater" class="mtdt-menu-item" :class="{searching: searching}"
+   <a v-if="!service.token && hasAccess" class="mtdt-menu-item" :class="{searching: searching}"
    @click="searchCode" :style="{'--color': $store.state.style.primary}">
       {{$t('access_to')}} {{service.domain}}
       <i  class="fa fa-square-o"></i>
    </a>
-   <a v-if="!service.token && !isFormater" class="mtdt-menu-item" :class="{searching: searching}"
+   <a v-if="!service.token && !hasAccess" class="mtdt-menu-item" :class="{searching: searching}"
     :style="{'--color': $store.state.style.primary}" :title="$t('insufficient_right')">
       {{$t('limited_access_to', {domain: service.domain})}} 
       <i  class="fa fa-ban"></i>
@@ -108,6 +108,12 @@ export default {
   computed: {
     email () {
       return this.$store.getters['user/email']
+    },
+    hasAccess () {
+      if (!this.clientId) {
+        return false
+      }
+      return this.$store.getters['roles/hasAccess'](this.clientId)
     },
     isFormater (newvalue) {
       var isFormater = this.$store.getters['user/isFormater']
@@ -176,11 +182,14 @@ export default {
       this.hasExpired = false
     },
     getClientId () {
+      console.log(this.client)
       var url = this.service.clientIdUrl
       this.$http.get(url).then(function (response) {
         if (response.body && response.body.clientId) {
           this.clientId = response.body.clientId
-          if (!(this.email && !this.isFormater)) {
+          console.log(this.clientId)
+          console.log('hasAccess=', this.hasAccess)
+          if (!(this.email && !this.hasAccess)) {
             this.msg = true
           } else {
             console.log('no client Id')
@@ -233,8 +242,8 @@ export default {
       this.searching = false
 
     },
-    testLoginSso (email, isFormater) {
-      if (!email || !isFormater || !this.clientId || !this.redirectUri) {
+    testLoginSso (email, hasAccess) {
+      if (!email || !hasAccess || !this.clientId || !this.redirectUri) {
         return
       }
       var params = {
