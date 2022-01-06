@@ -246,7 +246,6 @@ export default {
         var domain = this.user.username.substring(this.user.username.indexOf('@') + 1)
         this.getOrganizations(domain)
       }
-      console.log('el=' ,this.$el)
       this.mousemoveListener = this.move.bind(this)
       document.addEventListener('mousemove', this.mousemoveListener)
       this.mouseupListener = this.moveEnd.bind(this)
@@ -254,7 +253,6 @@ export default {
    // }
   },
   mounted () {
-    console.log('mounted el=' ,this.$el)
     if (this.$el && this.$el !== 'undefined') {
 	    var position = this.$el.getBoundingClientRect()
 	    this.$el.querySelector('.mtdt-user-box').style.top = (position.top + 30) + 'px'
@@ -400,18 +398,15 @@ export default {
         var find = this.organizations.find(org => organism.indexOf(org.o_name.toLowerCase()) >= 0 )
         if (find) {
           this.organizationId = find.o_uid
-          console.log(this.organizationId)
           this.organizationType = find.o_fk_type_id
         } else {
           this.organizationId = null
         }
       } else {
         this.showOrganismMessage = true
-      }
-      
+      }     
     },
     close () {
-      console.log('close')
       this.show = false
     },
     hasRole (client, name) {

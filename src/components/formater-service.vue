@@ -3,6 +3,7 @@
   "fr": {
     "access_to": "Accès à",
     "authorize": "Autoriser",
+    "authorization_failed": "La connexion au service {domain} a échoué.",
     "insufficient_right": "Vos droits sont insuffisants\npour accéder aux services\nde visualisation et téléchargement",
     "limited_access_to": "Accès limité à {domain}",
     "log_service": "Pour visualiser ou télécharger les données de <b>{domain}</b>, vous devez vous y connecter.",
@@ -11,11 +12,13 @@
     "logout": "Se déconnecter",
     "need_authorize": "Pour visualiser ou télécharger les données de <b>{domain}</b>, vous devez autoriser ce service à accéder à vos données personnelles (email, nom, rôles).",
     "need_log": "Pour accéder à toutes les données du service <b>{domain}</b>, vous devez vous connecter puis, si vous avez <b>les droits suffisants</b> et suivant votre navigateur, autoriser ce service à accéder à vos données (nom, email).",
+    "service_response": "La réponse du service est",
     "session_expire": "Votre session auprès de <b>{domain}</b> a expiré.<br />Vous devez vous reconnecter."
   },
   "en": {
     "access_to": "Access to",
     "authorize": "Authorize",
+    "authorization_failed": "Connection to the service {domain} failed.",
     "insufficient_right": "Your rights are insufficient\nto access the viewing\nand downloading services",
     "limited_access_to": "Limited access to {domain}",
     "log_service": "To access data of <b>{domain}</b>  service,<br /> you must login to this service.",
@@ -24,6 +27,7 @@
     "logout": "Se déconnecter",
     "need_authorize": "To visualize and download data of <b>{domain}</b> and your browser, you must authorize this service to access your personnal data (email, name, roles).",
     "need_log": "To access data of <b>{domain}</b>  service,<br /> you must login in then, if you have sufficient rights, you must authorize this service to access your personnal data (name, email).",
+    "service_response": "The service has responded",
     "session_expire": "Your session width <b>{domain}</b> has expired.<br /> You need to log back in."
   }
 }
@@ -32,7 +36,10 @@
  <span class="mtdt-service">
  <div class="mtdt-msg" v-if="msg" >
  <div  style="text-align:right;" ><i class="fa fa-close" style="cursor: pointer;" @click="close"></i></div>
- <div class="mtdt-msg-title" >Important!</div>
+ <div class="mtdt-msg-title" >
+      <span v-if="!errorMessage">Important!</span>
+      <span v-else >{{$t('error')}}</span>
+ </div>
  
  <!--   <div v-if="$store.state.geonetwork && !email" 
   v-html="$t('need_log', {domain: service.domain})"></div>
@@ -44,17 +51,20 @@
   <div v-else="$store.state.metadata" 
     v-html="$t('log_service', {domain: service.domain})"></div>
   -->
-  <div v-if="!email" 
-  v-html="$t('need_log', {domain: service.domain})"></div>
+  <div v-if="!email"  v-html="$t('need_log', {domain: service.domain})"></div>
    <div v-else-if="hasExpired" v-html="$t('session_expire', {domain: service.domain})">
   </div>
-  <div v-else="email && hasAccess"
+  <div v-else-if="email && hasAccess && !errorMessage"
    v-html="$t('need_authorize', {domain: service.domain})">
+   </div>
+   <div v-else-if="errorMessage">
+     <div>{{$t('authorization_failed', {domain: service.domain})}}</div>
+     <div>{{$t('service_response')}}: &laquo;{{errorMessage}}&raquo;</div>
    </div>
    <div class="mtdt-service-button" :class="{searching: searching}" v-show="clientId && service.token === null"
      @click="searchCode" >
 	   <!--  <span v-if="$store.state.metadata">{{$t('login')}}</span> -->
-	   <span v-if="email && hasAccess">{{$t('authorize')}}</span>
+	   <span v-if="email && hasAccess && !errorMessage">{{$t('authorize')}}</span>
    </div>
  </div>
  <!--  <div v-if="!$store.state.metadata && email" class="mtdt-service-button" :class="{searching: searching}" v-show="clientId">
@@ -110,10 +120,12 @@ export default {
       return this.$store.getters['user/email']
     },
     hasAccess () {
-      if (!this.clientId) {
+      if (!this.clientId || this.reject) {
         return false
       }
-      return this.$store.getters['roles/hasAccess'](this.clientId)
+      var access = this.$store.getters['roles/hasAccess'](this.clientId)
+      this.testLoginSso(this.email, access)
+      return access
     },
     isFormater (newvalue) {
       var isFormater = this.$store.getters['user/isFormater']
@@ -148,6 +160,8 @@ export default {
       src: null,
       root: null,
       clientId: null,
+      reject: false,
+      errorMessage: null,
       domain: null,
       codeListener: null,
       state: null,
@@ -180,15 +194,13 @@ export default {
     close () {
       this.msg = false
       this.hasExpired = false
+      this.errorMessage = null
     },
     getClientId () {
-      console.log(this.client)
       var url = this.service.clientIdUrl
       this.$http.get(url).then(function (response) {
         if (response.body && response.body.clientId) {
           this.clientId = response.body.clientId
-          console.log(this.clientId)
-          console.log('hasAccess=', this.hasAccess)
           if (!(this.email && !this.hasAccess)) {
             this.msg = true
           } else {
@@ -266,6 +278,9 @@ export default {
 //       .then(resp => console.log(resp), resp => console.log(browser.cookies.get({name: 'KEYCLOAK_IDENTITY' })))
     },
     getToken (code) {
+      if (this.reject) {
+        return
+      }
       var url = this.service.authUrl
       var params = {
         code: code,
@@ -283,7 +298,11 @@ export default {
       .then(
          resp => this.setToken(resp.body), 
          resp => {
-           alert('SERVER RESPONSE ' + resp.status + ' - ' + resp.statusText)
+           console.log('REJETE')
+           this.reject = true
+           this.msg = true
+           this.errorMessage = resp.status + ' - ' + resp.statusText
+           // alert('SERVER RESPONSE ' + resp.status + ' - ' + resp.statusText)
            this.searching = false
          }
       )

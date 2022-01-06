@@ -27,7 +27,6 @@ export default {
       var client = state.clients[clientName]
       var canAccess = false
       client.roles.forEach(function (role) {
-        console.log(role)
         if (role.access) {
           canAccess = true
         }
@@ -37,9 +36,7 @@ export default {
   },
   mutations: {
     set (state, clients) {
-      console.log(clients)
       state.clients = clients
-      
     },
     setStatus (state, obj) {
       var index = state.clients[obj.client].roles.findIndex(role => role.name === obj.name)

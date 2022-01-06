@@ -195,8 +195,6 @@ export default {
           roles[client] = obj.client_roles[client].roles
         }
         roles.global = obj.realm_roles
-
-        console.log(roles)
         state.user = {
             id: obj.sub,
             email: obj.email,
