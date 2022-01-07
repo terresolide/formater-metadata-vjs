@@ -525,7 +525,7 @@ border-radius: 5px;
 position: fixed; 
 top: calc(50% - 150px);
 left:calc(50% - 310px);
-z-index:10;
+z-index:100;
 text-align: left;
 cursor: move;
 box-shadow: 2px 3px 3px 3px rgba(0, 0, 0, 0.5);
