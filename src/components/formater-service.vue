@@ -2,8 +2,11 @@
 {
   "fr": {
     "access_to": "Accès à",
+    "access_token": "token d'accès",
     "authorize": "Autoriser",
     "authorization_failed": "La connexion au service {domain} a échoué.",
+    "copied_to_clipboard": "Le token a été copié dans le presse-papier.<br>Il expire dans <b>{time}</b>",
+    "copy_in_clipboard": "Copier le token d'accès dans le presse-papier",
     "insufficient_right": "Vos droits sont insuffisants\npour accéder aux services\nde visualisation et téléchargement",
     "limited_access_to": "Accès limité à {domain}",
     "log_service": "Pour visualiser ou télécharger les données de <b>{domain}</b>, vous devez vous y connecter.",
@@ -17,8 +20,11 @@
   },
   "en": {
     "access_to": "Access to",
+    "access_token": "Access token",
     "authorize": "Authorize",
     "authorization_failed": "Connection to the service {domain} failed.",
+    "copied_to_clipboard": "The token has been copied in clipboard.<br>It will expire in <b>{time}</b>",
+    "copy_in_clipboard": "Copy the access token in clipboard",
     "insufficient_right": "Your rights are insufficient\nto access the viewing\nand downloading services",
     "limited_access_to": "Limited access to {domain}",
     "log_service": "To access data of <b>{domain}</b>  service,<br /> you must login to this service.",
@@ -71,7 +77,7 @@
   -->
     <iframe v-if="iframeUrl" style="display:none;" :src="iframeUrl" ></iframe>
  <div v-if="email" class="mtdt-service-button" :class="{searching: searching}" v-show="clientId">
-   <a v-if="service.token" class="mtdt-menu-item" 
+   <a v-if="service.token" 
    @click="logout" :style="{'--color': $store.state.style.primary}">
       {{$t('access_to')}} {{service.domain}}
       <i  class="fa fa-check-square-o"></i>
@@ -86,6 +92,10 @@
       {{$t('limited_access_to', {domain: service.domain})}} 
       <i  class="fa fa-ban"></i>
    </a>
+   <span  v-if="service.token"  class="copy-clipboard mtdt-menu-item" :title="$t('copy_in_clipboard')">
+             (<a @click="copyClipboard" :style="{'--color': $store.state.style.primary}"><i class="fa fa-clipboard"></i> {{$t('access_token')}}</a>)
+            <div class="clipboard-tooltip" v-show="showTooltip"  @click="showTooltip = false" v-html="$t('copied_to_clipboard', {time: getTime})"></div>
+   </span> 
 </div>
 <!--  <div class="mtdt-service-button" v-if="$store.state.metadata"
 :class="{searching: searching}" >
@@ -118,6 +128,9 @@ export default {
   computed: {
     email () {
       return this.$store.getters['user/email']
+    },
+    getTime () {
+      return new Date(this.time).toISOString().substr(11, 8);
     },
     hasAccess () {
       if (!this.clientId || this.reject) {
@@ -170,10 +183,12 @@ export default {
       popup: null,
       identity: null,
       expire: null,
+      time: 0,
       hasExpired: false,
       timer: null,
       needAuthorize: null,
-      iframeUrl: null
+      iframeUrl: null,
+      showTooltip: false
     }
   },
   created () {
@@ -196,6 +211,18 @@ export default {
       this.hasExpired = false
       this.errorMessage = null
     },
+    copyClipboard () {
+      var _this = this
+      navigator.clipboard.writeText(this.service.token).then(function() {
+        /* clipboard successfully set */
+        _this.showTooltip = true
+        setTimeout(function () {
+          _this.showTooltip = false
+        }, 6000)
+      }, function() {
+        alert(_this.$i18n.t('unauthorized_clipboard'))
+      }); var _this = this
+    },
     getClientId () {
       var url = this.service.clientIdUrl
       this.$http.get(url).then(function (response) {
@@ -212,6 +239,7 @@ export default {
         }
 	    }, resp => console.log('NO_CLIENT_ID'))
     },
+   
     searchCode () {
       console.log(this.clientId)
       if (!this.clientId) {
@@ -320,11 +348,14 @@ export default {
       } 
       if (data.token) {
         this.$store.commit('services/setToken', {id: this.service.id, token: data.token})
+        this.$store.commit('roles/setToken', {client: this.service.clientId, token: data.token})
         // if (this.$store.state.metadata) {
           var obj = jwt_decode(data.token)
           this.identity = obj.data || null
           var now = new Date()
           this.expire = obj.exp * 1000 // - now.getTime() 
+          var now = new Date()
+          this.time = this.expire - now.getTime()
           // if (this.expire > 2000) {
           this.timer = setInterval(this.refreshToken, 6000)
           // }
@@ -335,7 +366,8 @@ export default {
     },
     refreshToken () {
       var now = new Date()
-      if (this.expire - now.getTime() < 180000) {
+      this.time = this.expire - now.getTime()
+      if (this.time < 180000) {
 	      this.$http.get(this.service.refreshUrl,    
 	      // this.$http.get(this.service.refreshUrl + '?_tk=' + this.service.token,
 	          {
@@ -352,8 +384,10 @@ export default {
 	          var obj = jwt_decode(resp.body.token)
 	          var now = new Date()
 	          this.expire = obj.exp * 1000
+	          this.time = this.expire - now.getTime()
 	        } else {
 	          this.hasExpired = true
+	          this.time = 0
 	          this.msg = true
 	          this.logout()
 	        }
@@ -365,7 +399,8 @@ export default {
     },
     validToken () {
      var now = new Date()
-     if (this.expire - now.getTime() < 180000) {
+     this.time = this.expire - now.getTime()
+     if (this.time < 180000) {
 	      this.$http.get(this.service.validationUrl + '?_tk=' + this.service.token,
 	          {
 	            headers: {
@@ -376,6 +411,7 @@ export default {
 	          .then(function (resp) {
 	            if (resp.body.status === 'error') {
 	              this.hasExpired = true
+	              this.time = 0
 	              this.msg = true
 	              this.logout()
 	            }
@@ -385,6 +421,7 @@ export default {
     logout () {
       this.identity = null
       this.expire = null
+      this.time = 0
       clearInterval(this.timer)
       this.timer = null
       this.$store.commit('services/setToken', {id: this.service.id, token: null})
@@ -445,6 +482,29 @@ div.mtdt-msg-title {
 }
 .mtdt-service-button a:hover {
   color: darkred;
+}
+.copy-clipboard {
+  position: relative;
+}
+.clipboard-tooltip {
+  position: absolute;
+  background-color: #fafafa;
+  border: 1px solid #a3a3a3;
+  font-size: smaller;
+  line-height: 1;
+  padding: 4px;
+  width: 160px;
+  text-align: left;
+  left:150px;
+  color:black;
+  z-index:100;
+  -webkit-box-shadow: 2px 2px 3px rgba(0, 0, 0, 0.4);
+  box-shadow: 2px 2px 3px rgba(0, 0, 0, 0.4);
+}
+span div.clipboard-tooltip  {
+  cursor: pointer;
+  font-size:0.8rem;
+  left:0;
 }
 /* .mtdt-menu-item:after{
   content: "|";

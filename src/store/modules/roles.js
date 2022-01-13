@@ -36,7 +36,22 @@ export default {
   },
   mutations: {
     set (state, clients) {
+      for(name in clients) {
+        var first = false
+        clients[name].roles.forEach(function (role, index) {
+          if (!first && role.parameters.display) {
+            role.first = true
+            first =false
+          }
+        })
+      }
       state.clients = clients
+    },
+    setToken (state, obj) {
+      console.log(obj)
+      if (state.clients[obj.client]) {
+        state.clients[obj.client].token = obj.token
+      }
     },
     setStatus (state, obj) {
       var index = state.clients[obj.client].roles.findIndex(role => role.name === obj.name)

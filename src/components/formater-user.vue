@@ -4,8 +4,11 @@
     "access_rights": "Your access rights",
     "access_request": "Access request",
     "access_to_formater": "To be able to access some data, you must select it and make a request by clicking on <b>&laquo;Access request&raquo;</b>.",
+    "access_token": "Acess token",
     "account": "Your account",
     "add_message": "Add message to your request",
+    "copied_to_clipboard": "The token &laquo;{client}&raquo; has been copied in clipboard.",
+    "copy_in_clipboard": "Copy the access token in clipboard",
     "download": "Download",
     "email": "Email",
     "firstname": "First Name",
@@ -24,8 +27,11 @@
     "access_rights": "Vos droits d'accès",
     "access_request": "Demande d'accès",
     "access_to_formater": "Pour pouvoir accéder à certaines données, vous devez les sélectionner and faire une demande en cliquant sur <b>&laquo;Demande d'accès&raquo;</b>.",
+    "access_token": "token d'accès",
     "account": "Votre compte",
     "add_message": "Ajoutez un message à votre demande",
+    "copied_to_clipboard": "Le token &laquo;{client}&raquo; a été copié dans le presse-papier.",
+    "copy_in_clipboard": "Copier le token d'accès dans le presse-papier",
     "download": "Téléchargement",
     "email": "Email",
     "firstname": "Prénom",
@@ -111,6 +117,7 @@
      <div >{{$t('preview')}}</div>
      <div >{{$t('download')}}</div>
      <div v-if="canAsk">{{$t('select_data')}}</div>
+     <div></div>
    </div>
    <div class="role-line">
 	   <div>
@@ -124,13 +131,14 @@
        <i class="fa fa-check"></i>
      </div>
 	   <div v-if="canAsk"></div>
+	   <div></div>
    </div>
    <div v-for="(client,clientName) in clients">
    <!--   <div v-if="clientName !== 'global'" :title="description(client)"
        style="cursor:pointer;weight:800;">
        {{title(client)}}
      </div> --> 
-     <div class="role-line" v-for="role in client.roles" v-if="role.parameters.display">
+     <div class="role-line" v-for="(role, index) in client.roles" v-if="role.parameters.display">
         <div>{{title(role)}}</div>
         <div class="fmt-center">
           <div v-if="role.description" style="position:relative;">
@@ -147,7 +155,16 @@
         <div  v-if="canAsk" class="fmt-center">
          <input v-if="!role.access && !role.status" type="checkbox" v-model="checkedRoles" :value="clientName + '.' + role.name" />
         </div>
+        <div>
+         <span v-if="role.first && client.token" class="copy-clipboard" :title="$t('copy_in_clipboard')">
+             <span @click="copyClipboard($event, clientName)" class="fmt-button small fa fa-clipboard" :style="{background: $store.state.style.primary}">
+               {{$t('access_token')}}
+             </span>
+            <div class="clipboard-tooltip"  v-html="$t('copied_to_clipboard', {client: clientName})"></div>
+         </span> 
+         </div>
      </div>
+     
    </div>
    <div v-if="canAsk">
    <p  v-html="$t('access_to_formater')" style="font-size:0.9em;font-style:italic;line-height:1;"></p>
@@ -228,6 +245,7 @@ export default {
       organizationId: null,
       organizationType: null,
       selected: false,
+      showTooltipClipboard: {},
       box:null,
       mousemoveListener: null,
       mouseupListener: null,
@@ -310,6 +328,20 @@ export default {
         }
         this.asking = false
       })
+    },
+    copyClipboard (event, clientName) {
+      var _this = this
+      console.log(event)
+      var target = event.target
+      navigator.clipboard.writeText(this.clients[clientName].token).then(function() {
+        /* clipboard successfully set */
+        target.classList.add('tooltip-show')
+        setTimeout(function () {
+          target.classList.remove('tooltip-show')
+        }, 6000)
+      }, function() {
+        alert(_this.$i18n.t('unauthorized_clipboard'))
+      }); var _this = this
     },
     getTypeName (typeId)
     {
@@ -505,6 +537,11 @@ span.fmt-button {
   opacity: 0.9;
   box-shadow: 0 1px 5px rgba(0,0,0,.65);
 }
+span.fmt-button.small {
+  font-size: 0.9rem;
+  padding: 2px 3px;
+  display: inline-block;
+}
 span.fmt-button:hover,
 span.fmt-fa-button:hover {
   opacity:1;
@@ -556,7 +593,8 @@ div.mtdt-user-box table td {
 div.mtdt-user-box table td:nth-child(5) {
   border-left: 1px solid grey;
 }
-div.fmt-tooltip {
+div.fmt-tooltip,
+.clipboard-tooltip {
   position: absolute;
   display:none;
   background-color: #fafafa;
@@ -570,11 +608,38 @@ div.fmt-tooltip {
   box-shadow: 2px 2px 3px rgba(0, 0, 0, 0.4);
   z-index:1;
 }
+
+.copy-clipboard {
+  position: relative;
+}
+/* .clipboard-tooltip {
+  position: absolute;
+  background-color: #fafafa;
+  border: 1px solid #a3a3a3;
+  font-size: smaller;
+  line-height: 1;
+  padding: 4px;
+  width: 160px;
+  text-align: left;
+  left:150px;
+  color:black;
+  z-index:100;
+  -webkit-box-shadow: 2px 2px 3px rgba(0, 0, 0, 0.4);
+  box-shadow: 2px 2px 3px rgba(0, 0, 0, 0.4);
+} */
+span div.clipboard-tooltip  {
+  display:none;
+  cursor: pointer;
+  font-size:0.8rem;
+  left:0;
+}
+
 datalist {
     max-height: 500px;
     overflow-y: auto;
 }
-.tooltip-show + div.fmt-tooltip {
+.tooltip-show + div.fmt-tooltip,
+.tooltip-show + div.clipboard-tooltip {
   display:block;
 }
 </style>
