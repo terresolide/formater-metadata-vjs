@@ -160,7 +160,7 @@
              <span @click="copyClipboard($event, clientName)" class="fmt-button small fa fa-clipboard" :style="{background: $store.state.style.primary}">
                {{$t('access_token')}}
              </span>
-            <div class="clipboard-tooltip"  v-html="$t('copied_to_clipboard', {client: clientName})"></div>
+            <div class="clipboard-tooltip"  @click="removeTooltip($event)" v-html="$t('copied_to_clipboard', {client: clientName})"></div>
          </span> 
          </div>
      </div>
@@ -342,6 +342,11 @@ export default {
       }, function() {
         alert(_this.$i18n.t('unauthorized_clipboard'))
       }); var _this = this
+    },
+    removeTooltip (event)
+    {
+      var node = event.target
+      node.previousElementSibling.classList.remove('tooltip-show')
     },
     getTypeName (typeId)
     {

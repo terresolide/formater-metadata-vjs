@@ -93,8 +93,8 @@
       <i  class="fa fa-ban"></i>
    </a>
    <span  v-if="service.token"  class="copy-clipboard mtdt-menu-item" :title="$t('copy_in_clipboard')">
-             (<a @click="copyClipboard" :style="{'--color': $store.state.style.primary}"><i class="fa fa-clipboard"></i> {{$t('access_token')}}</a>)
-            <div class="clipboard-tooltip" v-show="showTooltip"  @click="showTooltip = false" v-html="$t('copied_to_clipboard', {time: getTime})"></div>
+             (<a @click="copyClipboard($event)" :style="{'--color': $store.state.style.primary}"><i class="fa fa-clipboard"></i> {{$t('access_token')}}</a>)
+            <div class="clipboard-tooltip"   @click="removeTooltip($event)" v-html="$t('copied_to_clipboard', {time: getTime})"></div>
    </span> 
 </div>
 <!--  <div class="mtdt-service-button" v-if="$store.state.metadata"
@@ -211,17 +211,25 @@ export default {
       this.hasExpired = false
       this.errorMessage = null
     },
-    copyClipboard () {
+    copyClipboard (event) {
       var _this = this
+      var target = event.target
+      console.log(target)
       navigator.clipboard.writeText(this.service.token).then(function() {
         /* clipboard successfully set */
-        _this.showTooltip = true
+        target.classList.add('tooltip-show')
         setTimeout(function () {
-          _this.showTooltip = false
+          target.classList.remove('tooltip-show')
         }, 6000)
       }, function() {
         alert(_this.$i18n.t('unauthorized_clipboard'))
       }); var _this = this
+    },
+    removeTooltip (event) {
+      var node = event.target
+      console.log(event)
+      console.log(node.previousElementSibling)
+      node.previousElementSibling.classList.remove('tooltip-show')
     },
     getClientId () {
       var url = this.service.clientIdUrl
@@ -483,6 +491,8 @@ div.mtdt-msg-title {
 .mtdt-service-button a:hover {
   color: darkred;
 }
+/**
+use css of formater-user
 .copy-clipboard {
   position: relative;
 }
@@ -506,6 +516,7 @@ span div.clipboard-tooltip  {
   font-size:0.8rem;
   left:0;
 }
+**/ 
 /* .mtdt-menu-item:after{
   content: "|";
   padding-left:10px;
