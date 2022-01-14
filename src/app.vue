@@ -126,6 +126,7 @@ export default {
 .mtdt-app th,
 .mtdt-app td {
   letter-spacing:0px;
+  text-decoration: none;
 }
 /* h1, h2, h3, h4, h5, h6, p, em, img, strong, b, u, i, dl, dt, dd, ol, ul, li, form, label, legend, table, tbody, tfoot, thead, tr, th, td
 */
