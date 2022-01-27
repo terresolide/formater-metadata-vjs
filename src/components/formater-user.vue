@@ -164,7 +164,6 @@
          </span> 
          </div>
      </div>
-     
    </div>
    <div v-if="canAsk">
    <p  v-html="$t('access_to_formater')" style="font-size:0.9em;font-style:italic;line-height:1;"></p>
@@ -509,7 +508,7 @@ export default {
 <style >
 div.role-line {
   display: grid;
-  grid-template-columns: minmax(100px,180px) 50px minmax(50px, 100px) minmax(50px, 100px) minmax(50px, 100px);
+  grid-template-columns: minmax(100px,180px) 50px minmax(50px, 120px) minmax(50px, 120px) minmax(50px, 120px);
   grid-gap: 5px;
   text-align:center;
 }

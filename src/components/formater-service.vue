@@ -227,8 +227,6 @@ export default {
     },
     removeTooltip (event) {
       var node = event.target
-      console.log(event)
-      console.log(node.previousElementSibling)
       node.previousElementSibling.classList.remove('tooltip-show')
     },
     getClientId () {
