@@ -329,6 +329,9 @@ export default {
         delete this.parameters.sortOrder
         // this.parameters.sortOrder = 'reverse'
       }
+      if (route.name === 'FormaterCatalogue' && this.$store.state.group && !this.parameters._groupOwner) {
+        this.parameters._groupOwner = this.$store.state.group.join('+or+')
+      }
       // this.$router.push({name: 'FormaterCatalogue', query:this.parameters})
       // this.parameters.sortOrder =  this.parameters.sortBy === 'title' ? 'ordering': 'reverse';
       var url = this.srv + 'q?' + Object.keys(this.parameters).map(function (prop) {
