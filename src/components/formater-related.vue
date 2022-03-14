@@ -46,23 +46,23 @@
    </div>
    <div v-if="type === 'metadata'"></div>
     <div v-if="layers && (layers.length > 1 || (type === 'metadata' && layers.length > 0))">
-      <div v-if="!token && hasAccess" class="mtdt-related-type fa fa-globe"  @click="authorize" @mouseover="$event.preventDefault()"
+      <div v-if="!token && hasAccess.view" class="mtdt-related-type fa fa-globe"  @click="authorize" @mouseover="$event.preventDefault()"
       :style="{backgroundColor: layerAdded ? '#8c0209' : primary, opacity:0.8}" :title="$t('display_layer')">
           <span class="fa fa-caret-down" v-if="type === 'cartouche'"></span>
        </div>
-      <div v-else class="mtdt-related-type fa fa-globe" :class="{disabled: !token && !hasAccess}" 
+      <div v-else class="mtdt-related-type fa fa-globe" :class="{disabled: !token && !hasAccess.view}" 
       :style="{backgroundColor: layerAdded ? '#8c0209' : primary}" :title="$t('display_layer')">
           <span class="fa fa-caret-down" v-if="type === 'cartouche'"></span>
        </div>
        <div class="mtdt-expand" v-if="token || type === 'metadata'">
-            <ul v-if="!token && hasAccess" class="mtdt-layers" >
+            <ul v-if="!token && hasAccess.view" class="mtdt-layers" >
             
             <li v-for="(layer, index) in layers"  :key="index" @click="authorize">
              <i class="fa" :class="{'fa-square-o': !layer.checked,'fa-check-square-o': layer.checked}"  :data-layer="index"></i>
              <div  :title="layer.description">{{layer.name}}</div>
            </li>
            </ul>  
-            <ul v-if="token || !hasAccess" class="mtdt-layers" >
+            <ul v-if="token || !hasAccess.view" class="mtdt-layers" >
             
             <li v-for="(layer, index) in layers" :class="{disabled: !token}" :key="index" @click="changeLayer(layer, true);">
              <i class="fa" :class="{'fa-square-o': !layer.checked,'fa-check-square-o': layer.checked}"  :data-layer="index"></i>
@@ -116,7 +116,7 @@
         </a>
       </span>
       <!-- case CNES and user not authenticate on flatsim -->
-      <span v-else-if="!token && hasAccess" @click="authorize"> 
+      <span v-else-if="!token && hasAccess.download" @click="authorize"> 
         <span class="mtdt-related-type fa fa-download" :style="{backgroundColor: primary, opacity:0.8}" ></span>
       </span>
       <!--  other case @todo -->
@@ -127,14 +127,14 @@
     </div>
     <!-- DOWNLOAD FEW LINKS -->
     <div v-if="download && (download.length >1 || (type === 'metadata' && download.length > 0))">
-       <div class="mtdt-related-type fa fa-download" :class="{disabled: !token && !hasAccess}" :style="{backgroundColor: primary}" 
+       <div class="mtdt-related-type fa fa-download" :class="{disabled: !token && !hasAccess.download}" :style="{backgroundColor: primary}" 
        :title="$t('download_data')" @click="authorize">
          <span v-if="type === 'cartouche'" class="fa fa-caret-down"></span>
       </div> 
       <div v-if="type === 'metadata'"></div>
       <div class="mtdt-expand mtdt-links" >
            <ul >
-           <li v-for="(file, index) in download" :key="index"  :class="{disabled: file.disabled || (!token && !hasAccess)}">
+           <li v-for="(file, index) in download" :key="index"  :class="{disabled: file.disabled || (!token && !hasAccess.download)}">
               <!--  case SHOM -->
               <span  v-if="file.type && file.type === 'WWW:DOWNLOAD-1.0-link--download'" >
                 <span :title="file.description"  @click="record(file.url, 'download', $event)">
@@ -150,7 +150,7 @@
                  <a :href="file.url + '?_bearer=' + token" style="display:none;"></a>
              </span>
              <!--  case FLATSIM without authentication -->
-             <span v-else-if="!token && hasAccess" @click="authorize">
+             <span v-else-if="!token && hasAccess.download" @click="authorize">
                 {{file.name? file.name: $t('download_data')}}
              </span>
              <!--  other case @todo -->
@@ -312,11 +312,12 @@
         return this.$store.getters['user/isFormater']
       },
       hasAccess () {
-        var clientId = this.$store.getters['user/clientId']
+        var clientId = this.$store.getters['services/clientId']
         var access = false
         if (clientId) {
-          var access = this.$store.getters['roles/hasAccess'](clientId)
+          var access = this.$store.getters['roles/hasAccess'](clientId, this.$route.params.uuid)
         }
+        console.log(access)
         return access
       }
     },

@@ -20,18 +20,39 @@ export default {
     getClients (state, getters) {
       return state.clients
     },
-    hasAccess: (state) => (clientName) => {
+    hasAccess: (state) => (clientName, currentIdentifier) => {
       if (!state.clients[clientName]) {
         return false
       }
       var client = state.clients[clientName]
-      var canAccess = false
+      var response = {
+          view: false,
+          download: false
+      }
+      // var canAccess = false
       client.roles.forEach(function (role) {
+        console.log(role)
         if (role.access) {
-          canAccess = true
+          if (role.parameters.hasOwnProperty('view')) {
+            if (role.parameters.view === true || role.parameters.view.includes(currentIdentifier)) {
+              response.view = true
+            }
+          } else {
+            response.view = true
+          }
+          if (role.parameters.hasOwnProperty('download')) {
+            if (role.parameters.download === true || role.parameters.download.includes(currentIdentifier)) {
+              response.download = true
+            }
+          } else {
+            response.download = true
+          }
         }
       })
-      return canAccess
+      if (!response.view && !response.download) {
+        return false
+      }
+      return response
     }
   },
   mutations: {

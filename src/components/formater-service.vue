@@ -136,7 +136,7 @@ export default {
       if (!this.clientId || this.reject) {
         return false
       }
-      var access = this.$store.getters['roles/hasAccess'](this.clientId)
+      var access = this.$store.getters['roles/hasAccess'](this.clientId, this.$route.params.uuid)
       this.testLoginSso(this.email, access)
       return access
     },

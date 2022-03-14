@@ -17,6 +17,13 @@ export default {
    current (state, getters) {
      return state.current
    },
+   clientId(state, getters) {
+     if (state.current >= 0) {
+       return state.services[state.current].clientId
+     } else {
+       return false
+     }
+   },
    byDomain: (state) => (domain) => {
      return state.services.find(obj => obj.domain === domain)
    },
