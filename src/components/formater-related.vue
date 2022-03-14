@@ -37,7 +37,7 @@
       <div v-if="token" class="mtdt-related-type fa fa-globe" @click="changeLayer(layers[0], true)" 
       :style="{backgroundColor: layerAdded ? '#8c0209' : primary}" :title="$t('display_layer')">
       </div>
-      <div v-else-if="hasAccess" class="mtdt-related-type fa fa-globe" @click="authorize"
+      <div v-else-if="hasAccess && hasAccess.view" class="mtdt-related-type fa fa-globe" @click="authorize"
      :style="{backgroundColor: layerAdded ? '#8c0209' : primary, opacity:0.8}" :title="$t('display_layer')">
       </div>
       <div v-else  class="mtdt-related-type fa fa-globe disabled" 
@@ -46,23 +46,23 @@
    </div>
    <div v-if="type === 'metadata'"></div>
     <div v-if="layers && (layers.length > 1 || (type === 'metadata' && layers.length > 0))">
-      <div v-if="!token && hasAccess.view" class="mtdt-related-type fa fa-globe"  @click="authorize" @mouseover="$event.preventDefault()"
+      <div v-if="!token && hasAccess && hasAccess.view" class="mtdt-related-type fa fa-globe"  @click="authorize" @mouseover="$event.preventDefault()"
       :style="{backgroundColor: layerAdded ? '#8c0209' : primary, opacity:0.8}" :title="$t('display_layer')">
           <span class="fa fa-caret-down" v-if="type === 'cartouche'"></span>
        </div>
-      <div v-else class="mtdt-related-type fa fa-globe" :class="{disabled: !token && !hasAccess.view}" 
+      <div v-else class="mtdt-related-type fa fa-globe" :class="{disabled: !token && !(hasAccess && hasAccess.view)}" 
       :style="{backgroundColor: layerAdded ? '#8c0209' : primary}" :title="$t('display_layer')">
           <span class="fa fa-caret-down" v-if="type === 'cartouche'"></span>
        </div>
        <div class="mtdt-expand" v-if="token || type === 'metadata'">
-            <ul v-if="!token && hasAccess.view" class="mtdt-layers" >
+            <ul v-if="!token && hasAccess && hasAccess.view" class="mtdt-layers" >
             
             <li v-for="(layer, index) in layers"  :key="index" @click="authorize">
              <i class="fa" :class="{'fa-square-o': !layer.checked,'fa-check-square-o': layer.checked}"  :data-layer="index"></i>
              <div  :title="layer.description">{{layer.name}}</div>
            </li>
            </ul>  
-            <ul v-if="token || !hasAccess.view" class="mtdt-layers" >
+            <ul v-if="token || !(hasAccess && hasAccess.view)" class="mtdt-layers" >
             
             <li v-for="(layer, index) in layers" :class="{disabled: !token}" :key="index" @click="changeLayer(layer, true);">
              <i class="fa" :class="{'fa-square-o': !layer.checked,'fa-check-square-o': layer.checked}"  :data-layer="index"></i>
@@ -100,6 +100,7 @@
         <hr v-if="type === 'metadata'" /> 
     </div>
     <!--  DOWNLOAD 1 LINK -->
+    <div>{{hasAccess}}</div>
     <div v-if="download && download.length === 1 && type === 'cartouche'">
       <!--  case SHOM, OI2 open in new window -->
       <span v-if="(download[0].type && download[0].type === 'WWW:DOWNLOAD-1.0-link--download') || download[0].auth === 'BASIC'"
@@ -108,33 +109,33 @@
         <a style="display:none;"  :href="download[0].url" target="_blank" ></a>
       </span>
        <!--  case CNES -->
-       <span v-else-if="token && token !== -1" 
-       :href="download[0].url + '?_bearer=' + token" :class="{disabled:download[0].disabled || !token}" 
+       <span v-else-if="token && token !== -1 && hasAccess.download" 
+       :href="download[0].url + '?_bearer=' + token" :class="{disabled:download[0].disabled || !token || !hasAccess.download}" 
         :title="$t('download_data')" >
         <span class="mtdt-related-type fa fa-download" :style="{backgroundColor: primary}" @click="record(download[0].url, 'download', $event)"></span>
         <a style="display:none;" :href="download[0].url + '?_bearer=' + token" >
         </a>
       </span>
       <!-- case CNES and user not authenticate on flatsim -->
-      <span v-else-if="!token && hasAccess.download" @click="authorize"> 
+      <span v-else-if="!token && hasAccess && hasAccess.download" @click="authorize"> 
         <span class="mtdt-related-type fa fa-download" :style="{backgroundColor: primary, opacity:0.8}" ></span>
       </span>
       <!--  other case @todo -->
-      <span v-else  :class="{disabled:download[0].disabled || !token}" 
+      <span v-else  :class="{disabled:download[0].disabled || !token || !hasAccess.download}" 
         :title="$t('download_data')">
          <span class="mtdt-related-type fa fa-download" :style="{backgroundColor: primary}" ></span>
       </span> 
     </div>
     <!-- DOWNLOAD FEW LINKS -->
     <div v-if="download && (download.length >1 || (type === 'metadata' && download.length > 0))">
-       <div class="mtdt-related-type fa fa-download" :class="{disabled: !token && !hasAccess.download}" :style="{backgroundColor: primary}" 
+       <div class="mtdt-related-type fa fa-download" :class="{disabled: !token && !(hasAccess && hasAccess.download)}" :style="{backgroundColor: primary}" 
        :title="$t('download_data')" @click="authorize">
          <span v-if="type === 'cartouche'" class="fa fa-caret-down"></span>
       </div> 
       <div v-if="type === 'metadata'"></div>
       <div class="mtdt-expand mtdt-links" >
            <ul >
-           <li v-for="(file, index) in download" :key="index"  :class="{disabled: file.disabled || (!token && !hasAccess.download)}">
+           <li v-for="(file, index) in download" :key="index"  :class="{disabled: file.disabled || !token }">
               <!--  case SHOM -->
               <span  v-if="file.type && file.type === 'WWW:DOWNLOAD-1.0-link--download'" >
                 <span :title="file.description"  @click="record(file.url, 'download', $event)">
@@ -143,14 +144,17 @@
                 <a  :href="file.url"  target="_blank" style="display:none;"></a>
               </span>
               <!--  case FLATSIM -->
-              <span  v-else-if="token && token !== -1"  >
+              <span  v-else-if="token && token !== -1 && hasAccess.download"  >
                  <span :title="file.description"  @click="record(file.url, 'download', $event)">
                    {{file.name? file.name: $t('download_data')}}
                  </span>
                  <a :href="file.url + '?_bearer=' + token" style="display:none;"></a>
              </span>
              <!--  case FLATSIM without authentication -->
-             <span v-else-if="!token && hasAccess.download" @click="authorize">
+             <span v-else-if="!token || hasAccess.download" @click="authorize">
+                {{file.name? file.name: $t('download_data')}}
+             </span>
+             <span v-else-if="!token  && !hasAccess.download" >
                 {{file.name? file.name: $t('download_data')}}
              </span>
              <!--  other case @todo -->
