@@ -48,7 +48,6 @@ export default {
       state.clients = clients
     },
     setToken (state, obj) {
-      console.log(obj)
       if (state.clients[obj.client]) {
         state.clients[obj.client].token = obj.token
       }

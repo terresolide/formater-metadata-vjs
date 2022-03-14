@@ -214,7 +214,6 @@ export default {
     copyClipboard (event) {
       var _this = this
       var target = event.target
-      console.log(target)
       navigator.clipboard.writeText(this.service.token).then(function() {
         /* clipboard successfully set */
         target.classList.add('tooltip-show')
