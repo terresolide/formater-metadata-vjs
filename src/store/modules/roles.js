@@ -22,7 +22,7 @@ export default {
     },
     hasAccess: (state) => (clientName, currentIdentifier) => {
       if (!state.clients[clientName]) {
-        return false
+        return {view: true, download:true}
       }
       var client = state.clients[clientName]
       var response = {

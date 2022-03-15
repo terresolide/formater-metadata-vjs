@@ -24,7 +24,6 @@
        <div @click="abortRequest" style="width:100%;text-align:right;">
        <i class="fa fa-close" style="color:darkred;width:40px;text-align:right;cursor:pointer;margin:0"></i></div>
        
-       
        <progress-bar :value="progress"  :options="progressBarOptions"></progress-bar>
          </div>
     <div v-if="type === 'cartouche' && hasBboxLayer" style="display:inline-block;" >
@@ -33,38 +32,45 @@
       </div>
     
     </div>
+    <!--  layer  -->
     <div v-if="layers && layers.length === 1 && type === 'cartouche'">
-      <div v-if="token" class="mtdt-related-type fa fa-globe" @click="changeLayer(layers[0], true)" 
+     <!--  case from service with token -->
+      <div v-if="token && token!==-1 && hasAccess && hasAccess.view" class="mtdt-related-type fa fa-globe" @click="changeLayer(layers[0], true)" 
       :style="{backgroundColor: layerAdded ? '#8c0209' : primary}" :title="$t('display_layer')">
       </div>
-      <div v-else-if="hasAccess && hasAccess.view" class="mtdt-related-type fa fa-globe" @click="authorize"
+      <div v-else-if="token && token !== -1 && hasAccess && hasAccess.view" class="mtdt-related-type fa fa-globe" @click="authorize"
      :style="{backgroundColor: layerAdded ? '#8c0209' : primary, opacity:0.8}" :title="$t('display_layer')">
       </div>
-      <div v-else  class="mtdt-related-type fa fa-globe disabled" 
+      <div v-else-if="token && !(hasAccess && hasAccess.view)"  class="mtdt-related-type fa fa-globe disabled" 
       :style="{backgroundColor: layerAdded ? '#8c0209' : primary}" :title="$t('display_layer')">
       </div> 
+      <!--  no authentication needed -->
+       <div v-if="!token" class="mtdt-related-type fa fa-globe" @click="changeLayer(layers[0], true)" 
+      :style="{backgroundColor: layerAdded ? '#8c0209' : primary}" :title="$t('display_layer')">
+      </div>
    </div>
    <div v-if="type === 'metadata'"></div>
     <div v-if="layers && (layers.length > 1 || (type === 'metadata' && layers.length > 0))">
-      <div v-if="!token && hasAccess && hasAccess.view" class="mtdt-related-type fa fa-globe"  @click="authorize" @mouseover="$event.preventDefault()"
+      <!--  case service with token -->
+      <div v-if="token && token === -1 && hasAccess && hasAccess.view" class="mtdt-related-type fa fa-globe"  @click="authorize" @mouseover="$event.preventDefault()"
       :style="{backgroundColor: layerAdded ? '#8c0209' : primary, opacity:0.8}" :title="$t('display_layer')">
           <span class="fa fa-caret-down" v-if="type === 'cartouche'"></span>
        </div>
-      <div v-else class="mtdt-related-type fa fa-globe" :class="{disabled: !token && !(hasAccess && hasAccess.view)}" 
+      <div v-else class="mtdt-related-type fa fa-globe" :class="{disabled: !(hasAccess && hasAccess.view)}" 
       :style="{backgroundColor: layerAdded ? '#8c0209' : primary}" :title="$t('display_layer')">
           <span class="fa fa-caret-down" v-if="type === 'cartouche'"></span>
        </div>
-       <div class="mtdt-expand" v-if="token || type === 'metadata'">
-            <ul v-if="!token && hasAccess && hasAccess.view" class="mtdt-layers" >
+       <div class="mtdt-expand" v-if="token !== -1 || type === 'metadata'">
+            <ul v-if="token=== -1 && hasAccess && hasAccess.view" class="mtdt-layers" >
             
             <li v-for="(layer, index) in layers"  :key="index" @click="authorize">
              <i class="fa" :class="{'fa-square-o': !layer.checked,'fa-check-square-o': layer.checked}"  :data-layer="index"></i>
              <div  :title="layer.description">{{layer.name}}</div>
            </li>
            </ul>  
-            <ul v-if="token || !(hasAccess && hasAccess.view)" class="mtdt-layers" >
+            <ul v-if="token !== -1 || !(hasAccess && hasAccess.view)" class="mtdt-layers" >
             
-            <li v-for="(layer, index) in layers" :class="{disabled: !token}" :key="index" @click="changeLayer(layer, true);">
+            <li v-for="(layer, index) in layers" :class="{disabled: token === -1}" :key="index" @click="changeLayer(layer, true);">
              <i class="fa" :class="{'fa-square-o': !layer.checked,'fa-check-square-o': layer.checked}"  :data-layer="index"></i>
              <div  :title="layer.description">{{layer.name}}</div>
            </li>
@@ -100,7 +106,6 @@
         <hr v-if="type === 'metadata'" /> 
     </div>
     <!--  DOWNLOAD 1 LINK -->
-    <div>{{hasAccess}}</div>
     <div v-if="download && download.length === 1 && type === 'cartouche'">
       <!--  case SHOM, OI2 open in new window -->
       <span v-if="(download[0].type && download[0].type === 'WWW:DOWNLOAD-1.0-link--download') || download[0].auth === 'BASIC'"
@@ -159,7 +164,7 @@
              </span>
              <!--  other case @todo -->
             <span  v-else :title="file.description"  >{{file.name? file.name: $t('download_data')}}</span>
-          </li>
+          </li>token!==-1 && 
           </ul>    
       </div> 
         <hr v-if="type === 'metadata'" /> 
@@ -317,7 +322,8 @@
       },
       hasAccess () {
         var clientId = this.$store.getters['services/clientId']
-        var access = false
+        console.log(clientId)
+        var access = {download: true, view: true}
         if (clientId) {
           var access = this.$store.getters['roles/hasAccess'](clientId, this.$route.params.uuid)
         }

@@ -35,14 +35,14 @@ export default {
      if (service) {
        return service.token
      } else {
-       return -1
+       return null
      }
    },
    token (state, getters) {
      if (state.current >= 0) {
        return state.services[state.current].token
      } else {
-       return -1
+       return null
      }
    }
   },
