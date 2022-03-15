@@ -342,9 +342,17 @@ const GeonetworkPlugin = {
                switch(protocol) {
                case 'UKST':
                case 'OpenSearch':
+               case 'OpenSearch--VIEW:AUTH--DOWNLOAD:AUTH':
+               case 'OpenSearch--VIEW:ROLE--DOWNLOAD:ROLE':
+               case 'OpenSearch--VIEW:AUTH--DOWNLOAD:ROLE':
+                 var access = access = { view: 'role', download: 'role'}
+                 if (protocol === 'OpenSearch--VIEW:AUTH--DOWNLOAD:AUTH') {
+                   access = { view: 'auth', download: 'auth'}
+                 }
                  metadata.api = {
                    http: url,
-                   name: name
+                   name: name,
+                   access: access
                  }
                  break;
                case 'WTS':

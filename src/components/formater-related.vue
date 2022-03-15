@@ -61,7 +61,7 @@
           <span class="fa fa-caret-down" v-if="type === 'cartouche'"></span>
        </div>
        <div class="mtdt-expand" v-if="token !== -1 || type === 'metadata'">
-            <ul v-if="token=== -1 && hasAccess && hasAccess.view" class="mtdt-layers" >
+            <ul v-if="token === -1 && hasAccess && hasAccess.view" class="mtdt-layers" >
             
             <li v-for="(layer, index) in layers"  :key="index" @click="authorize">
              <i class="fa" :class="{'fa-square-o': !layer.checked,'fa-check-square-o': layer.checked}"  :data-layer="index"></i>
@@ -70,7 +70,7 @@
            </ul>  
             <ul v-if="token !== -1 || !(hasAccess && hasAccess.view)" class="mtdt-layers" >
             
-            <li v-for="(layer, index) in layers" :class="{disabled: token === -1}" :key="index" @click="changeLayer(layer, true);">
+            <li v-for="(layer, index) in layers" :class="{disabled: !(hasAccess && hasAccess.view)}" :key="index" @click="changeLayer(layer, true);">
              <i class="fa" :class="{'fa-square-o': !layer.checked,'fa-check-square-o': layer.checked}"  :data-layer="index"></i>
              <div  :title="layer.description">{{layer.name}}</div>
            </li>
@@ -140,7 +140,7 @@
       <div v-if="type === 'metadata'"></div>
       <div class="mtdt-expand mtdt-links" >
            <ul >
-           <li v-for="(file, index) in download" :key="index"  :class="{disabled: file.disabled || !token }">
+           <li v-for="(file, index) in download" :key="index"  :class="{disabled: file.disabled || token === -1 || !hasAccess.download }">
               <!--  case SHOM -->
               <span  v-if="file.type && file.type === 'WWW:DOWNLOAD-1.0-link--download'" >
                 <span :title="file.description"  @click="record(file.url, 'download', $event)">
@@ -155,8 +155,8 @@
                  </span>
                  <a :href="file.url + '?_bearer=' + token" style="display:none;"></a>
              </span>
-             <!--  case FLATSIM without authentication -->
-             <span v-else-if="!token || hasAccess.download" @click="authorize">
+             <!--  case FLATSIM without authentication but can download -->
+             <span v-else-if="token === -1 && hasAccess.download" @click="authorize">
                 {{file.name? file.name: $t('download_data')}}
              </span>
              <span v-else-if="!token  && !hasAccess.download" >
@@ -164,7 +164,7 @@
              </span>
              <!--  other case @todo -->
             <span  v-else :title="file.description"  >{{file.name? file.name: $t('download_data')}}</span>
-          </li>token!==-1 && 
+          </li> 
           </ul>    
       </div> 
         <hr v-if="type === 'metadata'" /> 
@@ -322,10 +322,24 @@
       },
       hasAccess () {
         var clientId = this.$store.getters['services/clientId']
-        console.log(clientId)
+
         var access = {download: true, view: true}
         if (clientId) {
-          var access = this.$store.getters['roles/hasAccess'](clientId, this.$route.params.uuid)
+          var accessConf = this.$store.getters['services/access'](this.$route.params.uuid)
+          if (accessConf.view === 'auth' && accessConf.download === 'auth') {
+            return access
+          }
+          if (accessConf.view === 'role') {
+            delete access.view
+          }
+          if (accessConf.download === 'role') {
+            delete access.download
+          }
+          console.log(access)
+          var access2 = this.$store.getters['roles/hasAccess'](clientId, this.$route.params.uuid)
+          var access3 = Object.assign(access2, access)
+          console.log(access3)
+          return access3
         }
         console.log(access)
         return access

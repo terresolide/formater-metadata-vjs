@@ -11,6 +11,13 @@ export default {
     current: -1
   },
   getters: {
+    access: (state) => (uuid) => {
+      if (state.current >= 0) {
+        return state.services[state.current].access[uuid]
+      } else {
+        return false
+      }
+    },
    all (state, getters) {
      return state.services
    },
@@ -76,9 +83,15 @@ export default {
            service.validationUrl = service.host + '/atdistrib/resto2/api/user/checkToken'
            service.disconnectUrl = service.host + '/atdistrib/resto2/api/user/disconnect'
            service.refreshUrl = service.host + '/atdistrib/resto2/api/user/connect'
+           service.access = {}
+           service.access[service.uuid] = service.access
            state.services.push(service)
          }
+       } else {
+           state.services[index].access[service.uuid] = service.access
        }
+
+
        state.current = index
        // return index
 //      let service = new Service(api)

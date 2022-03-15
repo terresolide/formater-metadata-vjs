@@ -220,6 +220,8 @@ export default {
               this.describe = val.api.http
            }
          } 
+         console.log(val.api)
+         console.log(this.serviceId)
       },
       setParameters(osParameters) {
     	  //         this.metadata.osParameters = osParameters.parameters
@@ -228,7 +230,7 @@ export default {
         this.mapping = osParameters.mapping
         if (osParameters.api) {
           var url = new URL(osParameters.api)
-    	    this.$store.commit('services/add', {domain: url.hostname, api: osParameters.api})
+    	    this.$store.commit('services/add', {domain: url.hostname, api: osParameters.api, access: this.metadata.api.access, uuid: this.uuid})
     	    this.serviceId = this.$store.getters['services/current']
           this.service = this.$store.getters['services/byId'](this.serviceId)
         }
