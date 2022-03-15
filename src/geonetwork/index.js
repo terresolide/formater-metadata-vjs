@@ -188,7 +188,8 @@ const GeonetworkPlugin = {
              })
            },
            extractDistributionInfo (metadata, json, idLang) {
-             this.extractFormat(metadata, json['gmd:MD_Distribution']['gmd:distributionFormat'], idLang)
+             var json2 = json['gmd:MD_Distribution']['gmd:distributionFormat'] || {}
+             this.extractFormat(metadata, json2, idLang)
              this.extractLinks (metadata, json, idLang) 
            },
            extractExtent (metadata, json) {
@@ -217,6 +218,7 @@ const GeonetworkPlugin = {
            extractFormat (metadata, json, idLang) {
              var formats = []
              var _this = this
+             console.log(json)
              var nodes = JSONPATH.query(json, "$..['gmd:MD_Format']")
              if (nodes === undefined) {
                return null
