@@ -299,7 +299,7 @@ export default {
           state: this.state,
           prompt: 'none'
       }
-      this.searching = true
+      // this.searching = true
       var url = this.authUrl + '?'
       var paramsStr = Object.keys(params).map(function (key) {
         return key + '=' + params[key]
