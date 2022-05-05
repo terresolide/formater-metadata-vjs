@@ -59,13 +59,35 @@ export default {
     set (state, clients) {
       for(name in clients) {
         var first = false
+        var groups = {}
+        // group of rights like OZARK, TARIM
+        var withGroup = false
         clients[name].roles.forEach(function (role, index) {
+          
           if (!first && role.parameters.display) {
             role.first = true
             first =false
           }
+          if (role.parameters.group) {
+            withGroup = true
+            if (!groups[role.parameters.group]) {
+              groups[role.parameters.group] = []
+            }
+            groups[role.parameters.group].push(role)
+          }
+
         })
+        for(var key in groups) {
+          groups[key].sort(function (a, b) {
+            return a.parameters.view < b.parameters.view && a.parameters.download < b.parameters.download 
+          })
+        }
+        clients[name].groups = groups
+        if (withGroup) {
+          delete clients[name].roles
+        }
       }
+      console.log(clients)
       state.clients = clients
     },
     setToken (state, obj) {

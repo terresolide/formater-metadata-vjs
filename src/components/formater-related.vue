@@ -324,6 +324,7 @@
         var clientId = this.$store.getters['services/clientId']
 
         var access = {download: true, view: true}
+        return access
         if (clientId) {
           var accessConf = this.$store.getters['services/access'](this.$route.params.uuid)
           if (accessConf.view === 'auth' && accessConf.download === 'auth') {

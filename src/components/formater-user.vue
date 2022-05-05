@@ -138,7 +138,7 @@
        style="cursor:pointer;weight:800;">
        {{title(client)}}
      </div> --> 
-     <div class="role-line" v-for="(role, index) in client.roles" v-if="role.parameters.display">
+     <div class="role-line"  v-for="(role, index) in client.roles" v-if="client.roles && role.parameters.display">
         <div>{{title(role)}}</div>
         <div class="fmt-center">
           <div v-if="role.description" style="position:relative;">
@@ -163,6 +163,8 @@
             <div class="clipboard-tooltip"  @click="removeTooltip($event)" v-html="$t('copied_to_clipboard', {client: clientName})"></div>
          </span> 
          </div>
+     </div>
+     <div v-else-if="client.groups">
      </div>
    </div>
    <div v-if="canAsk">
@@ -212,14 +214,15 @@ export default {
       var clients = this.$store.getters['roles/getClients']
       var _this = this
       for(var client in clients) {
-        clients[client].roles.forEach(function (role) {
-          role.access = _this.hasRole(client, role.name)
-        })
+//         clients[client].roles.forEach(function (role) {
+//           role.access = _this.hasRole(client, role.name)
+//         })
       }
       return clients
     },
     canAsk () {
       var can = false
+      return true
       for (var client in this.clients) {
 	      this.clients[client].roles.forEach(function (role) {
 	        if (!role.access && !role.status && role.parameters.display) {
