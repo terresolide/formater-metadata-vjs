@@ -72,6 +72,9 @@ export default {
     refreshToken (state, getter) {
       return state.refreshToken
     },
+    roles (state, getter) {
+      return state.user.roles
+    },
     tokenUrl (state, getters) {
       if (state.ssoUrl) {
         return  state.ssoUrl + '/realms/' + state.realm + '/protocol/openid-connect/token'
@@ -152,9 +155,9 @@ export default {
       state.state = btoa(state.clientId).replace(/=|\+|\//gm, '0')
       
     },
-    hasAccess (state) {
-      return state.user.roles
-    },
+//    hasAccess (state) {
+//      return state.user.roles
+//    },
 //    set (state, jwtToken) {
 //      var obj = jwt_decode(jwtToken)
 //      if (obj.nonce === state.nonce) {

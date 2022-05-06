@@ -56,39 +56,56 @@ export default {
     }
   },
   mutations: {
-    set (state, clients) {
-      for(name in clients) {
+    set (state, obj) {
+      for(name in obj.clients) {
         var first = false
         var groups = {}
         // group of rights like OZARK, TARIM
-        var withGroup = false
-        clients[name].roles.forEach(function (role, index) {
-          
-          if (!first && role.parameters.display) {
-            role.first = true
-            first =false
-          }
-          if (role.parameters.group) {
-            withGroup = true
-            if (!groups[role.parameters.group]) {
-              groups[role.parameters.group] = []
+        if (obj.clients[name].roles) {
+          obj.clients[name].roles.forEach(function (role, index) {
+            if (!first && role.parameters.display) {
+              role.first = true
+//              var index = obj.roles[name].indexOf(role.name)
+//              role.access = index >= 0
+              first =false
             }
-            groups[role.parameters.group].push(role)
-          }
-
-        })
-        for(var key in groups) {
-          groups[key].sort(function (a, b) {
-            return a.parameters.view < b.parameters.view && a.parameters.download < b.parameters.download 
           })
         }
-        clients[name].groups = groups
-        if (withGroup) {
-          delete clients[name].roles
+        // sort
+        if (obj.clients[name].groups) {
+          for(var key in obj.clients[name].groups) {
+            obj.clients[name].groups[key].sort(function (a, b) {
+              return  parseInt(a.parameters.download) >= parseInt(b.parameters.download) ? 1 : 0
+            })
+//            obj.clients[name].groups[key].forEach(function (role) {
+//              var index = obj.roles[name].indexOf(role.name)
+//              role.access = index >= 0
+//            })
+          }
         }
       }
-      console.log(clients)
-      state.clients = clients
+      state.clients = obj.clients
+      this.commit('roles/setAccess',obj.roles)
+    },
+    setAccess (state, roles) {
+      for(name in state.clients) {
+        var rolestr = roles[name].join(',')
+        if (state.clients[name].roles) {
+          state.clients[name].roles.forEach(function (role, index) {
+              var index = rolestr.indexOf(role.name)
+              role.access = index >= 0
+          })
+        }
+        if (state.clients[name].groups) {
+          for(var key in state.clients[name].groups) {
+            state.clients[name].groups[key].forEach(function (role, i) {
+              var index = rolestr.indexOf(role.name)
+              role.access = index >= 0
+            })
+          }
+        }
+      }
+      console.log(state.clients)
     },
     setToken (state, obj) {
       if (state.clients[obj.client]) {
@@ -96,8 +113,20 @@ export default {
       }
     },
     setStatus (state, obj) {
-      var index = state.clients[obj.client].roles.findIndex(role => role.name === obj.name)
-      state.clients[obj.client].roles[index].status = obj.status
+      if (state.clients[obj.client].roles) {
+        var index = state.clients[obj.client].roles.findIndex(role => role.name === obj.name)
+        if (index >= 0) {
+           state.clients[obj.client].roles[index].status = obj.status
+        }
+      } 
+      if (state.clients[obj.client].groups) {
+        for (var key in state.clients[obj.client].groups) {
+          var index = state.clients[obj.client].groups[key].findIndex(role => role.name === obj.name)
+          if (index >= 0) {
+            state.clients[obj.client].groups[key][index].status = obj.status
+          }
+        }
+      }
     }
   }
 }

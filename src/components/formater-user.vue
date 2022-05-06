@@ -125,19 +125,19 @@
 	   </div>
 	   <div></div>
 	   <div class="fmt-center">
-	     <i class="fa fa-check"></i>
+	     <i class="fa fa-check" style="color:green;"></i>
 	   </div>
      <div class="fmt-center">
-       <i class="fa fa-check"></i>
+       <i class="fa fa-check" style="color:green;"></i>
      </div>
 	   <div v-if="canAsk"></div>
 	   <div></div>
    </div>
    <div v-for="(client,clientName) in clients">
-   <!--   <div v-if="clientName !== 'global'" :title="description(client)"
-       style="cursor:pointer;weight:800;">
+   <div v-if="clientName !== 'global'" :title="description(client)"
+       style="cursor:pointer;font-weight:800;">
        {{title(client)}}
-     </div> --> 
+     </div> 
      <div class="role-line"  v-for="(role, index) in client.roles" v-if="client.roles && role.parameters.display">
         <div>{{title(role)}}</div>
         <div class="fmt-center">
@@ -147,14 +147,21 @@
           </div> 
         </div>
         <div class="fmt-center">
-           <i v-if="role.parameters.view" class="fa" :class="{'fa-close': !role.access, 'fa-check': role.access} "></i>
+          <span v-if="role.access"><i class="fa fa-check" style="color:green;"></i></span>
+          <!--  <i v-if="role.parameters.view" class="fa" :class="{'fa-close': !role.access, 'fa-check': role.access} "></i>
+          --> 
+          <input v-if="!role.access && !role.status" type="checkbox" v-model="checkedRoles" :value="clientName + '.' + role.name" />
+       
         </div>
         <div class="fmt-center">
-           <i v-if="role.parameters.download" class="fa" :class="{'fa-close': !role.access, 'fa-check': role.access} "></i>
+         <!--   <i v-if="role.parameters.download" class="fa" :class="{'fa-close': !role.access, 'fa-check': role.access} "></i>
+          --> 
+          <span v-if="role.access"><i class="fa fa-check" style="color:green;"></i></span>
+          <input v-if="!role.access && !role.status" type="checkbox" v-model="checkedRoles" :value="clientName + '.' + role.name" />
+       
         </div>
         <div  v-if="canAsk" class="fmt-center">
-         <input v-if="!role.access && !role.status" type="checkbox" v-model="checkedRoles" :value="clientName + '.' + role.name" />
-        </div>
+         </div>
         <div>
          <span v-if="role.first && client.token" class="copy-clipboard" :title="$t('copy_in_clipboard')">
              <span @click="copyClipboard($event, clientName)" class="fmt-button small fa fa-clipboard" :style="{background: $store.state.style.primary}">
@@ -164,7 +171,23 @@
          </span> 
          </div>
      </div>
-     <div v-else-if="client.groups">
+     <div class="role-line" v-if="client.groups" v-for="group, key in client.groups">
+        <div>{{key}}</div>
+        <div class="fmt-center"></div>
+        <div v-for="role in group" class="fmt-center">
+           <span v-if="role.access"><i class="fa fa-check" style="color:green;"></i></span>
+           <span v-else>
+             <span v-if="role.status === 'WAITING'">
+               <i class="fa fa-clock-o"></i>
+             </span>
+              <span v-if="role.status === 'REJECTED'">
+               <i class="fa fa-close" style="color:darkred;"></i>
+             </span>
+	           <span v-if="!role.status">
+	              <input type="checkbox" v-model="checkedRoles" :value="clientName + '.' + role.name" :disabled="role.status"/>
+	           </span>
+           </span>
+        </div>
      </div>
    </div>
    <div v-if="canAsk">
@@ -227,9 +250,18 @@ export default {
 	      this.clients[client].roles.forEach(function (role) {
 	        if (!role.access && !role.status && role.parameters.display) {
 	          can = true
-	          return can
 	        }
 	      })
+	      if (this.clients[client].groups) {
+	        for (var key in this.clients[client].groups) {
+	          var count = 0
+	          this.clients[client].groups[key].forEach(function (role) {
+	            if (!role.access && !role.status && role.parameters.display) {
+	              can = true
+	            }
+	          })
+	        }
+	      }
       }
       return can
     }
@@ -372,7 +404,7 @@ export default {
       this.$http.post(url, postdata, {emulateJSON: true})
       .then(resp => {
         if (resp.body.success) {
-          this.$store.commit('roles/set', resp.body.roles)
+          this.$store.commit('roles/set', {clients: resp.body.roles, roles: this.$store.getters['user/roles']})
         }
         if (this.canAsk) {
           this.show = true
