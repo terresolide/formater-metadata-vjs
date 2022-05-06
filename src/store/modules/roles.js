@@ -75,7 +75,7 @@ export default {
         if (obj.clients[name].groups) {
           for(var key in obj.clients[name].groups) {
             obj.clients[name].groups[key].sort(function (a, b) {
-              return  parseInt(a.parameters.download) >= parseInt(b.parameters.download) ? 1 : 0
+              return  a.name > b.name ? 1 : 0
             })
 //            obj.clients[name].groups[key].forEach(function (role) {
 //              var index = obj.roles[name].indexOf(role.name)
@@ -98,6 +98,11 @@ export default {
         }
         if (state.clients[name].groups) {
           for(var key in state.clients[name].groups) {
+            if (state.clients[name].groups[key][0].status === 'REJECTED') {
+              state.clients[name].groups[key][1].status = 'REJECTED'
+            } else if (state.clients[name].groups[key][1].status === 'WAITING') {
+              state.clients[name].groups[key][0].status = 'WAITING'
+            }
             state.clients[name].groups[key].forEach(function (role, i) {
               var index = rolestr.indexOf(role.name)
               role.access = index >= 0
@@ -105,7 +110,6 @@ export default {
           }
         }
       }
-      console.log(state.clients)
     },
     setToken (state, obj) {
       if (state.clients[obj.client]) {
@@ -124,6 +128,9 @@ export default {
           var index = state.clients[obj.client].groups[key].findIndex(role => role.name === obj.name)
           if (index >= 0) {
             state.clients[obj.client].groups[key][index].status = obj.status
+            if (index === 1 && obj.status === 'WAITING') {
+              state.clients[obj.client].groups[key][0].status = 'WAITING'
+            }
           }
         }
       }

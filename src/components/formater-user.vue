@@ -21,6 +21,9 @@
     "register": "Register",
     "required": "Required",
     "select_data": "Select",
+    "WAITING": "Waiting",
+    "REJECTED": "Rejected",
+    "ACCEPTED": "Accepted",
     "wait_validation": "Your request has been registered with our services. An email has been sent to you. It will be treated as quickly as possible"
   },
   "fr": {
@@ -44,6 +47,9 @@
     "register": "S'inscrire",
     "required": "Obligatoire",
     "select_data": "Sélectionnez",
+    "WAITING": "En attente",
+    "REJECTED": "Refusé",
+    "ACCEPTED": "Accepté",
     "wait_validation": "Votre demande a bien été enregistrée auprès de nos services. Un email vous a été envoyé. Elle sera traitée le plus rapidement possible."
   }
 }
@@ -147,7 +153,7 @@
           </div> 
         </div>
         <div class="fmt-center">
-          <span v-if="role.access"><i class="fa fa-check" style="color:green;"></i></span>
+          <span v-if="role.access" :title="$t('ACCEPTED')"><i class="fa fa-check" style="color:green;"></i></span>
           <!--  <i v-if="role.parameters.view" class="fa" :class="{'fa-close': !role.access, 'fa-check': role.access} "></i>
           --> 
           <input v-if="!role.access && !role.status" type="checkbox" v-model="checkedRoles" :value="clientName + '.' + role.name" />
@@ -156,7 +162,7 @@
         <div class="fmt-center">
          <!--   <i v-if="role.parameters.download" class="fa" :class="{'fa-close': !role.access, 'fa-check': role.access} "></i>
           --> 
-          <span v-if="role.access"><i class="fa fa-check" style="color:green;"></i></span>
+          <span v-if="role.access" :title="$t('ACCEPTED')"><i class="fa fa-check" style="color:green;"></i></span>
           <input v-if="!role.access && !role.status" type="checkbox" v-model="checkedRoles" :value="clientName + '.' + role.name" />
        
         </div>
@@ -174,17 +180,19 @@
      <div class="role-line" v-if="client.groups" v-for="group, key in client.groups">
         <div>{{key}}</div>
         <div class="fmt-center"></div>
-        <div v-for="role in group" class="fmt-center">
-           <span v-if="role.access"><i class="fa fa-check" style="color:green;"></i></span>
+        <div v-for="role, index in group" class="fmt-center">
+           <span v-if="role.access" :title="$t('ACCEPTED')"><i class="fa fa-check" style="color:green;"></i></span>
            <span v-else>
-             <span v-if="role.status === 'WAITING'">
+             <span v-if="role.status === 'WAITING'" :title="$t('WAITING')">
                <i class="fa fa-clock-o"></i>
              </span>
-              <span v-if="role.status === 'REJECTED'">
+              <span v-if="role.status === 'REJECTED'" :title="$t('REJECTED')">
                <i class="fa fa-close" style="color:darkred;"></i>
              </span>
 	           <span v-if="!role.status">
-	              <input type="checkbox" v-model="checkedRoles" :value="clientName + '.' + role.name" :disabled="role.status"/>
+	              <input v-if="index === 1 || checkedRoles.indexOf(clientName + '.' + group[1].name) < 0" type="checkbox" v-model="checkedRoles" :value="clientName + '.' + role.name" />
+	              <input v-if="index === 0 && checkedRoles.indexOf(clientName + '.' + group[1].name) >=0"  type="checkbox"  :checked="true" disabled value="no" />
+
 	           </span>
            </span>
         </div>
@@ -325,6 +333,10 @@ export default {
         }
       }
       this.asking = true
+      var toRemove = []
+      var _this = this
+      // remove role "view" if there is role "view download"
+      this.checkedRoles = this.checkedRoles.filter(role => _this.checkedRoles.indexOf(role + 'D') < 0)
       var postdata = {
           userId: this.user.id,
           email: this.user.email,
