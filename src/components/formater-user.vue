@@ -122,7 +122,7 @@
      <div></div>
      <div >{{$t('preview')}}</div>
      <div >{{$t('download')}}</div>
-     <div v-if="canAsk">{{$t('select_data')}}</div>
+     <div></div>
      <div></div>
    </div>
    <div class="role-line">
@@ -139,63 +139,81 @@
 	   <div v-if="canAsk"></div>
 	   <div></div>
    </div>
-   <div v-for="(client,clientName) in clients">
-   <div v-if="clientName !== 'global'" :title="description(client)"
-       style="cursor:pointer;font-weight:800;">
+   <div v-for="(client,clientName) in clients" v-if="clientName !== 'global'" style="border-top: 1px dotted grey;padding:3px;">
+   <div class="role-line">
+     <div class="title-client" style="cursor:pointer;font-weight:800;text-align:left;"  @click="toggleClient($event)">
        {{title(client)}}
-     </div> 
-     <div class="role-line"  v-for="(role, index) in client.roles" v-if="client.roles && role.parameters.display">
-        <div>{{title(role)}}</div>
-        <div class="fmt-center">
-          <div v-if="role.description" style="position:relative;">
+      </div>
+      <div class="fmt-center">
+          <div v-if="client.description" style="position:relative;">
              <span class="fmt-button fa fa-info" @click="showTooltip($event)"></span>
-             <div class="fmt-tooltip" @click="hideTooltip()" v-html="description(role)"></div>
+             <div class="fmt-tooltip" @click="hideTooltip()" v-html="description(client)"></div>
           </div> 
         </div>
-        <div class="fmt-center">
-          <span v-if="role.access" :title="$t('ACCEPTED')"><i class="fa fa-check" style="color:green;"></i></span>
-          <!--  <i v-if="role.parameters.view" class="fa" :class="{'fa-close': !role.access, 'fa-check': role.access} "></i>
-          --> 
-          <input v-if="!role.access && !role.status" type="checkbox" v-model="checkedRoles" :value="clientName + '.' + role.name" />
-       
-        </div>
-        <div class="fmt-center">
-         <!--   <i v-if="role.parameters.download" class="fa" :class="{'fa-close': !role.access, 'fa-check': role.access} "></i>
-          --> 
-          <span v-if="role.access" :title="$t('ACCEPTED')"><i class="fa fa-check" style="color:green;"></i></span>
-          <input v-if="!role.access && !role.status" type="checkbox" v-model="checkedRoles" :value="clientName + '.' + role.name" />
-       
-        </div>
-        <div  v-if="canAsk" class="fmt-center">
-         </div>
-        <div>
-         <span v-if="role.first && client.token" class="copy-clipboard" :title="$t('copy_in_clipboard')">
+      <div class="fmt-center"><input type="checkbox" /></div>
+      <div class="fmt-center"><input type="checkbox" /></div>
+      <div class="fmt-center">
+       <span v-if="true || client.token" class="copy-clipboard" :title="$t('copy_in_clipboard')">
              <span @click="copyClipboard($event, clientName)" class="fmt-button small fa fa-clipboard" :style="{background: $store.state.style.primary}">
                {{$t('access_token')}}
              </span>
             <div class="clipboard-tooltip"  @click="removeTooltip($event)" v-html="$t('copied_to_clipboard', {client: clientName})"></div>
          </span> 
-         </div>
-     </div>
-     <div class="role-line" v-if="client.groups" v-for="group, key in client.groups">
-        <div>{{key}}</div>
-        <div class="fmt-center"></div>
-        <div v-for="role, index in group" class="fmt-center">
-           <span v-if="role.access" :title="$t('ACCEPTED')"><i class="fa fa-check" style="color:green;"></i></span>
-           <span v-else>
-             <span v-if="role.status === 'WAITING'" :title="$t('WAITING')">
-               <i class="fa fa-clock-o"></i>
-             </span>
-              <span v-if="role.status === 'REJECTED'" :title="$t('REJECTED')">
-               <i class="fa fa-close" style="color:darkred;"></i>
-             </span>
-	           <span v-if="!role.status">
-	              <input v-if="index === 1 || checkedRoles.indexOf(clientName + '.' + group[1].name) < 0" type="checkbox" v-model="checkedRoles" :value="clientName + '.' + role.name" />
-	              <input v-if="index === 0 && checkedRoles.indexOf(clientName + '.' + group[1].name) >=0"  type="checkbox"  :checked="true" disabled value="no" />
-
+      </div>
+     </div> 
+     <div class="client-content">
+	     <div class="role-line"  v-for="(role, index) in client.roles" v-if="client.roles && role.parameters.display">
+	        <div>{{title(role)}}</div>
+	        <div class="fmt-center">
+	          <div v-if="role.description" style="position:relative;">
+	             <span class="fmt-button fa fa-info" @click="showTooltip($event)"></span>
+	             <div class="fmt-tooltip" @click="hideTooltip()" v-html="description(role)"></div>
+	          </div> 
+	        </div>
+	        <div class="fmt-center">
+	          <span v-if="role.access" :title="$t('ACCEPTED')"><i class="fa fa-check" style="color:green;"></i></span>
+	          <!--  <i v-if="role.parameters.view" class="fa" :class="{'fa-close': !role.access, 'fa-check': role.access} "></i>
+	          --> 
+	          <input v-if="!role.access && !role.status" type="checkbox" v-model="checkedRoles" :value="clientName + '.' + role.name" />
+	       
+	        </div>
+	        <div class="fmt-center">
+	         <!--   <i v-if="role.parameters.download" class="fa" :class="{'fa-close': !role.access, 'fa-check': role.access} "></i>
+	          --> 
+	          <span v-if="role.access" :title="$t('ACCEPTED')"><i class="fa fa-check" style="color:green;"></i></span>
+	          <input v-if="!role.access && !role.status" type="checkbox" v-model="checkedRoles" :value="clientName + '.' + role.name" />
+	       
+	        </div>
+	   <!--      <div  v-if="canAsk" class="fmt-center">
+	         </div> --> 
+	        <div>
+	         </div>
+	     </div>
+	     <div class="role-line" v-if="client.groups" v-for="group, key in client.groups">
+	        <div>{{key}}</div>
+	        <div class="fmt-center">
+	          <div v-if="group[0].description" style="position:relative;">
+	             <span class="fmt-button fa fa-info" @click="showTooltip($event)"></span>
+	             <div class="fmt-tooltip" @click="hideTooltip()" v-html="description(group[0])"></div>
+	          </div> 
+	        </div>
+	        <div v-for="role, index in group" class="fmt-center">
+	           <span v-if="role.access" :title="$t('ACCEPTED')"><i class="fa fa-check" style="color:green;"></i></span>
+	           <span v-else>
+	             <span v-if="role.status === 'WAITING'" :title="$t('WAITING')">
+	               <i class="fa fa-clock-o"></i>
+	             </span>
+	              <span v-if="role.status === 'REJECTED'" :title="$t('REJECTED')">
+	               <i class="fa fa-close" style="color:darkred;"></i>
+	             </span>
+		           <span v-if="!role.status">
+		              <input v-if="index === 1 || checkedRoles.indexOf(clientName + '.' + group[1].name) < 0" type="checkbox" v-model="checkedRoles" :value="clientName + '.' + role.name" />
+		              <input v-if="index === 0 && checkedRoles.indexOf(clientName + '.' + group[1].name) >=0"  type="checkbox"  :checked="true" disabled value="no" />
+	
+		           </span>
 	           </span>
-           </span>
-        </div>
+	        </div>
+	     </div>
      </div>
    </div>
    <div v-if="canAsk">
@@ -249,6 +267,7 @@ export default {
 //           role.access = _this.hasRole(client, role.name)
 //         })
       }
+      console.log(clients)
       return clients
     },
     canAsk () {
@@ -321,6 +340,12 @@ export default {
   destroyed () {
   },
   methods: {
+    toggleClient (event) {
+      console.log(event)
+      var target = event.target.parentNode
+      target.classList.toggle('deployed')
+      
+    },
     accessRequest () {
       if (this.checkedRoles.length === 0) {
         return
@@ -552,7 +577,19 @@ export default {
   }
 }
 </script>
-<style >
+<style scoped>
+div.title-client::before {
+  content: ' + ';
+}
+div.deployed div.title-client::before {
+  content: '-';
+}
+div.client-content {
+ display:none;
+}
+div.deployed + div.client-content {
+  display:block;
+}
 div.role-line {
   display: grid;
   grid-template-columns: minmax(100px,180px) 50px minmax(50px, 120px) minmax(50px, 120px) minmax(50px, 120px);
