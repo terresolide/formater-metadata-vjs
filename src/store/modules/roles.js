@@ -88,7 +88,10 @@ export default {
       this.commit('roles/setAccess',obj.roles)
     },
     setAccess (state, roles) {
-      for(name in state.clients) {
+      for(var name in state.clients) {
+        if (!roles[name]) {
+          continue
+        }
         var rolestr = roles[name].join(',')
         if (state.clients[name].roles) {
           state.clients[name].roles.forEach(function (role, index) {

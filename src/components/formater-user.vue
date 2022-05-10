@@ -66,171 +66,180 @@
 	 <i class="fa fa-user" style="font-size:1em;vertical-align:baseline;"></i>
 	 {{$t('account')}}
  </div>
- <div class="mtdt-user-info">
-   <div>
-     <label>Id</label> {{user.username}}
-   </div>
-   <div>
-      <label>{{$t('firstname')}}</label> {{user.givenName }}
-   </div>
-   <div>
-     <label>{{$t('lastname')}}</label> {{user.familyName}}
-   </div>
-   <div v-if="user.organization">
-	    <div>
-	     <label>{{$t('organization')}}</label>  {{user.organization}}
-	   </div>
-	    <div>
-	     <label>{{$t('organization_type')}}</label>  {{getTypeName(user.organizationType)}}
-	   </div>
-   </div>
-   <div v-else>
-     <form class="form-organization v-form">
-     <div >
-           <label>{{$t('organization')}}</label>
-             <input style="line-height:normal;min-width:350px;" v-model="organization" list="organizations" required 
-             @mousedown="$event.stopPropagation()" @input="updateType($event)" > *
-             <em v-if="showOrganizationMessage" style="color:darkred;">{{$t('at_least_3')}}</em>
-             <datalist id="organizations">
-                <option v-for="org in organizations" :data-value="org.o_uid" >{{org.o_name}}<span v-if="org.o_short"> ({{org.o_short}})</span></option>
-             </datalist>
-         </div>
-         <div  >
-           <label>Type</label>
-           <select v-model="organizationType" :disabled="organizationId" required >
-             <option style="min-width:325px;" value="">---</option>
-             <option v-for="type in organizationTypes" :value="type.t_id">{{type.t_name}}</option>
-           </select> *
-         </div>
-         <div><label></label><em style="margin-left:10px;">* {{$t('required')}}</em></div>
-     </form>
-   </div>
-  </div>
-  <h3 :style="{color:$store.state.style.primary}">
-     <span class="fa fa-key"></span> {{$t('access_rights')}}
-  </h3>
-  
-  <div style="margin-left:30px;">
-   <!--   <div v-for="key in ['username', 'givenName', 'lastname', 'email']">
-    <label :style="{color: $store.state.style.primary}">{{$t(key)}}:</label> {{user[key]}}
-    </div>
-   <h4 :style="{color: $store.state.style.primary, fontWeight: 800}">
-   
-   </h4>-->
-   <div class="role-line" style="font-weight:800;">
-     <div></div>
-     <div></div>
-     <div >{{$t('preview')}}</div>
-     <div >{{$t('download')}}</div>
-     <div></div>
-     <div></div>
-   </div>
-   <div class="role-line">
+ <div style="height:auto;overflow-y:auto;overflow-x:hidden;" :style="{maxHeight: height + 'px'}">
+	 <div class="mtdt-user-info" >
 	   <div>
-	   {{$t('public_data')}}
+	     <label>Id</label> {{user.username}}
 	   </div>
-	   <div></div>
-	   <div class="fmt-center">
-	     <i class="fa fa-check" style="color:green;"></i>
+	   <div>
+	      <label>{{$t('firstname')}}</label> {{user.givenName }}
 	   </div>
-     <div class="fmt-center">
-       <i class="fa fa-check" style="color:green;"></i>
-     </div>
-	   <div v-if="canAsk"></div>
-	   <div></div>
-   </div>
-   <div v-for="(client,clientName) in clients" v-if="clientName !== 'global'" style="border-top: 1px dotted grey;padding:3px;">
-   <div class="role-line">
-     <div class="title-client" style="cursor:pointer;font-weight:800;text-align:left;"  @click="toggleClient($event)">
-       {{title(client)}}
-      </div>
-      <div class="fmt-center">
-          <div v-if="client.description" style="position:relative;">
-             <span class="fmt-button fa fa-info" @click="showTooltip($event)"></span>
-             <div class="fmt-tooltip" @click="hideTooltip()" v-html="description(client)"></div>
-          </div> 
-        </div>
-      <div class="fmt-center"><input type="checkbox" /></div>
-      <div class="fmt-center"><input type="checkbox" /></div>
-      <div class="fmt-center">
-       <span v-if="true || client.token" class="copy-clipboard" :title="$t('copy_in_clipboard')">
-             <span @click="copyClipboard($event, clientName)" class="fmt-button small fa fa-clipboard" :style="{background: $store.state.style.primary}">
-               {{$t('access_token')}}
-             </span>
-            <div class="clipboard-tooltip"  @click="removeTooltip($event)" v-html="$t('copied_to_clipboard', {client: clientName})"></div>
-         </span> 
-      </div>
-     </div> 
-     <div class="client-content">
-	     <div class="role-line"  v-for="(role, index) in client.roles" v-if="client.roles && role.parameters.display">
-	        <div>{{title(role)}}</div>
-	        <div class="fmt-center">
-	          <div v-if="role.description" style="position:relative;">
-	             <span class="fmt-button fa fa-info" @click="showTooltip($event)"></span>
-	             <div class="fmt-tooltip" @click="hideTooltip()" v-html="description(role)"></div>
-	          </div> 
-	        </div>
-	        <div class="fmt-center">
-	          <span v-if="role.access" :title="$t('ACCEPTED')"><i class="fa fa-check" style="color:green;"></i></span>
-	          <!--  <i v-if="role.parameters.view" class="fa" :class="{'fa-close': !role.access, 'fa-check': role.access} "></i>
-	          --> 
-	          <input v-if="!role.access && !role.status" type="checkbox" v-model="checkedRoles" :value="clientName + '.' + role.name" />
-	       
-	        </div>
-	        <div class="fmt-center">
-	         <!--   <i v-if="role.parameters.download" class="fa" :class="{'fa-close': !role.access, 'fa-check': role.access} "></i>
-	          --> 
-	          <span v-if="role.access" :title="$t('ACCEPTED')"><i class="fa fa-check" style="color:green;"></i></span>
-	          <input v-if="!role.access && !role.status" type="checkbox" v-model="checkedRoles" :value="clientName + '.' + role.name" />
-	       
-	        </div>
-	   <!--      <div  v-if="canAsk" class="fmt-center">
-	         </div> --> 
-	        <div>
+	   <div>
+	     <label>{{$t('lastname')}}</label> {{user.familyName}}
+	   </div>
+	   <div v-if="user.organization">
+		    <div>
+		     <label>{{$t('organization')}}</label>  {{user.organization}}
+		   </div>
+		    <div>
+		     <label>{{$t('organization_type')}}</label>  {{getTypeName(user.organizationType)}}
+		   </div>
+	   </div>
+	   <div v-else>
+	     <form class="form-organization v-form">
+	     <div >
+	           <label>{{$t('organization')}}</label>
+	             <input style="line-height:normal;min-width:350px;" v-model="organization" list="organizations" required 
+	             @mousedown="$event.stopPropagation()" @input="updateType($event)" > *
+	             <em v-if="showOrganizationMessage" style="color:darkred;">{{$t('at_least_3')}}</em>
+	             <datalist id="organizations">
+	                <option v-for="org in organizations" :data-value="org.o_uid" >{{org.o_name}}<span v-if="org.o_short"> ({{org.o_short}})</span></option>
+	             </datalist>
 	         </div>
+	         <div  >
+	           <label>Type</label>
+	           <select v-model="organizationType" :disabled="organizationId" required >
+	             <option style="min-width:325px;" value="">---</option>
+	             <option v-for="type in organizationTypes" :value="type.t_id">{{type.t_name}}</option>
+	           </select> *
+	         </div>
+	         <div><label></label><em style="margin-left:10px;">* {{$t('required')}}</em></div>
+	     </form>
+	   </div>
+	  </div>
+	  <h3 :style="{color:$store.state.style.primary}">
+	     <span class="fa fa-key"></span> {{$t('access_rights')}}
+	  </h3>
+	  
+	  <div style="margin-left:30px;">
+	   <!--   <div v-for="key in ['username', 'givenName', 'lastname', 'email']">
+	    <label :style="{color: $store.state.style.primary}">{{$t(key)}}:</label> {{user[key]}}
+	    </div>
+	   <h4 :style="{color: $store.state.style.primary, fontWeight: 800}">
+	   
+	   </h4>-->
+	   <div class="role-line" style="font-weight:800;background:grey;">
+	     <div></div>
+	     <div></div>
+	     <div >{{$t('preview')}}</div>
+	     <div >{{$t('download')}}</div>
+	     <div></div>
+	     <div></div>
+	   </div>
+	   <div class="role-line">
+		   <div>
+		   {{$t('public_data')}}
+		   </div>
+		   <div></div>
+		   <div class="fmt-center">
+		     <i class="fa fa-check" style="color:green;"></i>
+		   </div>
+	     <div class="fmt-center">
+	       <i class="fa fa-check" style="color:green;"></i>
 	     </div>
-	     <div class="role-line" v-if="client.groups" v-for="group, key in client.groups">
-	        <div>{{key}}</div>
-	        <div class="fmt-center">
-	          <div v-if="group[0].description" style="position:relative;">
-	             <span class="fmt-button fa fa-info" @click="showTooltip($event)"></span>
-	             <div class="fmt-tooltip" @click="hideTooltip()" v-html="description(group[0])"></div>
+		   <div v-if="canAsk"></div>
+		   <div></div>
+	   </div>
+	   <div v-for="(client,clientName) in clients" v-if="clientName !== 'global'" style="border-top: 1px dotted grey;padding:0px;">
+	   <div class="role-line"  > 
+	     <div class="title-client" style="cursor:pointer;font-weight:800;text-align:left;"  @click="toggleClient($event)">
+	       {{title(client)}}
+	      </div>
+	      <div class="fmt-center">
+	          <div v-if="client.description" style="position:relative;">
+	             <span class="fa fa-info-circle" @click="showTooltip($event)"></span>
+	             <div class="fmt-tooltip" @click="hideTooltip()" v-html="description(client)"></div>
 	          </div> 
 	        </div>
-	        <div v-for="role, index in group" class="fmt-center">
-	           <span v-if="role.access" :title="$t('ACCEPTED')"><i class="fa fa-check" style="color:green;"></i></span>
-	           <span v-else>
-	             <span v-if="role.status === 'WAITING'" :title="$t('WAITING')">
-	               <i class="fa fa-clock-o"></i>
+	      <div class="fmt-center" >
+	        <span v-if="client.groups && Object.keys(client.groups).length > 1" >
+	          <input v-if="selectedClients.indexOf(clientName + '.VD') >=0" type="checkbox"  :checked="true" disabled value="no" />
+	          <input v-else :disabled="!canAskClients[clientName].view" type="checkbox" v-model="selectedClients" @change="toggleAll($event)" :value="clientName + '.V'"/>
+	       </span>
+	      </div>
+	      <div class="fmt-center" >
+	        <span v-if="client.groups && Object.keys(client.groups).length > 1" >
+	         <input :disabled="!canAskClients[clientName].download" type="checkbox" v-model="selectedClients" @change="toggleAll($event)" :value="clientName + '.VD'"/>
+	        </span>
+	      </div>
+	      <div class="fmt-center">
+	       <span v-if="client.token" class="copy-clipboard" :title="$t('copy_in_clipboard')">
+	             <span @click="copyClipboard($event, clientName)" class="fmt-button small fa fa-clipboard" :style="{background: $store.state.style.primary}">
+	               {{$t('access_token')}}
 	             </span>
-	              <span v-if="role.status === 'REJECTED'" :title="$t('REJECTED')">
-	               <i class="fa fa-close" style="color:darkred;"></i>
-	             </span>
-		           <span v-if="!role.status">
-		              <input v-if="index === 1 || checkedRoles.indexOf(clientName + '.' + group[1].name) < 0" type="checkbox" v-model="checkedRoles" :value="clientName + '.' + role.name" />
-		              <input v-if="index === 0 && checkedRoles.indexOf(clientName + '.' + group[1].name) >=0"  type="checkbox"  :checked="true" disabled value="no" />
-	
+	            <div class="clipboard-tooltip"  @click="removeTooltip($event)" v-html="$t('copied_to_clipboard', {client: clientName})"></div>
+	         </span> 
+	      </div>
+	     </div> 
+	     <div class="client-content">
+		     <div class="role-line"  v-for="(role, index) in client.roles" v-if="client.roles && role.parameters.display">
+		        <div>{{title(role)}}</div>
+		        <div class="fmt-center">
+		          <div v-if="role.description" style="position:relative;">
+		             <span class="fa fa-info-circle" @click="showTooltip($event)"></span>
+		             <div class="fmt-tooltip" @click="hideTooltip()" v-html="description(role)"></div>
+		          </div> 
+		        </div>
+		        <div class="fmt-center">
+		          <span v-if="role.access" :title="$t('ACCEPTED')"><i class="fa fa-check" style="color:green;"></i></span>
+		          <!--  <i v-if="role.parameters.view" class="fa" :class="{'fa-close': !role.access, 'fa-check': role.access} "></i>
+		          --> 
+		          <input v-if="!role.access && !role.status && role.parameters.view" type="checkbox" v-model="checkedRoles" :value="clientName + '.' + role.name" />
+		        </div>
+		        <div class="fmt-center">
+		         <!--   <i v-if="role.parameters.download" class="fa" :class="{'fa-close': !role.access, 'fa-check': role.access} "></i>
+		          --> 
+		          <span v-if="role.access" :title="$t('ACCEPTED')"><i class="fa fa-check" style="color:green;"></i></span>
+		          <input v-if="!role.access && !role.status && role.parameters.download" type="checkbox" v-model="checkedRoles" :value="clientName + '.' + role.name" />
+		        </div>
+		   <!--      <div  v-if="canAsk" class="fmt-center">
+		         </div> --> 
+		        <div>
+		         </div>
+		     </div>
+		     <div class="role-line" v-if="client.groups" v-for="group, key in client.groups">
+		        <div>{{key}}</div>
+		        <div class="fmt-center">
+		          <div v-if="group[0].description" style="position:relative;">
+		             <span class="fa fa-info-circle" @click="showTooltip($event)"></span>
+		             <div class="fmt-tooltip" @click="hideTooltip()" v-html="description(group[0])"></div>
+		          </div> 
+		        </div>
+		        <div v-for="role, index in group" class="fmt-center">
+		           <span v-if="role.access" :title="$t('ACCEPTED')"><i class="fa fa-check" style="color:green;"></i></span>
+		           <span v-else>
+		             <span v-if="role.status === 'WAITING'" :title="$t('WAITING')">
+		               <i class="fa fa-clock-o"></i>
+		             </span>
+		              <span v-if="role.status === 'REJECTED'" :title="$t('REJECTED')">
+		               <i class="fa fa-close" style="color:darkred;"></i>
+		             </span>
+			           <span v-if="!role.status">
+			              <input v-if="index === 1 || checkedRoles.indexOf(clientName + '.' + group[1].name) < 0" type="checkbox" v-model="checkedRoles" :value="clientName + '.' + role.name" />
+			              <input v-if="index === 0 && checkedRoles.indexOf(clientName + '.' + group[1].name) >=0"  type="checkbox"  :checked="true" disabled value="no" />
+		
+			           </span>
 		           </span>
-	           </span>
-	        </div>
+		        </div>
+		     </div>
 	     </div>
-     </div>
+	   </div>
+	   <div v-if="canAsk">
+	   <p  v-html="$t('access_to_formater')" style="font-size:0.9em;font-style:italic;line-height:1;"></p>
+	   <div style="position:relative;">
+	     <div v-if="asking" style="position:absolute;left:50%;top:10%;font-size:30px;">
+	       <span class="fa fa-spinner animated"></span>
+	     </div>
+	     <textarea style="width:100%" v-model="message" :placeholder="$t('add_message')"></textarea>
+	   </div>
+	   <span  class="fmt-button" :class="{disabled: checkedRoles.length === 0 || asking}" :style="{background: $store.state.style.primary}" @click="accessRequest">{{$t('access_request')}}</span>
+	   </div>
+	   <p v-if="displayWait" v-html="$t('wait_validation')" style="font-size:0.9em;color:green;line-height:1;"></p>
+	   <p v-if="errorAsk" style="color:darkred;">Erreur : {{errorAsk}}</p>
+	    </div>
    </div>
-   <div v-if="canAsk">
-   <p  v-html="$t('access_to_formater')" style="font-size:0.9em;font-style:italic;line-height:1;"></p>
-   <div style="position:relative;">
-     <div v-if="asking" style="position:absolute;left:50%;top:10%;font-size:30px;">
-       <span class="fa fa-spinner animated"></span>
-     </div>
-     <textarea style="width:100%" v-model="message" :placeholder="$t('add_message')"></textarea>
-   </div>
-   <span  class="fmt-button" :class="{disabled: checkedRoles.length === 0 || asking}" :style="{background: $store.state.style.primary}" @click="accessRequest">{{$t('access_request')}}</span>
-   </div>
-   <p v-if="displayWait" v-html="$t('wait_validation')" style="font-size:0.9em;color:green;line-height:1;"></p>
-   <p v-if="errorAsk" style="color:darkred;">Erreur : {{errorAsk}}</p>
-    </div>
  </div>
- <a  @click="show=true" :style="{'--color': $store.state.style.primary}" :title="$t('access_rights')">
+ <a  @click="show=!show" :style="{'--color': $store.state.style.primary}" :title="$t('access_rights')">
  <i class="fa fa-user" style="margin-right:3px;"></i> {{$t('account')}} |
   
 </a>
@@ -266,6 +275,21 @@ export default {
 //         clients[client].roles.forEach(function (role) {
 //           role.access = _this.hasRole(client, role.name)
 //         })
+          if (clients[client].groups)
+          var canAskView = false
+          var canAskDownload = false
+          for (var key in clients[client].groups) {
+            console.log(key)
+            if (!clients[client].groups[key][0].access && !clients[client].groups[key][0].status &&
+                clients[client].groups[key][0].parameters.display) {
+              canAskView = true
+            }
+            if (!clients[client].groups[key][1].access && !clients[client].groups[key][1].status &&
+                clients[client].groups[key][1].parameters.display) {
+              canAskDownload = true
+            }
+            this.canAskClients[client] = {view: canAskView, download: canAskDownload}
+          }
       }
       console.log(clients)
       return clients
@@ -306,15 +330,19 @@ export default {
       organizationId: null,
       organizationType: null,
       selected: false,
+      selectedClients: [],
+      canAskClients: {},
       showTooltipClipboard: {},
       box:null,
       mousemoveListener: null,
       mouseupListener: null,
+      resizeListener: null,
       selected: false,
       delta: {x: 0, y:0},
       pos: {x:0, y:0},
       errorAsk: null,
-      asking: false
+      asking: false,
+      height: 350
     }
   },
   created () {
@@ -325,6 +353,8 @@ export default {
         var domain = this.user.username.substring(this.user.username.indexOf('@') + 1)
         this.getOrganizations(domain)
       }
+      this.resizeListener = this.resize.bind(this)
+      window.addEventListener('resize', this.resizeListener)
       this.mousemoveListener = this.move.bind(this)
       document.addEventListener('mousemove', this.mousemoveListener)
       this.mouseupListener = this.moveEnd.bind(this)
@@ -336,15 +366,45 @@ export default {
 	    var position = this.$el.getBoundingClientRect()
 	    this.$el.querySelector('.mtdt-user-box').style.top = (position.top + 30) + 'px'
     }
+    this.resize()
   },
   destroyed () {
+    window.addEventListener('resize', this.resizeListener)
+    this.resizeListener = null
+    document.removeEventListener('mousemove', this.mousemoveListener)
+    this.mousemoveListener = null
+    document.removeEventListener('mouseup', this.mouseupListener)
+    this.mouseupListener = null
   },
   methods: {
+    resize () {
+      this.height = window.innerHeight - 90
+    },
     toggleClient (event) {
-      console.log(event)
       var target = event.target.parentNode
       target.classList.toggle('deployed')
-      
+    },
+    toggleAll(event) {
+      console.log(event)
+      console.log(event.target.value)
+      var value = event.target.value
+      var values = value.split('.')
+      console.log(values)
+     
+      if (event) {
+        return
+      }
+      console.log(this.clients)
+      console.log(clientName)
+      var index = values[1]
+     
+      for (var key in this.clients[clientName].groups) {
+        var role = this.clients[clientName].groups[key][index]
+        if (!role.access && !role.status && role.parameters.display) {
+          this.checkedRoles.push(clientName + '.' + role.name)
+        }
+      }
+
     },
     accessRequest () {
       if (this.checkedRoles.length === 0) {
@@ -578,6 +638,16 @@ export default {
 }
 </script>
 <style scoped>
+.fa-info-circle {
+  text-shadow: 2px 2px 4px dark;
+  opacity: 0.8;
+  cursor: pointer;
+}
+.fa-info-circle:hover {
+  opacity: 1;
+}
+</style>
+<style >
 div.title-client::before {
   content: ' + ';
 }
@@ -596,6 +666,11 @@ div.role-line {
   grid-gap: 5px;
   text-align:center;
 }
+
+div.role-line:nth-child(2n + 1) {
+  background: #f3f3f3;
+}
+
 div.role-line > div {
 
 }
