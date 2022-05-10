@@ -141,7 +141,7 @@
 		   <div></div>
 	   </div>
 	   <div v-for="(client,clientName) in clients" v-if="clientName !== 'global'" style="border-top: 1px dotted grey;padding:0px;">
-	   <div class="role-line"  > 
+	   <div class="role-line"  v-if="(client.groups && Object.keys(client.groups).length > 1) || (client.roles && client.roles.length > 1)"> 
 	     <div class="title-client" style="cursor:pointer;font-weight:800;text-align:left;"  @click="toggleClient($event)">
 	       {{title(client)}}
 	      </div>
@@ -171,8 +171,8 @@
 	         </span> 
 	      </div>
 	     </div> 
-	     <div class="client-content">
-		     <div class="role-line"  v-for="(role, index) in client.roles" v-if="client.roles && role.parameters.display">
+	     <div :class="{'client-content': (client.groups && Object.keys(client.groups).length > 1) || (client.roles && client.roles.length > 1) }">
+		     <div class="role-line sub"  v-for="(role, index) in client.roles" v-if="client.roles && role.parameters.display">
 		        <div>{{title(role)}}</div>
 		        <div class="fmt-center">
 		          <div v-if="role.description" style="position:relative;">
@@ -197,7 +197,7 @@
 		        <div>
 		         </div>
 		     </div>
-		     <div class="role-line" v-if="client.groups" v-for="group, key in client.groups">
+		     <div class="role-line sub" v-if="client.groups" v-for="group, key in client.groups">
 		        <div>{{key}}</div>
 		        <div class="fmt-center">
 		          <div v-if="group[0].description" style="position:relative;">
@@ -667,7 +667,7 @@ div.role-line {
   text-align:center;
 }
 
-div.role-line:nth-child(2n + 1) {
+div.role-line.sub:nth-child(2n + 1) {
   background: #f3f3f3;
 }
 
@@ -748,14 +748,14 @@ div.mtdt-user-info > div {
 div.mtdt-user-info {
   margin-bottom:20px;
 }
-div.mtdt-user-box table th, 
+/**div.mtdt-user-box table th, 
 div.mtdt-user-box table td {
   border: none;
   padding: 0 2px;
 }
 div.mtdt-user-box table td:nth-child(5) {
   border-left: 1px solid grey;
-}
+}**/
 div.fmt-tooltip,
 .clipboard-tooltip {
   position: absolute;
