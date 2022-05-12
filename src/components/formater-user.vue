@@ -118,7 +118,7 @@
 	   <h4 :style="{color: $store.state.style.primary, fontWeight: 800}">
 	   
 	   </h4>-->
-	   <div class="role-line" style="font-weight:800;background:grey;">
+	   <div class="role-line" style="font-weight:800;color:white;" :style="{background:$store.state.style.primary}" >
 	     <div></div>
 	     <div></div>
 	     <div >{{$t('preview')}}</div>
@@ -126,7 +126,7 @@
 	     <div></div>
 	     <div></div>
 	   </div>
-	   <div class="role-line">
+	   <div class="role-line full">
 		   <div>
 		   {{$t('public_data')}}
 		   </div>
@@ -140,7 +140,7 @@
 		   <div v-if="canAsk"></div>
 		   <div></div>
 	   </div>
-	   <div v-for="(client,clientName) in clients" v-if="clientName !== 'global'" style="border-top: 1px dotted grey;padding:0px;">
+	   <div v-for="(client,clientName) in clients" v-if="clientName !== 'global'" style="border-top: 1px dotted black;padding:0px;">
 	   <div class="role-line"  v-if="(client.groups && Object.keys(client.groups).length > 1) || (client.roles && client.roles.length > 1)"> 
 	     <div class="title-client" style="cursor:pointer;font-weight:800;text-align:left;"  @click="toggleClient($event)">
 	       {{title(client)}}
@@ -172,7 +172,7 @@
 	      </div>
 	     </div> 
 	     <div :class="{'client-content': (client.groups && Object.keys(client.groups).length > 1) || (client.roles && client.roles.length > 1) }">
-		     <div class="role-line sub"  v-for="(role, index) in client.roles" v-if="client.roles && role.parameters.display">
+		     <div class="role-line"  v-for="(role, index) in client.roles" v-if="client.roles && role.parameters.display">
 		        <div>{{title(role)}}</div>
 		        <div class="fmt-center">
 		          <div v-if="role.description" style="position:relative;">
@@ -197,7 +197,7 @@
 		        <div>
 		         </div>
 		     </div>
-		     <div class="role-line sub" v-if="client.groups" v-for="group, key in client.groups">
+		     <div class="role-line" v-if="client.groups" v-for="group, key in client.groups">
 		        <div>{{key}}</div>
 		        <div class="fmt-center">
 		          <div v-if="group[0].description" style="position:relative;">
@@ -315,6 +315,9 @@ export default {
 	      }
       }
       return can
+    },
+    lightColor () {
+      return this.$shadeColor(this.$store.state.style.emphasis, 0.8)
     }
   },
   data() {
@@ -667,7 +670,7 @@ div.role-line {
   text-align:center;
 }
 
-div.role-line.sub:nth-child(2n + 1) {
+div.client-content div.role-line:nth-child(2n + 1) {
   background: #f3f3f3;
 }
 

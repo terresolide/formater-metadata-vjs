@@ -807,7 +807,8 @@ max-width:92%;
    display: inline-block;
    max-width:85%;
    vertical-align:top;
-   word-break: break-all;
+   word-break: break-word;
+   text-align:justify;
 }
  .mtdt-related-cartouche ul.mtdt-layers li i.fa {
    margin-right: 3px;
@@ -819,9 +820,11 @@ max-width:92%;
     padding:0;
     width: calc(100% - 35px);
     overflow: hidden;
-    word-break: break-all;
+    word-break: break-word;
     vertical-align: top;
-    max-height:26px;
+    line-height:0.9;
+    max-height:32px;
+    padding:2px 0;
 }
  .mtdt-related-cartouche .mtdt-expand h4 {
    margin: 5px 0px;

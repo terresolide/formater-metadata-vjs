@@ -296,7 +296,7 @@ export default {
      this.reader.loadInfo(layer, {opacity:0.5, zoom: zoom} , metaId, this.addWMSLayer)
    },
    addWTSLayer (layer, metaId) {
-     var tileLayer = L.tileLayer(layer.href, {opacity: 0.5})
+     var tileLayer = L.tileLayer(layer.href, {opacity: 0.3})
      this.addLayerToMap(layer.options.id, metaId, tileLayer)
    },
    addWMSLayer(layerObj, metaId, zoom) {

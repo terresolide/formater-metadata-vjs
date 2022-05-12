@@ -75,7 +75,7 @@
  </div>
  <!--  <div v-if="!$store.state.metadata && email" class="mtdt-service-button" :class="{searching: searching}" v-show="clientId">
   -->
-    <iframe v-if="iframeUrl" style="display:none;" :src="iframeUrl" ></iframe>
+  <!--   <iframe v-if="iframeUrl" style="display:none;" :src="iframeUrl" ></iframe>  -->
  <div v-if="email" class="mtdt-service-button" :class="{searching: searching}" v-show="clientId">
    <a v-if="service.token" 
    @click="logout" :style="{'--color': $store.state.style.primary}">
