@@ -58,41 +58,61 @@ export default {
   mutations: {
     set (state, obj) {
       for(name in obj.clients) {
-        var first = false
-        var groups = {}
-        // group of rights like OZARK, TARIM
+        var first = false      
         if (obj.clients[name].roles) {
           obj.clients[name].roles.forEach(function (role, index) {
             if (!first && role.parameters.display) {
               role.first = true
-//              var index = obj.roles[name].indexOf(role.name)
-//              role.access = index >= 0
               first =false
             }
           })
         }
-        // sort
+        // sort role by name in each group of roles
+        // FLATSIM_AFAR_V < FLATSIM_AFAR_VD
+        // then index = 0 for view role
+        // index = 1 for view & download role
         if (obj.clients[name].groups) {
           for(var key in obj.clients[name].groups) {
             obj.clients[name].groups[key].sort(function (a, b) {
               return  a.name > b.name ? 1 : 0
             })
-//            obj.clients[name].groups[key].forEach(function (role) {
-//              var index = obj.roles[name].indexOf(role.name)
-//              role.access = index >= 0
-//            })
+          }
+        }
+      }
+      // update status of join role
+      // if view is rejected => download is rejected
+      // if wait for download => wait for view
+      if (obj.clients[name].groups) {
+        for(var key in obj.clients[name].groups) {
+          if (obj.clients[name].groups[key][0].status === 'REJECTED') {
+            obj.clients[name].groups[key][1].status = 'REJECTED'
+          } else if (obj.clients[name].groups[key][1].status === 'WAITING') {
+            console.log(key)
+            obj.clients[name].groups[key][0].status = 'WAITING'
           }
         }
       }
       state.clients = obj.clients
       this.commit('roles/setAccess',obj.roles)
     },
+    /**
+     * Roles is an array of roles by client 
+     * Ex: {
+     *    global: ['FORMATER_USER'], 
+     *    flastim: ['FLATSIM_AFAR_V', 'FLATSIM_TARIM_VD']
+     * }
+     */
     setAccess (state, roles) {
       for(var name in state.clients) {
         if (!roles[name]) {
+          // user has no role for this client
           continue
         }
+        
         var rolestr = roles[name].join(',')
+        // user string strategy
+        // if user has role view and download (CLIENT_ROLE_VD)
+        // user has role view (CLIENT_ROLE_V) and can find substring in role string
         if (state.clients[name].roles) {
           state.clients[name].roles.forEach(function (role, index) {
               var index = rolestr.indexOf(role.name)
@@ -101,11 +121,6 @@ export default {
         }
         if (state.clients[name].groups) {
           for(var key in state.clients[name].groups) {
-            if (state.clients[name].groups[key][0].status === 'REJECTED') {
-              state.clients[name].groups[key][1].status = 'REJECTED'
-            } else if (state.clients[name].groups[key][1].status === 'WAITING') {
-              state.clients[name].groups[key][0].status = 'WAITING'
-            }
             state.clients[name].groups[key].forEach(function (role, i) {
               var index = rolestr.indexOf(role.name)
               role.access = index >= 0

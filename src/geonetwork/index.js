@@ -218,7 +218,6 @@ const GeonetworkPlugin = {
            extractFormat (metadata, json, idLang) {
              var formats = []
              var _this = this
-             console.log(json)
              var nodes = JSONPATH.query(json, "$..['gmd:MD_Format']")
              if (nodes === undefined) {
                return null
@@ -230,6 +229,22 @@ const GeonetworkPlugin = {
                 formats.push(_this.extractFromLangs(format['gmd:name'], idLang))
              })
              metadata.format = formats
+           },
+           /**
+            * Extract needed role to use fonctionnality
+            * from api description like
+            * search=free;view=MACHIN_V;download=MACHIN_VD
+            **/
+           extractAccessFromDescription (description) {
+             var lists = description.split(';')
+             var access = {}
+             lists.forEach(function (tab) {
+               var extract = tab.split('=')
+               if (extract.length > 1) {
+                  access[extract[0]] = extract[1]
+               }
+             })
+             return access
            },
            extractFromLangs(json, idLang) {
              var value = null
@@ -342,13 +357,9 @@ const GeonetworkPlugin = {
                switch(protocol) {
                case 'UKST':
                case 'OpenSearch':
-               case 'OpenSearch--VIEW:AUTH--DOWNLOAD:AUTH':
-               case 'OpenSearch--VIEW:ROLE--DOWNLOAD:ROLE':
-               case 'OpenSearch--VIEW:AUTH--DOWNLOAD:ROLE':
-                 var access = access = { view: 'role', download: 'role'}
-                 if (protocol === 'OpenSearch--VIEW:AUTH--DOWNLOAD:AUTH') {
-                   access = { view: 'auth', download: 'auth'}
-                 }
+               case 'Opensearch':
+               case 'opensearch':
+                 var access =  _this.extractAccessFromDescription(description)
                  metadata.api = {
                    http: url,
                    name: name,

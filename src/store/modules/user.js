@@ -24,6 +24,32 @@ export default {
     formaterRole: null
   },
   getters: {
+    canDownload: (state, getter) => (download, clientId) => {
+      if (download === 'free' ) {
+        return true
+      }
+      if (download === 'auth') {
+        if (state.user && state.user.email) {
+          return true
+        } else {
+          return false
+        }
+      }
+      return false
+    },
+    canView: (state, getter) => (view, clientId) => {
+      if (view === 'free') {
+        return true
+      }
+      if (view === 'auth') {
+        if (state.user && state.user.email) {
+          return true
+        } else {
+          return false
+        }
+      }
+      return false
+    },
     code (state, getters) {
       return state.code
     },

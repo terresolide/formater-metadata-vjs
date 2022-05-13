@@ -62,7 +62,9 @@
               <img :src="meta.logo"  />
           </a>
        </div>
-       <formater-related type="cartouche"  :id="meta.id" :cds="dataCenter" :download="meta.download" :order="meta.order" :has-bbox-layer="hasBboxLayer" :layers="meta.layers"  :links="meta.links" :related="meta.related"></formater-related>
+       <formater-related type="cartouche" :access="access" :id="meta.id" :cds="dataCenter" 
+       :download="meta.download" :order="meta.order" :has-bbox-layer="hasBboxLayer" :layers="meta.layers" 
+       :links="meta.links" :related="meta.related"></formater-related>
      </div>
  </div>
 </template>
@@ -84,6 +86,10 @@ export default {
     metadata: {
       type: Object,
       default: null
+    },
+    access: {
+      type: Object,
+      default: () => {return {view: 'free', download: 'free'}}
     },
     cds: {
       type: String,

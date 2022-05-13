@@ -32,16 +32,20 @@
       </div>
     
     </div>
-    <!--  layer  -->
+    <!-- ****** layers ****** -->
+    <!-- view Cartouche and a lonely layer -->
     <div v-if="layers && layers.length === 1 && type === 'cartouche'">
      <!--  case from service with token -->
-      <div v-if="token && token!==-1 && hasAccess && hasAccess.view" class="mtdt-related-type fa fa-globe" @click="changeLayer(layers[0], true)" 
+     <div v-if="access.view === 'free'" class="mtdt-related-type fa fa-globe" @click="changeLayer(layers[0], true)" 
       :style="{backgroundColor: layerAdded ? '#8c0209' : primary}" :title="$t('display_layer')">
       </div>
-      <div v-else-if="token && token !== -1 && hasAccess && hasAccess.view" class="mtdt-related-type fa fa-globe" @click="authorize"
+      <div v-else-if="token && token!==-1 && canView" class="mtdt-related-type fa fa-globe" @click="changeLayer(layers[0], true)" 
+      :style="{backgroundColor: layerAdded ? '#8c0209' : primary}" :title="$t('display_layer')">
+      </div>
+      <div v-else-if="token && token === -1 && canView" class="mtdt-related-type fa fa-globe" @click="authorize"
      :style="{backgroundColor: layerAdded ? '#8c0209' : primary, opacity:0.8}" :title="$t('display_layer')">
       </div>
-      <div v-else-if="token && !(hasAccess && hasAccess.view)"  class="mtdt-related-type fa fa-globe disabled" 
+      <div v-else-if="token && !canView"  class="mtdt-related-type fa fa-globe disabled" 
       :style="{backgroundColor: layerAdded ? '#8c0209' : primary}" :title="$t('display_layer')">
       </div> 
       <!--  no authentication needed -->
@@ -52,25 +56,29 @@
    <div v-if="type === 'metadata'"></div>
     <div v-if="layers && (layers.length > 1 || (type === 'metadata' && layers.length > 0))">
       <!--  case service with token -->
-      <div v-if="token && token === -1 && hasAccess && hasAccess.view" class="mtdt-related-type fa fa-globe"  @click="authorize" @mouseover="$event.preventDefault()"
-      :style="{backgroundColor: layerAdded ? '#8c0209' : primary, opacity:0.8}" :title="$t('display_layer')">
-          <span class="fa fa-caret-down" v-if="type === 'cartouche'"></span>
-       </div>
-      <div v-else class="mtdt-related-type fa fa-globe" :class="{disabled: !(hasAccess && hasAccess.view)}" 
+      <div v-if="access.view === 'free'" class="mtdt-related-type fa fa-globe" :class="{disabled: !canView}" 
       :style="{backgroundColor: layerAdded ? '#8c0209' : primary}" :title="$t('display_layer')">
           <span class="fa fa-caret-down" v-if="type === 'cartouche'"></span>
        </div>
-       <div class="mtdt-expand" v-if="token !== -1 || type === 'metadata'">
-            <ul v-if="token === -1 && hasAccess && hasAccess.view" class="mtdt-layers" >
+      <div v-else-if="!token && canView" class="mtdt-related-type fa fa-globe"  @click="authorize" @mouseover="$event.preventDefault()"
+      :style="{backgroundColor: layerAdded ? '#8c0209' : primary, opacity:0.8}" :title="$t('display_layer')">
+          <span class="fa fa-caret-down" v-if="type === 'cartouche'">xxx</span>
+       </div>
+      <div v-else class="mtdt-related-type fa fa-globe" :class="{disabled: !canView}" 
+      :style="{backgroundColor: layerAdded ? '#8c0209' : primary}" :title="$t('display_layer')">
+          <span class="fa fa-caret-down" v-if="type === 'cartouche'"></span>
+       </div>
+       <div class="mtdt-expand" v-if="(canView && token) || type === 'metadata'">
+            <ul v-if="canView && !token" class="mtdt-layers" >
             
             <li v-for="(layer, index) in layers"  :key="index" @click="authorize">
              <i class="fa" :class="{'fa-square-o': !layer.checked,'fa-check-square-o': layer.checked}"  :data-layer="index"></i>
              <div  :title="layer.description">{{layer.name}}</div>
            </li>
            </ul>  
-            <ul v-if="token !== -1 || !(hasAccess && hasAccess.view)" class="mtdt-layers" >
+            <ul v-if="(token && canView) || access.view === 'free'" class="mtdt-layers" >
             
-            <li v-for="(layer, index) in layers" :class="{disabled: !(hasAccess && hasAccess.view)}" :key="index" @click="changeLayer(layer, true);">
+            <li v-for="(layer, index) in layers" :class="{disabled: !canView}" :key="index" @click="changeLayer(layer, true);">
              <i class="fa" :class="{'fa-square-o': !layer.checked,'fa-check-square-o': layer.checked}"  :data-layer="index"></i>
              <div  :title="layer.description">{{layer.name}}</div>
            </li>
@@ -114,33 +122,33 @@
         <a style="display:none;"  :href="download[0].url" target="_blank" ></a>
       </span>
        <!--  case CNES -->
-       <span v-else-if="token && token !== -1 && hasAccess.download" 
-       :href="download[0].url + '?_bearer=' + token" :class="{disabled:download[0].disabled || !token || !hasAccess.download}" 
+       <span v-else-if="token && token !== -1 && canDownload" 
+       :href="download[0].url + '?_bearer=' + token" :class="{disabled:download[0].disabled || !token || !canDownload}" 
         :title="$t('download_data')" >
         <span class="mtdt-related-type fa fa-download" :style="{backgroundColor: primary}" @click="record(download[0].url, 'download', $event)"></span>
         <a style="display:none;" :href="download[0].url + '?_bearer=' + token" >
         </a>
       </span>
       <!-- case CNES and user not authenticate on flatsim -->
-      <span v-else-if="!token && hasAccess && hasAccess.download" @click="authorize"> 
+      <span v-else-if="!token && canDownload" @click="authorize"> 
         <span class="mtdt-related-type fa fa-download" :style="{backgroundColor: primary, opacity:0.8}" ></span>
       </span>
       <!--  other case @todo -->
-      <span v-else  :class="{disabled:download[0].disabled || !token || !hasAccess.download}" 
+      <span v-else  :class="{disabled:download[0].disabled || !token || !canDownload}" 
         :title="$t('download_data')">
          <span class="mtdt-related-type fa fa-download" :style="{backgroundColor: primary}" ></span>
       </span> 
     </div>
     <!-- DOWNLOAD FEW LINKS -->
     <div v-if="download && (download.length >1 || (type === 'metadata' && download.length > 0))">
-       <div class="mtdt-related-type fa fa-download" :class="{disabled: !token && !(hasAccess && hasAccess.download)}" :style="{backgroundColor: primary}" 
+       <div class="mtdt-related-type fa fa-download" :class="{disabled: !token && !canDownload}" :style="{backgroundColor: primary}" 
        :title="$t('download_data')" @click="authorize">
          <span v-if="type === 'cartouche'" class="fa fa-caret-down"></span>
       </div> 
       <div v-if="type === 'metadata'"></div>
       <div class="mtdt-expand mtdt-links" >
            <ul >
-           <li v-for="(file, index) in download" :key="index"  :class="{disabled: file.disabled || token === -1 || !hasAccess.download }">
+           <li v-for="(file, index) in download" :key="index"  :class="{disabled: file.disabled || token === -1 || !canDownload }">
               <!--  case SHOM -->
               <span  v-if="file.type && file.type === 'WWW:DOWNLOAD-1.0-link--download'" >
                 <span :title="file.description"  @click="record(file.url, 'download', $event)">
@@ -149,17 +157,17 @@
                 <a  :href="file.url"  target="_blank" style="display:none;"></a>
               </span>
               <!--  case FLATSIM -->
-              <span  v-else-if="token && token !== -1 && hasAccess.download"  >
+              <span  v-else-if="token && token !== -1 && canDownload"  >
                  <span :title="file.description"  @click="record(file.url, 'download', $event)">
                    {{file.name? file.name: $t('download_data')}}
                  </span>
                  <a :href="file.url + '?_bearer=' + token" style="display:none;"></a>
              </span>
              <!--  case FLATSIM without authentication but can download -->
-             <span v-else-if="token === -1 && hasAccess.download" @click="authorize">
+             <span v-else-if="token === -1 && canDownload" @click="authorize">
                 {{file.name? file.name: $t('download_data')}}
              </span>
-             <span v-else-if="!token  && !hasAccess.download" >
+             <span v-else-if="!token  && !canDownload" >
                 {{file.name? file.name: $t('download_data')}}
              </span>
              <!--  other case @todo -->
@@ -233,6 +241,10 @@
         type: Number,
         default: 0
       },
+      access: {
+        type: Object,
+        default: () => {return {view: 'free', download: 'free'}}
+      },
       type: {
         type: String,
         default: 'cartouche'
@@ -303,7 +315,7 @@
         return layerAdded
       },
       platforms () {
-		  var platforms = []
+		    var platforms = []
     	  if (this.related && this.related.siblings) {
 
     		  this.related.siblings.forEach(function (platform) {
@@ -314,36 +326,20 @@
     	  }
 		  return platforms
       },
+      clientId () {
+        return this.$store.getters['user/clientId']
+      },
       token () {
         return this.$store.getters['services/token']
       },
       isFormater () {
         return this.$store.getters['user/isFormater']
       },
-      hasAccess () {
-        var clientId = this.$store.getters['services/clientId']
-
-        var access = {download: true, view: true}
-        return access
-        if (clientId) {
-          var accessConf = this.$store.getters['services/access'](this.$route.params.uuid)
-          if (accessConf.view === 'auth' && accessConf.download === 'auth') {
-            return access
-          }
-          if (accessConf.view === 'role') {
-            delete access.view
-          }
-          if (accessConf.download === 'role') {
-            delete access.download
-          }
-          console.log(access)
-          var access2 = this.$store.getters['roles/hasAccess'](clientId, this.$route.params.uuid)
-          var access3 = Object.assign(access2, access)
-          console.log(access3)
-          return access3
-        }
-        console.log(access)
-        return access
+      canView () {
+        return this.$store.getters['user/canView'](this.access.view, this.clientId)
+      },
+      canDownload () {
+        return this.$store.getters['user/canDownload'](this.access.download, this.clientId)
       }
     },
     watch: {
@@ -412,7 +408,7 @@
         this.abort = true
       },
       authorize () {
-        if (!this.hasAccess || this.token) {
+        if (!(this.canView || this.canDownload) || this.token) {
           return
         }
         var event = new CustomEvent('fmt:needAuthorize')
