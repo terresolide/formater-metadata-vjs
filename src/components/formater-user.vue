@@ -7,6 +7,7 @@
     "access_token": "Acess token",
     "account": "Your account",
     "add_message": "Add message to your request",
+    "all_access": "All access",
     "copied_to_clipboard": "The token &laquo;{client}&raquo; has been copied in clipboard.",
     "copy_in_clipboard": "Copy the access token in clipboard",
     "download": "Download",
@@ -20,8 +21,9 @@
     "public_data": "Public data",
     "register": "Register",
     "required": "Required",
+    "select_all": "Select all",
     "select_data": "Select",
-    "WAITING": "Waiting",
+    "WAITING": "Waiting for treatment",
     "REJECTED": "Rejected",
     "ACCEPTED": "Accepted",
     "wait_validation": "Your request has been registered with our services. An email has been sent to you. It will be treated as quickly as possible"
@@ -33,6 +35,7 @@
     "access_token": "token d'accès",
     "account": "Votre compte",
     "add_message": "Ajoutez un message à votre demande",
+    "all_access": "Tout accès",
     "copied_to_clipboard": "Le token &laquo;{client}&raquo; a été copié dans le presse-papier.",
     "copy_in_clipboard": "Copier le token d'accès dans le presse-papier",
     "download": "Téléchargement",
@@ -46,8 +49,9 @@
     "public_data": "Données publiques",
     "register": "S'inscrire",
     "required": "Obligatoire",
+    "select_all": "Tout sélectionner",
     "select_data": "Sélectionnez",
-    "WAITING": "En attente",
+    "WAITING": "En attente de traitement",
     "REJECTED": "Refusé",
     "ACCEPTED": "Accepté",
     "wait_validation": "Votre demande a bien été enregistrée auprès de nos services. Un email vous a été envoyé. Elle sera traitée le plus rapidement possible."
@@ -142,10 +146,10 @@
 	   </div>
 	   <div v-for="(client,clientName) in clients" v-if="clientName !== 'global'" style="border-top: 1px dotted black;padding:0px;">
 	   <div class="role-line"  v-if="(client.groups && Object.keys(client.groups).length > 1) || (client.roles && client.roles.length > 1)"> 
-	     <div class="title-client" style="cursor:pointer;font-weight:800;text-align:left;"  @click="toggleClient($event)">
-	       {{title(client)}}
+	     <div class="title-client" style="cursor:pointer;text-align:left;"  @click="toggleClient($event)">
+	       <span style="font-weight:800;">{{title(client)}}</span> <em style="float:right;font-size:0.9rem;">({{$t('all_access')}})</em>
 	      </div>
-	      <div class="fmt-center">
+	      <div class="fmt-center" style="clear:both;">
 	          <div v-if="client.description" style="position:relative;">
 	             <span class="fa fa-info-circle" @click="showTooltip($event)"></span>
 	             <div class="fmt-tooltip" @click="hideTooltip()" v-html="description(client)"></div>
@@ -153,13 +157,16 @@
 	        </div>
 	      <div class="fmt-center" >
 	        <span v-if="client.groups && Object.keys(client.groups).length > 1" >
-	          <input v-if="selectedClients.indexOf(clientName + '.VD') >=0" type="checkbox"  :checked="true" disabled value="no" />
-	          <input v-else :disabled="!canAskClients[clientName].view" type="checkbox" v-model="selectedClients" @change="toggleAll($event)" :value="clientName + '.V'"/>
+	          <input v-if="selectedClients.indexOf(clientName + '.1') >=0" 
+	          type="checkbox"  :title="$t('select_all')" :checked="true" disabled value="no" />
+	          <input v-else :disabled="!canAskClients[clientName].view" type="checkbox"
+	           v-model="selectedClients" :title="$t('select_all')" @change="toggleAll($event)" :value="clientName + '.0'"/>
 	       </span>
 	      </div>
 	      <div class="fmt-center" >
 	        <span v-if="client.groups && Object.keys(client.groups).length > 1" >
-	         <input :disabled="!canAskClients[clientName].download" type="checkbox" v-model="selectedClients" @change="toggleAll($event)" :value="clientName + '.VD'"/>
+	         <input :disabled="!canAskClients[clientName].download" type="checkbox"
+             v-model="selectedClients" :title="$t('select_all')" @change="toggleAll($event)" :value="clientName + '.1'"/>
 	        </span>
 	      </div>
 	      <div class="fmt-center">
@@ -384,27 +391,61 @@ export default {
       this.height = window.innerHeight - 90
     },
     toggleClient (event) {
-      var target = event.target.parentNode
+      var target = event.target
+      while (!target.classList.contains('role-line')) {
+        target = target.parentNode
+      }
+      console.log(target)
       target.classList.toggle('deployed')
     },
     toggleAll(event) {
-      console.log(event)
-      console.log(event.target.value)
       var value = event.target.value
       var values = value.split('.')
-      console.log(values)
-     
-      if (event) {
-        return
+      var index = parseInt(values[1])
+      var view = true
+      var download = false
+      if (index === 1) {
+        download = true
       }
-      console.log(this.clients)
-      console.log(clientName)
-      var index = values[1]
-     
-      for (var key in this.clients[clientName].groups) {
-        var role = this.clients[clientName].groups[key][index]
-        if (!role.access && !role.status && role.parameters.display) {
-          this.checkedRoles.push(clientName + '.' + role.name)
+      var clientName = values[0]
+      var checked = event.target.checked
+      if (this.clients[clientName].groups) {
+	      for (var key in this.clients[clientName].groups) {
+	        var role = this.clients[clientName].groups[key][index]
+	        console.log(role)
+	        console.log(key)
+	        var roleName = clientName + '.' + role.name
+	        if (checked && this.checkedRoles.indexOf(roleName) < 0 && !role.access && !role.status && role.parameters.display) {
+	          this.checkedRoles.push(roleName)
+	        }
+	        if (!checked) {
+	          var j = this.checkedRoles.indexOf(roleName)
+	          if (j >= 0) {
+	            this.checkedRoles.splice(j, 1)
+	          }
+	        }
+	      }
+      }
+      if (this.clients[clientName].roles) {
+        for (var i in this.clients[clientName].roles) {
+          var role = this.clients[clientName].roles[i]
+          var roleName = clientName + '.' + role.name
+          if (checked && view && role.parameters.view && this.checkedRoles.indexOf(roleName) < 0) {
+	          if (!role.access && !role.status && role.parameters.display) {
+	            this.checkedRoles.push(roleName)
+	          }
+          }
+          if (checked && download && role.parameters.download && this.checkedRoles.indexOf(roleName) < 0) {
+            if (!role.access && !role.status && role.parameters.display) {
+              this.checkedRoles.push(roleName)
+            }
+          }
+          if (!checked) {
+            var j = this.checkedRoles.indexOf(roleName)
+            if (j >= 0) {
+              this.checkedRoles.splice(j, 1)
+            }
+          }
         }
       }
 
@@ -655,7 +696,7 @@ div.title-client::before {
   content: ' + ';
 }
 div.deployed div.title-client::before {
-  content: '-';
+  content: ' - ';
 }
 div.client-content {
  display:none;
