@@ -55,11 +55,12 @@
    </div>
    <div v-if="type === 'metadata'"></div>
     <div v-if="layers && (layers.length > 1 || (type === 'metadata' && layers.length > 0))">
-      <!--  case service with token -->
+      <!--  case service without token -->
       <div v-if="access.view === 'free'" class="mtdt-related-type fa fa-globe" :class="{disabled: !canView}" 
       :style="{backgroundColor: layerAdded ? '#8c0209' : primary}" :title="$t('display_layer')">
           <span class="fa fa-caret-down" v-if="type === 'cartouche'"></span>
        </div>
+     <!-- with service and token -->
       <div v-else-if="!token && canView" class="mtdt-related-type fa fa-globe"  @click="authorize" @mouseover="$event.preventDefault()"
       :style="{backgroundColor: layerAdded ? '#8c0209' : primary, opacity:0.8}" :title="$t('display_layer')">
           <span class="fa fa-caret-down" v-if="type === 'cartouche'">xxx</span>
@@ -68,8 +69,8 @@
       :style="{backgroundColor: layerAdded ? '#8c0209' : primary}" :title="$t('display_layer')">
           <span class="fa fa-caret-down" v-if="type === 'cartouche'"></span>
        </div>
-       <div class="mtdt-expand" v-if="(canView && token) || type === 'metadata'">
-            <ul v-if="canView && !token" class="mtdt-layers" >
+       <div class="mtdt-expand" v-if="(canView && token) || access.view === 'free' || type === 'metadata'">
+            <ul v-if="canView && !token && access.view !== 'free'" class="mtdt-layers" >
             
             <li v-for="(layer, index) in layers"  :key="index" @click="authorize">
              <i class="fa" :class="{'fa-square-o': !layer.checked,'fa-check-square-o': layer.checked}"  :data-layer="index"></i>
