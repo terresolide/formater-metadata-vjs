@@ -35,41 +35,42 @@
     <!-- ****** layers ****** -->
     <!-- view Cartouche and a lonely layer -->
     <div v-if="layers && layers.length === 1 && type === 'cartouche'">
-     <!--  case from service with token -->
+    
      <div v-if="access.view === 'free'" class="mtdt-related-type fa fa-globe" @click="changeLayer(layers[0], true)" 
       :style="{backgroundColor: layerAdded ? '#8c0209' : primary}" :title="$t('display_layer')">
       </div>
+       <!--  case from service with token -->
       <div v-else-if="token && token!==-1 && canView" class="mtdt-related-type fa fa-globe" @click="changeLayer(layers[0], true)" 
       :style="{backgroundColor: layerAdded ? '#8c0209' : primary}" :title="$t('display_layer')">
       </div>
-      <div v-else-if="token && token === -1 && canView" class="mtdt-related-type fa fa-globe" @click="authorize"
+      <div v-else-if="!token && canView" class="mtdt-related-type fa fa-globe" @click="authorize"
      :style="{backgroundColor: layerAdded ? '#8c0209' : primary, opacity:0.8}" :title="$t('display_layer')">
       </div>
       <div v-else-if="token && !canView"  class="mtdt-related-type fa fa-globe disabled" 
       :style="{backgroundColor: layerAdded ? '#8c0209' : primary}" :title="$t('display_layer')">
       </div> 
       <!--  no authentication needed -->
-       <div v-if="!token" class="mtdt-related-type fa fa-globe" @click="changeLayer(layers[0], true)" 
+      <!--   <div v-if="!token" class="mtdt-related-type fa fa-globe" @click="changeLayer(layers[0], true)" 
       :style="{backgroundColor: layerAdded ? '#8c0209' : primary}" :title="$t('display_layer')">
-      </div>
+      </div> -->
    </div>
    <div v-if="type === 'metadata'"></div>
     <div v-if="layers && (layers.length > 1 || (type === 'metadata' && layers.length > 0))">
       <!--  case service without token -->
-      <div v-if="access.view === 'free'" class="mtdt-related-type fa fa-globe" :class="{disabled: !canView}" 
+      <div v-if="access.view === 'free'" class="mtdt-related-type fa fa-globe" 
       :style="{backgroundColor: layerAdded ? '#8c0209' : primary}" :title="$t('display_layer')">
           <span class="fa fa-caret-down" v-if="type === 'cartouche'"></span>
        </div>
      <!-- with service and token -->
       <div v-else-if="!token && canView" class="mtdt-related-type fa fa-globe"  @click="authorize" @mouseover="$event.preventDefault()"
       :style="{backgroundColor: layerAdded ? '#8c0209' : primary, opacity:0.8}" :title="$t('display_layer')">
-          <span class="fa fa-caret-down" v-if="type === 'cartouche'">xxx</span>
+          <span class="fa fa-caret-down" v-if="type === 'cartouche'"></span>
        </div>
-      <div v-else class="mtdt-related-type fa fa-globe" :class="{disabled: !canView}" 
+      <div v-else class="mtdt-related-type fa fa-globe"  :class="{disabled: !canView}"
       :style="{backgroundColor: layerAdded ? '#8c0209' : primary}" :title="$t('display_layer')">
           <span class="fa fa-caret-down" v-if="type === 'cartouche'"></span>
        </div>
-       <div class="mtdt-expand" v-if="(canView && token) || access.view === 'free' || type === 'metadata'">
+       <div class="mtdt-expand" v-if="(canView && !token)  || type === 'metadata'">
             <ul v-if="canView && !token && access.view !== 'free'" class="mtdt-layers" >
             
             <li v-for="(layer, index) in layers"  :key="index" @click="authorize">
@@ -78,10 +79,9 @@
            </li>
            </ul>  
             <ul v-if="(token && canView) || access.view === 'free'" class="mtdt-layers" >
-            
             <li v-for="(layer, index) in layers" :class="{disabled: !canView}" :key="index" @click="changeLayer(layer, true);">
              <i class="fa" :class="{'fa-square-o': !layer.checked,'fa-check-square-o': layer.checked}"  :data-layer="index"></i>
-             <div  :title="layer.description">{{layer.name}}</div>
+             <div  :title="layer.description">{{layer.name}} xxx</div>
            </li>
            </ul>   
        </div> 
