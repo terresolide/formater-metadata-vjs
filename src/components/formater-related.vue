@@ -709,7 +709,9 @@
   display: inline-block;
   width: 100%;
 }
+.wrapper-content .mtdt-app .mtdt-links a:hover,
 .mtdt-links a:hover,
+.wrapper-content .mtdt-app .mtdt-links span:hover,
 .mtdt-links span:hover {
   background: darkred;
   color:white;

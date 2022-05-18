@@ -19,41 +19,41 @@ export default {
     },
     getClients (state, getters) {
       return state.clients
-    },
-    hasAccess: (state) => (clientName, currentIdentifier) => {
-      if (!state.clients[clientName]) {
-        return {view: true, download:true}
-      }
-      var client = state.clients[clientName]
-      var response = {
-          view: false,
-          download: false
-      }
-      // var canAccess = false
-      client.roles.forEach(function (role) {
-        console.log(role)
-        if (role.access) {
-          if (role.parameters.hasOwnProperty('view')) {
-            if (role.parameters.view === true || role.parameters.view.includes(currentIdentifier)) {
-              response.view = true
-            }
-          } else {
-            response.view = true
-          }
-          if (role.parameters.hasOwnProperty('download')) {
-            if (role.parameters.download === true || role.parameters.download.includes(currentIdentifier)) {
-              response.download = true
-            }
-          } else {
-            response.download = true
-          }
-        }
-      })
-      if (!response.view && !response.download) {
-        return false
-      }
-      return response
-    }
+    } //,
+//    hasAccess: (state) => (clientName, currentIdentifier) => {
+//      if (!state.clients[clientName]) {
+//        return {view: true, download:true}
+//      }
+//      var client = state.clients[clientName]
+//      var response = {
+//          view: false,
+//          download: false
+//      }
+//      // var canAccess = false
+//      client.roles.forEach(function (role) {
+//        console.log(role)
+//        if (role.access) {
+//          if (role.parameters.hasOwnProperty('view')) {
+//            if (role.parameters.view === true || role.parameters.view.includes(currentIdentifier)) {
+//              response.view = true
+//            }
+//          } else {
+//            response.view = true
+//          }
+//          if (role.parameters.hasOwnProperty('download')) {
+//            if (role.parameters.download === true || role.parameters.download.includes(currentIdentifier)) {
+//              response.download = true
+//            }
+//          } else {
+//            response.download = true
+//          }
+//        }
+//      })
+//      if (!response.view && !response.download) {
+//        return false
+//      }
+//      return response
+//    }
   },
   mutations: {
     set (state, obj) {

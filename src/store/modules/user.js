@@ -48,6 +48,13 @@ export default {
           return false
         }
       }
+      console.log(clientId)
+      if (clientId) {
+        var views = view.split(',')
+        console.log(views)
+        console.log(state.user.roles[clientId])
+        
+      }
       return false
     },
     code (state, getters) {
@@ -66,6 +73,37 @@ export default {
       } else {
         return null
       }
+    },
+    getAccess: (state) => (client, access) => {
+     
+      var resp = {search: false, view: false, download: false}
+      if (!client) {
+        return resp
+      }
+      var userRoles = false
+      if (state.user.roles[client]) {
+        userRoles = state.user.roles[client].join(',')
+      } 
+      ['search', 'view', 'download'].forEach(function (prop) {
+        if (!access[prop] || access[prop] === 'free' || access[prop] === 'auth') {
+          resp[prop] = true
+        } else {
+          if (!userRoles)
+          {
+            resp[prop] = false
+          } else {
+            var roles = access[prop].split(',')
+            console.log(roles)
+            for (var key in roles) {
+              if (userRoles.indexOf(roles[key]) >= 0) {
+                resp[prop] = true
+                break
+              }
+            }
+          }
+        }
+      })
+      return resp
     },
     getState (state, getters) {
       return state.state
@@ -224,6 +262,7 @@ export default {
           roles[client] = obj.client_roles[client].roles
         }
         roles.global = obj.realm_roles
+        console.log(roles)
         state.user = {
             id: obj.sub,
             email: obj.email,

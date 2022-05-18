@@ -133,12 +133,22 @@ export default {
       return new Date(this.time).toISOString().substr(11, 8);
     },
     hasAccess () {
+      if (!this.access) {
+        return false
+      }
+      return this.access.view || this.access.download
+    },
+    access () {
       if (!this.clientId || this.reject) {
         return false
       }
-      var access = this.$store.getters['roles/hasAccess'](this.clientId, this.$route.params.uuid)
-      this.testLoginSso(this.email, access)
-      return access
+      console.log(this.clientId)
+      console.log(this.service.access)
+      // var serviceRoles = this.$store.getters['roles/byClient']
+      var result = this.$store.getters['user/getAccess'](this.clientId, this.service.access)
+      console.log(result)
+      // this.testLoginSso(this.email, result)
+      return result
     },
     isFormater (newvalue) {
       var isFormater = this.$store.getters['user/isFormater']

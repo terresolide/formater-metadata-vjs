@@ -231,7 +231,7 @@ export default {
         this.mapping = osParameters.mapping
         if (osParameters.api) {
           var url = new URL(osParameters.api)
-    	    this.$store.commit('services/add', {domain: url.hostname, api: osParameters.api, access: this.metadata.api.access, uuid: this.uuid})
+    	    this.$store.commit('services/add', {domain: url.hostname, api: osParameters.api, access: this.access, uuid: this.uuid})
     	    this.serviceId = this.$store.getters['services/current']
           this.service = this.$store.getters['services/byId'](this.serviceId)
         }

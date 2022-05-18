@@ -83,15 +83,13 @@ export default {
            service.validationUrl = service.host + '/atdistrib/resto2/api/user/checkToken'
            service.disconnectUrl = service.host + '/atdistrib/resto2/api/user/disconnect'
            service.refreshUrl = service.host + '/atdistrib/resto2/api/user/connect'
-           service.access = {}
-           service.access[service.uuid] = service.access
            state.services.push(service)
          }
        } else {
-           state.services[index].access[service.uuid] = service.access
+           state.services[index].access = service.access
        }
 
-
+       console.log(state.services[index].access)
        state.current = index
        // return index
 //      let service = new Service(api)
