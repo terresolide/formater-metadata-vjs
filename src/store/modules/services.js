@@ -1,5 +1,22 @@
 /**
  * Services
+ * Manage list of opensearch service
+ * @prop services array of service 
+ *    {
+ *      id: index in table services
+ *      type: 'resto2'
+ *      token: access token to the service
+ *      host: base url to the service
+ *      authUrl: the authenticate url of the service, where pass code
+ *      clientId: the clientId in sso
+ *      clientIdUrl: the url where find the clientId
+ *      validationUrl: url de validation du token
+ *      disconnectUrl: url de déconnexion du service
+ *      refreshUrl: url de rafraichissement du token
+ *      access: the current role for access to search,view or download for the current metadata
+ *    }
+ * @prop sso name of sso used to connect?
+ * @prop current the index of the selected service or -1 if no service
  */
 // import Service from '@/modules/service.js'
 
@@ -11,13 +28,6 @@ export default {
     current: -1
   },
   getters: {
-    access: (state) => (uuid) => {
-      if (state.current >= 0) {
-        return state.services[state.current].access[uuid]
-      } else {
-        return false
-      }
-    },
    all (state, getters) {
      return state.services
    },

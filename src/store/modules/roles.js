@@ -1,5 +1,34 @@
 /**
- * Global Roles
+ * Global Roles used for access request
+ * @prop clients list of clients record in catalog DB
+ *   global is the global rôles in sso
+ *   is like
+ *     flatsim: {
+ *       title: {fr: 'Données FLATSIM', en: 'FLATSIM data'},
+ *       description: {fr: '', en: ''},
+ *       roles: [role1, role2]
+ *       groups: {
+ *         AFAR: [role3, role4] 
+ *       },
+ *     oi2: {
+ *       title: {fr: 'Données OI2', en: 'OI2 data'},
+ *       description: {fr: '', en: ''},
+ *       roles: [role5]
+ *     } 
+ *   }
+ *   where 
+ *     - single role like role1, role2 or role5 authorize all view and download
+ *     - grouped role is order by view role and download role
+ *       if download role authorize also view, its name contains the view role name
+ *   where role is like 
+ *   {
+ *     name: 'FLATSIM_AFAR_V',
+ *     title: {fr: 'AFAR', en: 'AFAR'},
+ *     description: {fr: '', en: ''},
+ *     parameters: {view: true, download: false, group: 'AFAR', display: true, ...}, 
+ *     status: 'WAITING' ( the user requested for this role: 'WAITING', 'REJECTED', 'ACCEPTED' or null)
+ *     access: true or false (the user has the role)
+ *   }
  */
 export default {
   namespaced: true,
