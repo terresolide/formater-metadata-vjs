@@ -1,7 +1,7 @@
 <i18n>
 {
   "fr": {
-    "access_to": "Accès à",
+    "access_to": "Connexion à",
     "access_token": "token d'accès",
     "authorize": "Autoriser",
     "authorization_failed": "La connexion au service {domain} a échoué.",
@@ -19,7 +19,7 @@
     "session_expire": "Votre session auprès de <b>{domain}</b> a expiré.<br />Vous devez vous reconnecter."
   },
   "en": {
-    "access_to": "Access to",
+    "access_to": "Login to",
     "access_token": "Access token",
     "authorize": "Authorize",
     "authorization_failed": "Connection to the service {domain} failed.",
@@ -60,7 +60,7 @@
   <div v-if="!email"  v-html="$t('need_log', {domain: service.domain})"></div>
    <div v-else-if="hasExpired" v-html="$t('session_expire', {domain: service.domain})">
   </div>
-  <div v-else-if="email && hasAccess && !errorMessage"
+  <div v-else-if="email && hasAccess && !service.token && !errorMessage"
    v-html="$t('need_authorize', {domain: service.domain})">
    </div>
    <div v-else-if="errorMessage">
@@ -134,27 +134,27 @@ export default {
     },
     hasAccess () {
       if (!this.access) {
+       // this.msg = true
         return false
       }
-      return this.access.view || this.access.download
+      var access = this.access.view || this.access.download
+    //  this.msg = access && !this.service.token
+      return access
     },
     access () {
       if (!this.clientId || this.reject) {
         return false
       }
-      console.log(this.clientId)
-      console.log(this.service.access)
       // var serviceRoles = this.$store.getters['roles/byClient']
       var result = this.$store.getters['user/getAccess'](this.clientId, this.service.access)
-      console.log(result)
       // this.testLoginSso(this.email, result)
       return result
     },
-    isFormater (newvalue) {
-      var isFormater = this.$store.getters['user/isFormater']
-      this.testLoginSso(this.email, isFormater)
-      return isFormater
-    },
+//     isFormater (newvalue) {
+//       var isFormater = this.$store.getters['user/isFormater']
+//       this.testLoginSso(this.email, isFormater)
+//       return isFormater
+//     },
     redirectUri () {
       if (this.$store.state.ssoLogin) {
         return this.$store.state.ssoLogin
@@ -243,7 +243,7 @@ export default {
       this.$http.get(url).then(function (response) {
         if (response.body && response.body.clientId) {
           this.clientId = response.body.clientId
-          if (!(this.email && !this.hasAccess)) {
+          if (this.email && this.hasAccess) {
             this.msg = true
           } else {
             console.log('no client Id')

@@ -35,6 +35,7 @@ export default {
      return state.current
    },
    clientId(state, getters) {
+     console.log(state.current)
      if (state.current >= 0) {
        return state.services[state.current].clientId
      } else {
@@ -98,9 +99,10 @@ export default {
        } else {
            state.services[index].access = service.access
        }
-
        console.log(state.services[index].access)
        state.current = index
+       console.log(state.services)
+       console.log(index)
        // return index
 //      let service = new Service(api)
 //      console.log(service.domain)

@@ -75,7 +75,8 @@ export default {
       }
     },
     getAccess: (state) => (client, access) => {
-     
+      console.log(client)
+      console.log(access)
       var resp = {search: false, view: false, download: false}
       if (!client) {
         return resp
@@ -84,6 +85,8 @@ export default {
       if (state.user.roles[client]) {
         userRoles = state.user.roles[client].join(',')
       } 
+      console.log(userRoles);
+      
       ['search', 'view', 'download'].forEach(function (prop) {
         if (!access[prop] || access[prop] === 'free' || access[prop] === 'auth') {
           resp[prop] = true
@@ -93,7 +96,6 @@ export default {
             resp[prop] = false
           } else {
             var roles = access[prop].split(',')
-            console.log(roles)
             for (var key in roles) {
               if (userRoles.indexOf(roles[key]) >= 0) {
                 resp[prop] = true

@@ -328,19 +328,25 @@
 		  return platforms
       },
       clientId () {
-        return this.$store.getters['user/clientId']
+        return this.$store.getters['services/clientId']
       },
       token () {
         return this.$store.getters['services/token']
       },
-      isFormater () {
-        return this.$store.getters['user/isFormater']
+//       isFormater () {
+//         return this.$store.getters['user/isFormater']
+//       },
+      rights () {
+        console.log(this.clientId)
+        console.log(this.access)
+        return this.$store.getters['user/getAccess'](this.clientId, this.access)
       },
       canView () {
-        return this.$store.getters['user/canView'](this.access.view, this.clientId)
+        console.log(this.rights)
+        return this.rights.view
       },
       canDownload () {
-        return this.$store.getters['user/canDownload'](this.access.download, this.clientId)
+        return this.rights.download
       }
     },
     watch: {
