@@ -73,15 +73,15 @@
        <div class="mtdt-expand" v-if="(canView && !token)  || type === 'metadata'">
             <ul v-if="canView && !token && access.view !== 'free'" class="mtdt-layers" >
             
-            <li v-for="(layer, index) in layers"  :key="index" @click="authorize">
+            <li v-for="(layer, index) in layers" style="opacity:0.8;" :key="index" @click="authorize">
              <i class="fa" :class="{'fa-square-o': !layer.checked,'fa-check-square-o': layer.checked}"  :data-layer="index"></i>
              <div  :title="layer.description">{{layer.name}}</div>
            </li>
            </ul>  
-            <ul v-if="(token && canView) || access.view === 'free'" class="mtdt-layers" >
-            <li v-for="(layer, index) in layers" :class="{disabled: !canView}" :key="index" @click="changeLayer(layer, true);">
+            <ul v-else class="mtdt-layers" >
+            <li v-for="(layer, index) in layers" :class="{disabled: !canView && access.view !== 'free'}" :key="index" @click="changeLayer(layer, true);">
              <i class="fa" :class="{'fa-square-o': !layer.checked,'fa-check-square-o': layer.checked}"  :data-layer="index"></i>
-             <div  :title="layer.description">{{layer.name}} xxx</div>
+             <div  :title="layer.description">{{layer.name}}</div>
            </li>
            </ul>   
        </div> 
@@ -117,7 +117,7 @@
     <!--  DOWNLOAD 1 LINK -->
     <div v-if="download && download.length === 1 && type === 'cartouche'">
       <!--  case SHOM, OI2 open in new window -->
-      <span v-if="(download[0].type && download[0].type === 'WWW:DOWNLOAD-1.0-link--download') || download[0].auth === 'BASIC'"
+      <span v-if="access.download === 'free'"
         :href="download[0].url" target="_blank"  :title="$t('download_data')" >
         <span class="mtdt-related-type fa fa-download" :style="{backgroundColor: primary}" @click="record(download[0].url, 'download', $event)"></span>
         <a style="display:none;"  :href="download[0].url" target="_blank" ></a>
@@ -142,14 +142,22 @@
     </div>
     <!-- DOWNLOAD FEW LINKS -->
     <div v-if="download && (download.length >1 || (type === 'metadata' && download.length > 0))">
-       <div class="mtdt-related-type fa fa-download" :class="{disabled: !token && !canDownload}" :style="{backgroundColor: primary}" 
+       <div v-if="access.download === 'free'" class="mtdt-related-type fa fa-download"  :style="{backgroundColor: primary}" 
+       :title="$t('download_data')" >
+         <span v-if="type === 'cartouche'" class="fa fa-caret-down"></span>
+      </div>
+      <div v-else-if="!token && canDownload" class="mtdt-related-type fa fa-download"  :style="{backgroundColor: primary, opacity:0.8}" 
        :title="$t('download_data')" @click="authorize">
          <span v-if="type === 'cartouche'" class="fa fa-caret-down"></span>
-      </div> 
+      </div>
+      <div v-else class="mtdt-related-type fa fa-download" :class="{disabled: !canDownload}"
+        :style="{backgroundColor: primary}" :title="$t('download_data')" >
+         <span v-if="type === 'cartouche'" class="fa fa-caret-down"></span>
+      </div>
       <div v-if="type === 'metadata'"></div>
       <div class="mtdt-expand mtdt-links" >
            <ul >
-           <li v-for="(file, index) in download" :key="index"  :class="{disabled: file.disabled || token === -1 || !canDownload }">
+           <li v-for="(file, index) in download" :key="index"  :class="{disabled: file.disabled || token === -1 || (!canDownload && access.download !== 'free'}">
               <!--  case SHOM -->
               <span  v-if="file.type && file.type === 'WWW:DOWNLOAD-1.0-link--download'" >
                 <span :title="file.description"  @click="record(file.url, 'download', $event)">

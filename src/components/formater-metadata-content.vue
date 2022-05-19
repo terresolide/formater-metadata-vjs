@@ -66,7 +66,7 @@
 
 <h1 :style="{color:$store.state.style.primary}">{{$t('about_resource')}}</h1>
  <div style="float:right;background:#eee;margin-left:5px;max-width:300px;min-width:200px;width:25%;" v-if="hasRelated">
- <formater-related type="metadata" :depth="depth" :download="metadata.download" :id="metadata.id"
+ <formater-related type="metadata" :depth="depth" :access="access" :download="metadata.download" :id="metadata.id"
     :cds="metadata.cds"     :layers="metadata.layers"  :links="metadata.links" :related="metadata.related" :order="metadata.order" :siblings="metadata.siblings"></formater-related>
     
 </div>
@@ -242,6 +242,17 @@ export default {
       return this.metadata.download || this.metadata.layers || this.metadata.links || this.metadata.related || this.metadata.order
     }
 
+  },
+  data () {
+    return {
+      access: {search:'free', view: 'free', download: 'free'}
+    }
+  },
+  created () {
+    console.log(this.metadata.access)
+    if (this.metadata.access) {
+      this.access = this.metadata.access
+    }
   },
   methods:{
 

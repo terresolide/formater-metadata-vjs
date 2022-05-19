@@ -37,7 +37,7 @@
         <!-- independant metadata -->
         <div class="mtdt-free-capsule" v-if="$store.state.selectedMetadata" >
           <div >
-            <formater-metadata :metadata="$store.state.selectedMetadata" :depth="-1" @close="closeSingle"></formater-metadata>
+            <formater-metadata :metadata="$store.state.selectedMetadata"  :depth="-1" @close="closeSingle"></formater-metadata>
           </div>
         </div>
        <formater-metadata v-if="metadata" :metadata="metadata" :full="fullMetadata" @parametersChange="setParameters" @close="close" :depth="1"></formater-metadata>

@@ -161,6 +161,7 @@ export default {
       } else {
         var event = new CustomEvent('fmt:metadataEvent', {detail: {meta:this.meta, depth: -1 } })
         document.dispatchEvent(event)
+        this.meta.access = this.access
         this.$store.commit('selectMetadata', this.meta)
       }
 //       var event = new CustomEvent('fmt:metadataEvent', {detail: {meta:this.meta, depth: this.depth } })
