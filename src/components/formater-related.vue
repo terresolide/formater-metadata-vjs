@@ -70,7 +70,7 @@
       :style="{backgroundColor: layerAdded ? '#8c0209' : primary}" :title="$t('display_layer')">
           <span class="fa fa-caret-down" v-if="type === 'cartouche'"></span>
        </div>
-       <div class="mtdt-expand" v-if="(canView && !token)  || type === 'metadata'">
+       <div class="mtdt-expand" v-if="canView || access.view === 'free' || type === 'metadata'">
             <ul v-if="canView && !token && access.view !== 'free'" class="mtdt-layers" >
             
             <li v-for="(layer, index) in layers" style="opacity:0.8;" :key="index" @click="authorize">
@@ -157,9 +157,9 @@
       <div v-if="type === 'metadata'"></div>
       <div class="mtdt-expand mtdt-links" >
            <ul >
-           <li v-for="(file, index) in download" :key="index"  :class="{disabled: file.disabled || token === -1 || (!canDownload && access.download !== 'free'}">
+           <li v-for="(file, index) in download" :key="index"  >
               <!--  case SHOM -->
-              <span  v-if="file.type && file.type === 'WWW:DOWNLOAD-1.0-link--download'" >
+              <span  v-if="access.download === 'free'">
                 <span :title="file.description"  @click="record(file.url, 'download', $event)">
                     {{file.name? file.name: $t('download_data')}}
                 </span>
@@ -172,11 +172,11 @@
                  </span>
                  <a :href="file.url + '?_bearer=' + token" style="display:none;"></a>
              </span>
-             <!--  case FLATSIM without authentication but can download -->
-             <span v-else-if="token === -1 && canDownload" @click="authorize">
+             <!--  case FLATSIM without service authentication but can download -->
+             <span v-else-if="!token && canDownload" style="opacity:0.8;" @click="authorize">
                 {{file.name? file.name: $t('download_data')}}
              </span>
-             <span v-else-if="!token  && !canDownload" >
+             <span v-else-if="!canDownload" class="disabled">
                 {{file.name? file.name: $t('download_data')}}
              </span>
              <!--  other case @todo -->
@@ -702,7 +702,8 @@
 }
 .mtdt-related-cartouche .mtdt-related-type.disabled,
 .mtdt-related-cartouche a.disabled ,
-.mtdt-related-cartouche span.disabled {
+.mtdt-related-cartouche span.disabled,
+.mtdt-expand span.disabled {
   pointer-events:none;
   opacity:0.5;
 }

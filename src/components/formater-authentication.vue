@@ -134,7 +134,6 @@ export default {
   },
   methods: {
    closeLogout (event) {
-     console.log(event)
      this.ssoLogoutInfo = false
      event.stopPropagation()
      event.preventDefault()

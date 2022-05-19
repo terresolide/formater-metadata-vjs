@@ -236,6 +236,9 @@ const GeonetworkPlugin = {
             * search=free;view=MACHIN_V;download=MACHIN_VD
             **/
            extractAccessFromDescription (description) {
+             if (!description) {
+               return {search:'free', view: 'UNKNOWN', download: 'UNKOWN'}
+             }
              var lists = description.split(';')
              var access = {}
              lists.forEach(function (tab) {

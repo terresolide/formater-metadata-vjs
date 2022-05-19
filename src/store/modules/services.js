@@ -69,6 +69,9 @@ export default {
       state.sso = ssoname
     },
     reset (state) {
+      if (state.current) {
+        state.services[state.current].token = null
+      }
       state.services.forEach(function(service, index) {
         state.services[index].token = null
       })
