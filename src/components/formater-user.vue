@@ -4,12 +4,9 @@
     "access_rights": "Your access rights",
     "access_request": "Access request",
     "access_to_formater": "To be able to access some data, you must select it and make a request by clicking on <b>&laquo;Access request&raquo;</b>.",
-    "access_token": "Acess token",
     "account": "Your account",
     "add_message": "Add message to your request",
-    "all_access": "All access",
-    "copied_to_clipboard": "The token &laquo;{client}&raquo; has been copied in clipboard.",
-    "copy_in_clipboard": "Copy the access token in clipboard",
+    "at_least_3": "At least 3 characters",
     "download": "Download",
     "email": "Email",
     "firstname": "First Name",
@@ -21,23 +18,15 @@
     "public_data": "Public data",
     "register": "Register",
     "required": "Required",
-    "select_all": "Select all",
-    "select_data": "Select",
-    "WAITING": "Waiting for treatment",
-    "REJECTED": "Rejected",
-    "ACCEPTED": "Accepted",
     "wait_validation": "Your request has been registered with our services. An email has been sent to you. It will be treated as quickly as possible"
   },
   "fr": {
     "access_rights": "Vos droits d'accès",
     "access_request": "Demande d'accès",
     "access_to_formater": "Pour pouvoir accéder à certaines données, vous devez les sélectionner and faire une demande en cliquant sur <b>&laquo;Demande d'accès&raquo;</b>.",
-    "access_token": "token d'accès",
     "account": "Votre compte",
     "add_message": "Ajoutez un message à votre demande",
-    "all_access": "Tout accès",
-    "copied_to_clipboard": "Le token &laquo;{client}&raquo; a été copié dans le presse-papier.",
-    "copy_in_clipboard": "Copier le token d'accès dans le presse-papier",
+    "at_least_3": "Au moins 3 caractères",
     "download": "Téléchargement",
     "email": "Email",
     "firstname": "Prénom",
@@ -49,11 +38,6 @@
     "public_data": "Données publiques",
     "register": "S'inscrire",
     "required": "Obligatoire",
-    "select_all": "Tout sélectionner",
-    "select_data": "Sélectionnez",
-    "WAITING": "En attente de traitement",
-    "REJECTED": "Refusé",
-    "ACCEPTED": "Accepté",
     "wait_validation": "Votre demande a bien été enregistrée auprès de nos services. Un email vous a été envoyé. Elle sera traitée le plus rapidement possible."
   }
 }
@@ -145,10 +129,12 @@
 		   <div></div>
 	   </div>
 	   <!-- GLOBAL ROLES -->
-	   <formater-client v-if="clients.global" :client="clients.global" :checked-roles="checkedRoles"></formater-client>
-	
+	   <div v-if="clients.global" style="border-top: 1px dotted black;padding:0px;">
+	      <formater-client :client="clients.global" name="global" :checked-roles="checkedRoles"></formater-client>
+	   </div>
+	   <!--  CLIENT ROLES -->
 	   <div v-for="(client,clientName) in clients"  v-if="clientName !== 'global'" style="border-top: 1px dotted black;padding:0px;">
-	   <div class="role-line"  v-if="(client.groups && Object.keys(client.groups).length > 1) || (client.roles && client.roles.length > 1)"> 
+	  <!--  <div class="role-line"  v-if="(client.groups && Object.keys(client.groups).length > 1) || (client.roles && client.roles.length > 1)"> 
 	     <div class="title-client" style="cursor:pointer;text-align:left;"  @click="toggleClient($event)">
 	       <span style="font-weight:800;">{{title(client)}}</span> <em style="float:right;font-size:0.9rem;">({{$t('all_access')}})</em>
 	      </div>
@@ -180,8 +166,9 @@
 	            <div class="clipboard-tooltip"  @click="removeTooltip($event)" v-html="$t('copied_to_clipboard', {client: clientName})"></div>
 	         </span> 
 	      </div>
-	     </div> 
-	     <div :class="{'client-content': (client.groups && Object.keys(client.groups).length > 1) || (client.roles && client.roles.length > 1) }">
+	     </div> --> 
+	     <formater-client :client="client" :name="clientName" :checked-roles="checkedRoles"></formater-client>
+	   <!--   <div :class="{'client-content': (client.groups && Object.keys(client.groups).length > 1) || (client.roles && client.roles.length > 1) }">
 		     <div class="role-line"  v-for="(role, index) in client.roles" v-if="client.roles && role.parameters.display">
 		        <div>{{title(role)}}</div>
 		        <div class="fmt-center">
@@ -192,18 +179,14 @@
 		        </div>
 		        <div class="fmt-center">
 		          <span v-if="role.access" :title="$t('ACCEPTED')"><i class="fa fa-check" style="color:green;"></i></span>
-		          <!--  <i v-if="role.parameters.view" class="fa" :class="{'fa-close': !role.access, 'fa-check': role.access} "></i>
-		          --> 
+		        
 		          <input v-if="!role.access && !role.status && role.parameters.view" type="checkbox" v-model="checkedRoles" :value="clientName + '.' + role.name" />
 		        </div>
 		        <div class="fmt-center">
-		         <!--   <i v-if="role.parameters.download" class="fa" :class="{'fa-close': !role.access, 'fa-check': role.access} "></i>
-		          --> 
+	
 		          <span v-if="role.access" :title="$t('ACCEPTED')"><i class="fa fa-check" style="color:green;"></i></span>
 		          <input v-if="!role.access && !role.status && role.parameters.download" type="checkbox" v-model="checkedRoles" :value="clientName + '.' + role.name" />
 		        </div>
-		   <!--      <div  v-if="canAsk" class="fmt-center">
-		         </div> --> 
 		        <div>
 		         </div>
 		     </div>
@@ -232,7 +215,7 @@
 		           </span>
 		        </div>
 		     </div>
-	     </div>
+	     </div> -->
 	   </div>
 	   <div v-if="canAsk">
 	   <p  v-html="$t('access_to_formater')" style="font-size:0.9em;font-style:italic;line-height:1;"></p>
@@ -280,35 +263,35 @@ export default {
       return this.$store.state.lang
     },
     clients () {
-      var clients = this.$store.getters['roles/getClients']
-      var _this = this
-      for(var client in clients) {
-//         clients[client].roles.forEach(function (role) {
-//           role.access = _this.hasRole(client, role.name)
-//         })
-          if (clients[client].groups)
-          var canAskView = false
-          var canAskDownload = false
-          for (var key in clients[client].groups) {
-            console.log(key)
-            if (!clients[client].groups[key][0].access && !clients[client].groups[key][0].status) {
-              canAskView = true
-            }
-            if (!clients[client].groups[key][1].access && !clients[client].groups[key][1].status) {
-              canAskDownload = true
-            }
-            this.canAskClients[client] = {view: canAskView, download: canAskDownload}
-          }
-      }
-      console.log(clients)
-      return clients
+      return this.$store.getters['roles/getClients']
+//       var _this = this
+//       for(var client in clients) {
+// //         clients[client].roles.forEach(function (role) {
+// //           role.access = _this.hasRole(client, role.name)
+// //         })
+//           if (clients[client].groups)
+//           var canAskView = false
+//           var canAskDownload = false
+//           for (var key in clients[client].groups) {
+//             console.log(key)
+//             if (!clients[client].groups[key][0].access && !clients[client].groups[key][0].status) {
+//               canAskView = true
+//             }
+//             if (!clients[client].groups[key][1].access && !clients[client].groups[key][1].status) {
+//               canAskDownload = true
+//             }
+//             this.canAskClients[client] = {view: canAskView, download: canAskDownload}
+//           }
+//       }
+//       console.log(clients)
+//       return clients
     },
     canAsk () {
       var can = false
       return true
       for (var client in this.clients) {
 	      this.clients[client].roles.forEach(function (role) {
-	        if (!role.access && !role.status && role.parameters.display) {
+	        if (!role.access && !role.status) {
 	          can = true
 	        }
 	      })
@@ -316,7 +299,7 @@ export default {
 	        for (var key in this.clients[client].groups) {
 	          var count = 0
 	          this.clients[client].groups[key].forEach(function (role) {
-	            if (!role.access && !role.status && role.parameters.display) {
+	            if (!role.access && !role.status) {
 	              can = true
 	            }
 	          })
@@ -342,9 +325,9 @@ export default {
       organizationId: null,
       organizationType: null,
       selected: false,
-      selectedClients: [],
-      canAskClients: {},
-      showTooltipClipboard: {},
+   //   selectedClients: [],
+    //  canAskClients: {},
+   //   showTooltipClipboard: {},
       box:null,
       mousemoveListener: null,
       mouseupListener: null,
@@ -392,66 +375,66 @@ export default {
     resize () {
       this.height = window.innerHeight - 90
     },
-    toggleClient (event) {
-      var target = event.target
-      while (!target.classList.contains('role-line')) {
-        target = target.parentNode
-      }
-      console.log(target)
-      target.classList.toggle('deployed')
-    },
-    toggleAll(event) {
-      var value = event.target.value
-      var values = value.split('.')
-      var index = parseInt(values[1])
-      var view = true
-      var download = false
-      if (index === 1) {
-        download = true
-      }
-      var clientName = values[0]
-      var checked = event.target.checked
-      if (this.clients[clientName].groups) {
-	      for (var key in this.clients[clientName].groups) {
-	        var role = this.clients[clientName].groups[key][index]
-	        console.log(role)
-	        console.log(key)
-	        var roleName = clientName + '.' + role.name
-	        if (checked && this.checkedRoles.indexOf(roleName) < 0 && !role.access && !role.status && role.parameters.display) {
-	          this.checkedRoles.push(roleName)
-	        }
-	        if (!checked) {
-	          var j = this.checkedRoles.indexOf(roleName)
-	          if (j >= 0) {
-	            this.checkedRoles.splice(j, 1)
-	          }
-	        }
-	      }
-      }
-      if (this.clients[clientName].roles) {
-        for (var i in this.clients[clientName].roles) {
-          var role = this.clients[clientName].roles[i]
-          var roleName = clientName + '.' + role.name
-          if (checked && view && role.parameters.view && this.checkedRoles.indexOf(roleName) < 0) {
-	          if (!role.access && !role.status && role.parameters.display) {
-	            this.checkedRoles.push(roleName)
-	          }
-          }
-          if (checked && download && role.parameters.download && this.checkedRoles.indexOf(roleName) < 0) {
-            if (!role.access && !role.status && role.parameters.display) {
-              this.checkedRoles.push(roleName)
-            }
-          }
-          if (!checked) {
-            var j = this.checkedRoles.indexOf(roleName)
-            if (j >= 0) {
-              this.checkedRoles.splice(j, 1)
-            }
-          }
-        }
-      }
+//     toggleClient (event) {
+//       var target = event.target
+//       while (!target.classList.contains('role-line')) {
+//         target = target.parentNode
+//       }
+//       console.log(target)
+//       target.classList.toggle('deployed')
+//     },
+//     toggleAll(event) {
+//       var value = event.target.value
+//       var values = value.split('.')
+//       var index = parseInt(values[1])
+//       var view = true
+//       var download = false
+//       if (index === 1) {
+//         download = true
+//       }
+//       var clientName = values[0]
+//       var checked = event.target.checked
+//       if (this.clients[clientName].groups) {
+// 	      for (var key in this.clients[clientName].groups) {
+// 	        var role = this.clients[clientName].groups[key][index]
+// 	        console.log(role)
+// 	        console.log(key)
+// 	        var roleName = clientName + '.' + role.name
+// 	        if (checked && this.checkedRoles.indexOf(roleName) < 0 && !role.access && !role.status && role.parameters.display) {
+// 	          this.checkedRoles.push(roleName)
+// 	        }
+// 	        if (!checked) {
+// 	          var j = this.checkedRoles.indexOf(roleName)
+// 	          if (j >= 0) {
+// 	            this.checkedRoles.splice(j, 1)
+// 	          }
+// 	        }
+// 	      }
+//       }
+//       if (this.clients[clientName].roles) {
+//         for (var i in this.clients[clientName].roles) {
+//           var role = this.clients[clientName].roles[i]
+//           var roleName = clientName + '.' + role.name
+//           if (checked && view && role.parameters.view && this.checkedRoles.indexOf(roleName) < 0) {
+// 	          if (!role.access && !role.status && role.parameters.display) {
+// 	            this.checkedRoles.push(roleName)
+// 	          }
+//           }
+//           if (checked && download && role.parameters.download && this.checkedRoles.indexOf(roleName) < 0) {
+//             if (!role.access && !role.status && role.parameters.display) {
+//               this.checkedRoles.push(roleName)
+//             }
+//           }
+//           if (!checked) {
+//             var j = this.checkedRoles.indexOf(roleName)
+//             if (j >= 0) {
+//               this.checkedRoles.splice(j, 1)
+//             }
+//           }
+//         }
+//       }
 
-    },
+//     },
     accessRequest () {
       if (this.checkedRoles.length === 0) {
         return
@@ -506,25 +489,25 @@ export default {
         this.asking = false
       })
     },
-    copyClipboard (event, clientName) {
-      var _this = this
-      console.log(event)
-      var target = event.target
-      navigator.clipboard.writeText(this.clients[clientName].token).then(function() {
-        /* clipboard successfully set */
-        target.classList.add('tooltip-show')
-        setTimeout(function () {
-          target.classList.remove('tooltip-show')
-        }, 6000)
-      }, function() {
-        alert(_this.$i18n.t('unauthorized_clipboard'))
-      }); var _this = this
-    },
-    removeTooltip (event)
-    {
-      var node = event.target
-      node.previousElementSibling.classList.remove('tooltip-show')
-    },
+//     copyClipboard (event, clientName) {
+//       var _this = this
+//       console.log(event)
+//       var target = event.target
+//       navigator.clipboard.writeText(this.clients[clientName].token).then(function() {
+//         /* clipboard successfully set */
+//         target.classList.add('tooltip-show')
+//         setTimeout(function () {
+//           target.classList.remove('tooltip-show')
+//         }, 6000)
+//       }, function() {
+//         alert(_this.$i18n.t('unauthorized_clipboard'))
+//       }); var _this = this
+//     },
+//     removeTooltip (event)
+//     {
+//       var node = event.target
+//       node.previousElementSibling.classList.remove('tooltip-show')
+//     },
     getTypeName (typeId)
     {
       var find = this.organizationTypes.find(t => t.t_id===typeId)
@@ -642,24 +625,24 @@ export default {
 //       })
 //       event.target.classList.add('tooltip-show')
 //     },
-    description (role) {
-      if (role.description && role.description[this.lang]) {
-        return role.description[this.lang]
-      } else if (role.description) {
-        return role.description[Object.keys(role.description)[0]]
-      }
-      return 'no description'
-    },
-    title (role) {
-      if (role.title) {
-        if (role.title[this.lang] && this.lang !== 'en') {
-          return role.title[this.lang]
-        } else if (role.title.en) {
-          return role.title.en
-        }
-      }
-      return role.name
-    },
+//     description (role) {
+//       if (role.description && role.description[this.lang]) {
+//         return role.description[this.lang]
+//       } else if (role.description) {
+//         return role.description[Object.keys(role.description)[0]]
+//       }
+//       return 'no description'
+//     },
+//     title (role) {
+//       if (role.title) {
+//         if (role.title[this.lang] && this.lang !== 'en') {
+//           return role.title[this.lang]
+//         } else if (role.title.en) {
+//           return role.title.en
+//         }
+//       }
+//       return role.name
+//     },
     movestart (evt) {
       this.box = this.$el.querySelector('.mtdt-user-box')
 
@@ -684,17 +667,17 @@ export default {
 }
 </script>
 <style scoped>
-.fa-info-circle {
+/** .fa-info-circle {
   text-shadow: 2px 2px 4px dark;
   opacity: 0.8;
   cursor: pointer;
 }
 .fa-info-circle:hover {
   opacity: 1;
-}
+} **/
 </style>
 <style >
-div.title-client::before {
+/** div.title-client::before {
   content: ' + ';
 }
 div.deployed div.title-client::before {
@@ -724,7 +707,7 @@ div.role-line > div:first-child {
   min-width: 100px;
   max-width: 180px;
   text-align: right;
-}
+}**/
 
 form.form-organization input:invalid {
   border-color: red;
@@ -801,8 +784,7 @@ div.mtdt-user-box table td {
 }
 div.mtdt-user-box table td:nth-child(5) {
   border-left: 1px solid grey;
-}**/
-/* div.fmt-tooltip, */
+}
 .clipboard-tooltip {
   position: absolute;
   display:none;
@@ -820,35 +802,21 @@ div.mtdt-user-box table td:nth-child(5) {
 
 .copy-clipboard {
   position: relative;
-}
-/* .clipboard-tooltip {
-  position: absolute;
-  background-color: #fafafa;
-  border: 1px solid #a3a3a3;
-  font-size: smaller;
-  line-height: 1;
-  padding: 4px;
-  width: 160px;
-  text-align: left;
-  left:150px;
-  color:black;
-  z-index:100;
-  -webkit-box-shadow: 2px 2px 3px rgba(0, 0, 0, 0.4);
-  box-shadow: 2px 2px 3px rgba(0, 0, 0, 0.4);
-} */
+} 
+
 span div.clipboard-tooltip  {
   display:none;
   cursor: pointer;
   font-size:0.8rem;
   left:0;
 }
-
+*/
 datalist {
     max-height: 500px;
     overflow-y: auto;
 }
-/* .tooltip-show + div.fmt-tooltip, */
+/* .tooltip-show + div.fmt-tooltip, 
 .tooltip-show + div.clipboard-tooltip {
   display:block;
-}
+} */
 </style>

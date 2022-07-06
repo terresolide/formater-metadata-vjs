@@ -31,6 +31,16 @@ export default {
   }
 }
 </script>
+<style scoped>
+.fa-info-circle {
+  text-shadow: 2px 2px 4px dark;
+  opacity: 0.8;
+  cursor: pointer;
+}
+.fa-info-circle:hover {
+  opacity: 1;
+}
+</style>
 <style>
 div.fmt-tooltip {
   position: absolute;
