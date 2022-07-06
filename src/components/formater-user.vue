@@ -144,7 +144,10 @@
 		   <div v-if="canAsk"></div>
 		   <div></div>
 	   </div>
-	   <div v-for="(client,clientName) in clients" v-if="clientName !== 'global'" style="border-top: 1px dotted black;padding:0px;">
+	   <!-- GLOBAL ROLES -->
+	   <formater-client v-if="clients.global" :client="clients.global" :checked-roles="checkedRoles"></formater-client>
+	
+	   <div v-for="(client,clientName) in clients"  v-if="clientName !== 'global'" style="border-top: 1px dotted black;padding:0px;">
 	   <div class="role-line"  v-if="(client.groups && Object.keys(client.groups).length > 1) || (client.roles && client.roles.length > 1)"> 
 	     <div class="title-client" style="cursor:pointer;text-align:left;"  @click="toggleClient($event)">
 	       <span style="font-weight:800;">{{title(client)}}</span> <em style="float:right;font-size:0.9rem;">({{$t('all_access')}})</em>
@@ -255,10 +258,11 @@
 </span>
 </template>
 <script>
-
+const FormaterClient = () => import('@/components/formater-client.vue')
 export default {
   name: 'FormaterUser',
   components: {
+    FormaterClient
   },
   props: {
   },
@@ -287,12 +291,10 @@ export default {
           var canAskDownload = false
           for (var key in clients[client].groups) {
             console.log(key)
-            if (!clients[client].groups[key][0].access && !clients[client].groups[key][0].status &&
-                clients[client].groups[key][0].parameters.display) {
+            if (!clients[client].groups[key][0].access && !clients[client].groups[key][0].status) {
               canAskView = true
             }
-            if (!clients[client].groups[key][1].access && !clients[client].groups[key][1].status &&
-                clients[client].groups[key][1].parameters.display) {
+            if (!clients[client].groups[key][1].access && !clients[client].groups[key][1].status) {
               canAskDownload = true
             }
             this.canAskClients[client] = {view: canAskView, download: canAskDownload}
@@ -624,22 +626,22 @@ export default {
     hasRole (client, name) {
       return this.$store.getters['user/hasRole'](client, name)
     },
-    hideTooltip() {
-      document.querySelectorAll('.tooltip-show').forEach(function (node) {
-        node.classList.remove('tooltip-show')
-      })
-    },
-    showTooltip (event) {
-      event.preventDefault()
-      if (event.target.classList.contains('tooltip-show')) {
-        event.target.classList.remove('tooltip-show')
-        return
-      }
-      document.querySelectorAll('.tooltip-show').forEach(function (node) {
-        node.classList.remove('tooltip-show')
-      })
-      event.target.classList.add('tooltip-show')
-    },
+//     hideTooltip() {
+//       document.querySelectorAll('.tooltip-show').forEach(function (node) {
+//         node.classList.remove('tooltip-show')
+//       })
+//     },
+//     showTooltip (event) {
+//       event.preventDefault()
+//       if (event.target.classList.contains('tooltip-show')) {
+//         event.target.classList.remove('tooltip-show')
+//         return
+//       }
+//       document.querySelectorAll('.tooltip-show').forEach(function (node) {
+//         node.classList.remove('tooltip-show')
+//       })
+//       event.target.classList.add('tooltip-show')
+//     },
     description (role) {
       if (role.description && role.description[this.lang]) {
         return role.description[this.lang]
@@ -800,7 +802,7 @@ div.mtdt-user-box table td {
 div.mtdt-user-box table td:nth-child(5) {
   border-left: 1px solid grey;
 }**/
-div.fmt-tooltip,
+/* div.fmt-tooltip, */
 .clipboard-tooltip {
   position: absolute;
   display:none;
@@ -845,7 +847,7 @@ datalist {
     max-height: 500px;
     overflow-y: auto;
 }
-.tooltip-show + div.fmt-tooltip,
+/* .tooltip-show + div.fmt-tooltip, */
 .tooltip-show + div.clipboard-tooltip {
   display:block;
 }

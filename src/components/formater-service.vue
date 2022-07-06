@@ -92,6 +92,11 @@
       {{$t('limited_access_to', {domain: service.domain})}} 
       <i  class="fa fa-ban"></i>
    </a>
+    <a v-if="service.token && !hasAccess" class="mtdt-menu-item" :class="{searching: searching}"
+    :style="{'--color': $store.state.style.primary}" :title="$t('insufficient_right')">
+      Droit insuffisant demande accès
+      <i  class="fa fa-ban"></i>
+   </a>
    <span  v-if="service.token"  class="copy-clipboard mtdt-menu-item" :title="$t('copy_in_clipboard')">
              (<a @click="copyClipboard($event)" :style="{'--color': $store.state.style.primary}"><i class="fa fa-clipboard"></i> {{$t('access_token')}}</a>)
             <div class="clipboard-tooltip"   @click="removeTooltip($event)" v-html="$t('copied_to_clipboard', {time: getTime})"></div>
@@ -145,8 +150,10 @@ export default {
       if (!this.clientId || this.reject) {
         return false
       }
+      console.log(this.service.access)
       // var serviceRoles = this.$store.getters['roles/byClient']
       var result = this.$store.getters['user/getAccess'](this.clientId, this.service.access)
+      console.log(result)
       // this.testLoginSso(this.email, result)
       return result
     },
