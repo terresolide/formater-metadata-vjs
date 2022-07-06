@@ -24,7 +24,6 @@
 </i18n>
 <template>
 <span>
-
   <div class="role-line"  v-if="(client.groups && Object.keys(client.groups).length > 1) || (client.roles && client.roles.length > 1)"> 
        <div class="title-client" style="cursor:pointer;text-align:left;"  @click="toggleClient($event)">
          <span style="font-weight:800;">{{title(client)}}</span> <em style="float:right;font-size:0.9rem;">({{$t('all_access')}})</em>
@@ -60,36 +59,28 @@
 		            <div>{{title(role)}}</div>
 		            <div class="fmt-center">
 		            <formater-tooltip :description="description(role)"></formater-tooltip>
-		             <!--  <div v-if="role.description" style="position:relative;">
-		                 <span class="fa fa-info-circle" @click="showTooltip($event)"></span>
-		                 <div class="fmt-tooltip" @click="hideTooltip()" v-html="description(role)"></div>
-		              </div>   -->
 		            </div>
 		            <div class="fmt-center">
 		              <span v-if="role.access" :title="$t('ACCEPTED')"><i class="fa fa-check" style="color:green;"></i></span>
 		              <!--  <i v-if="role.parameters.view" class="fa" :class="{'fa-close': !role.access, 'fa-check': role.access} "></i>
 		              --> 
-		              <input v-if="!role.access && !role.status && role.parameters.view" type="checkbox" v-model="checkedRoles" :value="name + '.' + role.name" />
+		              <input v-if="!role.access && !role.status && role.parameters.view" type="checkbox"  :value="name + '.' + role.name"
+		               :checked="checkedRoles.indexOf(name + '.' + role.name) >= 0" @click="changeRole($event)"/>
 		            </div>
 		            <div class="fmt-center">
 		             <!--   <i v-if="role.parameters.download" class="fa" :class="{'fa-close': !role.access, 'fa-check': role.access} "></i>
 		              --> 
 		              <span v-if="role.access" :title="$t('ACCEPTED')"><i class="fa fa-check" style="color:green;"></i></span>
-		              <input v-if="!role.access && !role.status && role.parameters.download" type="checkbox" v-model="checkedRoles" :value="name + '.' + role.name" @click="changeRole($event)"/>
+		              <input v-if="!role.access && !role.status && role.parameters.download" type="checkbox" :value="name + '.' + role.name"
+		              :checked="checkedRoles.indexOf(name + '.' + role.name) >= 0" @click="changeRole($event)" />
 		            </div>
-		       <!--      <div  v-if="canAsk" class="fmt-center">
-		             </div> --> 
 		            <div>
 		             </div>
 		  </div>
 	   <div class="role-line" v-if="client.groups" v-for="group, key in client.groups">
-	      <div>{{title(group[0])}}</div>
+	      <div>{{title(group[0], key)}}</div>
 	      <div class="fmt-center">
 	         <formater-tooltip :description="description(group[0])"></formater-tooltip>
-	       <!--  <div v-if="group[0].description" style="position:relative;">
-	           <span class="fa fa-info-circle" @click="showTooltip($event)"></span>
-	           <div class="fmt-tooltip" @click="hideTooltip()" v-html="description(group[0])"></div>
-	        </div> --> 
 	      </div>
 	      <div v-for="role, index in group" class="fmt-center">
 	         <span v-if="role.access" :title="$t('ACCEPTED')"><i class="fa fa-check" style="color:green;"></i></span>
@@ -101,7 +92,8 @@
 	             <i class="fa fa-close" style="color:darkred;"></i>
 	           </span>
 	           <span v-if="!role.status">
-	              <input v-if="index === 1 || checkedRoles.indexOf(name + '.' + group[1].name) < 0" type="checkbox" v-model="checkedRoles" :value="name + '.' + role.name" />
+	              <input v-if="index === 1 || checkedRoles.indexOf(name + '.' + group[1].name) < 0" type="checkbox" :value="name + '.' + role.name" 
+	              :checked="checkedRoles.indexOf(name + '.' + role.name) >= 0" @click="changeRole($event)"/>
 	              <input v-if="index === 0 && checkedRoles.indexOf(name + '.' + group[1].name) >=0"  type="checkbox"  :checked="true" disabled value="no" />
 	
 	           </span>
@@ -163,13 +155,16 @@ export default {
     console.log(this.client)
   },
   methods: {
-    title (role) {
+    title (role, group) {
       if (role.title) {
         if (role.title[this.lang] && this.lang !== 'en') {
           return role.title[this.lang]
         } else if (role.title.en) {
           return role.title.en
         }
+      }
+      if (group) {
+        return group
       }
       return role.name
     },
@@ -215,13 +210,10 @@ export default {
           var role = this.client.groups[key][index]
           var roleName = this.name + '.' + role.name
           if (checked && this.checkedRoles.indexOf(roleName) < 0 && !role.access && !role.status) {
-            /// this.checkedRoles.push(roleName)
+            this.emitChange(roleName, true)
           }
           if (!checked) {
-            var j = this.checkedRoles.indexOf(roleName)
-            if (j >= 0) {
-              this.checkedRoles.splice(j, 1)
-            }
+            this.emitChange(roleName, false)
           }
         }
       }
@@ -231,19 +223,17 @@ export default {
           var roleName = this.name + '.' + role.name
           if (checked && view && role.parameters.view && this.checkedRoles.indexOf(roleName) < 0) {
             if (!role.access && !role.status && role.parameters.display) {
-             // this.checkedRoles.push(roleName)
+             this.emitChanges(roleName, true)
             }
           }
           if (checked && download && role.parameters.download && this.checkedRoles.indexOf(roleName) < 0) {
             if (!role.access && !role.status && role.parameters.display) {
-              this.checkedRoles.push(roleName)
+              this.emitChanges(roleName, true)
             }
           }
           if (!checked) {
-//             var j = this.checkedRoles.indexOf(roleName)
-//             if (j >= 0) {
-//               this.checkedRoles.splice(j, 1)
-//             }
+            this.emitChange(roleName, false)
+
           }
         }
       }
@@ -255,8 +245,12 @@ export default {
       }
       target.classList.toggle('deployed')
     },
+    emitChange(roleName, value) {
+      this.$emit('roleChange', {role: roleName, checked: value})
+    },
     changeRole (event) {
-      console.log(event)
+      var target = event.target
+      this.emitChange(target.value, target.checked)
     }
   }
 }
