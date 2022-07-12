@@ -61,21 +61,23 @@
 		            <formater-tooltip :description="description(role)"></formater-tooltip>
 		            </div>
 		            <div class="fmt-center">
+		             <span v-if="Object.keys(role.parameters).length === 0 || role.parameters.view">
 		              <span v-if="role.access" :title="$t('ACCEPTED')"><i class="fa fa-check" style="color:green;"></i></span>
 		              <!--  <i v-if="role.parameters.view" class="fa" :class="{'fa-close': !role.access, 'fa-check': role.access} "></i>
 		              --> 
-		              <input v-if="!role.access && !role.status && role.parameters.view" type="checkbox"  :value="name + '.' + role.name"
+		              <input v-if="!role.access && !role.status" type="checkbox"  :value="name + '.' + role.name"
 		               :checked="checkedRoles.indexOf(name + '.' + role.name) >= 0" @click="changeRole($event)"/>
+		             </span>
 		            </div>
 		            <div class="fmt-center">
+		               <span v-if="Object.keys(role.parameters).length === 0 || role.parameters.download">
 		             <!--   <i v-if="role.parameters.download" class="fa" :class="{'fa-close': !role.access, 'fa-check': role.access} "></i>
 		              --> 
-		              <span v-if="role.access" :title="$t('ACCEPTED')"><i class="fa fa-check" style="color:green;"></i></span>
-		              <input v-if="!role.access && !role.status && role.parameters.download" type="checkbox" :value="name + '.' + role.name"
+			              <span v-if="role.access" :title="$t('ACCEPTED')"><i class="fa fa-check" style="color:green;"></i></span>
+			              <input v-if="!role.access && !role.status" type="checkbox" :value="name + '.' + role.name"
 		              :checked="checkedRoles.indexOf(name + '.' + role.name) >= 0" @click="changeRole($event)" />
+		              </span>
 		            </div>
-		            <div>
-		             </div>
 		  </div>
 	   <div class="role-line" v-if="client.groups" v-for="group, key in client.groups">
 	      <div>{{title(group[0], key)}}</div>
@@ -176,11 +178,11 @@ export default {
       }
       return null
     },
-    copyClipboard (event, clientName) {
+    copyClipboard (event) {
       var _this = this
       console.log(event)
       var target = event.target
-      navigator.clipboard.writeText(this.clients[clientName].token).then(function() {
+      navigator.clipboard.writeText(this.client.token).then(function() {
         /* clipboard successfully set */
         target.classList.add('tooltip-show')
         setTimeout(function () {
@@ -219,7 +221,7 @@ export default {
       }
       if (this.client.roles) {
         for (var i in this.client.roles) {
-          var role = this.clients.roles[i]
+          var role = this.client.roles[i]
           var roleName = this.name + '.' + role.name
           if (checked && view && role.parameters.view && this.checkedRoles.indexOf(roleName) < 0) {
             if (!role.access && !role.status && role.parameters.display) {
