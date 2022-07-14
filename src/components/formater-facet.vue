@@ -87,6 +87,11 @@ export default {
     },
     label (newvalue) {
       this.name = this.label.split('|').pop()
+      if (this.defaut && this.defaut.indexOf(this.value) >= 0) {
+          this.isChecked = true
+      } else {
+          this.isChecked = false
+      }
     }// ,
 //     checked (newvalue) {
 //       if (!newvalue) {

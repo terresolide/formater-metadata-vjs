@@ -67,6 +67,14 @@ export default {
   mounted () {
    	if (this.dimension.length > 0) {
 	  this.dimensions = this.dimension
+// 	  .sort(function compare(a, b) {
+// 	    if (a['@label'] est inférieur à b selon les critères de tri)
+// 	      return -1;
+// 	   if (a['@label'] est supérieur à b selon les critères de tri)
+// 	      return 1;
+// 	   // a doit être égal à b
+// 	   return 0;
+// 	 })
      
    	} else {
       this.dimensions = [this.dimension]
