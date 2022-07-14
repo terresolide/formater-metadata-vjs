@@ -33,7 +33,8 @@
     }
   },
     "https://w3id.org/formater/data-center/ISDeform": {
-    "logo": "https://service.poleterresolide.fr/geonetwork/images/harvesting/isdeform.png",
+    "logo": "https://service.poleterresolide.fr/geonetwork/images/harvesting/cropped-Logo_IsDeform_v8.png",
+    "href": "https://www.isdeform.fr/",
     "title": {
       "fr": "ISDeform",
       "en": "ISDeform"
