@@ -12,6 +12,7 @@ export default {
       email: null,
       roles: []
     },
+    strRoles: null,
     token: null,
     code: null,
     refreshToken: null,
@@ -24,39 +25,39 @@ export default {
     formaterRole: null
   },
   getters: {
-    canDownload: (state, getter) => (download, clientId) => {
-      if (download === 'free' ) {
-        return true
-      }
-      if (download === 'auth') {
-        if (state.user && state.user.email) {
-          return true
-        } else {
-          return false
-        }
-      }
-      return false
-    },
-    canView: (state, getter) => (view, clientId) => {
-      if (view === 'free') {
-        return true
-      }
-      if (view === 'auth') {
-        if (state.user && state.user.email) {
-          return true
-        } else {
-          return false
-        }
-      }
-      console.log(clientId)
-      if (clientId) {
-        var views = view.split(',')
-        console.log(views)
-        console.log(state.user.roles[clientId])
-        
-      }
-      return false
-    },
+//    canDownload: (state, getter) => (download, clientId) => {
+//      if (download === 'free' ) {
+//        return true
+//      }
+//      if (download === 'auth') {
+//        if (state.user && state.user.email) {
+//          return true
+//        } else {
+//          return false
+//        }
+//      }
+//      return false
+//    },
+//    canView: (state, getter) => (view, clientId) => {
+//      if (view === 'free') {
+//        return true
+//      }
+//      if (view === 'auth') {
+//        if (state.user && state.user.email) {
+//          return true
+//        } else {
+//          return false
+//        }
+//      }
+//      console.log(clientId)
+//      if (clientId) {
+//        var views = view.split(',')
+//        console.log(views)
+//        console.log(state.user.roles[clientId])
+//        
+//      }
+//      return false
+//    },
     code (state, getters) {
       return state.code
     },
@@ -74,27 +75,32 @@ export default {
         return null
       }
     },
-    getAccess: (state) => (client, access) => {
+  //  getAccess: (state) => (client, access) => {
+    getAccess: (state) => (access) => {
       var resp = {search: false, view: false, download: false}
-      if (!client) {
-        return resp
-      }
-      var userRoles = false
-      if (state.user && state.user.roles && state.user.roles[client]) {
-        userRoles = state.user.roles[client].join(',')
-      } 
-      
-      ['search', 'view', 'download'].forEach(function (prop) {
-        if (!access[prop] || access[prop] === 'free' || access[prop] === 'auth') {
+//      if (!client) {
+//        return resp
+//      }
+//      var userRoles = false
+//      if (state.user && state.user.roles && state.user.roles[client]) {
+//        userRoles = state.user.roles[client].join(',')
+//      } 
+      var props =  ['search', 'view', 'download']
+      props.forEach(function (prop) {
+        if (!access[prop] || access[prop] === 'free') {
           resp[prop] = true
+        } else if (access[prop] === 'auth') {
+          resp[prop] = state.user ? true : false
         } else {
-          if (!state.user || !state.user.roles || !state.user.roles[client])
+         // if (!state.user || !state.user.roles || !state.user.roles[client])
+          if (!state.user || !state.strRoles)
           {
             resp[prop] = false
           } else {
             var roles = access[prop].split(',')
             for (var key in roles) {
-              if (userRoles.indexOf(roles[key]) >= 0) {
+             // if (userRoles.indexOf(roles[key]) >= 0) {
+              if (state.strRoles && state.strRoles.indexOf(roles[key]) >= 0) {
                 resp[prop] = true
                 break
               }
@@ -108,11 +114,12 @@ export default {
       return state.state
     },
     hasRole: (state) => (client, role) => {
-      if (!state.user.roles[client])
-      {
-        return false
-      }
-      return state.user.roles[client].indexOf(role) >= 0
+      return state.strRoles && state.strRoles.indexOf(role) >= 0
+//      if (!state.user.roles[client])
+//      {
+//        return false
+//      }
+//      return state.user.roles[client].indexOf(role) >= 0
     },
     isFormater (state, getters) {
       if (!state.user || !state.user.roles) {
@@ -261,7 +268,14 @@ export default {
           roles[client] = obj.client_roles[client].roles
         }
         roles.global = obj.realm_roles
-        console.log(roles)
+        
+        var strRoles = []
+        for (var key in roles) {
+          if (key !== 'account' && key !== 'realm-management') {
+            strRoles.push(roles[key].join(','))
+          }
+        }
+        state.strRoles = strRoles.join(',')
         state.user = {
             id: obj.sub,
             email: obj.email,
@@ -281,6 +295,7 @@ export default {
       state.token = null
       state.code = null
       state.refreshToken = null
+      state.strRoles = null
     }
   }
 }

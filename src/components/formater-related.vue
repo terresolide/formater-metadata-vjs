@@ -345,12 +345,10 @@
 //         return this.$store.getters['user/isFormater']
 //       },
       rights () {
-        console.log(this.clientId)
-        console.log(this.access)
-        return this.$store.getters['user/getAccess'](this.clientId, this.access)
+       // return this.$store.getters['user/getAccess'](this.clientId, this.access)
+        return this.$store.getters['user/getAccess'](this.access)
       },
       canView () {
-        console.log(this.rights)
         return this.rights.view
       },
       canDownload () {

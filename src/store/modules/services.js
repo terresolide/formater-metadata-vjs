@@ -35,7 +35,6 @@ export default {
      return state.current
    },
    clientId(state, getters) {
-     console.log(state.current)
      if (state.current >= 0) {
        return state.services[state.current].clientId
      } else {
@@ -68,8 +67,16 @@ export default {
     init (state, ssoname) {
       state.sso = ssoname
     },
+    initialize (state, clients) {
+      var index = 0
+      this.clients.forEach(function (client) {
+        client.id = index
+        state.services.push(client)
+        index++
+      })
+    },
     reset (state) {
-      if (state.current) {
+      if (state.current >= 0) {
         state.services[state.current].token = null
       }
       state.services.forEach(function(service, index) {
@@ -102,7 +109,6 @@ export default {
        } else {
            state.services[index].access = service.access
        }
-       console.log(state.services[index].access)
        state.current = index
        console.log(state.services)
        console.log(index)

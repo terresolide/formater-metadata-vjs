@@ -133,7 +133,6 @@ export default {
        var canAskDownload = false
        if (this.client.groups) {
          for (var key in this.client.groups) {
-           console.log(key)
            if (!this.client.groups[key][0].access && !this.client.groups[key][0].status) {
              canAskView = true
            }

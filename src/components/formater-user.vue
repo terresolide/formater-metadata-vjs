@@ -183,7 +183,6 @@ export default {
     },
     canAsk () {
       var can = false
-      return true
       for (var client in this.clients) {
 	      this.clients[client].roles.forEach(function (role) {
 	        if (!role.access && !role.status) {

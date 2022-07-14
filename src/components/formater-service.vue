@@ -1,7 +1,7 @@
 <i18n>
 {
   "fr": {
-    "access_to": "Connexion à",
+    "access_to": "Connecté à",
     "access_token": "token d'accès",
     "authorize": "Autoriser",
     "authorization_failed": "La connexion au service {domain} a échoué.",
@@ -91,6 +91,9 @@
     :style="{'--color': $store.state.style.primary}" :title="$t('insufficient_right')">
       {{$t('limited_access_to', {domain: service.domain})}} 
       <i  class="fa fa-ban"></i>
+      <div>Demande accès</div>
+      <div>{{access}}</div>
+      <div>{{service.access}}</div>
    </a>
     <a v-if="service.token && !hasAccess" class="mtdt-menu-item" :class="{searching: searching}"
     :style="{'--color': $store.state.style.primary}" :title="$t('insufficient_right')">
@@ -146,16 +149,15 @@ export default {
     //  this.msg = access && !this.service.token
       return access
     },
+    client () {
+      return this.$store.getters['roles/getClient'](this.service.clientId)
+    },
     access () {
       if (!this.clientId || this.reject) {
         return false
       }
-      console.log(this.service.access)
-      // var serviceRoles = this.$store.getters['roles/byClient']
-      var result = this.$store.getters['user/getAccess'](this.clientId, this.service.access)
-      console.log(result)
-      // this.testLoginSso(this.email, result)
-      return result
+      // var result = this.$store.getters['user/getAccess'](this.clientId, this.service.access)
+      return this.$store.getters['user/getAccess'](this.service.access)
     },
 //     isFormater (newvalue) {
 //       var isFormater = this.$store.getters['user/isFormater']
