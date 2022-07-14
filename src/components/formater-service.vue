@@ -91,9 +91,9 @@
     :style="{'--color': $store.state.style.primary}" :title="$t('insufficient_right')">
       {{$t('limited_access_to', {domain: service.domain})}} 
       <i  class="fa fa-ban"></i>
-      <div>Demande accès</div>
+    <!--    <div>Demande accès</div>
       <div>{{access}}</div>
-      <div>{{service.access}}</div>
+      <div>{{service.access}}</div>-->
    </a>
     <a v-if="service.token && !hasAccess" class="mtdt-menu-item" :class="{searching: searching}"
     :style="{'--color': $store.state.style.primary}" :title="$t('insufficient_right')">
@@ -248,20 +248,26 @@ export default {
       node.previousElementSibling.classList.remove('tooltip-show')
     },
     getClientId () {
-      var url = this.service.clientIdUrl
-      this.$http.get(url).then(function (response) {
-        if (response.body && response.body.clientId) {
-          this.clientId = response.body.clientId
-          if (this.email && this.hasAccess) {
-            this.msg = true
-          } else {
-            console.log('no client Id')
-          }
-          this.$store.commit('services/setClientId', {id: this.service.id, clientId: this.clientId})
-          this.state = 'php' + btoa(this.clientId + this.service.domain).replace(/=|\+|\//gm, '0')
-          this.testLoginSso()
-        }
-	    }, resp => console.log('NO_CLIENT_ID'))
+      this.clientId = this.service.clientId
+      if (this.email && this.hasAccess) {
+		    this.msg = true
+		  }
+      this.state = 'php' + btoa(this.clientId + this.service.domain).replace(/=|\+|\//gm, '0')
+      this.testLoginSso()
+//       var url = this.service.clientIdUrl
+//       this.$http.get(url).then(function (response) {
+//         if (response.body && response.body.clientId) {
+//           this.clientId = response.body.clientId
+//           if (this.email && this.hasAccess) {
+//             this.msg = true
+//           } else {
+//             console.log('no client Id')
+//           }
+//           this.$store.commit('services/setClientId', {id: this.service.id, clientId: this.clientId})
+//           this.state = 'php' + btoa(this.clientId + this.service.domain).replace(/=|\+|\//gm, '0')
+//           this.testLoginSso()
+//         }
+// 	    }, resp => console.log('NO_CLIENT_ID'))
     },
    
     searchCode () {

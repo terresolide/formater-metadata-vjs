@@ -25,6 +25,7 @@ export default {
   state: {
     services: [],
     sso: null,
+    pre: null,
     current: -1
   },
   getters: {
@@ -69,11 +70,17 @@ export default {
     },
     initialize (state, clients) {
       var index = 0
-      this.clients.forEach(function (client) {
+      state.services = []
+      clients.forEach(function (client) {
         client.id = index
+        client.token = null
+        client.access = false
         state.services.push(client)
         index++
       })
+      if (state.pre) {
+        this.commit('services/add', state.pre)
+      }
     },
     reset (state) {
       if (state.current >= 0) {
@@ -87,31 +94,32 @@ export default {
       state.current = -1
     },
     add (state, service) {
-      
+       if (state.services.length === 0) {
+         state.pre = service
+       }
        var index = state.services.findIndex(obj => obj.domain === service.domain)
-       if (index < 0) {
-         var url = new URL(service.api)
-         if (url.pathname.indexOf('atdistrib/resto2') > 0) {
-           index = state.services.length
-           service.id = index
-           service.token = null
-           service.type = 'resto2'
-           service.host = url.protocol + '//' + url.hostname
-           service.authUrl = null
-           service.clientIdUrl = null
-           service.authUrl = service.host + '/atdistrib/resto2/api/auth/' + state.sso
-           service.clientIdUrl = service.host + '/atdistrib/resto2/api/auth/' + state.sso + '/clientid'
-           service.validationUrl = service.host + '/atdistrib/resto2/api/user/checkToken'
-           service.disconnectUrl = service.host + '/atdistrib/resto2/api/user/disconnect'
-           service.refreshUrl = service.host + '/atdistrib/resto2/api/user/connect'
-           state.services.push(service)
-         }
-       } else {
+//       if (index < 0) {
+//         var url = new URL(service.api)
+//         if (url.pathname.indexOf('atdistrib/resto2') > 0) {
+//           index = state.services.length
+//           service.id = index
+//           service.token = null
+//           service.type = 'resto2'
+//           service.host = url.protocol + '//' + url.hostname
+//           service.authUrl = null
+//           service.clientIdUrl = null
+//           service.authUrl = service.host + '/atdistrib/resto2/api/auth/' + state.sso
+//           service.clientIdUrl = service.host + '/atdistrib/resto2/api/auth/' + state.sso + '/clientid'
+//           service.validationUrl = service.host + '/atdistrib/resto2/api/user/checkToken'
+//           service.disconnectUrl = service.host + '/atdistrib/resto2/api/user/disconnect'
+//           service.refreshUrl = service.host + '/atdistrib/resto2/api/user/connect'
+//           state.services.push(service)
+//         }
+       if (index >= 0) {
            state.services[index].access = service.access
        }
        state.current = index
-       console.log(state.services)
-       console.log(index)
+
        // return index
 //      let service = new Service(api)
 //      console.log(service.domain)

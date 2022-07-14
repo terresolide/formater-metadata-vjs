@@ -340,6 +340,7 @@ export default {
       .then(resp => {
         if (resp.body.success) {
           this.$store.commit('roles/set', {clients: resp.body.roles, roles: this.$store.getters['user/roles']})
+          this.$store.commit('services/initialize', resp.body.clients)
         }
         if (this.canAsk) {
           this.show = true

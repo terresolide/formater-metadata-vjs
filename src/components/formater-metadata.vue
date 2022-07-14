@@ -234,6 +234,7 @@ export default {
     	    this.$store.commit('services/add', {domain: url.hostname, api: osParameters.api, access: this.access, uuid: this.uuid})
     	    this.serviceId = this.$store.getters['services/current']
           this.service = this.$store.getters['services/byId'](this.serviceId)
+          console.log(this.service)
         }
         this.disableType =  this.describe ? 'opensearch' : 'geonetwork'
         this.$emit('parametersChange', {osParameters: this.osParameters, mapping: this.mapping, type: this.disableType, depth: this.depth})
