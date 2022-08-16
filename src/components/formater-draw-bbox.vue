@@ -83,7 +83,7 @@ export default {
   created: function() {
     this.$i18n.locale = this.lang
     if (this.$i18n.locale  === 'fr') {
-      L.drawLocal = require('formater-geotiff-visualizer-vjs/src/module/leaflet.draw.fr.js')
+      L.drawLocal = require('formater-commons-components-vjs/src/leaflet/leaflet.draw.fr.js')
     } 
 
     // open and close

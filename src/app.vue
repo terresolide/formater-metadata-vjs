@@ -10,7 +10,7 @@
 </i18n>
 <template>
 <div class="mtdt-app" >
- <aeris-theme :primary="$store.state.style.primary" :active="true" :emphasis="$store.state.style.emphasis"></aeris-theme>
+ <!-- <aeris-theme :primary="$store.state.style.primary" :active="true" :emphasis="$store.state.style.emphasis"></aeris-theme> -->
  <header v-if="authEnabled && $route.name !== 'FormaterLogin' && $route.name !== 'FormaterLogout'" >
     <formater-authentication v-if="authEnabled" ></formater-authentication>
     <!--  <i class="fa fa-shopping-cart" style="font-size:1.5rem;opacity:0.6" :style="{color: $store.state.style.primary}"></i>-->
@@ -28,7 +28,7 @@
 </template>
 
 <script>
- import AerisTheme from 'aeris-commons-components-vjs/src/aeris-theme/aeris-theme.vue'
+ // import AerisTheme from 'aeris-commons-components-vjs/src/aeris-theme/aeris-theme.vue'
  import FormaterService from '@/components/formater-service.vue'
  import FormaterAuthentication from '@/components/formater-authentication.vue'
  import dataCenter from '@/assets/json/dataCenter.json'
@@ -43,7 +43,7 @@
 export default {
     name: 'App',
     components: {
-      AerisTheme,
+     //  AerisTheme,
       FormaterAuthentication,
       FormaterService
     },

@@ -346,7 +346,7 @@ const GeonetworkPlugin = {
              }
              var _this = this
              links.forEach(function (online, index) {
-               var protocol = protocol = online['gmd:protocol']['gco:CharacterString'] ? online['gmd:protocol']['gco:CharacterString']['#text'] : online['gmd:protocol']['gmx:Anchor']['#text']
+               var protocol = online['gmd:protocol']['gco:CharacterString'] ? online['gmd:protocol']['gco:CharacterString']['#text'] : online['gmd:protocol']['gmx:Anchor']['#text']
                var url = online['gmd:linkage']['gmd:URL']
                var name = _this.extractFromLangs(online['gmd:name'], idLang)
                var description = _this.extractFromLangs(online['gmd:description'], idLang)
@@ -370,6 +370,8 @@ const GeonetworkPlugin = {
                  }
                  break;
                case 'WTS':
+               case 'WMTS':
+               case 'XYZ-Tile-Service':
                case 'OGC:WMS': 
                case 'OGC:WFS':
                case 'OGC:WFS-G':
@@ -394,6 +396,7 @@ const GeonetworkPlugin = {
                  break;
                case 'WWW:DOWNLOAD-1.0-link--download':
                case 'telechargement':
+               case 'download':
                  if (!metadata.download) {
                    metadata.download = []
                  }

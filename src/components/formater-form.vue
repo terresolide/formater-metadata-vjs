@@ -32,23 +32,24 @@
      <input id="any" name="any" v-model="fulltextSearch" :placeholder="$t('search')" @keypress="changeTextOnEnter"  /><i class="fa fa-search"></i>
  </div>
  <formater-map :depth="depth"></formater-map>
- <formater-search-box header-icon-class="fa fa-globe" open-icon-class="fa fa-caret-right" :title="$t('spatial_extent')" :deployed="false" type="empty" :disable-level="+ $store.state.disable.spatial">
- <formater-spatial-search :disable="$store.state.disable.spatial" :lang="$store.state.lang"></formater-spatial-search>
+ <formater-search-box :color="$store.state.style.primary" header-icon-class="fa fa-globe" open-icon-class="fa fa-caret-right" :title="$t('spatial_extent')" :deployed="false" type="empty" :disable-level="+ $store.state.disable.spatial">
+   <formater-spatial-search :disable="$store.state.disable.spatial" :lang="$store.state.lang"></formater-spatial-search>
  </formater-search-box>
  
-<formater-search-box header-icon-class="fa fa-calendar" open-icon-class="fa fa-caret-right" :title="$t('time_slot')" :deployed="true" type="empty" :disable-level="+ $store.state.disable.temporal">
+<formater-search-box :color="$store.state.style.primary" header-icon-class="fa fa-calendar" open-icon-class="fa fa-caret-right" :title="$t('time_slot')" :deployed="true" type="empty" :disable-level="+ $store.state.disable.temporal">
   <formater-temporal-search :lang="$i18n.locale" name="ext" :daymin="$store.state.temporalExtent.min"
-   :daymax="$store.state.temporalExtent.max" :disable="$store.state.disable.temporal"
+   :daymax="$store.state.temporalExtent.max" :color="$store.state.style.emphasis" :disable="$store.state.disable.temporal"
    :default-from="temp.from" :default-to="temp.to"></formater-temporal-search>
 </formater-search-box>
 <!--  opensearch parameters -->
-<formater-search-box header-icon-class="fa fa-thermometer-3" v-if="$store.state.parameters.others.length > 0" open-icon-class="fa fa-caret-right" :title="$t('parameters')" :deployed="true" type="empty">
+<formater-search-box :color="$store.state.style.primary" header-icon-class="fa fa-thermometer-3" v-if="$store.state.parameters.others.length > 0" open-icon-class="fa fa-caret-right" :title="$t('parameters')" :deployed="true" type="empty">
  <formater-parameters-form :parameters="$store.state.parameters.others" :depth="depth"></formater-parameters-form>
  </formater-search-box>
 <!--  end opensearch -->
 <!-- step1 only dimension -->
 <div v-for="(key, index) in $store.state.gnParameters.step1" :disable="depth > 0">
-<formater-search-box v-if="dimensions[nameToIndex[key]] && dimensions[nameToIndex[key]].category" :header-icon-class="facetToIcon(key)" open-icon-class="fa fa-caret-right" :title="titleDimension(key)"  
+<formater-search-box  v-if="dimensions[nameToIndex[key]] && dimensions[nameToIndex[key]].category" 
+:color="$store.state.style.primary" :header-icon-class="facetToIcon(key)" open-icon-class="fa fa-caret-right" :title="titleDimension(key)"  
 :disable-level="depth > 0 ? 1 : 0" type="empty">
   <formater-dimension-block v-if="!isFacet(key)"   :dimension="dimensions[nameToIndex[key]].category" :name="key" :disable="depth > 0"></formater-dimension-block>
   <formater-facet-block v-if="isFacet(key)"   :dimension="dimensions[nameToIndex[key]].category" :name="key" 
@@ -58,7 +59,8 @@
 
 <!-- step 1 and step 2 -->
 <div v-for="(key, index) in $store.state.gnParameters.step1step2" >
-<formater-search-box v-if="dimensions[nameToIndex[key]] && dimensions[nameToIndex[key]].category" :header-icon-class="facetToIcon(key)" open-icon-class="fa fa-caret-right" :title="titleDimension(key)"
+<formater-search-box  v-if="dimensions[nameToIndex[key]] && dimensions[nameToIndex[key]].category" 
+:color="$store.state.style.primary" :header-icon-class="facetToIcon(key)" open-icon-class="fa fa-caret-right" :title="titleDimension(key)"
 :disable-level="$store.state.disable.other ? 1 : 0" type="empty">
   <formater-dimension-block v-if="!isFacet(key)"   :dimension="dimensions[nameToIndex[key]].category" :disable="$store.state.disable.other" :name="key" ></formater-dimension-block>
   <formater-facet-block v-if="isFacet(key)"   :dimension="dimensions[nameToIndex[key]].category" :disable="$store.state.disable.other" 
@@ -67,7 +69,8 @@
 </div>
 
 <div v-for="(key, index) in $store.state.gnParameters.step2" v-if="depth > 0" >
-<formater-search-box v-if="dimensions[nameToIndex[key]] && dimensions[nameToIndex[key]].category" :header-icon-class="facetToIcon(key)" open-icon-class="fa fa-caret-right" :title="titleDimension(key)" 
+<formater-search-box v-if="dimensions[nameToIndex[key]] && dimensions[nameToIndex[key]].category"
+:color="$store.state.style.primary"  :header-icon-class="facetToIcon(key)" open-icon-class="fa fa-caret-right" :title="titleDimension(key)" 
 :disable-level="$store.state.disable.other ? 1 : 0" type="empty">
   <formater-dimension-block :ref="key" v-if="!isFacet(key)"   :dimension="dimensions[nameToIndex[key]].category" :disable="$store.state.disable.other":name="key" ></formater-dimension-block>
   <formater-facet-block v-if="isFacet(key)"   :dimension="dimensions[nameToIndex[key]].category" :disable="$store.state.disable.other" 

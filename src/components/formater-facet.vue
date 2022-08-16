@@ -15,17 +15,17 @@
 	         <i class="fa fa-minus-square-o"></i>
 	     </div>
 	     <div class="mtdt-child" v-if="dimension.category && dimension.category.length > 0" >
-	      	<formater-facet  :level="level + 1" :defaut="defaut"  :facet-name="facetName" :label="item['@label']" :value="childValue(index)" v-for="(item,index) in dimension.category" :dimension="item" :key="index" @input="childChanged"></formater-facet>
+	       	<formater-facet  :level="level + 1" :defaut="defaut"  :facet-name="facetName" :label="item['@label']" :value="childValue(index)" v-for="(item,index) in dimension.category" :dimension="item" :key="index" @input="childChanged"></formater-facet>
 	     </div>
 	  </div>
  </div>
 </template>
 <script>
-import FormaterFacet from './formater-facet.vue';
+// import FormaterFacet from './formater-facet.vue';
 export default {
   name: 'FormaterFacet',
   components: {
-    FormaterFacet
+   // FormaterFacet
   },
   props: {
     dimension: {

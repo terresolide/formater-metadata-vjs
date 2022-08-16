@@ -59,7 +59,7 @@ import FormaterListMetadata from './components/formater-list-metadata.vue';
 const FormaterMetadata = () => import('./components/formater-metadata.vue')
 import FormaterPaging from './components/formater-paging.vue';
 import FormaterDrawBbox from './components/formater-draw-bbox.vue';
-import AerisTheme from 'aeris-commons-components-vjs/src/aeris-theme/aeris-theme.vue'
+// import AerisTheme from 'aeris-commons-components-vjs/src/aeris-theme/aeris-theme.vue'
 
 const JSONPATH = require('jsonpath')
 // prevent previous and next page for browser
@@ -78,7 +78,7 @@ export default {
     FormaterMetadata,
     FormaterPaging,
    // FormaterRequester,
-    AerisTheme
+   // AerisTheme
   },
   data() {
     return {

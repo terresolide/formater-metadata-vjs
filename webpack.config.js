@@ -4,13 +4,13 @@ var PACKAGE = require('./package.json');
 var config = require('./config');
 var buildVersion = PACKAGE.version;
 var buildName = PACKAGE.name;
-var CleanWebpackPlugin = require('clean-webpack-plugin');
-var UglifyJsPlugin = require('uglifyjs-webpack-plugin')
+var {CleanWebpackPlugin} = require('clean-webpack-plugin');
+// var UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 const VueLoaderPlugin = require('vue-loader/lib/plugin')
 // var vueLoaderConfig = require('./vue-loader.conf')
 var preUrl = PACKAGE.preproduction.url + "/webcomponents/";
 var prodUrl = PACKAGE.production.url + '/' + buildName + '@' + buildVersion +  '/dist/' ;
-var FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin');
+// var FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin');
 //if (process.env.NODE_ENV === 'production') {
 //  var appURL = prodUrl;
 //} else {
@@ -100,7 +100,6 @@ module.exports = {
   devServer: {
     // https: true,
     historyApiFallback: true,
-    noInfo: true,
     headers: {
       "Access-Control-Allow-Origin": "http://localhost:8080",
       "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
@@ -110,7 +109,7 @@ module.exports = {
   performance: {
     hints: false
   },
-  devtool: '#eval-source-map'
+  devtool: 'eval-source-map'
 }
 
 if (process.env.NODE_ENV === 'development') {
@@ -122,10 +121,10 @@ if (process.env.NODE_ENV === 'development') {
   ])
   module.exports.mode = 'development'
 	module.exports.output.filename='build.js'
-	  module.exports.plugins = (module.exports.plugins || []).concat([
-
-	    new FriendlyErrorsWebpackPlugin()
-	  ])
+//	  module.exports.plugins = (module.exports.plugins || []).concat([
+//
+//	    new FriendlyErrorsWebpackPlugin()
+//	  ])
 
 
 }
@@ -137,16 +136,18 @@ if (process.env.NODE_ENV === 'production') {
     new VueLoaderPlugin()
   ])
   module.exports.mode = 'production'
-  module.exports.devtool = '#source-map';
+  module.exports.devtool = 'source-map';
   module.exports.output.publicPath = prodUrl;
 
   // http://vue-loader.vuejs.org/en/workflow/production.html
   module.exports.plugins = (module.exports.plugins || []).concat([
 
-    new CleanWebpackPlugin(pathsToClean),
-    new UglifyJsPlugin({
-        sourceMap: true
+    new CleanWebpackPlugin({
+      cleanAfterEveryBuildPatterns: ['dist']
     }),
+//    new UglifyJsPlugin({
+//        sourceMap: true
+//    }),
     new webpack.LoaderOptionsPlugin({
       minimize: true,
       options: {
@@ -164,7 +165,7 @@ if (process.env.NODE_ENV === 'preproduction') {
     new VueLoaderPlugin()
   ])
     module.exports.mode = 'production'
-    module.exports.devtool = '#source-map';
+    module.exports.devtool = 'source-map';
     module.exports.output.path =  path.resolve(__dirname, './webcomponents'),
     module.exports.output.publicPath = preUrl;
     module.exports.output.filename =   buildName+'_'+buildVersion+'.js'
@@ -173,9 +174,9 @@ if (process.env.NODE_ENV === 'preproduction') {
     // http://vue-loader.vuejs.org/en/workflow/production.html
     module.exports.plugins = (module.exports.plugins || []).concat([
     //  new CleanWebpackPlugin(["webcomponents/*.*"]),
-      new UglifyJsPlugin({
-          sourceMap: true
-        }),
+//      new UglifyJsPlugin({
+//          sourceMap: true
+//        }),
       new webpack.LoaderOptionsPlugin({
         minimize: true,
         options: {
