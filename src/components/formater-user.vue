@@ -151,7 +151,7 @@
 	    </div>
    </div>
  </div>
- <a  @click="show=!show" :style="{'--color': $store.state.style.primary}" :title="$t('access_rights')">
+ <a  @click="changeShow" :style="{'--color': $store.state.style.primary}" :title="$t('access_rights')">
  <i class="fa fa-user" style="margin-right:3px;"></i> {{$t('account')}} |
   
 </a>
@@ -204,11 +204,13 @@ export default {
     },
     lightColor () {
       return this.$shadeColor(this.$store.state.style.emphasis, 0.8)
+    }, 
+    show () {
+      return this.$store.getters['user/show']
     }
   },
   data() {
     return {
-      show: false,
       displayWait: false,
       checkedRoles: [],
       message: null,
@@ -263,6 +265,10 @@ export default {
     this.mouseupListener = null
   },
   methods: {
+    changeShow () {
+      console.log('show')
+      this.$store.commit('user/toggleShow', {client: null, access: null})
+    },
     resize () {
       this.height = window.innerHeight - 90
     },
@@ -343,7 +349,7 @@ export default {
           this.$store.commit('services/initialize', resp.body.clients)
         }
         if (this.canAsk) {
-          this.show = true
+          this.$store.commit('user/toggleShow', {client: null, access: null})
         }
       })
     },
@@ -424,7 +430,7 @@ export default {
       }     
     },
     close () {
-      this.show = false
+      this.$store.commit('user/toggleShow', null)
     },
     hasRole (client, name) {
       return this.$store.getters['user/hasRole'](client, name)

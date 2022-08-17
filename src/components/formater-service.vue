@@ -4,9 +4,11 @@
     "access_to": "Connecté à",
     "access_token": "token d'accès",
     "authorize": "Autoriser",
-    "authorization_failed": "La connexion au service {domain} a échoué.",
+    "authorization_failed": "La connexion au service <b>{domain}</b> a échoué.<br>Vous ne pouvez pas accéder aux produits.<br>Le service a répondu:",
     "copied_to_clipboard": "Le token a été copié dans le presse-papier.<br>Il expire dans <b>{time}</b>",
+    "connexion_failed": "Échec connexion à {domain}",
     "copy_in_clipboard": "Copier le token d'accès dans le presse-papier",
+    "error": "Error",
     "insufficient_right": "Vos droits sont insuffisants\npour accéder aux services\nde visualisation et téléchargement de cette collection",
     "limited_access_to": "Accès limité à {domain}",
     "log_service": "Pour visualiser ou télécharger les données de <b>{domain}</b>, vous devez vous y connecter.",
@@ -22,9 +24,11 @@
     "access_to": "Login to",
     "access_token": "Access token",
     "authorize": "Authorize",
-    "authorization_failed": "Connection to the service {domain} failed.",
+    "authorization_failed": "Connection to the service <b>{domain}</b> failed.<br>You cannot access the products.<br>The service responded:",
+    "connexion_failed": "Connection to {domain} failed",
     "copied_to_clipboard": "The token has been copied in clipboard.<br>It will expire in <b>{time}</b>",
     "copy_in_clipboard": "Copy the access token in clipboard",
+    "error": "Erreur",
     "insufficient_right": "Your rights are insufficient\nto access the viewing\nand downloading services of this collection",
     "limited_access_to": "Limited access to {domain}",
     "log_service": "To access data of <b>{domain}</b>  service,<br /> you must login to this service.",
@@ -40,26 +44,24 @@
 </i18n>
 <template>
  <span class="mtdt-service">
+ <!-- MESSAGE -->
  <div class="mtdt-msg" v-if="msg" >
  <div  style="text-align:right;" ><i class="fa fa-close" style="cursor: pointer;" @click="close"></i></div>
  <div class="mtdt-msg-title" >
-      <span v-if="!errorMessage">Important!</span>
+      <span v-if="!errorMessage && !service.reject">Important!</span>
       <span v-else >{{$t('error')}}</span>
  </div>
- 
- <!--   <div v-if="$store.state.geonetwork && !email" 
-  v-html="$t('need_log', {domain: service.domain})"></div>
-   <div v-else-if="hasExpired" v-html="$t('session_expire', {domain: service.domain})">
-  </div>
-  <div v-else-if="$store.state.geonetwork && email"
-   v-html="$t('need_authorize', {domain: service.domain})"></div>
-  
-  <div v-else="$store.state.metadata" 
-    v-html="$t('log_service', {domain: service.domain})"></div>
-  -->
+
   <div v-if="!email"  v-html="$t('need_log', {domain: service.domain})"></div>
-   <div v-else-if="hasExpired" v-html="$t('session_expire', {domain: service.domain})">
-  </div>
+   <div v-else-if="hasExpired" v-html="$t('session_expire', {domain: service.domain})"></div>
+   
+  <div v-else-if="service && service.reject">
+     <span v-html="$t('authorization_failed', {domain: service.domain})"></span>
+     <ul style="margin-left: 10px;">
+        <li><b>Code</b>: {{service.reject.status}}</li>
+        <li><b>Msg</b>: {{service.reject.msg ? service.reject.msg : '---'}}</li>
+     </ul>
+   </div>
   <div v-else-if="email && hasAccess && !service.token && !errorMessage"
    v-html="$t('need_authorize', {domain: service.domain})">
    </div>
@@ -73,6 +75,7 @@
 	   <span v-if="email && hasAccess && !errorMessage">{{$t('authorize')}}</span>
    </div>
  </div>
+ <!-- END MESSAGE -->
  <!--  <div v-if="!$store.state.metadata && email" class="mtdt-service-button" :class="{searching: searching}" v-show="clientId">
   -->
   <!--   <iframe v-if="iframeUrl" style="display:none;" :src="iframeUrl" ></iframe>  -->
@@ -82,13 +85,17 @@
       {{$t('access_to')}} {{service.domain}}
       <i  class="fa fa-check-square-o"></i>
    </a>
-   <a v-if="!service.token && hasAccess" class="mtdt-menu-item" :class="{searching: searching}"
+   <a v-if="service.reject" class="mtdt-menu-item" style="color:darkred;">
+       {{$t('connexion_failed', {domain: service.domain})}}
+        <i  class="fa fa-ban"></i>
+   </a>
+   <a v-else-if="!service.token && hasAccess" class="mtdt-menu-item" :class="{searching: searching}"
    @click="searchCode" :style="{'--color': $store.state.style.primary}">
       {{$t('access_to')}} {{service.domain}}
       <i  class="fa fa-square-o"></i>
    </a>
-   <a v-if="!service.token && !hasAccess" class="mtdt-menu-item" :class="{searching: searching}"
-    :style="{'--color': $store.state.style.primary}" :title="$t('insufficient_right')">
+   <a v-else-if="!service.token && !hasAccess" class="mtdt-menu-item" :class="{searching: searching}"
+    :style="{'--color': $store.state.style.primary}" :title="$t('insufficient_right')" @click="showUser">
       {{$t('limited_access_to', {domain: service.domain})}} 
       <i  class="fa fa-ban"></i>
     <!--    <div>Demande accès</div>
@@ -153,7 +160,7 @@ export default {
       return this.$store.getters['roles/getClient'](this.service.clientId)
     },
     access () {
-      if (!this.clientId || this.reject) {
+      if (!this.clientId || this.service.reject) {
         return false
       }
       
@@ -195,7 +202,6 @@ export default {
       src: null,
       root: null,
       clientId: null,
-      reject: false,
       errorMessage: null,
       domain: null,
       codeListener: null,
@@ -249,6 +255,9 @@ export default {
     removeTooltip (event) {
       var node = event.target
       node.previousElementSibling.classList.remove('tooltip-show')
+    },
+    showUser ()  {
+      this.$store.commit('user/toggleShow', {client: this.clientId, access: this.service.access})
     },
     getClientId () {
       this.clientId = this.service.clientId
@@ -339,7 +348,7 @@ export default {
 //       .then(resp => console.log(resp), resp => console.log(browser.cookies.get({name: 'KEYCLOAK_IDENTITY' })))
     },
     getToken (code) {
-      if (this.reject) {
+      if (this.service.reject) {
         return
       }
       var url = this.service.authUrl
@@ -360,7 +369,8 @@ export default {
          resp => this.setToken(resp.body), 
          resp => {
            console.log('REJETE')
-           this.reject = true
+           // this.reject = true
+           this.$store.commit('services/setReject', {id: this.service.id, reject: {status: resp.status, msg: resp.statusText}})
            this.msg = true
            this.errorMessage = resp.status + ' - ' + resp.statusText
            // alert('SERVER RESPONSE ' + resp.status + ' - ' + resp.statusText)

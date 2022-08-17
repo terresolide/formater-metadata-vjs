@@ -222,7 +222,7 @@ const GeonetworkPlugin = {
              var _this = this
              var nodes = JSONPATH.query(json, "$..['gmd:MD_Format']")
              if (nodes === undefined) {
-               return null
+               return formats
              }
              if (!nodes.forEach) {
                nodes = [nodes]

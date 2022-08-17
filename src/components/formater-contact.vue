@@ -11,13 +11,13 @@
    <address>
      <div class="formater-organism">
        <span v-if="fields[8]">
-         <a :href="fields[8]" target="_blank"> <i class="fa fa-link"></i>{{fields[2]}}</a>
+         <a :href="fields[8]" target="_blank">{{fields[2]}}  <i class="fa fa-external-link"></i></a>
        </span>
        <span v-else class="tabulate">{{fields[2]}}</span>
      </div>
      <div class="formater-name" v-if="fields[3]">
         <span v-if="fields[9]">
-           <a :href="fields[9]" target="_blank"><i class="fa fa-link"></i>{{fields[3]}}</a>
+           <a :href="fields[9]" target="_blank">{{fields[3]}} <i class="fa fa-external-link"></i></a>
         </span>
         <span v-else class="tabulate">{{fields[3]}}</span>
      </div>
@@ -60,7 +60,6 @@ export default {
   },
   
   mounted () {
-    console.log(this.contact)
     this.fields = this.contact
     this.extractAddress()
   },
@@ -87,15 +86,10 @@ export default {
 .formater-contact div.formater-name a {
   color: black;
 }
-.formater-contact .tabulate {
-  margin-left: 17px;
-  display: inline-block;
+.formater-contact i.fa-external-link {
+  font-size: 0.8rem;
 }
-.formater-contact i.fa.fa-link {
-  margin-right:2px;
-  max-width:15px;
-  min-width:15px;
-}
+
 .formater-contact div.formater-organism a:hover,
 .formater-contact div.formater-name a:hover {
   color: darkred;

@@ -12,6 +12,7 @@ export default {
       email: null,
       roles: []
     },
+    show: null,
     strRoles: null,
     token: null,
     code: null,
@@ -210,6 +211,9 @@ export default {
     },
     redirectUri (state, getters) {
       return state.redirectUri
+    },
+    show (state, getters) {
+      return state.show
     }
   },
   mutations: {
@@ -296,6 +300,16 @@ export default {
       state.code = null
       state.refreshToken = null
       state.strRoles = null
+      state.show = null
+    },
+    toggleShow (state, obj) {
+      console.log(obj)
+      if (!state.show) {
+        state.show = obj
+      } else {
+        state.show = null
+      }
+      console.log(state.show)
     }
   }
 }

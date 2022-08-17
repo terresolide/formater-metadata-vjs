@@ -133,6 +133,9 @@ export default {
 //       state.services.push(service)
 //      }
     },
+    setReject (state, infos) {
+      state.services[infos.id].reject = infos.reject
+    },
     setToken (state, infos) {
       state.services[infos.id].token = infos.token
     },
