@@ -166,16 +166,18 @@ const GeonetworkPlugin = {
              return contacts
            },
            extractContact (json, type, idLang) {
-            
              var role = JSONPATH.query(json, "$..['gmd:CI_RoleCode']['@codeListValue']")[0]
-             var organisation = this.extractFromLangs(
-                 JSONPATH.query(json, "$..['gmd:organisationName']" )[0],
-                 idLang)
-             var name = JSONPATH.query(json, "$..['gmd:individualName']['gco:CharacterString']" )[0]
+             var organisationNode  = JSONPATH.query(json, "$..['gmd:organisationName']" )[0]
+             var organisation = this.extractFromLangs(organisationNode, idLang)
+             var organisationLink = this.extractHref(organisationNode)
+             var nameNode = JSONPATH.query(json, "$..['gmd:individualName']" )[0]
+             var name = this.extractFromLangs(nameNode, idLang)
+             var individualLink = this.extractHref(nameNode)
+                 // JSONPATH.query(json, "$..['gmd:individualName']['gco:CharacterString']" )[0]
              var email = JSONPATH.query(json, "$..['gmd:electronicMailAddress']..['#text']")[0]
              var address = this.extractAddress(JSONPATH.query(json, "$..['gmd:CI_Address']")[0])
              var position = null
-             return [role, type, organisation, name, email, position, null, address]
+             return [role, type, organisation, name, email, position, null, address, organisationLink, individualLink]
            },
            extractDates (metadata, json) {
              if (!json || json === 'undefined' || json.length === 0) {
@@ -248,6 +250,16 @@ const GeonetworkPlugin = {
                }
              })
              return access
+           },
+           extractHref (json) {
+             if (json === undefined) {
+               return null
+             }
+             var values = JSONPATH.query(json, "$..['gmx:Anchor']['@xlink:href']")
+             if (values.length > 0) {
+               return values[0]
+             }
+             return null
            },
            extractFromLangs(json, idLang) {
              var value = null

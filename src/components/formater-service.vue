@@ -156,8 +156,11 @@ export default {
       if (!this.clientId || this.reject) {
         return false
       }
+      
       // var result = this.$store.getters['user/getAccess'](this.clientId, this.service.access)
-      return this.$store.getters['user/getAccess'](this.service.access)
+      var result = this.$store.getters['user/getAccess'](this.service.access)
+      console.log(result)
+      return result
     },
 //     isFormater (newvalue) {
 //       var isFormater = this.$store.getters['user/isFormater']
