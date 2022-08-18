@@ -9,7 +9,7 @@
     "connexion_failed": "Échec connexion à {domain}",
     "copy_in_clipboard": "Copier le token d'accès dans le presse-papier",
     "error": "Error",
-    "insufficient_right": "Vos droits sont insuffisants\npour accéder aux services\nde visualisation et téléchargement de cette collection",
+    "insufficient_right": "Voir vos droits sur cette collection.\n(Insuffisants pour accéder aux services\nde visualisation et téléchargement)",
     "limited_access_to": "Accès limité à {domain}",
     "log_service": "Pour visualiser ou télécharger les données de <b>{domain}</b>, vous devez vous y connecter.",
     "log_to": "Se connecter au service {domain}",
@@ -29,7 +29,7 @@
     "copied_to_clipboard": "The token has been copied in clipboard.<br>It will expire in <b>{time}</b>",
     "copy_in_clipboard": "Copy the access token in clipboard",
     "error": "Erreur",
-    "insufficient_right": "Your rights are insufficient\nto access the viewing\nand downloading services of this collection",
+    "insufficient_right": "See your rights to this collection.\n(Insufficient\nto access the viewing\nand downloading services of this collection)",
     "limited_access_to": "Limited access to {domain}",
     "log_service": "To access data of <b>{domain}</b>  service,<br /> you must login to this service.",
     "log_to": "Sign in the {domain} service",
@@ -101,6 +101,10 @@
     <!--    <div>Demande accès</div>
       <div>{{access}}</div>
       <div>{{service.access}}</div>-->
+   </a>
+   <a v-if="email" class="mtdt-menu-item" :class="{searching: searching}" @click="showUser"
+   :style="{'--color': $store.state.style.primary}">
+       <i class="fa fa-key"></i> Vos droits 
    </a>
     <a v-if="service.token && !hasAccess" class="mtdt-menu-item" :class="{searching: searching}"
     :style="{'--color': $store.state.style.primary}" :title="$t('insufficient_right')">

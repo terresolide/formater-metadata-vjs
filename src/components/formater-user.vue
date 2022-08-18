@@ -18,6 +18,7 @@
     "public_data": "Public data",
     "register": "Register",
     "required": "Required",
+    "to_collection": "to this collection",
     "wait_validation": "Your request has been registered with our services. An email has been sent to you. It will be treated as quickly as possible"
   },
   "fr": {
@@ -38,6 +39,7 @@
     "public_data": "Données publiques",
     "register": "S'inscrire",
     "required": "Obligatoire",
+    "to_collection": "à cette collection",
     "wait_validation": "Votre demande a bien été enregistrée auprès de nos services. Un email vous a été envoyé. Elle sera traitée le plus rapidement possible."
   }
 }
@@ -96,7 +98,7 @@
 	   </div>
 	  </div>
 	  <h3 :style="{color:$store.state.style.primary}">
-	     <span class="fa fa-key"></span> {{$t('access_rights')}}
+	     <span class="fa fa-key"></span> {{$t('access_rights')}} <span v-if="show && show.client">{{$t('to_collection')}}</span>
 	  </h3>
 	  
 	  <div style="margin-left:30px;">
@@ -114,7 +116,7 @@
 	     <div></div>
 	     <div></div>
 	   </div>
-	   <div class="role-line full">
+	   <div class="role-line full" v-show="!show || !show.client">
 		   <div>
 		   {{$t('public_data')}}
 		   </div>
@@ -129,11 +131,12 @@
 		   <div></div>
 	   </div>
 	   <!-- GLOBAL ROLES -->
-	   <div v-if="clients.global" style="border-top: 1px dotted black;padding:0px;">
+	   <div v-if="clients.global" v-show=" !show || !show.client" style="border-top: 1px dotted black;padding:0px;">
 	      <formater-client :client="clients.global" name="global" :checked-roles="checkedRoles" @roleChange="selectRole"></formater-client>
 	   </div>
 	   <!--  CLIENT ROLES -->
-	   <div v-for="(client,clientName) in clients"  v-if="clientName !== 'global'" style="border-top: 1px dotted black;padding:0px;">
+	   <div v-for="(client,clientName) in clients"  v-if="clientName !== 'global'"
+	   v-show="!show || !show.client || show.client === clientName" style="border-top: 1px dotted black;padding:0px;">
 	     <formater-client :client="client" :name="clientName" :checked-roles="checkedRoles" @roleChange="selectRole"></formater-client>
 	   </div>
 	   <div v-if="canAsk">

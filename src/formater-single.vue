@@ -309,8 +309,9 @@ export default {
     },
     closeSingle () {
       var event = new CustomEvent('fmt:closeMetadataEvent', {detail: {depth: -1}})
-      document.dispatchEvent(event)
+      document.dispatchEvent(event)  
       this.$store.commit('resetSelectedMetadata')
+    //  this.$store.commit('services/resetCurrent')
     },
     receiveMetadata (event) {
       if (this.$store.state.metadata && this.first) {
@@ -349,7 +350,6 @@ export default {
     },
     close () {
       var route = this.$store.getters['previousRoute'] 
-      this.$store.commit('services/resetCurrent')
       this.$store.commit('backChild')
       this.$store.commit('temporalChange', this.$store.state.defaultTemporal)
       this.$router.push({name: route.name, params: route.params, query: route.query})

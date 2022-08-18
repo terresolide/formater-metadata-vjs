@@ -78,6 +78,7 @@ export default {
         state.services.push(client)
         index++
       })
+      console.log(state.pre)
       if (state.pre) {
         this.commit('services/add', state.pre)
       }
@@ -92,6 +93,7 @@ export default {
     },
     resetCurrent (state) {
       state.current = -1
+      state.pre = null
     },
     add (state, service) {
        if (state.services.length === 0) {

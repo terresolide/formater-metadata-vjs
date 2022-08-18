@@ -160,6 +160,7 @@ export default {
     if (!this.$store.state.metadata) {
       // this.$router.push({name: 'FormaterCatalogue', query: {}})
     }
+    this.$store.commit('services/resetCurrent')
     this.$store.commit('parametersChange', {parameters: [], mapping: [], type: null})
   },
   destroyed () {
@@ -290,7 +291,6 @@ export default {
         this.$store.commit('services/resetCurrent')
         this.$store.commit('temporalChange', this.temporalExtent)
       }
-
       this.$store.commit('currentUuidChange', this.currentUuid)
       this.$store.commit('parametersChange', {parameters: parameters, mapping: mapping, type: type})
       var event = new CustomEvent('fmt:closeMetadataEvent', {detail:  {depth: this.metadatas.length }})

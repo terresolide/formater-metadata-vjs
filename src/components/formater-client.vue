@@ -24,8 +24,14 @@
 </i18n>
 <template>
 <span>
-  <div class="role-line"  v-if="(client.groups && Object.keys(client.groups).length > 1) || (client.roles && client.roles.length > 1)"> 
-       <div class="title-client" style="cursor:pointer;text-align:left;"  @click="toggleClient($event)">
+  <div v-if="show && show.client" class="role-line deployed" >
+      <div  class="title-client" style="cursor:pointer;text-align:left;"  >
+         <span style="font-weight:800;">{{title(client)}}</span> 
+      </div>
+  </div>
+  <div v-else-if="(client.groups && Object.keys(client.groups).length > 1) || (client.roles && client.roles.length > 1)" class="role-line">
+  <!--  <div    v-if="(client.groups && Object.keys(client.groups).length > 1) || (client.roles && client.roles.length > 1)"> -->
+       <div  class="title-client" style="cursor:pointer;text-align:left;"  @click="toggleClient($event)">
          <span style="font-weight:800;">{{title(client)}}</span> <em style="float:right;font-size:0.9rem;">({{$t('all_access')}})</em>
         </div>
         <div class="fmt-center" style="clear:both;">
@@ -53,9 +59,10 @@
               <div class="clipboard-tooltip"  @click="removeTooltip($event)" v-html="$t('copied_to_clipboard', {client: name})"></div>
            </span> 
         </div>
-       </div> 
+      <!--  </div> --> 
+    </div>
        <div :class="{'client-content': (client.groups && Object.keys(client.groups).length > 1) || (client.roles && client.roles.length > 1) }">
-		     <div  class="role-line"  v-for="(role, index) in client.roles" >
+		     <div  class="role-line"  v-for="(role, index) in client.roles" v-show='showRole(role.name)'>
 		            <div>{{title(role)}}</div>
 		            <div class="fmt-center">
 		            <formater-tooltip :description="description(role)"></formater-tooltip>
@@ -79,7 +86,7 @@
 		              </span>
 		            </div>
 		  </div>
-	   <div class="role-line" v-if="client.groups" v-for="group, key in client.groups">
+	   <div class="role-line" v-if="client.groups" v-show="showGroup(key)" v-for="group, key in client.groups">
 	      <div>{{title(group[0], key)}}</div>
 	      <div class="fmt-center">
 	         <formater-tooltip :description="description(group[0])"></formater-tooltip>
@@ -145,6 +152,9 @@ export default {
     },
     lang () {
       return this.$store.state.lang
+    },
+    show () {
+      return this.$store.getters['user/show']
     }
   },
   data () {
@@ -153,7 +163,7 @@ export default {
     }
   },
   created () {
-    console.log(this.client)
+//     console.log(this.client)
   },
   methods: {
     title (role, group) {
@@ -179,7 +189,6 @@ export default {
     },
     copyClipboard (event) {
       var _this = this
-      console.log(event)
       var target = event.target
       navigator.clipboard.writeText(this.client.token).then(function() {
         /* clipboard successfully set */
@@ -195,6 +204,21 @@ export default {
     {
       var node = event.target
       node.previousElementSibling.classList.remove('tooltip-show')
+    },
+    showRole (roleName) {
+      if (!this.show || !this.show.roles) {
+        return true
+      } else {
+        return this.show.roles.indexOf(roleName) >= 0
+      }
+    },
+    showGroup (key) {
+      if (!this.show || !this.show.roles) {
+        return true
+      } else {
+        var intersection = this.client.groups[key].filter(role => this.show.roles.includes(role.name))
+        return intersection.length > 0
+      }
     },
     toggleAll(event) {
       var value = event.target.value

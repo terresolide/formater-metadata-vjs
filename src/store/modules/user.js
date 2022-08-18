@@ -303,13 +303,36 @@ export default {
       state.show = null
     },
     toggleShow (state, obj) {
-      console.log(obj)
-      if (!state.show) {
+      if (!obj) {
         state.show = obj
-      } else {
-        state.show = null
+        return
       }
-      console.log(state.show)
+      // Compare if it si the same client and the same role
+      var roles = null
+      if (obj.access) {
+        roles = []
+        for (var key in obj.access) {
+          if (obj.access[key] !== 'free' && obj.access[key] !== 'auth') {
+            if (roles.indexOf(obj.access[key]) < 0) {
+              roles.push(obj.access[key])
+            }
+          }
+        }
+      }
+      if (!state.show || state.show.client !== obj.client ||
+          (state.show.roles && !roles) || (!state.show.roles && roles)) {
+        state.show = {client: obj.client, roles: roles}
+      } else if (!state.show.roles && !roles) {
+        state.show = null
+      } else {
+        // compare roles
+        var intersection = state.show.roles.filter(role => roles.includes(role))
+        if (intersection.length === roles.length) {
+          state.show = null
+        } else {
+          state.show = {client: obj.client, roles: roles}
+        }
+      }
     }
   }
 }

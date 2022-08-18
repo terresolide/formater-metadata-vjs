@@ -28,6 +28,7 @@
         </div>
       </div>
     </div> -->
+    {{currentService}}
     <formater-service v-show="currentService === index"
      v-for="(service, index) in services" :key="index" :service="service">
      </formater-service>
