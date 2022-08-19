@@ -73,6 +73,7 @@ import FormaterOnline from './formater-online.vue'
 import FormaterRelated from './formater-related.vue'
 import FormaterTemporalExtent from './formater-temporal-extent.vue'
 const FormaterParameters = () => import('./formater-parameters.vue')
+import moment from 'moment'
 export default {
   name: 'FormaterCartoucheMetadata',
   components: {

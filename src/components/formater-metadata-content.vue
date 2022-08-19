@@ -172,7 +172,7 @@ import FormaterListContact from './formater-list-contact.vue'
 import FormaterKeywords from './formater-keywords.vue'
 import FormaterTemporalExtent from './formater-temporal-extent.vue'
 import FormaterRelated from './formater-related.vue';
-
+import moment from 'moment'
 export default {
   name: 'FormaterMetadataContent',
   components: {
