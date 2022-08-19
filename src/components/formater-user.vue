@@ -24,7 +24,7 @@
   "fr": {
     "access_rights": "Vos droits d'accès",
     "access_request": "Demande d'accès",
-    "access_to_formater": "Pour pouvoir accéder à certaines données, vous devez les sélectionner and faire une demande en cliquant sur <b>&laquo;Demande d'accès&raquo;</b>.",
+    "access_to_formater": "Pour pouvoir accéder à certaines données, vous devez les sélectionner et faire une demande en cliquant sur <b>&laquo;Demande d'accès&raquo;</b>.",
     "account": "Votre compte",
     "add_message": "Ajoutez un message à votre demande",
     "at_least_3": "Au moins 3 caractères",
@@ -52,12 +52,12 @@
        <i class="fa fa-close" style="cursor: pointer;"></i>
     </span>
  </div>
- <div class="mtdt-msg-title" :style="{color: $store.state.style.primary}"> 
+ <div v-show="(show && !show.client) || !user.organization"  class="mtdt-msg-title" :style="{color: $store.state.style.primary}"> 
 	 <i class="fa fa-user" style="font-size:1em;vertical-align:baseline;"></i>
 	 {{$t('account')}}
  </div>
  <div style="height:auto;overflow-y:auto;overflow-x:hidden;" :style="{maxHeight: height + 'px'}">
-	 <div class="mtdt-user-info" >
+	 <div  v-show="(show && !show.client) || !user.organization" class="mtdt-user-info" >
 	   <div>
 	     <label>Id</label> {{user.username}}
 	   </div>
@@ -97,7 +97,7 @@
 	     </form>
 	   </div>
 	  </div>
-	  <h3 :style="{color:$store.state.style.primary}">
+	  <h3 style="font-weight: 700;" :style="{color:$store.state.style.primary}">
 	     <span class="fa fa-key"></span> {{$t('access_rights')}} <span v-if="show && show.client">{{$t('to_collection')}}</span>
 	  </h3>
 	  
@@ -108,7 +108,7 @@
 	   <h4 :style="{color: $store.state.style.primary, fontWeight: 800}">
 	   
 	   </h4>-->
-	   <div class="role-line" style="font-weight:800;color:white;" :style="{background:$store.state.style.primary}" >
+	   <div class="role-line" style="font-weight:700;background:#e3e3e3;" >
 	     <div></div>
 	     <div></div>
 	     <div >{{$t('preview')}}</div>
@@ -269,7 +269,7 @@ export default {
   },
   methods: {
     changeShow () {
-      console.log('show')
+      console.log('Dans formater-user')
       this.$store.commit('user/toggleShow', {client: null, access: null})
     },
     resize () {
@@ -351,9 +351,9 @@ export default {
           this.$store.commit('roles/set', {clients: resp.body.roles, roles: this.$store.getters['user/roles']})
           this.$store.commit('services/initialize', resp.body.clients)
         }
-        if (this.canAsk) {
-          this.$store.commit('user/toggleShow', {client: null, access: null})
-        }
+//         if (this.canAsk) {
+//           this.$store.commit('user/toggleShow', {client: null, access: null})
+//         }
       })
     },
     getOrganizations (domain) {

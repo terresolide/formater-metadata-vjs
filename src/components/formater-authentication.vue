@@ -28,7 +28,6 @@
         </div>
       </div>
     </div> -->
-    {{currentService}}
     <formater-service v-show="currentService === index"
      v-for="(service, index) in services" :key="index" :service="service">
      </formater-service>
@@ -74,6 +73,9 @@ export default {
 //       }
       return this.$store.getters['user/email']
     },
+    user () {
+      return this.$store.getters['user/get']
+    },
     nonce () {
       return this.$store.getters['user/nonce']
     },
@@ -103,9 +105,9 @@ export default {
     currentService () {
       return this.$store.getters['services/current']
     },
-    isFormater () {
-      return this.$store.getters['user/isFormater']
-    },
+//     isFormater () {
+//       return this.$store.getters['user/isFormater']
+//     },
     services () {
       return this.$store.getters['services/all']
     }
@@ -185,8 +187,8 @@ export default {
          )
        .then(function (resp) {
          this.setTokens(resp.body)
-         if (this.$store.getters['user/hasRole']('NATIONAL_SCIENTIST')) {
-           console.log('IS FORMATER')
+         if (!this.user.organization) {
+           this.$store.commit('user/toggleShow', {client: null, access: null})
          }
          var expires = resp.body.expires_in - 50
          var _this = this
@@ -202,7 +204,6 @@ export default {
      this.$store.commit('user/setTokens', data)
    },
    updateTokens () {
-     console.log('UPDATE TOKENS')
      if (!this.$store.getters['user/refreshToken']) {
        return
      }

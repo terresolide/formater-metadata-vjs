@@ -10,15 +10,17 @@
     "copy_in_clipboard": "Copier le token d'accès dans le presse-papier",
     "error": "Error",
     "insufficient_right": "Voir vos droits sur cette collection.\n(Insuffisants pour accéder aux services\nde visualisation et téléchargement)",
-    "limited_access_to": "Accès limité à {domain}",
+    "limited_access_to": "Accès limité à cette collection",
     "log_service": "Pour visualiser ou télécharger les données de <b>{domain}</b>, vous devez vous y connecter.",
     "log_to": "Se connecter au service {domain}",
     "login": "Se connecter",
     "logout": "Se déconnecter",
     "need_authorize": "Pour visualiser ou télécharger les données de <b>{domain}</b>, vous devez autoriser ce service à accéder à vos données personnelles (email, nom, rôles).",
     "need_log": "Pour accéder à toutes les données du service <b>{domain}</b>, vous devez vous connecter puis, si vous avez <b>les droits suffisants</b> et suivant votre navigateur, autoriser ce service à accéder à vos données (nom, email).",
+    "see_rights": "Voir vos droits sur\ncette collection",
     "service_response": "La réponse du service est",
-    "session_expire": "Votre session auprès de <b>{domain}</b> a expiré.<br />Vous devez vous reconnecter."
+    "session_expire": "Votre session auprès de <b>{domain}</b> a expiré.<br />Vous devez vous reconnecter.",
+    "your_rights": "Vos droits"
   },
   "en": {
     "access_to": "Login to",
@@ -30,15 +32,17 @@
     "copy_in_clipboard": "Copy the access token in clipboard",
     "error": "Erreur",
     "insufficient_right": "See your rights to this collection.\n(Insufficient\nto access the viewing\nand downloading services of this collection)",
-    "limited_access_to": "Limited access to {domain}",
+    "limited_access_to": "Limited access to this collection",
     "log_service": "To access data of <b>{domain}</b>  service,<br /> you must login to this service.",
     "log_to": "Sign in the {domain} service",
     "login": "Sign in",
     "logout": "Se déconnecter",
     "need_authorize": "To visualize and download data of <b>{domain}</b> and your browser, you must authorize this service to access your personnal data (email, name, roles).",
     "need_log": "To access data of <b>{domain}</b>  service,<br /> you must login in then, if you have sufficient rights, you must authorize this service to access your personnal data (name, email).",
+    "see_rights": "See your rights to\n this collection",
     "service_response": "The service has responded",
-    "session_expire": "Your session width <b>{domain}</b> has expired.<br /> You need to log back in."
+    "session_expire": "Your session width <b>{domain}</b> has expired.<br /> You need to log back in.",
+    "your_rights": "Your rights"
   }
 }
 </i18n>
@@ -51,7 +55,6 @@
       <span v-if="!errorMessage && !service.reject">Important!</span>
       <span v-else >{{$t('error')}}</span>
  </div>
-
   <div v-if="!email"  v-html="$t('need_log', {domain: service.domain})"></div>
    <div v-else-if="hasExpired" v-html="$t('session_expire', {domain: service.domain})"></div>
    
@@ -80,38 +83,39 @@
   -->
   <!--   <iframe v-if="iframeUrl" style="display:none;" :src="iframeUrl" ></iframe>  -->
  <div v-if="email" class="mtdt-service-button" :class="{searching: searching}" v-show="clientId">
-   <a v-if="service.token" 
+   <a v-if="service.token && hasAccess" class="mtdt-menu-item"
    @click="logout" :style="{'--color': $store.state.style.primary}">
       {{$t('access_to')}} {{service.domain}}
       <i  class="fa fa-check-square-o"></i>
+   </a>
+    <a v-else-if="!service.token && hasAccess" class="mtdt-menu-item" :class="{searching: searching}"
+   @click="searchCode" :style="{'--color': $store.state.style.primary}">
+      {{$t('access_to')}} {{service.domain}}
+      <i  class="fa fa-square-o"></i>
    </a>
    <a v-if="service.reject" class="mtdt-menu-item" style="color:darkred;">
        {{$t('connexion_failed', {domain: service.domain})}}
         <i  class="fa fa-ban"></i>
    </a>
-   <a v-else-if="!service.token && hasAccess" class="mtdt-menu-item" :class="{searching: searching}"
-   @click="searchCode" :style="{'--color': $store.state.style.primary}">
-      {{$t('access_to')}} {{service.domain}}
-      <i  class="fa fa-square-o"></i>
-   </a>
-   <a v-else-if="!service.token && !hasAccess" class="mtdt-menu-item" :class="{searching: searching}"
+  
+   <a v-if="!hasAccess" class="mtdt-menu-item" :class="{searching: searching}"
     :style="{'--color': $store.state.style.primary}" :title="$t('insufficient_right')" @click="showUser">
-      {{$t('limited_access_to', {domain: service.domain})}} 
+      {{$t('limited_access_to')}} 
       <i  class="fa fa-ban"></i>
     <!--    <div>Demande accès</div>
       <div>{{access}}</div>
       <div>{{service.access}}</div>-->
    </a>
-   <a v-if="email" class="mtdt-menu-item" :class="{searching: searching}" @click="showUser"
-   :style="{'--color': $store.state.style.primary}">
-       <i class="fa fa-key"></i> Vos droits 
+   <a v-else class="mtdt-menu-item" :class="{searching: searching}" @click="showUser"
+   :style="{'--color': $store.state.style.primary}" :title="$t('see_rights')">
+       <i class="fa fa-key"></i> {{$t('your_rights')}} 
    </a>
-    <a v-if="service.token && !hasAccess" class="mtdt-menu-item" :class="{searching: searching}"
+   <!-- <a v-if="service.token && !hasAccess" class="mtdt-menu-item" :class="{searching: searching}"
     :style="{'--color': $store.state.style.primary}" :title="$t('insufficient_right')">
       Droit insuffisant demande accès
       <i  class="fa fa-ban"></i>
-   </a>
-   <span  v-if="service.token"  class="copy-clipboard mtdt-menu-item" :title="$t('copy_in_clipboard')">
+   </a>  --> 
+   <span  v-if="service.token && hasAccess"  class="copy-clipboard mtdt-menu-item" :title="$t('copy_in_clipboard')">
              (<a @click="copyClipboard($event)" :style="{'--color': $store.state.style.primary}"><i class="fa fa-clipboard"></i> {{$t('access_token')}}</a>)
             <div class="clipboard-tooltip"   @click="removeTooltip($event)" v-html="$t('copied_to_clipboard', {time: getTime})"></div>
    </span> 
@@ -167,11 +171,8 @@ export default {
       if (!this.clientId || this.service.reject) {
         return false
       }
-      
       // var result = this.$store.getters['user/getAccess'](this.clientId, this.service.access)
-      var result = this.$store.getters['user/getAccess'](this.service.access)
-      console.log(result)
-      return result
+      return this.$store.getters['user/getAccess'](this.service.access)
     },
 //     isFormater (newvalue) {
 //       var isFormater = this.$store.getters['user/isFormater']
@@ -210,7 +211,7 @@ export default {
       domain: null,
       codeListener: null,
       state: null,
-      msg: null,
+      msg: false,
       searching: false,
       popup: null,
       identity: null,
@@ -265,9 +266,10 @@ export default {
     },
     getClientId () {
       this.clientId = this.service.clientId
-      if (this.email && this.hasAccess) {
-		    this.msg = true
-		  }
+//       if (this.email && this.hasAccess) {
+//         console.log('quand get clientIds')
+// 		    this.msg = true
+// 		  }
       this.state = 'php' + btoa(this.clientId + this.service.domain).replace(/=|\+|\//gm, '0')
       this.testLoginSso()
 //       var url = this.service.clientIdUrl
@@ -287,11 +289,9 @@ export default {
     },
    
     searchCode () {
-      console.log(this.clientId)
       if (!this.clientId) {
         return null
       }
-      console.log(this.clientId)
       var params = {
           redirect_uri: encodeURIComponent(this.redirectUri),
           response_type: 'code',
