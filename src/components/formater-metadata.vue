@@ -91,7 +91,7 @@ const FormaterOpensearch = () => import('./formater-opensearch.vue')
 // import FormaterRelated from './formater-related.vue';
 import FormaterMetadataContent from './formater-metadata-content.vue'
 // const FormaterParameters = () => import('./formater-parameters.vue')
-
+import moment from 'moment'
 export default {
   name: 'FormaterMetadata',
   components: {
