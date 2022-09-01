@@ -60,6 +60,10 @@ export default {
       type: String,
       default: 'en'
     },
+    color: {
+      type: String,
+      default: '#dd9946'
+    },
     defaultBbox: {
       type: String,
       default: null
@@ -74,7 +78,7 @@ export default {
       areaSelect: false,
       searchEventListener: null,
       resetEventListener: null,
-      aerisThemeListener:null,
+//       aerisThemeListener:null,
       patternLatitude: "[-+]?(90|([1-8]?[0-9])([.][0-9]+)?)",
       patternLongitude:"[-+]?(180(\.0+)?|((1[0-7][0-9])|([1-9]?[0-9]))([.][0-9]+)?)"
     }
@@ -106,8 +110,8 @@ export default {
 //     this.resetEventListener = null;
 //     document.removeEventListener('aerisSearchEvent', this.searchEventListener);
 //     this.searchEventListener = null;
-    document.removeEventListener('aerisTheme', this.aerisThemeListener);
-    this.aerisThemeListener = null;
+//     document.removeEventListener('aerisTheme', this.aerisThemeListener);
+//     this.aerisThemeListener = null;
     document.removeEventListener('fmt:selectAreaChange', this.selectAreaChangeListener);
     this.selectAreaChangeListener = null
     document.removeEventListener('fmt:drawClose', this.drawCloseListener)
@@ -120,17 +124,19 @@ export default {
 //     document.addEventListener('aerisResetEvent', this.resetEventListener);
 //     this.searchEventListener = this.handleSearch.bind(this) 
 //     document.addEventListener('aerisSearchEvent', this.searchEventListener);
-    this.aerisThemeListener = this.handleTheme.bind(this) 
-    document.addEventListener('aerisTheme', this.aerisThemeListener);
+//     this.aerisThemeListener = this.handleTheme.bind(this) 
+//     document.addEventListener('aerisTheme', this.aerisThemeListener);
     this.selectAreaChangeListener = this.handleBounds.bind(this) 
     document.addEventListener('fmt:selectAreaChange', this.selectAreaChangeListener);
     this.drawCloseListener = this.handleDraw.bind(this)
     document.addEventListener('fmt:drawClose', this.drawCloseListener)
+    
     // this.bounds = this.box
   },
   mounted: function(){
-     var event = new CustomEvent('aerisThemeRequest', {});
-     document.dispatchEvent(event);
+//      var event = new CustomEvent('aerisThemeRequest', {});
+//      document.dispatchEvent(event);
+    this.ensureTheme()
   },
   methods:{
     initBbox (query) {
@@ -280,13 +286,13 @@ export default {
 //         e.detail.box = box
 //       }
 //     },
-    handleTheme: function(theme) {
-      this.theme = theme.detail;
-      this.ensureTheme();
-    },
+//     handleTheme: function(theme) {
+//       this.theme = theme.detail;
+//       this.ensureTheme();
+//     },
     ensureTheme: function() {
       if ((this.$el) && (this.$el.querySelector)) {
-        var color3 =  this.$shadeColor( this.theme.emphasis, 0.8);
+        var color3 =  this.$shadeColor( this.color, 0.8);
         var nodes= this.$el.querySelectorAll(".formater-input-group");
         [].forEach.call(nodes, function(node){
           node.style.backgroundColor = color3;

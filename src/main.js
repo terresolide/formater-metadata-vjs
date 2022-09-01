@@ -31,11 +31,16 @@ let config = {}
 if (typeof formaterConfig != 'undefined') {
   config = JSON.parse(formaterConfig.innerHTML)
 } 
- 
+let locale = navigator.language.substr(0, 2)
+if (!config.lang) {
+  config.lang = locale === 'fr' ? 'fr' : 'en'
+} else {
+  locale = config.lang
+}
 // export let keycloak = makeAuth(config.auth)
 
 const store = makeStore(config)
-let locale = navigator.language.substr(0, 2)
+
 
 if (config.lang) {
   locale = config.lang

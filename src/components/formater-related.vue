@@ -466,6 +466,7 @@
        },
        record (url, type, e) {
          if (!this.$store.state.recordUrl) {
+           e.target.nextElementSibling.click()
            return
          }
          var data = {

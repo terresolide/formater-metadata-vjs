@@ -69,6 +69,10 @@ export default {
       this.resizeListener = this.resize.bind(this)
       window.addEventListener('resize', this.resizeListener);
       this.$store.commit('dataCenters/init', dataCenter)
+      if (this.$store.state.metadata && this.$route.name !== 'FormaterLogin') {
+      console.log('has metadata')
+      this.$router.replace({name: 'Metadata', params: {uuid: this.$store.state.metadata}})
+    }
 //       var center = this.$store.getters['dataCenters/byId']('https://w3id.org/formater/data-center/CNES')
 //       console.log(center)
      // this.resize()

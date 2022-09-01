@@ -120,11 +120,11 @@ export default {
     }
   },
   created () {
-    if (this.$store.state.metadata && this.$route.name !== 'FormaterLogin') {
-      console.log('has metadata')
-      this.$router.replace({name: 'Metadata', params: {uuid: '0-serie'}})
-      return
-    }
+//     if (this.$store.state.metadata && this.$route.name !== 'FormaterLogin') {
+//       console.log('has metadata')
+//       this.$router.replace({name: 'Metadata', params: {uuid: this.$store.state.metadata}})
+//       return
+//     }
     // this.$router.push({name: 'FormaterCatalogue'})
     if (this.$route.query.sortBy) {
       this.sortBy = this.$route.query.sortBy

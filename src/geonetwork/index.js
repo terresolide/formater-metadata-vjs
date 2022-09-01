@@ -427,6 +427,9 @@ const GeonetworkPlugin = {
                  break;
                
                case 'WWW:LINK-1.0-http--link':
+               case 'WWW:LINK-1.0-http--partners':
+               case 'WWW:LINK-1.0-http--related':
+               case 'DOI':
                default:
                  if (!metadata.links) {
                    metadata.links = []
