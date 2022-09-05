@@ -37,6 +37,9 @@ if (!config.lang) {
 } else {
   locale = config.lang
 }
+if (!config.checkSSO) {
+  config.checkSSO = process.env.CHECK_SSO
+}
 // export let keycloak = makeAuth(config.auth)
 
 const store = makeStore(config)
@@ -74,7 +77,7 @@ if (config.lang) {
       components: { App },
       beforeCreate(e) {
         
-        if (!process.env.SSO_URL || !store.state.auth || document.location.href.indexOf('/login') > 0 ||
+        if (!process.env.SSO_URL || !store.state.app || document.location.href.indexOf('/login') > 0 ||
             document.location.href.indexOf('/logout') > 0 || document.location.href.indexOf('state=php') > 0) {
           if (document.location.href.indexOf('state=php') > 0) {
             var regex = new RegExp(/^(.*\/)\?(.*)#\/$/)
@@ -90,10 +93,8 @@ if (config.lang) {
         
         var location = this.$custURL(window.location.href)
         this.$store.commit('user/initAuth', {
-          clientId: process.env.SSO_CLIENT_ID, 
           ssoUrl: process.env.SSO_URL,
-          realm: process.env.SSO_REALM,
-          formaterRole: process.env.FORMATER_ROLE
+          realm: process.env.SSO_REALM
         })
         this.$store.commit('services/init', process.env.SSO_NAME)
         

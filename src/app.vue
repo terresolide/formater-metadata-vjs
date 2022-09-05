@@ -28,6 +28,8 @@
 </template>
 
 <script>
+
+
  // import AerisTheme from 'aeris-commons-components-vjs/src/aeris-theme/aeris-theme.vue'
  import FormaterService from '@/components/formater-service.vue'
  import FormaterAuthentication from '@/components/formater-authentication.vue'
@@ -55,7 +57,7 @@ export default {
     },
     computed: {
       authEnabled () {
-        return (this.$store.state.auth && this.$route.name !== 'FormaterLogin' &&
+        return (this.$store.state.app && this.$route.name !== 'FormaterLogin' &&
             this.$route.name !== 'FormaterLogout' )
       }
     },
@@ -69,10 +71,10 @@ export default {
       this.resizeListener = this.resize.bind(this)
       window.addEventListener('resize', this.resizeListener);
       this.$store.commit('dataCenters/init', dataCenter)
-      if (this.$store.state.metadata && this.$route.name !== 'FormaterLogin') {
-      console.log('has metadata')
-      this.$router.replace({name: 'Metadata', params: {uuid: this.$store.state.metadata}})
-    }
+//       if (this.$store.state.metadata && this.$route.name !== 'FormaterLogin') {
+//       console.log('has metadata')
+//         this.$router.replace({name: 'Metadata', params: {uuid: this.$store.state.metadata}})
+//       }
 //       var center = this.$store.getters['dataCenters/byId']('https://w3id.org/formater/data-center/CNES')
 //       console.log(center)
      // this.resize()

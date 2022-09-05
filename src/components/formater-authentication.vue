@@ -128,6 +128,7 @@ export default {
     this.codeListener = this.getMessage.bind(this)
     window.addEventListener('message', this.codeListener)
     // case already connected
+    this.requestClientForApp()
     this.getTokens()
     this.testLoginSso()
   },
@@ -282,6 +283,14 @@ export default {
      // window.postMessage(this.$store.getters['user/clientId'] + ' ' + 'blabla', 'https://sso.aeris-data.fr')
 //      this.$http.get(url, {credentials: true})
 //      .then(resp => console.log(resp), resp => console.log(browser.cookies.get({name: 'KEYCLOAK_IDENTITY' })))
+   },
+   requestClientForApp () {
+     this.$http.get(this.$store.state.checkSSO + '/api/client/' + this.$store.state.app)
+     .then(resp => {
+       if (resp.body.success) {
+         this.$store.commit('user/setClient', resp.body.client)
+       }
+     })
    },
    resetUser () {
      this.searching = false

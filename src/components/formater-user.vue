@@ -52,7 +52,7 @@
        <i class="fa fa-close" style="cursor: pointer;"></i>
     </span>
  </div>
- <div v-show="(show && !show.client) || !user.organization"  class="mtdt-msg-title" :style="{color: $store.state.style.primary}"> 
+ <div v-show="(show && !show.client) || !user.organization"  class="mtdt-msg-title" :style="{color: $store.state.style.primary, paddingTop: '10px'}"> 
 	 <i class="fa fa-user" style="font-size:1em;vertical-align:baseline;"></i>
 	 {{$t('account')}}
  </div>
@@ -97,11 +97,11 @@
 	     </form>
 	   </div>
 	  </div>
-	  <h3 style="font-weight: 700;" :style="{color:$store.state.style.primary}">
+	  <h3 style="font-weight: 700;" :style="{color:$store.state.style.primary, paddingTop: '10px'}">
 	     <span class="fa fa-key"></span> {{$t('access_rights')}} <span v-if="show && show.client">{{$t('to_collection')}}</span>
 	  </h3>
 	  
-	  <div style="margin-left:30px;">
+	  <div style="margin-left:30px;padding-bottom:5px;">
 	   <!--   <div v-for="key in ['username', 'givenName', 'lastname', 'email']">
 	    <label :style="{color: $store.state.style.primary}">{{$t(key)}}:</label> {{user[key]}}
 	    </div>
@@ -233,7 +233,7 @@ export default {
       pos: {x:0, y:0},
       errorAsk: null,
       asking: false,
-      height: 350
+      height: 750
     }
   },
   created () {
@@ -294,7 +294,7 @@ export default {
       var postdata = {
           userId: this.user.id,
           email: this.user.email,
-          app: null,
+          app: this.$store.state.app,
           realm: this.$store.getters['user/realm'],
           message: this.message,
           role: this.checkedRoles,

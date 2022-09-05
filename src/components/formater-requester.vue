@@ -458,7 +458,7 @@ export default {
           // var depth = (typeof this.parameters.depth != 'undefined') ? this.parameters.depth : this.depth
           var headers =  {
               'Accept': 'application/json, text/plain, */*',
-              'Accept-Language': this.$i18n.locale === 'fr' ? 'fre': 'eng'
+              'Accept-Language': this.$store.state.lang === 'fr' ? 'fre': 'eng'
            }
           var parameters = {
               _content_type: 'json',

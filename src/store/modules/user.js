@@ -22,8 +22,7 @@ export default {
     ssoUrl: null,
     clientId: null,
     realm: null,
-    redirectUri: null,
-    formaterRole: null
+    redirectUri: null
   },
   getters: {
 //    canDownload: (state, getter) => (download, clientId) => {
@@ -122,15 +121,15 @@ export default {
 //      }
 //      return state.user.roles[client].indexOf(role) >= 0
     },
-    isFormater (state, getters) {
-      if (!state.user || !state.user.roles) {
-        return false
-      }
-      return state.user.roles.indexOf(state.formaterRole) >= 0
-    },
-    formaterRole (state, getters) {
-      return state.formaterRole
-    },
+//    isFormater (state, getters) {
+//      if (!state.user || !state.user.roles) {
+//        return false
+//      }
+//      return state.user.roles.indexOf(state.formaterRole) >= 0
+//    },
+//    formaterRole (state, getters) {
+//      return state.formaterRole
+//    },
     nonce (state, getters) {
       return state.nonce
     },
@@ -218,16 +217,19 @@ export default {
   },
   mutations: {
     initAuth (state, obj) {
+     // state.formaterRole = obj.formaterRole
+      state.ssoUrl = obj.ssoUrl
+     // state.clientId = obj.clientId
+      state.realm = obj.realm
+    },
+    setClient (state, obj) {
+      state.clientId = obj.clientId
+      // @todo autre info pour client "externe"
       var date = new Date()
       var y = date.getYear() + ''
       var str = obj.clientId + date.getMonth() + '_' + date.getDate()
-      state.formaterRole = obj.formaterRole
-      state.ssoUrl = obj.ssoUrl
-      state.clientId = obj.clientId
-      state.realm = obj.realm
       state.nonce = btoa(str).replace(/=|\+|\//gm, '0')
       state.state = btoa(state.clientId).replace(/=|\+|\//gm, '0')
-      
     },
 //    hasAccess (state) {
 //      return state.user.roles

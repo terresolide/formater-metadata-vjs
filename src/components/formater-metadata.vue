@@ -25,7 +25,7 @@
       <formater-opensearch v-if="depth >= 0 && describe" :access="access" :service="service" :cds="metadata.cds" :describe="describe" :uuid="uuid" :depth="depth"
        @parametersChange="setParameters" @failed="removeDescribe"></formater-opensearch>
     
-   <span v-if="metadata && !metadata.appRoot" class="mtdt-metadata-close fa fa-close" @click="close"></span>
+   <span v-if="metadata && !metadata.appRoot && !isRoot" class="mtdt-metadata-close fa fa-close" @click="close"></span>
    <div v-if="metadata">
       <h1 class="mtdt-metadata-header" :style="{color:$store.state.style.primary}">
            <a v-if="dataCenter" :href="dataCenter.href" :title="dataCenter.title[$store.state.lang]" target="_blank" class="mtdt-group-logo">
@@ -78,7 +78,7 @@
    
    </div>
  </div>
-</template>
+</template> 
 <script>
 // import FormaterQuicklooks from './formater-quicklooks.vue'
 import FormaterExportLinks from './formater-export-links.vue'
@@ -127,6 +127,10 @@ export default {
         return false
       }
       return this.$store.getters['dataCenters/byId'](this.metadata.dataCenter)
+    },
+    isRoot () {
+      console.log(this.metadata)
+      return this.$store.state.metadata === this.metadata.id
     }
   },
   watch: {
