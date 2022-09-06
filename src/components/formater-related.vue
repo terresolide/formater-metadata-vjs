@@ -465,6 +465,7 @@
     	   this.platformAdded = newvalue
        },
        record (url, type, e) {
+         console.log(this.$store.state.recordUrl)
          if (!this.$store.state.recordUrl) {
            e.target.nextElementSibling.click()
            return
@@ -472,6 +473,8 @@
          var data = {
              email: this.$store.getters['user/email'],
              cds: this.cds,
+             app: this.$store.state.app,
+             domain: window.location.hostname,
              fullpath: this.$route.fullPath,
              path: this.$route.path,
              uuid: this.id,
