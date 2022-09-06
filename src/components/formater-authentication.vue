@@ -249,15 +249,11 @@ export default {
      this.ssoLogoutInfo = false
    },
    openPopup (url) {
-     this.popup = window.open(url, "_blank", "height=750, width=850, status=yes, toolbar=no, menubar=no, location=no,addressbar=no");
+     window.open(url, "_blank", "height=750, width=850, status=yes, toolbar=no, menubar=no, location=no,addressbar=no");
      var _this = this
-     var loop = setInterval(function() {
-       if (_this.popup.closed) {
-         clearInterval(loop)
-         _this.searching = false
-         _this.popup = null
-       }
-     })
+     setTimeout(function () {
+       _this.searching = false
+     }, 5000)
    },
    login () {
      this.searching = true
