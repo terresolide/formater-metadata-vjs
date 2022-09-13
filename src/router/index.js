@@ -8,6 +8,7 @@ const FormaterCatalogue = () => import('@/formater-catalogue.vue')
 const FormaterSingle = () => import('@/formater-single.vue')
 const FormaterLogin  = () => import('@/formater-login.vue')
 const FormaterLogout  = () => import('@/formater-logout.vue')
+const FormaterCharter  = () => import('@/formater-charter.vue')
 Vue.use(Router)
 
 export default new Router({
@@ -21,6 +22,11 @@ export default new Router({
       path: '/metadata/:uuid',
       name: 'Metadata',
       component: FormaterSingle
+    },
+    {
+      path: '/charter/:id',
+      name: 'Charter',
+      component: FormaterCharter
     },
     {
       path: '/login',
