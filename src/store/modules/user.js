@@ -69,7 +69,7 @@ export default {
       }
     },
     get (state, getters) {
-      if (state.user.email) {
+      if (state.user && state.user.email) {
         return state.user
       } else {
         return null

@@ -26,6 +26,7 @@
   "dependencies": {
     "easy-promise-queue": "^0.5.7",
     "formater-commons-components-vjs": "github:terresolide/formater-commons-components-vjs",
+    "formater-pdf-viewer-vjs": "github:terresolide/formater-pdf-viewer-vjs",
     "jsonpath": "^1.1.0",
     "jwt-decode": "^2.2.0",
     "keycloak-js": "^9.0.3",
