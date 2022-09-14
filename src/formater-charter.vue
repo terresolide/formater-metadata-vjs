@@ -3,10 +3,20 @@
  */
 <i18n>{
    "en":{
-     "need_log": "You must login to access this page!"
+     "accept": "I accept the terms of use by signing &laquo;{charter}&raquo;",
+     "already_signed": "You have already signed &laquo;{charter}&raquo;!",
+     "need_log": "You must login to access this page!",
+     "no_charter": "No charter match!",
+     "sign_charter": "Sign the &laquo;{charter}&raquo;",
+     "sign_saved": "Your signature has been saved."
    },
    "fr":{
-     "need_log": "Vous devez vous connecter pour accéder à cette page!"
+     "accept": "J'accepte les conditions d'utilisation en signant  &laquo;{charter}&raquo;",
+     "already_signed": "Vous avez déjà signé &laquo;{charter}&raquo;!",
+     "need_log": "Vous devez vous connecter pour accéder à cette page!",
+     "no_charter": "Aucune charte ne correspond!",
+     "sign_charter": "Signer &laquo;{charter}&raquo;",
+     "sign_saved": "Votre signature a bien été enregistrée."
    }
 }
 </i18n>
@@ -17,15 +27,26 @@
   
    </div>
    <div v-else-if="src" class="charter-view">
-      <h2>Je signe la charte</h2>
+      <h2 v-html="$t('sign_charter', {charter: title})"></h2>
+      <div style="text-align:center;">
+          <a :href="src" target="_blank"><i class="fa fa-file"></i> {{title}}</a>
+      </div>
       <formater-pdf-viewer :src="src" :lang="$store.state.lang" :fa="true"></formater-pdf-viewer>
-      <a :href="src" target="_blank"><i class="fa fa-file"></i> Accès en ligne</a>
-      <div>
-        <input type="checkbox" v-model="accept" /> Je signe  &laquo;{{title}}&raquo; 
-       <div> <input type="button" value="Enregistrer" /></div>
+      
+      <div class="form-charter">
+        <div v-if="alreadySigned" style="color:darkred;" v-html="$t('already_signed', {charter: title})"></div>
+          <input type="checkbox" v-model="accept" :disabled="alreadySigned || searching || success" required /> 
+        <span v-html="$t('accept', {charter: title})"></span> 
+        <div v-if="success" style="color:green;" v-html="$t('sign_saved', {charter: title})"></div>
+        
+        <div style="margin:20px;text-align:right;">
+             <input type="button" value="Enregistrer" :disabled="alreadySigned || searching || success" @click="send"/>
+        </div>
       </div>
    </div>
-   <div v-else>Pas de source</div>
+   <div v-else class="blurry-background">
+        <div class="connect-msg"  :style="{color: $store.state.style.primary}">{{$t('no_charter')}}</div>
+   </div>
  </div>
 </template>
 <script>
@@ -37,41 +58,86 @@ export default {
   },
   data() {
     return {
-      src: 'https://catalog.formater/pdf/charte-GDM-OPT.pdf',
+      src: null,
       title: null,
-      accept: false
+      accept: false,
+      alreadySigned: true,
+      searching: false,
+      success: false
     }
   },
   computed: {
     email () {
-      this.getCharter()
+      this.getCharter(this.id)
       return this.$store.getters['user/email']
     },
     user () {
       return this.$store.getters['user/get']
     },
     id () {
-      console.log(this.$route)
-      return 1
+      return this.$route.params.id
     }
   },
   created () {
     this.$store.commit('services/resetCurrent')
-    this.getCharter()
+   
   },
   mounted () {
+    this.getCharter(this.id)
   },
   destroyed () {
   },
   methods: {
-    getCharter () {
+    check (data) {
+      if (data.error) {
+        return
+      }
+      if (data.success) {
+        this.success = true
+      }
+    },
+    getCharter (id) {
+      this.reset()
       if (!this.user) {
         return
       }
-      var url = this.$store.state.checkSSO + '/api/charter' 
-       this.$http.post(url, {userId: this.user.id, charterId: this.id, lang: this.$store.state.lang }, {emulateJSON: true})
+      var url = this.$store.state.checkSSO + '/charters/get' 
+       this.$http.post(url, {userId: this.user.id, charterId: this.$route.params.id, lang: this.$store.state.lang }, {emulateJSON: true})
        .then(resp => {
-         console.log(resp.body)
+         if (resp.body) {
+           this.initialize(resp.body)
+         }
+       })
+    },
+    initialize (data) {
+      if (data.error) {
+        return
+      }
+      this.accept = data.userId
+      this.alreadySigned = this.accept
+      this.title = data.title
+      this.src = data.url
+    },
+    reset () {
+      this.accept = null
+      this.alreadySigned = true
+      this.title = '---'
+      this.src = null
+    },
+    send () {
+      if (!this.user || !this.accept) {
+        return
+      }
+      this.searching = true
+      var url = this.$store.state.checkSSO + '/charters/sign' 
+       this.$http.post(url, {userId: this.user.id, email: this.email, charterId: this.$route.params.id}, {emulateJSON: true})
+       .then(resp => {
+         this.searching = false
+         if (resp.body) {
+           this.check(resp.body)
+         }
+       }, resp => {
+         this.searching = false
        })
     }
   }
@@ -98,6 +164,11 @@ export default {
   margin: 5% auto;
   border:none;
 
+}
+.form-charter {
+   margin: 10px 0;
+   padding:10px;
+   border:1px dotted grey;
 }
 .mtdt-charter {
   border-top: 1px dotted grey;
