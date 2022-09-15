@@ -8,7 +8,8 @@
     "select_all": "Select all",
     "WAITING": "Waiting for treatment",
     "REJECTED": "Rejected",
-    "ACCEPTED": "Accepted"
+    "ACCEPTED": "Accepted",
+    "CONDITION": "Waiting your signature"
   },
   "fr": {
     "access_token": "token d'accès",
@@ -18,7 +19,8 @@
     "select_all": "Tout sélectionner",
     "WAITING": "En attente de traitement",
     "REJECTED": "Refusé",
-    "ACCEPTED": "Accepté"
+    "ACCEPTED": "Accepté",
+     "CONDITION": "En attente de votre signature"
   }
 }
 </i18n>
@@ -100,6 +102,11 @@
 	            <span v-if="role.status === 'REJECTED'" :title="$t('REJECTED')">
 	             <i class="fa fa-close" style="color:darkred;"></i>
 	           </span>
+	             <span v-if="role.status === 'CONDITION'" :title="$t('CONDITION')">
+               <router-link :to="{name:'Charter', params: {id: role.charterId}}">
+                 <i class="fa fa-pencil"  style="color:darkred;" ></i>
+               </router-link>
+             </span>
 	           <span v-if="!role.status">
 	              <input v-if="index === 1 || checkedRoles.indexOf(name + '.' + group[1].name) < 0" type="checkbox" :value="name + '.' + role.name" 
 	              :checked="checkedRoles.indexOf(name + '.' + role.name) >= 0" @click="changeRole($event)"/>

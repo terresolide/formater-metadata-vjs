@@ -290,11 +290,13 @@ export default {
       var toRemove = []
       var _this = this
       // remove role "view" if there is role "view download"
+      var location = this.$custURL(window.location.href)
       this.checkedRoles = this.checkedRoles.filter(role => _this.checkedRoles.indexOf(role + 'D') < 0)
       var postdata = {
           userId: this.user.id,
           email: this.user.email,
           app: this.$store.state.app,
+          domain: location.base + '#/',
           realm: this.$store.getters['user/realm'],
           message: this.message,
           role: this.checkedRoles,
