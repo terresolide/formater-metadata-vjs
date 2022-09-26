@@ -6,7 +6,7 @@
      "accept": "I accept the terms of use by signing &laquo;{charter}&raquo;",
      "already_signed": "You have already signed &laquo;{charter}&raquo;!",
      "need_log": "You must login to access this page!",
-     "newRoles": "New roles have been assigned to you: {newRoles}<br>Log out/log in for them to take effect!",
+     "new_roles": "New roles have been assigned to you: {newroles}<br>Log out/log in for them to take effect!",
      "no_charter": "No charter match!",
      "sign_charter": "Sign the &laquo;{charter}&raquo;",
      "sign_saved": "Your signature has been saved."
@@ -15,7 +15,7 @@
      "accept": "J'accepte les conditions d'utilisation en signant  &laquo;{charter}&raquo;",
      "already_signed": "Vous avez déjà signé &laquo;{charter}&raquo;!",
      "need_log": "Vous devez vous connecter pour accéder à cette page!",
-     "newRoles": "De nouveaux roles vous ont été attribués: {newRoles}<br>Déconnectez-vous/reconnectez-vous pour qu'ils soient pris en compte!",
+     "new_roles": "De nouveaux roles vous ont été attribués: {newroles}<br>Déconnectez-vous/reconnectez-vous pour qu'ils soient pris en compte!",
      "no_charter": "Aucune charte ne correspond!",
      "sign_charter": "Signer &laquo;{charter}&raquo;",
      "sign_saved": "Votre signature a bien été enregistrée."
@@ -40,7 +40,7 @@
           <input type="checkbox" v-model="accept" :disabled="alreadySigned || searching || success" required /> 
         <span v-html="$t('accept', {charter: title})"></span> 
         <div v-if="success" style="color:green;" v-html="$t('sign_saved', {charter: title})"></div>
-        <div v-if="success & newRoles.length > 0" style="color:green;" v-html="$t('new_roles', {newRoles: newRoles.join(',')})"></div>
+        <div v-if="success & newRoles.length > 0" style="color:green;" v-html="$t('new_roles', {newroles: newRoles.join(',')})"></div>
         <div style="margin:20px;text-align:right;">
              <input type="button" value="Enregistrer" :disabled="alreadySigned || searching || success" @click="send"/>
         </div>
@@ -143,7 +143,13 @@ export default {
       }
       this.searching = true
       var url = this.$store.state.checkSSO + '/charters/sign' 
-       this.$http.post(url, {userId: this.user.id, email: this.email, charterId: this.$route.params.id}, {emulateJSON: true})
+       this.$http.post(url, {
+         userId: this.user.id, 
+         email: this.email, 
+         charterId: this.$route.params.id, 
+         lang: this.$store.state.lang, 
+         url: window.location.href
+       }, {emulateJSON: true})
        .then(resp => {
          this.searching = false
          if (resp.body) {

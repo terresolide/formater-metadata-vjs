@@ -74,7 +74,7 @@
 		              <span v-if="role.access" :title="$t('ACCEPTED')"><i class="fa fa-check" style="color:green;"></i></span>
 		              <!--  <i v-if="role.parameters.view" class="fa" :class="{'fa-close': !role.access, 'fa-check': role.access} "></i>
 		              --> 
-		              <input v-if="!role.access && !role.status" type="checkbox"  :value="name + '.' + role.name"
+		              <input v-if="!role.access && !role.status " type="checkbox"  :value="name + '.' + role.name"
 		               :checked="checkedRoles.indexOf(name + '.' + role.name) >= 0" @click="changeRole($event)"/>
 		             </span>
 		            </div>

@@ -115,9 +115,9 @@ export default {
         for(var key in obj.clients[name].groups) {
           if (obj.clients[name].groups[key][0].status === 'REJECTED') {
             obj.clients[name].groups[key][1].status = 'REJECTED'
-          } else if (obj.clients[name].groups[key][1].status === 'WAITING') {
-            console.log(key)
-            obj.clients[name].groups[key][0].status = 'WAITING'
+          } else if (obj.clients[name].groups[key][1].status === 'WAITING' || 
+                     obj.clients[name].groups[key][1].status === 'CONDITION' ) {
+            obj.clients[name].groups[key][0].status = obj.clients[name].groups[key][1].status
           }
         }
       }
@@ -134,7 +134,19 @@ export default {
     setAccess (state, roles) {
       for(var name in state.clients) {
         if (!roles[name]) {
-          // user has no role for this client
+          // user has no role for this client. Check if some has been accepted and cancel
+          state.clients[name].roles.forEach(function (role, index) {
+              if (role.status === 'ACCEPTED') {
+                role.status = 'REJECTED'
+              }
+          })
+          for(var key in state.clients[name].groups) {
+            state.clients[name].groups[key].forEach(function (role, i) {
+              if (role.status === 'ACCEPTED') {
+                role.status = 'REJECTED'
+              }
+            })
+          }
           continue
         }
         
@@ -146,6 +158,9 @@ export default {
           state.clients[name].roles.forEach(function (role, index) {
               var index = rolestr.indexOf(role.name)
               role.access = index >= 0
+              if (!role.access && role.status === 'ACCEPTED') {
+                role.status = 'REJECTED'
+              }
           })
         }
         if (state.clients[name].groups) {
@@ -153,6 +168,9 @@ export default {
             state.clients[name].groups[key].forEach(function (role, i) {
               var index = rolestr.indexOf(role.name)
               role.access = index >= 0
+               if (!role.access && role.status === 'ACCEPTED') {
+                role.status = 'REJECTED'
+              }
             })
           }
         }
