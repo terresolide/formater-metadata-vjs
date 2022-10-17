@@ -375,28 +375,28 @@ export default {
       }
       this.$store.commit('searchingChange', false)
     },
-    treatmentGeojson (data, depth) {
-      var metadatas = {}
-      var self = this
-      var features = []
-      data.features.forEach( function (feature) {
-        feature.properties.id = feature.id
-        metadatas[feature.id] =  self.mapToGeonetwork(feature.properties)
-        features.push({type: feature.type, id: feature.id, geometry: feature.geometry})
+//     treatmentGeojson (data, depth) {
+//       var metadatas = {}
+//       var self = this
+//       var features = []
+//       data.features.forEach( function (feature) {
+//         feature.properties.id = feature.id
+//         metadatas[feature.id] =  self.mapToGeonetwork(feature.properties)
+//         features.push({type: feature.type, id: feature.id, geometry: feature.geometry})
        
-      })
-      if (data.features.length === 0) {
-        metadatas = {}
-      }
-      if (data.properties) {
-        var properties = data.properties
-      } else {
-        var properties = data.description
-      }
+//       })
+//       if (data.features.length === 0) {
+//         metadatas = {}
+//       }
+//       if (data.properties) {
+//         var properties = data.properties
+//       } else {
+//         var properties = data.description
+//       }
 
-      this.fill({ type: 'opensearch', properties: data.properties, features: features, metadata:metadatas}, depth)
-      this.$store.commit('searchingChange', false)
-    },
+//       this.fill({ type: 'opensearch', properties: data.properties, features: features, metadata:metadatas}, depth)
+//       this.$store.commit('searchingChange', false)
+//     },
     treatmentGeonetwork (data, depth) {
       var metadatas = {}
       this.treatmentDimension(data.summary.dimension)

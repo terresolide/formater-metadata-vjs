@@ -64,6 +64,8 @@ export default {
     return {
      // searchEventListener: null,
       api: null,
+      paramNS: 'parameters',
+
       // associative array of: parameter name in this application => name in the opensearch api
       // for the predefined parameters like box, temporalExtent, and paging (common for all api)
       mappingParameters: [],
@@ -101,7 +103,7 @@ export default {
       }
     },
     extractParameter (parameterNode, specName) {
-      var listPredefined = this.$store.state.parameters.predefined
+      var listPredefined = this.$store.getters['predefinedParams']
       // name in this application
       var appName = getKeyByValue(listPredefined, specName)
       // name in the opensearch api
@@ -138,7 +140,7 @@ export default {
       if (max) {
         obj = Object.assign(obj, {max: max})
       }
-      var nodes = parameterNode.getElementsByTagName('parameters:Options')
+      var nodes = parameterNode.getElementsByTagName(this.paramNS + ':Options')
       if (nodes) {
         var options= []
         for(var k=0; k < nodes.length; k++) {
@@ -163,10 +165,27 @@ export default {
         this.osParameters.push(obj)
       }
     },
+    extractNamespaces (attrs) {
+      var namespaces = {}
+      for (var i=0; i < attrs.length; i++) {
+        if (attrs[i].value.indexOf('parameters') > 0 ) {
+          var part = attrs[i].name.split(':')
+          this.paramNS =  part[1]
+        } else if (attrs[i].value.indexOf('time') > 0) {
+          var part = attrs[i].name.split(':')
+          namespaces.time = part[1]
+        } else if (attrs[i].value.indexOf('geo') > 0) {
+          var part = attrs[i].name.split(':')
+          namespaces.geo = part[1]
+        }
+      }
+      this.$store.commit('setNamespaces', namespaces)
+    },
     extractDescribeParameters(parametersString) {
       var parser = new DOMParser()
       var xml = parser.parseFromString(parametersString, 'text/xml')
-      var urls = xml.firstChild.childNodes
+      this.extractNamespaces(xml.firstElementChild.attributes)
+      var urls = xml.firstElementChild.childNodes
       var url = null
       // loop to find the good url
       urls.forEach(function (node) {
@@ -188,7 +207,7 @@ export default {
       } else {
         this.api = extract[1]
       }
-      var parameters = url.getElementsByTagName('parameters:Parameter')
+      var parameters = url.getElementsByTagName(this.paramNS + ':Parameter')
       var self = this
       var regexList = this.$store.state.parameters.excluedRegex
       // loop on the parameters node

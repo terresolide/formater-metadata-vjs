@@ -32,6 +32,11 @@ export default {
       this.getRecords(newroute)
     }
   },
+  computed: {
+    isFlatsim () {
+      return this.api.indexOf('flatsim') > 0
+    }
+  },
   data() {
     return {
       headers: {
@@ -155,6 +160,9 @@ export default {
       var self = this
       var features = []
       data.features.forEach( function (feature) {
+        if (!feature.id) {
+          feature.id = feature.properties.productIdentifier
+        }
         feature.properties.id = feature.id
         metadatas[feature.id] =  self.mapToGeonetwork(feature.properties)
         features.push({type: feature.type, id: feature.id, geometry: feature.geometry})
@@ -274,7 +282,7 @@ export default {
       }
       if (properties.license) {
         // @todo a effacer
-        if (properties.license.licenseId === 'unlicensed') {
+        if (properties.license.licenseId === 'unlicensed' && this.isFlatsim) {
           properties.legalConstraints = ['license: https://creativecommons.org/licenses/by-nc/4.0/']
         } else {
           properties.legalConstraints = [properties.license.licenseId]
@@ -381,6 +389,7 @@ export default {
 //     },
     fill (data, depth) {
       data.depth = this.depth
+      console.log(data)
       var event = new CustomEvent('fmt:metadataListEvent', {detail:  data})
       document.dispatchEvent(event)
     },

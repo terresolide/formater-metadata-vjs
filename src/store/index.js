@@ -113,24 +113,30 @@ export default function makeStore( config ) {
         // @toDelete ? pas utilisé pour le moment
         defaut: ['any', 'geometry', 'extTo', 'extFrom', 'from', 'to', 'resultType', '_content_type', 'bucket', 'fast']
       },
+      // namespace of opensearch extension
+      namespaces: {
+        time: 'time',
+        geo: 'geo',
+        eo: 'eo'
+      },
       // current opensearch api parameters
       parameters: {
         // regex of parameter (value attribute) which are exclued to use in request
         excluedRegex: ["\{geo:(uid|geometry|name|lon|lat|radius)\}", "\{eo:parentIdentifier\}",
           "\{(fs|eo):(first|second|creation|modification|processing){0,1}Date(Min|Max){0,1}\}", 
           "\{resto:[a-zA-Z]+\}"],
-        // list of predefined parameters (temporalExtent, spatialExtent and page information)
-        // its name in application and the corresponding value of parameter in opensearch api
-        predefined: {
-          any: "{searchTerms}",
-          start: "{time:start}",
-          end: "{time:end}",
-          lang: "{language}",
-          box: "{geo:box}",
-          maxRecords: "{count}",
-          index: "{startIndex}",
-          page: "{startPage}"
-        },
+//        // list of predefined parameters (temporalExtent, spatialExtent and page information)
+//        // its name in application and the corresponding value of parameter in opensearch api
+//        predefined: {
+//          any: "{searchTerms}",
+//          start: "{time:start}",
+//          end: "{time:end}",
+//          lang: "{language}",
+//          box: "{geo:box}",
+//          maxRecords: "{count}",
+//          index: "{startIndex}",
+//          page: "{startPage}"
+//        },
         // FOR THE CURRENT API opensearch: 2 arrays (empty by default)
         // associative array of: parameter name in this application => name in the opensearch api
         // for the predefined parameters like box, temporalExtent, and paging (common for all api)
@@ -150,6 +156,15 @@ export default function makeStore( config ) {
     mutations: {
       setDefaultSpatialExtent(state, spatialExtent) {
         state.spatialExtent = spatialExtent
+      },
+      setNamespaces (state, namespaces) {
+        state.namespaces = {
+          time: 'time',
+          geo: 'geo'
+        }
+        for (var key in namespaces) {
+          state.namespaces[key] = namespaces[key]
+        }
       },
       temporalChange(state, newTemporal) {
         state.temporalExtent = newTemporal
@@ -288,6 +303,18 @@ export default function makeStore( config ) {
           return {name: 'FormaterCatalogue', params: {}, query: {}}
         }
       },
+      predefinedParams (state, getters) {
+        return {
+          any: "{searchTerms}",
+          start: "{" + state.namespaces.time + ":start}",
+          end: "{" + state.namespaces.time + ":end}",
+          lang: "{language}",
+          box: "{" + state.namespaces.geo + ":box}",
+          maxRecords: "{count}",
+          index: "{startIndex}",
+          page: "{startPage}"
+        }
+      }
     },
     modules: {
       user: user,
