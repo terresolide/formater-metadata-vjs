@@ -10,6 +10,7 @@
     name: 'FormaterLogin',
     mounted () {
       var location = this.$custURL(window.location.href)
+      console.log(location)
       if (window.opener) {
         window.opener.postMessage(
           {

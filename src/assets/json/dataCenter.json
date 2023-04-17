@@ -9,7 +9,7 @@
     }
   }, 
   "https://w3id.org/formater/data-center/CNES": {
-    "logo": "https://service.poleterresolide.fr/geonetwork/images/harvesting/200px-CNES.png",
+    "logo": "https://catalogue-terresolide.ipgp.fr/geonetwork/images/harvesting/200px-CNES.png",
     "href": "https://cnes.fr/",
     "title": {
       "fr": "CNES - Centre National d'Etudes Spatiales",
@@ -17,7 +17,7 @@
     }
   },
   "https://w3id.org/formater/data-center/ISGI": {
-    "logo": "https://service.poleterresolide.fr/geonetwork/images/harvesting/logo_ISGI_2.png",
+    "logo": "https://catalogue-terresolide.ipgp.fr/geonetwork/images/harvesting/logo_ISGI_2.png",
     "href": "http://isgi.unistra.fr/",
     "title": {
       "fr": "SIIG - Service International des Indices Géomagnétiques",
@@ -25,7 +25,7 @@
     }
   }, 
    "https://w3id.org/formater/data-center/SHOM": {
-    "logo": "https://service.poleterresolide.fr/geonetwork/images/harvesting/shom-data.png",
+    "logo": "https://catalogue-terresolide.ipgp.fr/geonetwork/images/harvesting/shom-data.png",
     "href": "https://data.shom.fr/",
     "title": {
       "fr": "SHOM - Service hydrographique et océanographique de la Marine",
@@ -33,7 +33,7 @@
     }
   },
     "https://w3id.org/formater/data-center/ISDeform": {
-    "logo": "https://service.poleterresolide.fr/geonetwork/images/harvesting/cropped-Logo_IsDeform_v8.png",
+    "logo": "https://catalogue-terresolide.ipgp.fr/geonetwork/images/harvesting/cropped-Logo_IsDeform_v8.png",
     "href": "https://www.isdeform.fr/",
     "title": {
       "fr": "ISDeform",

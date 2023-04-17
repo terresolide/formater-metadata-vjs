@@ -171,6 +171,7 @@ export default {
    getTokens () {
      
      if (this.$store.getters['user/code']) {
+       console.log('gettoken')
        var postdata = {
          code: this.$store.getters['user/code'],
          grant_type: 'authorization_code',
