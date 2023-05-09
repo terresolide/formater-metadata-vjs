@@ -82,6 +82,7 @@
               </dd>
              
        </dl>
+       <p class="summary" v-html="decodeURIComponent(metadata.summary)" v-if="metadata.summary" style="margin-bottom:20px;"></p>
        <p v-html="metadata.description" v-if="metadata.description" style="margin-bottom:20px;"></p> 
        <dl class="mtdt-identifier" v-if="metadata.identifier && metadata.description" style="max-width:calc(100% - 305px);" :style="{clear: (type === 'opensearch' ? 'none' : 'left')}">
              <dt :style="dtStyle()">{{$t('identifier')}}</dt>
@@ -95,6 +96,7 @@
 			   </dd>
 			</dl>
        <formater-parameters type="metadata" :metadata="metadata" ></formater-parameters>
+       <formater-parameters v-if="others" type="metadata" :metadata="others" ></formater-parameters>
 </div>
 
 <dl v-if="countDate > 0" class="mtdt-main-parameter">
@@ -121,6 +123,9 @@
      <formater-temporal-extent :start="metadata.tempExtentBegin"  :end="metadata.tempExtentEnd" />
   </dd>
 </dl>
+
+<dl >
+</dl>
 <dl v-if="metadata.credit" class="mtdt-main-parameter large">
    <dt :style="dtStyle()">{{$t('credit')}} </dt>
    <dd >
@@ -145,7 +150,7 @@
      </div>
   </dd>
 </dl>
-          
+     
  <dl>         <hr /> </dl>
  <h1 :style="{color:$store.state.style.primary}">{{$t('about_metadata')}}</h1>
  <dl class="mtdt-main-parameter large"><dt :style="dtStyle()">{{$t('identifier')}}</dt><dd>{{metadata.id}}</dd></dl>
@@ -245,13 +250,23 @@ export default {
   },
   data () {
     return {
-      access: {search:'free', view: 'free', download: 'free'}
+      access: {search:'free', view: 'free', download: 'free'},
+      others: null
     }
   },
   created () {
     console.log(this.metadata.access)
     if (this.metadata.access) {
       this.access = this.metadata.access
+    }
+    if (this.metadata.EarthObservation && this.metadata.EarthObservation.metaDataProperty && this.metadata.EarthObservation.metaDataProperty.EarthObservationMetaData) {
+      this.others = this.metadata.EarthObservation.metaDataProperty.EarthObservationMetaData
+      delete this.others.identifier
+      delete this.others.productType
+      if (this.others.processing && this.others.processing.ProcessingInformation && this.others.processing.ProcessingInformation ) {
+        this.others.processingDate = this.others.processing.ProcessingInformation.processingDate
+        delete this.others.processing.ProcessingInformation
+      }
     }
   },
   methods:{
@@ -287,7 +302,17 @@ background: #333;
     background-image: none;
 background-image: linear-gradient(to right, #ccc, #333, #ccc);
 }
-
+ .mtdt-content .summary td {
+    font-size:0.9rem;
+ }
+ .summary td b {
+  font-weight:500;
+}
+ .summary tr td:first-child {
+  font-weight:600;
+  width: 110px;
+  vertical-align: top;
+}
 .mtdt-metadata .mtdt-content dl{
   display: block;
  /* clear:left;*/

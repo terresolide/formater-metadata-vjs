@@ -45,7 +45,8 @@
        
         </div>
          <formater-temporal-extent :start="meta.tempExtentBegin" :end="meta.tempExtentEnd"></formater-temporal-extent>
-         
+         <div class="summary" v-html="decodeURIComponent(metadata.summary)" v-if="metadata.summary" style="padding:5px 0"></div>
+      
          <div v-if="meta.description" v-html="meta.description" style="padding:5px 0"></div>
          <formater-parameters type="cartouche" :metadata="meta"></formater-parameters>
      </div>
@@ -252,7 +253,9 @@ export default {
   display: inline-block;
   float:left;
 }
-
+ .mtdt-cartouche-metadata .summary td {
+    font-size:0.8rem;
+ }
 .mtdt-cartouche-metadata div.mtdt-header{
   color: white;
   background-color: #dd9946;

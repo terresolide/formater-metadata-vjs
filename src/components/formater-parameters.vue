@@ -3,12 +3,12 @@
   "en": {
     "parentIdentifier": "Parent Id.",
     "productType": "Product type",
-    "parameters": "Parameters"
+    "parameters": "Others properties"
   },
   "fr": {
     "parentIdentifier": "Parent Id.",
     "productType": "Type de produit",
-    "parameters": "Paramètres"
+    "parameters": "Autres propriétés"
   }
 }
 </i18n>
@@ -62,6 +62,9 @@ export default{
    } else {
       this.uuid = this.metadata.id
       this.metaType = 'opensearch'
+   }
+   if (Array.isArray(this.metadata.productType)) {
+     this.metadata.productType = this.metadata.productType[0]
    }
   },
   data () {
@@ -120,7 +123,7 @@ dl.mtdt-simple-parameter:parent{
 }
 .mtdt-content .mtdt-parameters-metadata  dl.mtdt-simple-parameter dt{
   font-weight:500;
-  width: 165px;
+  width: 168px;
   padding-left: 10px;
   line-height:1;
 }

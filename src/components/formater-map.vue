@@ -13,8 +13,10 @@
  </span>
 </template>
 <script>
-var L = require("leaflet");
+var L = require('leaflet')
+var L = require('../modules/leaflet.extend.js')
 require("leaflet-kml")
+
 L.Control.Fmtlayer = require('../modules/leaflet.control.fmtlayer.js')
 L.Control.Reset = require('../modules/leaflet.control.reset.js')
 L.Control.Fullscreen = require('formater-commons-components-vjs/src/leaflet/leaflet.control.fullscreen.js')
@@ -476,7 +478,12 @@ export default {
      // } else {
        console.log('do bbox layer')
        this.bboxLayer = L.geoJSON(event.detail.feature, {style:this.getOptionsLayer(1)}) 
+       
        this.bboxLayer.addTo(this.map)
+//        this.bboxLayer.eachLayer(function (layer) {
+//          layer.buildFramed()
+//        })
+       
        var bounds = this.bboxLayer.getBounds()
        this.bounds = bounds
        // @todo passer cette variable comme local ? utilité
@@ -538,7 +545,18 @@ export default {
 //      }
      this.type = event.detail.type
      // this.filterBboxWithSelectedBounds(event.detail.features)
-     this.bboxLayer = L.geoJSON(event.detail.features, {style:this.getOptionsLayer(0)})  
+     var style = this.getOptionsLayer(0)
+     this.bboxLayer = L.geoJSON(event.detail.features, {
+           style: style,
+//            onEachFeature (feature, layer) {
+//              var bounds = layer.getBounds()
+//              style.border = 'triangle'
+//              layer.addFramed(style)
+//              // layer.buildFramed()
+//            }
+     })  
+     
+     //}
      this.bounds = this.bboxLayer.getBounds()
 //      this.bboxLayer[this.depth].addTo(this.map);
 //      if (this.bboxLayer[this.depth]) {

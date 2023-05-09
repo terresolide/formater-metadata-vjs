@@ -85,15 +85,15 @@ export default function makeStore( config ) {
         cartouche: {
           identifier: ['productType'],
           quality: ['resolution', 'representation', 'format', 'productValidity'],
-          acquisition:  [ 'platform', 'instrument', 'sensorMode', 'polarisation',  'relativeOrbitNumber', 'orbitDirection', 'subswath'],
+          acquisition:  ['platform', 'instrument', 'sensorMode', 'polarisation',  'relativeOrbitNumber', 'orbitDirection', 'subswath'],
           process:  ['processingLevel', 'processingMode',  'correction', 'version']
         },
         metadata: {
           identifier: ['productIdentifier', 'productType'],
-          quality: [ 'resolution', 'representation', 'format', 'nbCols', 'nbRows', 'waterCover', 'snowCover', 'cloudCover', 'productValidity'],
-          acquisition: [ 'platform', 'instrument','sensorMode', 'polarisation', 
+          quality: [ 'imageQualityStatus', 'productQualityStatus', 'resolution', 'representation', 'format', 'nbCols', 'nbRows', 'waterCover', 'snowCover', 'cloudCover', 'productValidity'],
+          acquisition: [ 'acquisitionType', 'statusSubType', 'platform', 'instrument','sensorMode', 'polarisation', 
             'orbitNumber', 'relativeOrbitNumber', 'orbitDirection', 'subswath'],
-          process: ['processingLevel', 'processingMode', 'processingContext',  'correction', 'version']
+          process: ['processingDate', 'processingLevel', 'processingMode', 'processingContext',  'correction', 'version']
         }
       },
       // default date & constraint list
