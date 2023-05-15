@@ -258,8 +258,8 @@ export default {
       properties.cds = this.cds
       // case Terradue
       if (properties.date) {
-        var date = properties.date.split('/')
-        if (date.length > 1) {
+        var dates = properties.date.split('/')
+        if (dates.length > 1) {
           properties.tempExtentBegin = dates[0]
           properties.tempExtentEnd = dates[1]
         }
