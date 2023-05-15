@@ -246,6 +246,9 @@ export default {
         }
         
       }
+//       console.log(this.osParameters)
+//       console.log(this.mappingParameters)
+//       console.log(this.fixedParameters)
      // this.recordService()
       this.$emit('parametersChange', {api: this.api, parameters:this.osParameters, mapping: this.mappingParameters, fixed: this.fixedParameters})
     },

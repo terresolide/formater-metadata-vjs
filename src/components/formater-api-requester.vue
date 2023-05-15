@@ -10,7 +10,6 @@
 <template></template>
 <script>
 
-
 export default {
   name: 'FormaterApiRequester',
   props: {
@@ -90,7 +89,6 @@ export default {
       this.initParameters()
       this.parameters = Object.assign(this.parameters, newroute.query)
       this.mapParameters()
-      this.parameters = Object.assign(this.parameters, this.$store.state.parameters.fixed)
     },
     mapParameters() {
       // transform the name of parameter from this application to the opensearch api for the predefined parameter
@@ -99,15 +97,18 @@ export default {
       var specificParameters = this.$store.state.parameters.others
       // parameters mapping with our app parameters
       var mappingParameters = this.$store.state.parameters.mapping
+      console.log(mappingParameters)
       // change 
       this.parameters.renameProperty('bbox', mappingParameters['box'])
       if (this.parameters.from) {
-        this.parameters[mappingParameters['index']] = this.parameters.from
+        this.parameters['index'] = this.parameters.from
         if (this.parameters.to) {
-          this.parameters[mappingParameters['maxRecords']] = this.parameters.to - this.parameters.from + 1
+          this.parameters['maxRecords'] = parseInt(this.parameters.to) - parseInt(this.parameters.from) + 1
         }
       }
       for(var name in this.parameters){
+        console.log(name)
+        console.log(this.parameters[name])
         if (typeof mappingParameters[name] !== 'undefined') {
           this.parameters.renameProperty(name, mappingParameters[name])
         } else  {
@@ -130,17 +131,31 @@ export default {
       // var depth = (typeof this.parameters.depth != 'undefined') ? this.parameters.depth : this.depth
       var self = this
       var url = this.api + (this.api.indexOf('?') > 0 ? '&' :'?');
+      var parameters = Object.assign({}, this.parameters)
+      parameters = Object.assign(parameters, this.$store.state.parameters.fixed)
+      console.log(parameters)
       // register parameters value
-       url += Object.keys(this.parameters).map(function (prop) {
-        return prop + '=' + self.parameters[prop]
+       url += Object.keys(parameters).map(function (prop) {
+        return prop + '=' + parameters[prop]
       }).join('&');
       this.$emit('registerValues', {depth: depth, parameters: this.parameters})
      // this.$store.commit('addValueToParameters', this.parameters)
+    
      this.$http.get(url).then(
           response => {   this.treatmentGeojson(response.body, depth);},
-          response => { this.treatmentError(response, url); })
+          response => { this.treatmentError(response, url, depth); })
     },
-    treatmentError (response, url) {
+    treatmentError (response, url, depth) {
+      
+      if (response && this.$store.state.env === 'development' && this.$store.state.proxy.url) {
+        var url = this.$store.state.proxy.url + '?url=' + encodeURIComponent(url)
+        this.$http.get(url)
+        .then(
+            response => { this.treatmentGeojson(response.body, depth);},
+            response => { this.treatmentError(null, url, depth);}
+         )
+         return
+      }
       switch(response.status) {
       case 0:
         this.$store.commit('setError', 'Maybe CORS ERROR, try with proxy')
@@ -177,8 +192,16 @@ export default {
       } else {
         var properties = data.description
       }
-
-      this.fill({ type: 'opensearch', properties: data.properties, features: features, metadata:metadatas}, depth)
+      if (properties.startIndex) {
+        properties.startIndex = parseInt(properties.startIndex)
+      }
+      if (properties.totalResults) {
+        properties.totalResults = parseInt(properties.totalResults)
+      }
+      if (properties.itemsPerPage) {
+        properties.itemsPerPage = parseInt(properties.itemsPerPage)
+      }
+      this.fill({ type: 'opensearch', properties: properties, features: features, metadata:metadatas}, depth)
       this.$store.commit('searchingChange', false)
     },
    
@@ -422,7 +445,6 @@ export default {
 //     },
     fill (data, depth) {
       data.depth = this.depth
-      console.log(data)
       var event = new CustomEvent('fmt:metadataListEvent', {detail:  data})
       document.dispatchEvent(event)
     },

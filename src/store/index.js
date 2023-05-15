@@ -124,7 +124,7 @@ export default function makeStore( config ) {
         // regex of parameter (value attribute) which are exclued to use in request
         excluedRegex: ["\{geo:(uid|geometry|name|lon|lat|radius|relation)\}", "\{eo:parentIdentifier\}",
           "\{(fs|eo):(first|second|creation|modification|processing){0,1}Date(Min|Max){0,1}\}", 
-          "\{resto:[a-zA-Z]+\}", "\{time:relation}"],
+          "\{resto:[a-zA-Z]+\}", "\{time:relation\}", "\{eop:accessedFrom\}", "\{t2:doubleCheckGeomtry\}"],
 //        // list of predefined parameters (temporalExtent, spatialExtent and page information)
 //        // its name in application and the corresponding value of parameter in opensearch api
 //        predefined: {
@@ -230,8 +230,6 @@ export default function makeStore( config ) {
         state.gnParameters.defaut = state.gnParameters.defaut.concat(state.gnParameters.step1step2)
       },
       parametersChange(state, newParameters) {
-        console.log('nouveau parametres')
-        console.log(newParameters)
         state.parameters.others = newParameters.parameters
         state.parameters.mapping = newParameters.mapping
         state.parameters.fixed = newParameters.fixed

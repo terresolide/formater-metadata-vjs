@@ -43,6 +43,7 @@ if (!config.checkSSO) {
 if (!config.recordUrl) {
   config.recordUrl = process.env.CHECK_SSO + '/downloads/click'
 }
+config.env = process.env.NODE_ENV
 // export let keycloak = makeAuth(config.auth)
 
 const store = makeStore(config)
