@@ -11,7 +11,10 @@
 <script>
 import FormaterApiRequester from '@/components/formater-api-requester.vue'
 function getKeyByValue(object, value) {
-  return Object.keys(object).find(key => object[key] === value);
+  return Object.keys(object).find(key => {
+    value = value.replace('?', '')
+    return object[key] === value
+  });
 }
 export default {
   name: 'FormaterOpensearch',
@@ -42,6 +45,7 @@ export default {
   },
   watch: {
     service (newvalue) {
+      console.log(newvalue)
       if (newvalue.domain.indexOf('flatsim') >= 0) {
         this.osParameters = this.osParameters.filter(param => param.name !== 'processingLevel')
         this.$emit('parametersChange', {api: this.api, parameters:this.osParameters, mapping: this.mappingParameters})
@@ -49,6 +53,8 @@ export default {
     }
   },
   created () {
+    console.log(this.service)
+    console.log(this.cds)
     // this.searchEventListener = this.handleSearch.bind(this) 
   	// document.addEventListener('aerisSearchEvent', this.searchEventListener);
     this.load()
@@ -64,6 +70,7 @@ export default {
     return {
      // searchEventListener: null,
       api: null,
+      fixedParameters: {},
       paramNS: 'parameters',
 
       // associative array of: parameter name in this application => name in the opensearch api
@@ -75,8 +82,22 @@ export default {
     }
   },
   methods: {
+     extractFixedParams (describe) {
+       var tab = describe.split('?')
+       var fixedParameters = {}
+       if (tab.length > 1) {
+         var params = tab[1].split('&')
+         params.forEach(function (param) {
+           var x = param.split('=')
+           fixedParameters[x[0]] = x[1]
+         })
+       }
+       this.fixedParameters = fixedParameters
+       return tab[0]
+     },
      load() {
-       this.$http.get(this.describe)
+       var describe = this.extractFixedParams(this.describe)
+       this.$http.get(describe)
        .then(
            response => { this.extractDescribeParameters(response.body);},
            response => { 
@@ -108,6 +129,9 @@ export default {
       var appName = getKeyByValue(listPredefined, specName)
       // name in the opensearch api
       var name = parameterNode.getAttribute('name')
+      if (this.fixedParameters[name]) {
+        return
+      }
       if (typeof appName !== 'undefined') {
         this.mappingParameters[appName] = name
         return
@@ -189,7 +213,8 @@ export default {
       var url = null
       // loop to find the good url
       urls.forEach(function (node) {
-         if (node.tagName && node.tagName.toLowerCase() === 'url' && node.getAttribute('type').indexOf('json') >= 0) {
+         if (node.tagName && node.tagName.toLowerCase() === 'url' && node.getAttribute('type').indexOf('json') >= 0
+             && node.getAttribute('type').indexOf('tdensity') < 0 && node.getAttribute('type').indexOf('elasticsearch') < 0) {
            var template = node.getAttribute('template')
            var extract = template.match(/^([^?]*(?:\?)).*$/i)
            if( extract && extract[1] && extract[1] != ''){
@@ -213,6 +238,8 @@ export default {
       // loop on the parameters node
       for(var i=0; i < parameters.length; i++){
         var specName = parameters[i].getAttribute('value')
+        console.log(specName)
+        specName = specName.replace('?', '')
         // search if the parameter is exclued (@see list in store/index.js)
         var isExclued = regexList.some(function(str) {
           var rx = new RegExp(str)
@@ -223,8 +250,10 @@ export default {
         }
         
       }
+      console.log(this.osParameters)
+      console.log(this.mappingParameters)
      // this.recordService()
-      this.$emit('parametersChange', {api: this.api, parameters:this.osParameters, mapping: this.mappingParameters})
+      this.$emit('parametersChange', {api: this.api, parameters:this.osParameters, mapping: this.mappingParameters, fixed: this.fixedParameters})
     },
     // record this service
 //     recordService() {
