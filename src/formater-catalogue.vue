@@ -161,7 +161,7 @@ export default {
       // this.$router.push({name: 'FormaterCatalogue', query: {}})
     }
     this.$store.commit('services/resetCurrent')
-    this.$store.commit('parametersChange', {parameters: [], mapping: [], type: null})
+    this.$store.commit('parametersChange', {parameters: [], mapping: [], fixed: {}, type: null})
   },
   destroyed () {
 //     document.removeEventListener('fmt:metadataEvent', this.metadataListener);
@@ -270,6 +270,7 @@ export default {
         var type = metadata.disableType
         var parameters = metadata.osParameters
         var mapping = metadata.mapping
+        var fixed = metadata.fixed
         var min = null
         var max = null
         if (metadata.tempExtentBegin && metadata.tempExtentBegin.substring) {
@@ -287,24 +288,25 @@ export default {
         this.currentUuid = null
         var parameters = []
         var mapping = []
+        var fixed = {}
         var type = null
         this.$store.commit('services/resetCurrent')
         this.$store.commit('temporalChange', this.temporalExtent)
       }
       this.$store.commit('currentUuidChange', this.currentUuid)
-      this.$store.commit('parametersChange', {parameters: parameters, mapping: mapping, type: type})
+      this.$store.commit('parametersChange', {parameters: parameters, mapping: mapping, fixed: fixed, type: type})
       var event = new CustomEvent('fmt:closeMetadataEvent', {detail:  {depth: this.metadatas.length }})
       document.dispatchEvent(event)
     },
     setParameters (obj) {
-
       if (obj.depth) {
         this.metadatas[obj.depth - 1].osParameters = obj.osParameters
         this.metadatas[obj.depth - 1].mapping = obj.mapping
+        this.metadatas[obj.depth - 1].fixed = obj.fixed
         this.metadatas[obj.depth - 1].disableType = obj.disableType
       }
       if (obj.depth === this.metadatas.length) {
-        this.$store.commit('parametersChange', {parameters: obj.osParameters, mapping: obj.mapping, type: obj.type})
+        this.$store.commit('parametersChange', {parameters: obj.osParameters, mapping: obj.mapping, fixed: obj.fixed, type: obj.type})
       }
     },
     registerValues (detail) {

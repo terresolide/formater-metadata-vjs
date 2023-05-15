@@ -141,6 +141,8 @@ export default function makeStore( config ) {
         // associative array of: parameter name in this application => name in the opensearch api
         // for the predefined parameters like box, temporalExtent, and paging (common for all api)
         mapping:[],
+        // current predefined parameters (like cat=DSM-OPT for example {cat: 'DSM-OPT'}
+        fixed: {},
         // list of others specific opensearch api parameters 
         // add in formater-parameters-form
         others: []
@@ -228,8 +230,11 @@ export default function makeStore( config ) {
         state.gnParameters.defaut = state.gnParameters.defaut.concat(state.gnParameters.step1step2)
       },
       parametersChange(state, newParameters) {
+        console.log('nouveau parametres')
+        console.log(newParameters)
         state.parameters.others = newParameters.parameters
         state.parameters.mapping = newParameters.mapping
+        state.parameters.fixed = newParameters.fixed
         switch(newParameters.type) {
         case 'noChild':
           state.disable = {temporal: true, spatial: true, searchTerm: true, other: true}

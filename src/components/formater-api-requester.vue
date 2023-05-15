@@ -90,6 +90,7 @@ export default {
       this.initParameters()
       this.parameters = Object.assign(this.parameters, newroute.query)
       this.mapParameters()
+      this.parameters = Object.assign(this.parameters, this.$store.state.parameters.fixed)
     },
     mapParameters() {
       // transform the name of parameter from this application to the opensearch api for the predefined parameter
@@ -255,6 +256,35 @@ export default {
       var properties = Object.assign({}, properties)
       properties.fromOs = true
       properties.cds = this.cds
+      // case Terradue
+      if (properties.date) {
+        date = properties.date.split('/')
+        if (date.length > 1) {
+          properties.tempExtentBegin = dates[0]
+          properties.tempExtentEnd = dates[1]
+        }
+      }
+      if (properties.links) {
+        for (var index in properties.links) {
+          
+        }
+        var index = properties.links.findIndex(lk => lk['@title'] && lk['@title'] === 'Download')
+        if (index >=0) {
+          var link = properties.links[index]
+          if (!properties['services']) {
+            properties['services'] = {}
+            
+          }
+          properties.services.download = {
+              url: link['@ref'],
+              mimeType: link['@type']
+          }
+
+          properties.links.splice(index, 1)
+        }
+      }
+     
+      // case Flatsim
       if (properties.productIdentifier) {
         properties.renameProperty('productIdentifier', 'identifier')
       }
@@ -365,6 +395,9 @@ export default {
           properties.keyword.push(keyword.name)
         })
         delete properties.keywords
+      }
+      if (!properties.keyword) {
+        properties.keyword = []
       }
       return properties
     },

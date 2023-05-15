@@ -45,16 +45,13 @@ export default {
   },
   watch: {
     service (newvalue) {
-      console.log(newvalue)
       if (newvalue.domain.indexOf('flatsim') >= 0) {
         this.osParameters = this.osParameters.filter(param => param.name !== 'processingLevel')
-        this.$emit('parametersChange', {api: this.api, parameters:this.osParameters, mapping: this.mappingParameters})
+        this.$emit('parametersChange', {api: this.api, parameters:this.osParameters, mapping: this.mappingParameters, fixed:this.fixedParameters})
       }
     }
   },
   created () {
-    console.log(this.service)
-    console.log(this.cds)
     // this.searchEventListener = this.handleSearch.bind(this) 
   	// document.addEventListener('aerisSearchEvent', this.searchEventListener);
     this.load()
@@ -238,7 +235,6 @@ export default {
       // loop on the parameters node
       for(var i=0; i < parameters.length; i++){
         var specName = parameters[i].getAttribute('value')
-        console.log(specName)
         specName = specName.replace('?', '')
         // search if the parameter is exclued (@see list in store/index.js)
         var isExclued = regexList.some(function(str) {
@@ -250,8 +246,6 @@ export default {
         }
         
       }
-      console.log(this.osParameters)
-      console.log(this.mappingParameters)
      // this.recordService()
       this.$emit('parametersChange', {api: this.api, parameters:this.osParameters, mapping: this.mappingParameters, fixed: this.fixedParameters})
     },

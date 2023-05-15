@@ -436,7 +436,7 @@ export default {
 //         this.metadatas[obj.depth - 1].disableType = obj.disableType
 //       }
 //       if (obj.depth === this.metadatas.length) {
-        this.$store.commit('parametersChange', {parameters: obj.osParameters, mapping: obj.mapping, type: obj.type})
+        this.$store.commit('parametersChange', {parameters: obj.osParameters, mapping: obj.mapping, fixed: obj.fixed, type: obj.type})
 //     }
     },
     closeError () {
