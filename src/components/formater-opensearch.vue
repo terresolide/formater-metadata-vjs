@@ -162,7 +162,13 @@ export default {
         obj = Object.assign(obj, {max: max})
       }
       var nodes = parameterNode.getElementsByTagName(this.paramNS + ':Options')
-      if (nodes) {
+      if (nodes.length === 0) {
+        nodes = parameterNode.getElementsByTagName(this.paramNS + ':Option')
+      }
+      if (nodes.length === 1) {
+        return
+      }
+      if (nodes.length > 0) {
         var options= []
         for(var k=0; k < nodes.length; k++) {
           options.push(nodes[k].getAttribute('value'))

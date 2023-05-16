@@ -291,22 +291,26 @@ export default {
         for (var index in properties.links) {
           
         }
-        var index = properties.links.findIndex(lk => lk['@title'] && lk['@title'] === 'Download')
-        if (index >=0) {
-          var link = properties.links[index]
-          if (!properties['services']) {
-            properties['services'] = {}
+//         var index = properties.links.findIndex(lk => lk['@title'] && lk['@title'] === 'Download')
+//         console.log(index)
+//         if (index >=0) {
+//           console.log('create linkss')
+//           var link = properties.links[index]
+//           console.log(link)
+//           if (!properties.hasOwnProperty('download')) {
+//             console.log('add services')
+//             properties.download = []
             
-          }
-          properties.services.download = {
-              url: link['@ref'],
-              mimeType: link['@type']
-          }
+//           }
+//           properties.download.push({
+//               url: link['@ref'],
+//               mimeType: link['@type']
+//           })
 
-          properties.links.splice(index, 1)
-        }
+//           properties.links.splice(index, 1)
+//         }
       }
-     
+      console.log(properties)
       // case Flatsim
       if (properties.productIdentifier) {
         properties.renameProperty('productIdentifier', 'identifier')
@@ -377,16 +381,43 @@ export default {
       if (properties.links) {
         var i = properties.links.length
         while (i--) {
+          // case terradue
+          if (properties.links[i]['@title'] === 'Download') {          
+            if (!properties.download) {
+              properties.download = []
+            }
+            properties.download.push({
+              url: properties.links[i]['@href'],
+              mimeType: properties.links[i]['@type']
+            })
+            properties.links.splice(i, 1)
+            continue
+          }
+          if (properties.links[i]['@type'] === 'application/json' && !properties.exportLinks.json) {
+            properties.exportLinks.json = properties.links[i]['@href']
+            properties.links.splice(i,1)
+            continue
+          }
+          if (properties.links[i]['@type'] === 'application/xml' && !properties.exportLinks.xml) {
+            properties.exportLinks.xml = properties.links[i]['@href']
+            properties.links.splice(i,1)
+            continue
+          }
           if (properties.links[i].type === 'application/json' && !properties.exportLinks.json) {
             properties.exportLinks.json = properties.links[i].href
             properties.links.splice(i,1)
+            continue
           }
           if (properties.links[i].type === 'application/xml' && !properties.exportLinks.xml) {
             properties.exportLinks.xml = properties.links[i].href
             properties.links.splice(i,1)
+            continue
           }
         }
-        delete properties.links
+        if (properties.links.length === 0) {
+          delete properties.links
+        }
+        // 
       }
 
       if (!properties.contacts) {

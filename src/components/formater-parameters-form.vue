@@ -8,7 +8,7 @@
 <template>
 <div class="fmt-parameters-form">
 <div v-for="(item, index) in parameters" class="fmt-input-block fmt-input-group" >
-	<label :style="{color: textColor}">{{item.name}}</label>
+	<label :style="{color: textColor}" :title="item.title">{{item.name}}</label>
 	<formater-select v-if="item.options && item.options.length > 0" :depth="depth" :name="item.name" width="260px" :options="item.options" @input="(event) => {selectChange(item.name, event)}" 
 	:color="$store.state.style.emphasis" :defaut="null" :set-value="values[item.name]"></formater-select>
 	<div class="fmt-input disable" v-if="item.options && item.options.length === 1" :style="{backgroundColor: inputColor}">
@@ -200,6 +200,7 @@ export default {
 	display: block;
 	font-size: 1.1em;
 	text-transform:capitalize;
-    letter-spacing: -0.5px;
+  letter-spacing: -0.5px;
+  cursor:pointer;
 }
 </style>
