@@ -97,7 +97,6 @@ export default {
       var specificParameters = this.$store.state.parameters.others
       // parameters mapping with our app parameters
       var mappingParameters = this.$store.state.parameters.mapping
-      console.log(mappingParameters)
       // change 
       this.parameters.renameProperty('bbox', mappingParameters['box'])
       if (this.parameters.from) {
@@ -107,8 +106,6 @@ export default {
         }
       }
       for(var name in this.parameters){
-        console.log(name)
-        console.log(this.parameters[name])
         if (typeof mappingParameters[name] !== 'undefined') {
           this.parameters.renameProperty(name, mappingParameters[name])
         } else  {
@@ -133,7 +130,6 @@ export default {
       var url = this.api + (this.api.indexOf('?') > 0 ? '&' :'?');
       var parameters = Object.assign({}, this.parameters)
       parameters = Object.assign(parameters, this.$store.state.parameters.fixed)
-      console.log(parameters)
       // register parameters value
        url += Object.keys(parameters).map(function (prop) {
         return prop + '=' + parameters[prop]
@@ -287,30 +283,7 @@ export default {
           properties.tempExtentEnd = dates[1]
         }
       }
-      if (properties.links) {
-        for (var index in properties.links) {
-          
-        }
-//         var index = properties.links.findIndex(lk => lk['@title'] && lk['@title'] === 'Download')
-//         console.log(index)
-//         if (index >=0) {
-//           console.log('create linkss')
-//           var link = properties.links[index]
-//           console.log(link)
-//           if (!properties.hasOwnProperty('download')) {
-//             console.log('add services')
-//             properties.download = []
-            
-//           }
-//           properties.download.push({
-//               url: link['@ref'],
-//               mimeType: link['@type']
-//           })
-
-//           properties.links.splice(index, 1)
-//         }
-      }
-      console.log(properties)
+     
       // case Flatsim
       if (properties.productIdentifier) {
         properties.renameProperty('productIdentifier', 'identifier')
@@ -390,6 +363,10 @@ export default {
               url: properties.links[i]['@href'],
               mimeType: properties.links[i]['@type']
             })
+            properties.links.splice(i, 1)
+            continue
+          }
+          if (properties.links[i].rel === 'via') {
             properties.links.splice(i, 1)
             continue
           }
