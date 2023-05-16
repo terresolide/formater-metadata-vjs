@@ -16,6 +16,14 @@
       "en": "CNES - Centre National d'Etudes Spatiales"
     }
   },
+  "https://w3id.org/formater/data-center/EOST": {
+    "logo": "https://catalogue-terresolide.ipgp.fr/geonetwork/images/harvesting/eost.png",
+    "href": "https://eost.unistra.fr/",
+    "title": {
+      "fr": "EOST - École et Observatoire des sciences de la Terre",
+      "en": "EOST - École et Observatoire des sciences de la Terre"
+    }
+  },
   "https://w3id.org/formater/data-center/ISGI": {
     "logo": "https://catalogue-terresolide.ipgp.fr/geonetwork/images/harvesting/logo_ISGI_2.png",
     "href": "http://isgi.unistra.fr/",

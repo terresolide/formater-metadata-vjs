@@ -14,7 +14,7 @@
 </template>
 <script>
 var L = require('leaflet')
-var L = require('../modules/leaflet.extend.js')
+// var L = require('../modules/leaflet.extend.js')
 require("leaflet-kml")
 
 L.Control.Fmtlayer = require('../modules/leaflet.control.fmtlayer.js')
