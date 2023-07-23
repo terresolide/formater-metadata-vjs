@@ -29,6 +29,9 @@ const GeonetworkPlugin = {
              var description = this.extractFromLangs(
                  JSONPATH.query(json, "$..['gmd:abstract']"),
                  idLang)
+             if (Array.isArray(description)) {
+               description = description[0]
+             }
              metadata.description = description.replace(/(?:\\[rn]|[\r\n])/g, '<br />')
              metadata.credit = this.extractFromLangs(json['gmd:credit'], idLang)
              metadata.purpose = this.extractFromLangs(json['gmd:purpose'], idLang)
