@@ -272,6 +272,7 @@ export default {
 //       })
 //     },
     mapToGeonetwork (properties) {
+      console.log(properties)
       var properties = Object.assign({}, properties)
       properties.fromOs = true
       properties.cds = this.cds
@@ -363,6 +364,12 @@ export default {
               url: properties.links[i]['@href'],
               mimeType: properties.links[i]['@type']
             })
+            properties.links.splice(i, 1)
+            continue
+          }
+          if (properties.links[i]['@title'] === 'Browse') {
+            properties.images = [['Browse', properties.links[i]['@href'], '']]
+            properties.thumbnail = properties.links[i]['@href']
             properties.links.splice(i, 1)
             continue
           }
