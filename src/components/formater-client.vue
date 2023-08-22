@@ -70,22 +70,39 @@
 		            <formater-tooltip :description="description(role)"></formater-tooltip>
 		            </div>
 		            <div class="fmt-center">
-		             <span v-if="Object.keys(role.parameters).length === 0 || role.parameters.view">
-		              <span v-if="role.access" :title="$t('ACCEPTED')"><i class="fa fa-check" style="color:green;"></i></span>
+		             <span v-if="role.access" :title="$t('ACCEPTED')"><i class="fa fa-check" style="color:green;"></i></span>
 		              <!--  <i v-if="role.parameters.view" class="fa" :class="{'fa-close': !role.access, 'fa-check': role.access} "></i>
 		              --> 
+		              <span v-else-if="role.status && role.status === 'WAITING'">
+		                <i class="fa fa-clock-o" ></i>
+		              </span>
+		               <span v-else-if="role.status && role.status === 'REJECTED'">
+                    <i class="fa fa-close" style="color:darkred;"></i>
+                  </span>
+		             <span v-else-if="Object.keys(role.parameters).length === 0 || !role.parameters.charter">
+                 
 		              <input v-if="!role.access && !role.status " type="checkbox"  :value="name + '.' + role.name"
 		               :checked="checkedRoles.indexOf(name + '.' + role.name) >= 0" @click="changeRole($event)"/>
 		             </span>
+		             <span v-else ><router-link :to="{name: 'Charter', id: role.charterId}">
+		             <i class="fa fa-pencil"></i> {{role.charterId}}
+		             </router-link></span>
 		            </div>
 		            <div class="fmt-center">
-		               <span v-if="Object.keys(role.parameters).length === 0 || role.parameters.download">
-		             <!--   <i v-if="role.parameters.download" class="fa" :class="{'fa-close': !role.access, 'fa-check': role.access} "></i>
-		              --> 
-			              <span v-if="role.access" :title="$t('ACCEPTED')"><i class="fa fa-check" style="color:green;"></i></span>
-			              <input v-if="!role.access && !role.status" type="checkbox" :value="name + '.' + role.name"
+		              <span v-if="role.access" :title="$t('ACCEPTED')"><i class="fa fa-check" style="color:green;"></i></span>
+                  <!--  <i v-if="role.parameters.view" class="fa" :class="{'fa-close': !role.access, 'fa-check': role.access} "></i>
+                  --> 
+                  <span v-else-if="role.status && role.status === 'WAITING'">
+                    <i class="fa fa-clock-o" ></i>
+                  </span>
+                   <span v-else-if="role.status && role.status === 'REJECTED'">
+                    <i class="fa fa-close" style="color:darkred;"></i>
+                  </span>
+                 <span v-else-if="Object.keys(role.parameters).length === 0 || !role.parameters.charter">
+			              <input  type="checkbox" :value="name + '.' + role.name"
 		              :checked="checkedRoles.indexOf(name + '.' + role.name) >= 0" @click="changeRole($event)" />
 		              </span>
+		             <span v-else ><i class="fa fa-pencil"></i></span>
 		            </div>
 		  </div>
 	   <div class="role-line" v-if="client.groups" v-show="showGroup(key)" v-for="group, key in client.groups">

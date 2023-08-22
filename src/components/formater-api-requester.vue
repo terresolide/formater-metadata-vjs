@@ -272,7 +272,6 @@ export default {
 //       })
 //     },
     mapToGeonetwork (properties) {
-      console.log(properties)
       var properties = Object.assign({}, properties)
       properties.fromOs = true
       properties.cds = this.cds

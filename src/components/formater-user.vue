@@ -113,7 +113,7 @@
 	     <div></div>
 	     <div >{{$t('preview')}}</div>
 	     <div >{{$t('download')}}</div>
-	     <div></div>
+	     <div>{{$t('charter')}}</div>
 	     <div></div>
 	   </div>
 	   <div class="role-line full" v-show="!show || !show.client">
