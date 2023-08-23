@@ -20,7 +20,7 @@
     "see_rights": "Voir vos droits sur\ncette collection",
     "service_response": "La réponse du service est",
     "session_expire": "Votre session auprès de <b>{domain}</b> a expiré.<br />Vous devez vous reconnecter.",
-    "your_rights": "Vos droits d'accès zz"
+    "your_rights": "Vos droits d'accès"
   },
   "en": {
     "access_to": "Login to",
@@ -123,7 +123,7 @@
 	            <div class="clipboard-tooltip"   @click="removeTooltip($event)" v-html="$t('copied_to_clipboard', {time: getTime})"></div>
 	   </span> 
     </span>
-    <span v-else-if="service.type === 'internal'">
+    <span v-else-if="service.type === 'internal' && !noRole">
        <a v-if="!hasAccess" class="mtdt-menu-item" :class="{searching: searching}"
       :style="{'--color': $store.state.style.primary}" :title="$t('insufficient_right')" @click="showUser">
         {{$t('limited_access_to')}} 
@@ -200,6 +200,15 @@ export default {
 //       this.testLoginSso(this.email, isFormater)
 //       return isFormater
 //     },
+
+    noRole () {
+      for(var key in this.service.access) {
+        if (this.service.access[key] !== 'free' && this.service.access[key] !== 'auth') {
+          return false
+        }
+      }
+      return true
+    },
     redirectUri () {
       if (this.$store.state.ssoLogin) {
         return this.$store.state.ssoLogin

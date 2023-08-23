@@ -67,7 +67,9 @@
         </div>
       <!--  </div> --> 
     </div>
+
        <div :class="{'client-content': (client.groups && Object.keys(client.groups).length > 1) || (client.roles && client.roles.length > 1) }">
+		 
 		     <div  class="role-line"  v-for="(role, index) in client.roles" v-show='showRole(role.name)'>
 		            <div>{{title(role)}}</div>
 		            <div class="fmt-center">
@@ -95,7 +97,7 @@
 		              :checked="checkedRoles.indexOf(name + '.' + role.name) >= 0" @click="changeRole($event)" />
 		             </span>
 		             <span v-else-if="role.charterId" :title="$t('CONDITION')" >
-		                   <i class="fa fa-pencil"></i>
+		                 <i class="fa fa-pencil"></i>
 		             </span>
 		            </div>
 		            <div class="fmt-center">
