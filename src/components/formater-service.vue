@@ -168,6 +168,9 @@ export default {
   },
   computed: {
     email () {
+      if (this.service.type === 'internal') {
+        this.$store.commit('services/setToken', {id: this.service.id, token: this.$store.getters['user/token']})
+      }
       return this.$store.getters['user/email']
     },
     getTime () {
@@ -245,13 +248,14 @@ export default {
   created () {
     this.getClientId()
     if (this.service.type === 'internal') {
+      
       return
     }
     this.codeListener = this.getMessage.bind(this)
     window.addEventListener('message', this.codeListener) 
     this.needAuthorize = this.openPopupAuthorize.bind(this)
     document.addEventListener('fmt:needAuthorize', this.needAuthorize)
-   
+    
   },
   destroyed () {
     if (this.service.type === 'internal') {
