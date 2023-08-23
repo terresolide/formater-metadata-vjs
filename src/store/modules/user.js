@@ -90,7 +90,7 @@ export default {
         if (!access[prop] || access[prop] === 'free') {
           resp[prop] = true
         } else if (access[prop] === 'auth') {
-          resp[prop] = state.user ? true : false
+          resp[prop] = state.user && state.user.email ? true : false
         } else {
          // if (!state.user || !state.user.roles || !state.user.roles[client])
           if (!state.user || !state.strRoles)
@@ -309,7 +309,7 @@ export default {
         state.show = obj
         return
       }
-      // Compare if it si the same client and the same role
+      // Compare if it's the same client and the same role
       var roles = null
       if (obj.access) {
         roles = []

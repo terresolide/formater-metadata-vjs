@@ -7,6 +7,7 @@
     "account": "Your account",
     "add_message": "Add message to your request",
     "at_least_3": "At least 3 characters",
+    "charter": "Charter to sign",
     "download": "Download",
     "email": "Email",
     "firstname": "First Name",
@@ -28,6 +29,7 @@
     "account": "Votre compte",
     "add_message": "Ajoutez un message à votre demande",
     "at_least_3": "Au moins 3 caractères",
+    "charter": "Charte à signer",
     "download": "Téléchargement",
     "email": "Email",
     "firstname": "Prénom",
@@ -435,7 +437,7 @@ export default {
         this.showOrganismMessage = true
       }     
     },
-    close () {
+    close () {650
       this.$store.commit('user/toggleShow', null)
     },
     hasRole (client, name) {

@@ -5,7 +5,9 @@
     "all_access": "All access",
     "copied_to_clipboard": "The token &laquo;{client}&raquo; has been copied in clipboard.",
     "copy_in_clipboard": "Copy the access token in clipboard",
+    "no_charter": "No charter",
     "select_all": "Select all",
+    "signed": "Signed",
     "WAITING": "Waiting for treatment",
     "REJECTED": "Rejected",
     "ACCEPTED": "Accepted",
@@ -16,11 +18,13 @@
     "all_access": "Tout accès",
     "copied_to_clipboard": "Le token &laquo;{client}&raquo; a été copié dans le presse-papier.",
     "copy_in_clipboard": "Copier le token d'accès dans le presse-papier",
+    "no_charter": "Aucune charte",
     "select_all": "Tout sélectionner",
+    "signed": "Signée",
     "WAITING": "En attente de traitement",
     "REJECTED": "Refusé",
     "ACCEPTED": "Accepté",
-     "CONDITION": "En attente de votre signature"
+    "CONDITION": "En attente de votre signature"
   }
 }
 </i18n>
@@ -69,50 +73,43 @@
 		            <div class="fmt-center">
 		            <formater-tooltip :description="description(role)"></formater-tooltip>
 		            </div>
-		            <div class="fmt-center">
-		             <span v-if="role.access" :title="$t('ACCEPTED')"><i class="fa fa-check" style="color:green;"></i></span>
-		              <!--  <i v-if="role.parameters.view" class="fa" :class="{'fa-close': !role.access, 'fa-check': role.access} "></i>
-		              --> 
-		              <span v-else-if="role.status && role.status === 'WAITING'">
-		                <i class="fa fa-clock-o" ></i>
-		              </span>
-		               <span v-else-if="role.status && role.status === 'REJECTED'">
-                    <i class="fa fa-close" style="color:darkred;"></i>
-                  </span>
-		             <span v-else-if="Object.keys(role.parameters).length === 0 || !role.parameters.charter">
-                 
-		              <input v-if="!role.access && !role.status " type="checkbox"  :value="name + '.' + role.name"
-		               :checked="checkedRoles.indexOf(name + '.' + role.name) >= 0" @click="changeRole($event)"/>
-		             </span>
-		             <span v-else ><router-link :to="{name: 'Charter', params: {id: role.charterId}}">
-		             <i class="fa fa-pencil"></i> 
-		             </router-link></span>
-		            </div>
-		            <div class="fmt-center">
+		            <div v-for="key in ['view', 'download']" class="fmt-center">
 		              <span v-if="role.access" :title="$t('ACCEPTED')"><i class="fa fa-check" style="color:green;"></i></span>
                   <!--  <i v-if="role.parameters.view" class="fa" :class="{'fa-close': !role.access, 'fa-check': role.access} "></i>
                   --> 
-                  <span v-else-if="role.status && role.status === 'WAITING'">
-                    <i class="fa fa-clock-o" ></i>
-                  </span>
-                   <span v-else-if="role.status && role.status === 'REJECTED'">
-                    <i class="fa fa-close" style="color:darkred;"></i>
-                  </span>
-                 <span v-else-if="Object.keys(role.parameters).length === 0 || !role.parameters.charter">
+                  <span v-else-if="role.status">
+		                  <span v-if="role.status === 'WAITING'">
+		                    <i class="fa fa-clock-o" ></i>
+		                  </span>
+		                  <span v-else-if="role.status && role.status === 'REJECTED'">
+		                    <i class="fa fa-close" style="color:darkred;"></i>
+		                  </span>
+		                  <span v-if="role.status === 'CONDITION'" :title="$t('CONDITION')">
+		                       <router-link :to="{name:'Charter', params: {id: role.charterId}}">
+		                           <i class="fa fa-pencil" ></i>
+		                       </router-link>
+		                  </span>
+                 </span>
+                 <span v-else-if="(Object.keys(role.parameters).length === 0 || !role.parameters.charter)">
 			              <input  type="checkbox" :value="name + '.' + role.name"
 		              :checked="checkedRoles.indexOf(name + '.' + role.name) >= 0" @click="changeRole($event)" />
-		              </span>
-		             <span v-else ><i class="fa fa-pencil"></i></span>
+		             </span>
+		             <span v-else-if="role.charterId" :title="$t('CONDITION')" >
+		                   <i class="fa fa-pencil"></i>
+		             </span>
 		            </div>
 		            <div class="fmt-center">
+		              <span v-if="role.charterId">
 		               <router-link v-if="role.charterId" :to="{name: 'Charter', params: {id: role.charterId}}">
                       <span v-if="$store.getters['charters/isSigned'](role.charterId)">
                         {{$t('signed')}}
                        </span>
-			                <span v-else>
+			                <span  v-else :title="$t('CONDITION')">
 			                 <i class="fa fa-pencil"></i>
 			                </span>
                    </router-link>
+                  </span>
+                  <span v-else><em>{{$t('no_charter')}}</em></span>
                 </div>
 		  </div>
 	   <div class="role-line" v-if="client.groups" v-show="showGroup(key)" v-for="group, key in client.groups">
@@ -122,7 +119,7 @@
 	      </div>
 	      <div v-for="role, index in group" class="fmt-center">
 	         <span v-if="role.access" :title="$t('ACCEPTED')"><i class="fa fa-check" style="color:green;"></i></span>
-	         <span v-else>
+	         <span v-else-if="role.status">
 	           <span v-if="role.status === 'WAITING'" :title="$t('WAITING')">
 	             <i class="fa fa-clock-o"></i>
 	           </span>
@@ -131,26 +128,30 @@
 	           </span>
 	             <span v-if="role.status === 'CONDITION'" :title="$t('CONDITION')">
                <router-link :to="{name:'Charter', params: {id: role.charterId}}">
-                 <i class="fa fa-pencil"  style="color:darkred;" ></i>
+                 <i class="fa fa-pencil" ></i>
                </router-link>
              </span>
-	           <span v-if="!role.status">
-	              <input v-if="index === 1 || checkedRoles.indexOf(name + '.' + group[1].name) < 0" type="checkbox" :value="name + '.' + role.name" 
-	              :checked="checkedRoles.indexOf(name + '.' + role.name) >= 0" @click="changeRole($event)"/>
-	              <input v-if="index === 0 && checkedRoles.indexOf(name + '.' + group[1].name) >=0"  type="checkbox"  :checked="true" disabled value="no" />
-	
-	           </span>
-	         </span>
+             </span>
+           <span v-else="!role.status">
+              <input v-if="index === 1 || checkedRoles.indexOf(name + '.' + group[1].name) < 0" type="checkbox" :value="name + '.' + role.name" 
+              :checked="checkedRoles.indexOf(name + '.' + role.name) >= 0" @click="changeRole($event)"/>
+              <input v-if="index === 0 && checkedRoles.indexOf(name + '.' + group[1].name) >=0"  type="checkbox"  :checked="true" disabled value="no" />
+
+           </span>
+	         
 	      </div>
 	      <div>
-	         <router-link v-if="group[0].charterId" :to="{name:'Charter', params: {id: group[0].charterId}}">
-                <span v-if="$store.getters['charters/isSigned'](group[0].charterId)">
-                   {{$t('signed')}}
-                </span>
-                <span v-else>
-                 <i class="fa fa-pencil"></i>
-                </span>
-            </router-link>
+	         <span v-if="group[0].charterId">
+		         <router-link :to="{name:'Charter', params: {id: group[0].charterId}}">
+	                <span v-if="$store.getters['charters/isSigned'](group[0].charterId)">
+	                   {{$t('signed')}}
+	                </span>
+	                <span :title="$t('CONDITION')" v-else>
+	                 <i class="fa fa-pencil"></i>
+	                </span>
+	            </router-link>
+           </span>
+           <span v-else><em>{{$t('no_charter')}}</em></span>
         </div>
      </div>
    </div>
@@ -338,7 +339,7 @@ div.deployed + div.client-content {
 }
 div.role-line {
   display: grid;
-  grid-template-columns: minmax(100px,180px) 50px minmax(50px, 120px) minmax(50px, 120px) minmax(50px, 120px);
+  grid-template-columns: minmax(100px,180px) 50px minmax(50px, 120px) minmax(50px, 120px) minmax(50px, 150px);
   grid-gap: 5px;
   text-align:center;
 }

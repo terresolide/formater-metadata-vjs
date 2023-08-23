@@ -127,11 +127,11 @@
        :href="download[0].url + '?_bearer=' + token" :class="{disabled:download[0].disabled || !token || !canDownload}" 
         :title="$t('download_data')" >
         <span class="mtdt-related-type fa fa-download" :style="{backgroundColor: primary}" @click="record(download[0].url, 'download', $event)"></span>
-        <a style="display:none;" :href="download[0].url + '?_bearer=' + token" >
+       <a style="display:none;" :href="download[0].url + '?_bearer=' + token" >
         </a>
       </span>
       <!-- case CNES and user not authenticate on flatsim -->
-      <span v-else-if="!token && canDownload" @click="authorize"> 
+      <span v-else-if="!token && canDownload" @click="authorize">
         <span class="mtdt-related-type fa fa-download" :style="{backgroundColor: primary, opacity:0.8}" ></span>
       </span>
       <!--  other case @todo -->
@@ -422,6 +422,7 @@
       },
       authorize () {
         if (!(this.canView || this.canDownload) || this.token) {
+       
           return
         }
         var event = new CustomEvent('fmt:needAuthorize')

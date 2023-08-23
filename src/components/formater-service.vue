@@ -20,7 +20,7 @@
     "see_rights": "Voir vos droits sur\ncette collection",
     "service_response": "La réponse du service est",
     "session_expire": "Votre session auprès de <b>{domain}</b> a expiré.<br />Vous devez vous reconnecter.",
-    "your_rights": "Vos droits d'accès"
+    "your_rights": "Vos droits d'accès zz"
   },
   "en": {
     "access_to": "Login to",
@@ -111,7 +111,7 @@
 	   </a>
 	   <a v-else class="mtdt-menu-item" :class="{searching: searching}" @click="showUser"
 	   :style="{'--color': $store.state.style.primary}" :title="$t('see_rights')">
-	       <i class="fa fa-key"></i> {{$t('your_rights')}} 
+	       <i class="fa fa-key"></i> {{$t('your_rights')}}
 	   </a>
 	   <!-- <a v-if="service.token && !hasAccess" class="mtdt-menu-item" :class="{searching: searching}"
 	    :style="{'--color': $store.state.style.primary}" :title="$t('insufficient_right')">
@@ -247,24 +247,26 @@ export default {
   },
   created () {
     this.getClientId()
+  },
+  mounted () {
+    this.needAuthorize = this.openPopupAuthorize.bind(this)
+    document.addEventListener('fmt:needAuthorize', this.needAuthorize)
     if (this.service.type === 'internal') {
       
       return
     }
     this.codeListener = this.getMessage.bind(this)
     window.addEventListener('message', this.codeListener) 
-    this.needAuthorize = this.openPopupAuthorize.bind(this)
-    document.addEventListener('fmt:needAuthorize', this.needAuthorize)
-    
   },
   destroyed () {
+
+    document.removeEventListener('fmt:needAuthorize', this.needAuthorize)
+    this.needAuthorize = null
     if (this.service.type === 'internal') {
       return
     }
     window.removeEventListener('message', this.codeListener)
     this.codeListener = null
-    document.addEventListener('fmt:needAuthorize', this.needAuthorize)
-    this.needAuthorize = null
   },
   methods: {
     close () {
@@ -411,6 +413,7 @@ export default {
       )
     },
     openPopupAuthorize (event) {
+      console.log(event)
       var currentId = this.$store.getters['services/current']
       if (this.service.id === currentId) {
         this.msg = true
