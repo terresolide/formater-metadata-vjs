@@ -227,7 +227,6 @@ export default {
    },
    updateTokens () {
      var refresh = this.getCookie()
-     console.log(refresh)
      if (!refresh) {
        return
      }

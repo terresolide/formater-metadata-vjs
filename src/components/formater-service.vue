@@ -20,7 +20,7 @@
     "see_rights": "Voir vos droits sur\ncette collection",
     "service_response": "La réponse du service est",
     "session_expire": "Votre session auprès de <b>{domain}</b> a expiré.<br />Vous devez vous reconnecter.",
-    "your_rights": "Vos droits"
+    "your_rights": "Vos droits d'accès"
   },
   "en": {
     "access_to": "Login to",
@@ -42,7 +42,7 @@
     "see_rights": "See your rights to\n this collection",
     "service_response": "The service has responded",
     "session_expire": "Your session width <b>{domain}</b> has expired.<br /> You need to log back in.",
-    "your_rights": "Your rights"
+    "your_rights": "Your access rights"
   }
 }
 </i18n>
@@ -83,42 +83,60 @@
   -->
   <!--   <iframe v-if="iframeUrl" style="display:none;" :src="iframeUrl" ></iframe>  -->
  <div v-if="email" class="mtdt-service-button" :class="{searching: searching}" v-show="clientId">
-   <a v-if="service.token && hasAccess" class="mtdt-menu-item"
-   @click="logout" :style="{'--color': $store.state.style.primary}">
-      {{$t('access_to')}} {{service.domain}}
-      <i  class="fa fa-check-square-o"></i>
-   </a>
-    <a v-else-if="!service.token && hasAccess" class="mtdt-menu-item" :class="{searching: searching}"
-   @click="searchCode" :style="{'--color': $store.state.style.primary}">
-      {{$t('access_to')}} {{service.domain}}
-      <i  class="fa fa-square-o"></i>
-   </a>
-   <a v-if="service.reject" class="mtdt-menu-item" style="color:darkred;">
-       {{$t('connexion_failed', {domain: service.domain})}}
+   <span v-if="service.type === 'external'">
+		   <a v-if="service.token && hasAccess" class="mtdt-menu-item"
+		   @click="logout" :style="{'--color': $store.state.style.primary}">
+		      {{$t('access_to')}} {{service.domain}}
+		      <i  class="fa fa-check-square-o"></i>
+		   </a>
+	 
+	  
+	    <a v-else-if="!service.token && hasAccess" class="mtdt-menu-item" :class="{searching: searching}"
+	   @click="searchCode" :style="{'--color': $store.state.style.primary}">
+	      {{$t('access_to')}} {{service.domain}}
+	      <i  class="fa fa-square-o"></i>
+	   </a>
+	   <a v-if="service.reject" class="mtdt-menu-item" style="color:darkred;">
+	       {{$t('connexion_failed', {domain: service.domain})}}
+	        <i  class="fa fa-ban"></i>
+	   </a>
+	  
+	   <a v-if="!hasAccess" class="mtdt-menu-item" :class="{searching: searching}"
+	    :style="{'--color': $store.state.style.primary}" :title="$t('insufficient_right')" @click="showUser">
+	      {{$t('limited_access_to')}} 
+	      <i  class="fa fa-ban"></i>
+	    <!--    <div>Demande accès</div>
+	      <div>{{access}}</div>
+	      <div>{{service.access}}</div>-->
+	   </a>
+	   <a v-else class="mtdt-menu-item" :class="{searching: searching}" @click="showUser"
+	   :style="{'--color': $store.state.style.primary}" :title="$t('see_rights')">
+	       <i class="fa fa-key"></i> {{$t('your_rights')}} 
+	   </a>
+	   <!-- <a v-if="service.token && !hasAccess" class="mtdt-menu-item" :class="{searching: searching}"
+	    :style="{'--color': $store.state.style.primary}" :title="$t('insufficient_right')">
+	      Droit insuffisant demande accès
+	      <i  class="fa fa-ban"></i>
+	   </a>  --> 
+	   <span  v-if="service.token && hasAccess"  class="copy-clipboard mtdt-menu-item" :title="$t('copy_in_clipboard')">
+	             (<a @click="copyClipboard($event)" :style="{'--color': $store.state.style.primary}"><i class="fa fa-clipboard"></i> {{$t('access_token')}}</a>)
+	            <div class="clipboard-tooltip"   @click="removeTooltip($event)" v-html="$t('copied_to_clipboard', {time: getTime})"></div>
+	   </span> 
+    </span>
+    <span v-else-if="service.type === 'internal'">
+       <a v-if="!hasAccess" class="mtdt-menu-item" :class="{searching: searching}"
+      :style="{'--color': $store.state.style.primary}" :title="$t('insufficient_right')" @click="showUser">
+        {{$t('limited_access_to')}} 
         <i  class="fa fa-ban"></i>
-   </a>
-  
-   <a v-if="!hasAccess" class="mtdt-menu-item" :class="{searching: searching}"
-    :style="{'--color': $store.state.style.primary}" :title="$t('insufficient_right')" @click="showUser">
-      {{$t('limited_access_to')}} 
-      <i  class="fa fa-ban"></i>
-    <!--    <div>Demande accès</div>
-      <div>{{access}}</div>
-      <div>{{service.access}}</div>-->
-   </a>
-   <a v-else class="mtdt-menu-item" :class="{searching: searching}" @click="showUser"
-   :style="{'--color': $store.state.style.primary}" :title="$t('see_rights')">
-       <i class="fa fa-key"></i> {{$t('your_rights')}} 
-   </a>
-   <!-- <a v-if="service.token && !hasAccess" class="mtdt-menu-item" :class="{searching: searching}"
-    :style="{'--color': $store.state.style.primary}" :title="$t('insufficient_right')">
-      Droit insuffisant demande accès
-      <i  class="fa fa-ban"></i>
-   </a>  --> 
-   <span  v-if="service.token && hasAccess"  class="copy-clipboard mtdt-menu-item" :title="$t('copy_in_clipboard')">
-             (<a @click="copyClipboard($event)" :style="{'--color': $store.state.style.primary}"><i class="fa fa-clipboard"></i> {{$t('access_token')}}</a>)
-            <div class="clipboard-tooltip"   @click="removeTooltip($event)" v-html="$t('copied_to_clipboard', {time: getTime})"></div>
-   </span> 
+      <!--    <div>Demande accès</div>
+        <div>{{access}}</div>
+        <div>{{service.access}}</div>-->
+     </a>
+     <a v-else class="mtdt-menu-item" :class="{searching: searching}" @click="showUser"
+     :style="{'--color': $store.state.style.primary}" :title="$t('see_rights')">
+         <i class="fa fa-key"></i> {{$t('your_rights')}} 
+     </a>
+    </span>
 </div>
 <!--  <div class="mtdt-service-button" v-if="$store.state.metadata"
 :class="{searching: searching}" >
@@ -226,7 +244,9 @@ export default {
   },
   created () {
     this.getClientId()
-    console.log(this.service)
+    if (this.service.type === 'internal') {
+      return
+    }
     this.codeListener = this.getMessage.bind(this)
     window.addEventListener('message', this.codeListener) 
     this.needAuthorize = this.openPopupAuthorize.bind(this)
@@ -234,6 +254,9 @@ export default {
    
   },
   destroyed () {
+    if (this.service.type === 'internal') {
+      return
+    }
     window.removeEventListener('message', this.codeListener)
     this.codeListener = null
     document.addEventListener('fmt:needAuthorize', this.needAuthorize)
