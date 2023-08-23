@@ -99,7 +99,6 @@ export default {
           } else {
             var roles = access[prop].split(',')
             for (var key in roles) {
-             // if (userRoles.indexOf(roles[key]) >= 0) {
               if (state.strRoles && state.strRoles.indexOf(roles[key]) >= 0) {
                 resp[prop] = true
                 break
