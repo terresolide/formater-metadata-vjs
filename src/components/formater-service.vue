@@ -226,6 +226,7 @@ export default {
   },
   created () {
     this.getClientId()
+    console.log(this.service)
     this.codeListener = this.getMessage.bind(this)
     window.addEventListener('message', this.codeListener) 
     this.needAuthorize = this.openPopupAuthorize.bind(this)

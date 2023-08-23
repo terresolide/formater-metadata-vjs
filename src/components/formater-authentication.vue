@@ -129,8 +129,10 @@ export default {
     window.addEventListener('message', this.codeListener)
     // case already connected
     this.requestClientForApp()
-    this.getTokens()
-    this.testLoginSso()
+    
+    // this.updateTokens()
+    // this.getTokens()
+    // this.testLoginSso()
   },
   destroyed () {
     window.removeEventListener('message', this.codeListener)
@@ -145,6 +147,16 @@ export default {
    },
    loginParams (redirectUrl) {
      return this.$store.getters['user/loginParams'](redirectUrl, true)
+   },
+   getCookie () {
+       var name = this.clientId + "=";
+       var ca = document.cookie.split(';');
+       for(var i=0;i < ca.length;i++) {
+         var c = ca[i];
+         while (c.charAt(0)==' ') c = c.substring(1,c.length);
+         if (c.indexOf(name) == 0) return c.substring(name.length,c.length);
+       }
+       return null;
    },
    getMessage (e) {
      if (e.data.code && e.data.state == this.$store.getters['user/getState']) {
@@ -201,16 +213,26 @@ export default {
        }, this.resetUser)
      }
    },
+   setCookie (refreshToken) {
+     if (!refreshToken) {
+       document.cookie = this.clientId + '=;expires=Thu, 01 Jan 1970 00:00:01 GMT;path=/;secure=True'
+     } else {
+       document.cookie = this.clientId + '=' + refreshToken + ';;path=/;SameSite=strict;secure=True'
+     }
+   },
    setTokens (data) {
      this.searching = false
+     this.setCookie(data.refresh_token)
      this.$store.commit('user/setTokens', data)
    },
    updateTokens () {
-     if (!this.$store.getters['user/refreshToken']) {
+     var refresh = this.getCookie()
+     console.log(refresh)
+     if (!refresh) {
        return
      }
      var postdata = {
-       refresh_token: this.$store.getters['user/refreshToken'],
+       refresh_token: refresh,
        grant_type: 'refresh_token',
        client_id: this.clientId,
        redirect_uri: this.$store.getters['user/redirectUri']
@@ -225,7 +247,7 @@ export default {
        )
      .then(function (resp) {
        this.setTokens(resp.body)
-       var expires = resp.body.expires_in - 50
+       var expires = resp.body.expires_in
        var _this = this
        var next = function () {
          _this.updateTokens()
@@ -269,28 +291,18 @@ export default {
      // wn.postMessage(this.clientId + ' ' + this.$store.getters['user/getState'], 'http://localhost:8080')
      // window.open(url, "_blank", "height=750, width=850, status=yes, toolbar=no, menubar=no, location=no,addressbar=no");
    },
-   testLoginSso () {
-     var redirectUri = this.$store.state.ssoLogin ? this.$store.state.ssoLogin : this.baseUrl + '/login?'
-     var url = this.loginUrl + '?prompt=none&' + this.loginParams(redirectUri)
-        
-//     var url = this.$store.getters['user/iframeUrl']
-//     url += '?client_id=' + this.$store.getters['user/clientId'] + '&origin=http://localhost:8080'
-     this.$store.commit('user/setRedirectUri', redirectUri)
-     this.iframeUrl = url
-     // window.postMessage(this.$store.getters['user/clientId'] + ' ' + 'blabla', 'https://sso.aeris-data.fr')
-//      this.$http.get(url, {credentials: true})
-//      .then(resp => console.log(resp), resp => console.log(browser.cookies.get({name: 'KEYCLOAK_IDENTITY' })))
-   },
    requestClientForApp () {
      this.$http.get(this.$store.state.checkSSO + '/api/client/' + this.$store.state.app)
      .then(resp => {
        if (resp.body.success) {
          this.$store.commit('user/setClient', resp.body.client)
+         this.updateTokens()
        }
      })
    },
    resetUser () {
      this.searching = false
+     this.setCookie(null)
      this.$store.commit('user/reset')
      this.$store.commit('services/reset')
    }
