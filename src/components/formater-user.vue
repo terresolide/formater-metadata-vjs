@@ -352,6 +352,7 @@ export default {
         if (resp.body.success) {
           this.$store.commit('roles/set', {clients: resp.body.roles, roles: this.$store.getters['user/roles']})
           this.$store.commit('services/initialize', resp.body.clients)
+          this.$store.commit('charters/setSigned', resp.body.charters)
         }
 //         if (this.canAsk) {
 //           this.$store.commit('user/toggleShow', {client: null, access: null})

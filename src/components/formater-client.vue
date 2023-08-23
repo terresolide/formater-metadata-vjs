@@ -84,8 +84,8 @@
 		              <input v-if="!role.access && !role.status " type="checkbox"  :value="name + '.' + role.name"
 		               :checked="checkedRoles.indexOf(name + '.' + role.name) >= 0" @click="changeRole($event)"/>
 		             </span>
-		             <span v-else ><router-link :to="{name: 'Charter', id: role.charterId}">
-		             <i class="fa fa-pencil"></i> {{role.charterId}}
+		             <span v-else ><router-link :to="{name: 'Charter', params: {id: role.charterId}}">
+		             <i class="fa fa-pencil"></i> 
 		             </router-link></span>
 		            </div>
 		            <div class="fmt-center">
@@ -104,6 +104,16 @@
 		              </span>
 		             <span v-else ><i class="fa fa-pencil"></i></span>
 		            </div>
+		            <div class="fmt-center">
+		               <router-link v-if="role.charterId" :to="{name: 'Charter', params: {id: role.charterId}}">
+                      <span v-if="$store.getters['charters/isSigned'](role.charterId)">
+                        {{$t('signed')}}
+                       </span>
+			                <span v-else>
+			                 <i class="fa fa-pencil"></i>
+			                </span>
+                   </router-link>
+                </div>
 		  </div>
 	   <div class="role-line" v-if="client.groups" v-show="showGroup(key)" v-for="group, key in client.groups">
 	      <div>{{title(group[0], key)}}</div>
@@ -132,9 +142,18 @@
 	           </span>
 	         </span>
 	      </div>
+	      <div>
+	         <router-link v-if="group[0].charterId" :to="{name:'Charter', params: {id: group[0].charterId}}">
+                <span v-if="$store.getters['charters/isSigned'](group[0].charterId)">
+                   {{$t('signed')}}
+                </span>
+                <span v-else>
+                 <i class="fa fa-pencil"></i>
+                </span>
+            </router-link>
+        </div>
      </div>
    </div>
- </div>
  </span>
 </template>
 <script>

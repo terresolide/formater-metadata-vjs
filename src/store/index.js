@@ -9,6 +9,7 @@ import services from './modules/services'
 import layers from './modules/layers'
 import centers from './modules/dataCenters'
 import roles from './modules/roles'
+import charters from './modules/charters'
 export default function makeStore( config ) {
   if (config.proxyUrl) {
     var proxy = {
@@ -324,7 +325,8 @@ export default function makeStore( config ) {
       services: services,
       layers: layers,
       dataCenters: centers,
-      roles: roles
+      roles: roles,
+      charters: charters
     }
   });
 }

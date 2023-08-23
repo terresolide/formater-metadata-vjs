@@ -114,7 +114,8 @@ export default {
         return
       }
       var url = this.$store.state.checkSSO + '/charters/get' 
-       this.$http.post(url, {userId: this.user.id, charterId: this.$route.params.id, lang: this.$store.state.lang }, {emulateJSON: true})
+      url += '?userId=' + this.user.id + '&charterId=' + this.$route.params.id + '&lang=' + this.$store.state.lang
+       this.$http.get(url)
        .then(resp => {
          if (resp.body) {
            this.initialize(resp.body)
