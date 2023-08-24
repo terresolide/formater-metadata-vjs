@@ -181,11 +181,13 @@ export default {
        // this.msg = true
         return false
       }
+      console.log(this.noRole)
       var access = this.access.view || this.access.download
     //  this.msg = access && !this.service.token
       return access
     },
     client () {
+      
       return this.$store.getters['roles/getClient'](this.service.clientId)
     },
     access () {
@@ -202,12 +204,9 @@ export default {
 //     },
 
     noRole () {
-      for(var key in this.service.access) {
-        if (this.service.access[key] !== 'free' && this.service.access[key] !== 'auth') {
-          return false
-        }
-      }
-      return true
+//       console.log(this.service)
+      var roles = this.$store.getters['roles/rolesForAccess'](this.service.clientId, this.service.access)
+      return roles.length === 0
     },
     redirectUri () {
       if (this.$store.state.ssoLogin) {
@@ -256,6 +255,7 @@ export default {
   },
   created () {
     this.getClientId()
+    
   },
   mounted () {
     this.needAuthorize = this.openPopupAuthorize.bind(this)

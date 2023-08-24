@@ -40,6 +40,7 @@ export default {
       return state.clients[client].find(role => role.name === name)
     },
     getClient: (state) => (clientName) => {
+      console.log(clientName)
       if (state.clients[clientName]) {
         return state.clients[clientName]
       } else {
@@ -48,7 +49,30 @@ export default {
     },
     getClients (state, getters) {
       return state.clients
-    } //,
+    },
+    rolesForAccess: (state) => (clientName, access) => {
+       if (!state.clients[clientName]) {
+         return []
+       }
+       var client = state.clients[clientName]
+       var neededRoles = []
+       // où on liste les roles demandés pour la fiche
+       for(var key in access) {
+         if (access[key] !== 'free' && access[key] !== 'auth') {
+           neededRoles.push(access[key])
+         }
+       }
+       var roles = []
+       // où on récupère les roles du client  si ils sont dans neededRoles
+       console.log(client.roles)
+       for(var coll in client.groups) {
+         roles = roles.concat(client.groups[coll].filter(g => neededRoles.indexOf(g.name) >= 0))
+       }
+     
+      roles = roles.concat(client.roles.filter(g => neededRoles.indexOf(g.name) >= 0))
+      return roles
+    },
+     //,
 //    hasAccess: (state) => (clientName, currentIdentifier) => {
 //      if (!state.clients[clientName]) {
 //        return {view: true, download:true}
