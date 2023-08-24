@@ -175,7 +175,6 @@ export default {
     },
     initBoundsLayer () {
       this.removeBoundsLayer()
-      console.log(this.searchArea)
       if (this.searchArea) {
         this.boundsLayer = L.rectangle(this.searchArea, {color:'#cccccc', fillOpacity: 0.2, weight: 1})
         this.boundsLayer.addTo(this.map)

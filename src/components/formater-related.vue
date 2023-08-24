@@ -466,7 +466,6 @@
     	   this.platformAdded = newvalue
        },
        record (url, type, e) {
-         console.log(this.$store.state.recordUrl)
          if (!this.$store.state.recordUrl) {
            e.target.nextElementSibling.click()
            return

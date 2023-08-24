@@ -245,7 +245,6 @@ export default {
         query[prop] = this.$route.query[prop]
       }
       delete query.box
-      console.log(query)
       this.$router.push({name: this.$route.name, params: this.$route.params, query: query})
 
 //       var event = new CustomEvent('fmt:spatialChangeEvent')

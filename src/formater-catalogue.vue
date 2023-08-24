@@ -121,7 +121,6 @@ export default {
   },
   created () {
     if (this.$store.state.metadata && this.$route.name !== 'FormaterLogin') {
-      console.log('has metadata')
       this.$router.replace({name: 'Metadata', params: {uuid: this.$store.state.metadata}})
       return
     }

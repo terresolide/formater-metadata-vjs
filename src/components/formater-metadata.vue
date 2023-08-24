@@ -129,7 +129,6 @@ export default {
       return this.$store.getters['dataCenters/byId'](this.metadata.dataCenter)
     },
     isRoot () {
-      console.log(this.metadata)
       return this.$store.state.metadata === this.metadata.id
     }
   },

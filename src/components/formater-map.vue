@@ -447,8 +447,6 @@ export default {
        
    },
    receiveMetadata(event) {
-  
-     console.log('receive lonely metadata')
      // case selectMeta in same page depth === 2
      // hide bboxLayer and layers
      if (event.detail.depth && event.detail.depth === -1) {
@@ -476,7 +474,6 @@ export default {
 // 	       // this.$store.commit('setDefaultSpatialExtent', spatialExtent)
 //        }
      // } else {
-       console.log('do bbox layer')
        this.bboxLayer = L.geoJSON(event.detail.feature, {style:this.getOptionsLayer(1)}) 
        
        this.bboxLayer.addTo(this.map)
@@ -496,7 +493,6 @@ export default {
      if (event.detail && event.detail.meta && event.detail.meta.legend) {
        // case global legend in meta (the same for all layers attached to metadata) 
        // case flatsim
-       console.log('FLATSIM')
        this.legendControl.addLegend(event.detail.meta.id, '0', event.detail.meta.legend)
      } 
 //      else {
@@ -663,7 +659,6 @@ export default {
      this.layers.clear()
    },
    back (event) {
-     console.log('back')
      if (this.single.bbox) {
        this.single.bbox.remove()
        this.single.bbox = null

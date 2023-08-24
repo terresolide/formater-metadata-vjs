@@ -40,7 +40,6 @@ export default {
       return state.clients[client].find(role => role.name === name)
     },
     getClient: (state) => (clientName) => {
-      console.log(clientName)
       if (state.clients[clientName]) {
         return state.clients[clientName]
       } else {

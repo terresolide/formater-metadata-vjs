@@ -9,7 +9,7 @@
     "connexion_failed": "Échec connexion à {domain}",
     "copy_in_clipboard": "Copier le token d'accès dans le presse-papier",
     "error": "Error",
-    "insufficient_right": "Voir vos droits sur cette collection.\n(Insuffisants pour accéder aux services\nde visualisation et téléchargement)",
+    "insufficient_right": "Vos droits sont insuffisants pour accéder aux services\nde visualisation et téléchargement de cette collection.",
     "limited_access_to": "Accès limité à cette collection",
     "log_service": "Pour visualiser ou télécharger les données de <b>{domain}</b>, vous devez vous y connecter.",
     "log_to": "Se connecter au service {domain}",
@@ -18,6 +18,7 @@
     "need_authorize": "Pour visualiser ou télécharger les données de <b>{domain}</b>, vous devez autoriser ce service à accéder à vos données personnelles (email, nom, rôles).",
     "need_log": "Pour accéder à toutes les données du service <b>{domain}</b>, vous devez vous connecter puis, si vous avez <b>les droits suffisants</b> et suivant votre navigateur, autoriser ce service à accéder à vos données (nom, email).",
     "see_rights": "Voir vos droits sur\ncette collection",
+    "see_insufficient_right": "Voir vos droits sur cette collection.\n(Insuffisants pour accéder aux services\nde visualisation et téléchargement)",
     "service_response": "La réponse du service est",
     "session_expire": "Votre session auprès de <b>{domain}</b> a expiré.<br />Vous devez vous reconnecter.",
     "your_rights": "Vos droits d'accès"
@@ -31,7 +32,7 @@
     "copied_to_clipboard": "The token has been copied in clipboard.<br>It will expire in <b>{time}</b>",
     "copy_in_clipboard": "Copy the access token in clipboard",
     "error": "Erreur",
-    "insufficient_right": "See your rights to this collection.\n(Insufficient\nto access the viewing\nand downloading services of this collection)",
+    "insufficient_right": "Your rights to this collection are insufficient\nto access the viewing and downloading services.",
     "limited_access_to": "Limited access to this collection",
     "log_service": "To access data of <b>{domain}</b>  service,<br /> you must login to this service.",
     "log_to": "Sign in the {domain} service",
@@ -40,6 +41,7 @@
     "need_authorize": "To visualize and download data of <b>{domain}</b> and your browser, you must authorize this service to access your personnal data (email, name, roles).",
     "need_log": "To access data of <b>{domain}</b>  service,<br /> you must login in then, if you have sufficient rights, you must authorize this service to access your personnal data (name, email).",
     "see_rights": "See your rights to\n this collection",
+    "see_insufficient_right": "See your rights to this collection.\n(Insufficient\nto access the viewing\nand downloading services of this collection)",  
     "service_response": "The service has responded",
     "session_expire": "Your session width <b>{domain}</b> has expired.<br /> You need to log back in.",
     "your_rights": "Your access rights"
@@ -102,14 +104,14 @@
 	   </a>
 	  
 	   <a v-if="!hasAccess" class="mtdt-menu-item" :class="{searching: searching}"
-	    :style="{'--color': $store.state.style.primary}" :title="$t('insufficient_right')" @click="showUser">
+	    :style="{'--color': $store.state.style.primary}" :title="noRole ? $t('insufficient_right') : $t('see_insufficient_right')" @click="showUser">
 	      {{$t('limited_access_to')}} 
 	      <i  class="fa fa-ban"></i>
 	    <!--    <div>Demande accès</div>
 	      <div>{{access}}</div>
 	      <div>{{service.access}}</div>-->
 	   </a>
-	   <a v-else class="mtdt-menu-item" :class="{searching: searching}" @click="showUser"
+	   <a v-else-if="!noRole" class="mtdt-menu-item" :class="{searching: searching}" @click="showUser"
 	   :style="{'--color': $store.state.style.primary}" :title="$t('see_rights')">
 	       <i class="fa fa-key"></i> {{$t('your_rights')}}
 	   </a>
@@ -123,16 +125,16 @@
 	            <div class="clipboard-tooltip"   @click="removeTooltip($event)" v-html="$t('copied_to_clipboard', {time: getTime})"></div>
 	   </span> 
     </span>
-    <span v-else-if="service.type === 'internal' && !noRole">
-       <a v-if="!hasAccess" class="mtdt-menu-item" :class="{searching: searching}"
-      :style="{'--color': $store.state.style.primary}" :title="$t('insufficient_right')" @click="showUser">
+    <span v-else-if="service.type === 'internal'">
+        <a v-if="!hasAccess" class="mtdt-menu-item" :class="{searching: searching}"
+      :style="{'--color': $store.state.style.primary}" :title="noRole ? $t('insufficient_right') : $t('see_insufficient_right')" @click="showUser">
         {{$t('limited_access_to')}} 
         <i  class="fa fa-ban"></i>
       <!--    <div>Demande accès</div>
         <div>{{access}}</div>
         <div>{{service.access}}</div>-->
      </a>
-     <a v-else class="mtdt-menu-item" :class="{searching: searching}" @click="showUser"
+     <a v-else-if="!noRole" class="mtdt-menu-item" :class="{searching: searching}" @click="showUser"
      :style="{'--color': $store.state.style.primary}" :title="$t('see_rights')">
          <i class="fa fa-key"></i> {{$t('your_rights')}} 
      </a>
@@ -181,8 +183,7 @@ export default {
        // this.msg = true
         return false
       }
-      console.log(this.noRole)
-      var access = this.access.view || this.access.download
+      var access = this.access.view && this.access.download
     //  this.msg = access && !this.service.token
       return access
     },
@@ -301,7 +302,9 @@ export default {
       node.previousElementSibling.classList.remove('tooltip-show')
     },
     showUser ()  {
-      this.$store.commit('user/toggleShow', {client: this.clientId, access: this.service.access})
+      if (!this.noRole) {
+         this.$store.commit('user/toggleShow', {client: this.clientId, access: this.service.access})
+      }
     },
     getClientId () {
       this.clientId = this.service.clientId
@@ -411,7 +414,7 @@ export default {
       .then(
          resp => this.setToken(resp.body), 
          resp => {
-           console.log('REJETE')
+           console.log('REJECT')
            // this.reject = true
            this.$store.commit('services/setReject', {id: this.service.id, reject: {status: resp.status, msg: resp.statusText}})
            this.msg = true
@@ -422,7 +425,6 @@ export default {
       )
     },
     openPopupAuthorize (event) {
-      console.log(event)
       var currentId = this.$store.getters['services/current']
       if (this.service.id === currentId) {
         this.msg = true

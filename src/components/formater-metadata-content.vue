@@ -255,7 +255,6 @@ export default {
     }
   },
   created () {
-    console.log(this.metadata.access)
     if (this.metadata.access) {
       this.access = this.metadata.access
     }

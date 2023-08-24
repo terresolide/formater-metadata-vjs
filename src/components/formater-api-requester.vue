@@ -76,9 +76,6 @@ export default {
         index: 1,
         maxRecords: this.$store.state.size.nbRecord
       }
-      if (this.$store.state.group) {
-         console.log('group')
-      }
     }, 
     getRecords (newroute) {
       this.$store.commit('searchingChange', true)

@@ -271,7 +271,6 @@ export default {
   },
   methods: {
     changeShow () {
-      console.log('Dans formater-user')
       this.$store.commit('user/toggleShow', {client: null, access: null})
     },
     resize () {
