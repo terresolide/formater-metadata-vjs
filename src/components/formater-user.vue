@@ -149,7 +149,7 @@
 	     </div>
 	     <textarea style="width:100%" v-model="message" :placeholder="$t('add_message')"></textarea>
 	   </div>
-	   <span  class="fmt-button" :class="{disabled: checkedRoles.length === 0 || asking}" :style="{background: $store.state.style.primary}" @click="accessRequest">{{$t('access_request')}}</span>
+	   <span  class="fmt-button" :class="{disabled: uncompleteUser || checkedRoles.length === 0 || asking}" :style="{background: $store.state.style.primary}" @click="accessRequest">{{$t('access_request')}}</span>
 	   </div>
 	   <p v-if="displayWait" v-html="$t('wait_validation')" style="font-size:0.9em;color:green;line-height:1;"></p>
 	   <p v-if="errorAsk" style="color:darkred;">Erreur : {{errorAsk}}</p>
@@ -185,6 +185,18 @@ export default {
     },
     clients () {
       return this.$store.getters['roles/getClients']
+    },
+    uncompleteUser () {
+      if (this.user.organization) {
+        return false
+      }
+      if (!this.organization) {
+        return true
+      }
+      if (!this.organizationType) {
+        return true
+      }
+      return false
     },
     canAsk () {
       var can = false
