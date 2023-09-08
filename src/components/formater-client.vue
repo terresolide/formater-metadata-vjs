@@ -38,24 +38,16 @@
   <div v-else-if="(client.groups && Object.keys(client.groups).length > 1) || (client.roles && client.roles.length > 1)" class="role-line">
   <!--  <div    v-if="(client.groups && Object.keys(client.groups).length > 1) || (client.roles && client.roles.length > 1)"> -->
        <div  class="title-client" style="cursor:pointer;text-align:left;"  @click="toggleClient($event)">
-         <span style="font-weight:800;">{{title(client)}}</span> <em style="float:right;font-size:0.9rem;">({{$t('all_access')}})</em>
+         <span style="font-weight:800;">{{title(client)}}</span> 
         </div>
         <div class="fmt-center" style="clear:both;">
             <formater-tooltip :description="description(client)"></formater-tooltip>
         </div>
         <div class="fmt-center" >
-          <span v-if="client.groups && Object.keys(client.groups).length > 1" >
-            <input v-if="selectedClients.indexOf(name + '.1') >=0" 
-            type="checkbox"  :title="$t('select_all')" :checked="true" disabled value="no" />
-            <input v-else :disabled="!canAskClient.view" type="checkbox"
-             v-model="selectedClients" :title="$t('select_all')" @change="toggleAll($event)" :value="name + '.0'"/>
-         </span>
+         
         </div>
         <div class="fmt-center" >
-          <span v-if="client.groups && Object.keys(client.groups).length > 1" >
-           <input :disabled="!canAskClient.download" type="checkbox"
-             v-model="selectedClients" :title="$t('select_all')" @change="toggleAll($event)" :value="name + '.1'"/>
-          </span>
+         
         </div>
         <div class="fmt-center">
          <span v-if="client.token" class="copy-clipboard" :title="$t('copy_in_clipboard')">
@@ -69,7 +61,28 @@
     </div>
 
        <div :class="{'client-content': (client.groups && Object.keys(client.groups).length > 1) || (client.roles && client.roles.length > 1) }">
-		 
+		     <div class="role-line" v-if="showRole(null) && client.groups && Object.keys(client.groups).length > 1">
+				     <div>
+		         <span style="font-size:1.2rem;">{{$t('select_all')}}</span>
+		        </div>
+		        <div class="fmt-center" style="clear:both;">
+		            
+		        </div>
+		        <div class="fmt-center" >
+		          <span  >
+		            <input v-if="selectedClients.indexOf(name + '.1') >=0" 
+		            type="checkbox"  :title="$t('select_all')" :checked="true" disabled value="no" />
+		            <input v-else :disabled="!canAskClient.view" type="checkbox"
+		             v-model="selectedClients" :title="$t('select_all')" @change="toggleAll($event)" :value="name + '.0'"/>
+		         </span>
+		        </div>
+		        <div class="fmt-center" >
+		          <span >
+		           <input :disabled="!canAskClient.download" type="checkbox"
+		             v-model="selectedClients" :title="$t('select_all')" @change="toggleAll($event)" :value="name + '.1'"/>
+		          </span>
+		        </div>
+		     </div>
 		     <div  class="role-line"  v-for="(role, index) in client.roles" v-show='showRole(role.name)'>
 		            <div>{{title(role)}}</div>
 		            <div class="fmt-center">
