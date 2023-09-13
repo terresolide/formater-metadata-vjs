@@ -2,6 +2,7 @@
   "fr": {
      "command_to_execute": "Commande curl à executer pour télécharger cette archive",
      "copied_clipboard": "La commande a été enregistrée dans votre presse-papier.",
+     "copy_clipboard": "Copier la commande dans le presse-papier",
      "title": "Télécharger en ligne de commande avec curl"
   },
   "en": {
