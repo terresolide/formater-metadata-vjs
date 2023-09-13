@@ -1,6 +1,7 @@
 <i18n>{
    "en":{
      "localize": "Localize on the map",
+     "command_line": "Download from command line",
      "display_layer": "Display the layer on the map",
      "download_data": "Download data",
      "download_forbidden": "Forbidden download",
@@ -9,6 +10,7 @@
    },
    "fr":{
      "localize": "Localiser sur la carte, cliquer pour garder la position",
+     "command_line": "Télécharger en ligne de commande",
      "display_layer": "Afficher sur la carte",
      "download_data": "Télécharger les données",
      "download_forbidden": "Téléchargement interdit",
@@ -87,6 +89,7 @@
        </div> 
          <hr v-if="type === 'metadata'" />
    </div>
+   <!-- LINKS -->
    <div v-if="links">
    		<div class="mtdt-related-type fa fa-link" :style="{backgroundColor: primary}">
           <span v-if="type === 'cartouche'" class="fa fa-caret-down" ></span>
@@ -122,13 +125,12 @@
         <span class="mtdt-related-type fa fa-download" :style="{backgroundColor: primary}" @click="record(download[0].url, 'download', $event)"></span>
         <a style="display:none;"  :href="download[0].url" target="_blank" ></a>
       </span>
-       <!--  case CNES -->
+       <!--  case CNES EOST (token=true)-->
        <span v-else-if="token && token !== -1 && canDownload" 
-       :href="download[0].url + '?_bearer=' + token" :class="{disabled:download[0].disabled || !token || !canDownload}" 
-        :title="$t('download_data')" >
+       :class="{disabled:download[0].disabled}"   :title="$t('download_data')" >
         <span class="mtdt-related-type fa fa-download" :style="{backgroundColor: primary}" @click="record(download[0].url, 'download', $event)"></span>
-       <a style="display:none;" :href="download[0].url + '?_bearer=' + token" >
-        </a>
+          <a style="display:none;" :href="download[0].url + '?_bearer=' + token" >
+          </a>
       </span>
       <!-- case CNES and user not authenticate on flatsim -->
       <span v-else-if="!token && canDownload" @click="authorize">
@@ -140,6 +142,12 @@
          <span class="mtdt-related-type fa fa-download" :style="{backgroundColor: primary}" ></span>
       </span> 
     </div>
+    <!--  command line -->
+     <div v-if="download && download.length === 1 && type === 'cartouche' &&token && token !==-1 && canDownload"
+       :title="$t('command_line')" @click="commandLine(download[0].url, token)">
+        <span class="mtdt-related-type fa fa-terminal">
+        </span>
+     </div>
     <!-- DOWNLOAD FEW LINKS -->
     <div v-if="download && (download.length >1 || (type === 'metadata' && download.length > 0))">
        <div v-if="access.download === 'free'" class="mtdt-related-type fa fa-download"  :style="{backgroundColor: primary}" 
@@ -284,6 +292,10 @@
       },
       related: {
         type: Array|Object,
+        default: null
+      },
+      title: {
+        type: String,
         default: null
       }
     },
@@ -464,6 +476,14 @@
        },
        changePlatform (newvalue) {
     	   this.platformAdded = newvalue
+       },
+       commandLine (url, token) {
+         var event = new CustomEvent('fmt:commandEvent', {detail: {
+           title: this.title,
+           href: url,
+           token: token
+         }})
+         document.dispatchEvent(event)
        },
        record (url, type, e) {
          if (!this.$store.state.recordUrl) {

@@ -63,7 +63,7 @@
               <img :src="meta.logo"  />
           </a>
        </div>
-       <formater-related type="cartouche" :access="access" :id="meta.id" :cds="dataCenter" 
+       <formater-related type="cartouche" :title="meta.title" :access="access" :id="meta.id" :cds="dataCenter" 
        :download="meta.download" :order="meta.order" :has-bbox-layer="hasBboxLayer" :layers="meta.layers" 
        :links="meta.links" :related="meta.related"></formater-related>
      </div>

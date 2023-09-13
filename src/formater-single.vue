@@ -19,6 +19,8 @@
   <!-- component to draw bbox -->
   <formater-draw-bbox ></formater-draw-bbox>
 
+  <!-- component to display command line -->
+  <formater-command-line></formater-command-line>
   <div >
    <!-- components can be view -->
  
@@ -60,7 +62,7 @@ const FormaterMetadata = () => import('./components/formater-metadata.vue')
 import FormaterPaging from './components/formater-paging.vue';
 import FormaterDrawBbox from './components/formater-draw-bbox.vue';
 // import AerisTheme from 'aeris-commons-components-vjs/src/aeris-theme/aeris-theme.vue'
-
+const FormaterCommandLine = () => import('./components/formater-command-line.vue')
 const JSONPATH = require('jsonpath')
 // prevent previous and next page for browser
 // function disableBack() { window.history.forward() }
@@ -72,6 +74,7 @@ const JSONPATH = require('jsonpath')
 export default {
   name: 'FormaterSingle',
   components: {
+    FormaterCommandLine,
     FormaterDrawBbox,
     FormaterForm,
     FormaterListMetadata,
