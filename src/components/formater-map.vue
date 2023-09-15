@@ -229,6 +229,18 @@ export default {
        }
        this.addWMSLayer(layer, metaId, zoom)
        break;
+     case 'GetMap':
+       if (!layer.options) {
+	       layer.options = {
+	         id: layer.id,
+	         service: 'WMS',
+	         layers: layer.name,
+	         format: 'image/png',
+	         opacity: 0.5
+	       }
+       }
+       this.addWMSLayer(layer, metaId, zoom)
+       break
      case 'WTS':
        layer.options = {
          id: layer.id,

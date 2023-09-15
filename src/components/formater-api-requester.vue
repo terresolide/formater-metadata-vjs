@@ -347,6 +347,18 @@ export default {
       if( !properties.exportLinks) {
         properties.exportLinks = {}
       }
+      //case terradue
+      if (properties.offering && properties.offering.operation && properties.offering.operation['@code'] === 'GetMap') {
+        properties.layers = [] 
+        properties.layers.push({
+             id: properties.id,
+             name: properties.title,
+             description: '',
+             href: properties.offering.operation['@href'],
+             type: 'GetMap'
+         })
+         console.log(properties.layers)
+      }
       // @todo Flatsim cas particulier des LIENS D'EXPORT qui se trouve dans link
       if (properties.links) {
         var i = properties.links.length
