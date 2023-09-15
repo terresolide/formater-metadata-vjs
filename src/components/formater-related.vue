@@ -42,13 +42,14 @@
       :style="{backgroundColor: layerAdded ? '#8c0209' : primary}" :title="$t('display_layer')">
       </div>
        <!--  case from service with token -->
+       
       <div v-else-if="token && token!==-1 && canView" class="mtdt-related-type fa fa-globe" @click="changeLayer(layers[0], true)" 
       :style="{backgroundColor: layerAdded ? '#8c0209' : primary}" :title="$t('display_layer')">
       </div>
       <div v-else-if="!token && canView" class="mtdt-related-type fa fa-globe" @click="authorize"
      :style="{backgroundColor: layerAdded ? '#8c0209' : primary, opacity:0.8}" :title="$t('display_layer')">
       </div>
-      <div v-else-if="token && !canView"  class="mtdt-related-type fa fa-globe disabled" 
+      <div v-else-if="!token || !canView"  class="mtdt-related-type fa fa-globe disabled" 
       :style="{backgroundColor: layerAdded ? '#8c0209' : primary}" :title="$t('display_layer')">
       </div> 
       <!--  no authentication needed -->
