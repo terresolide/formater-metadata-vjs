@@ -69,9 +69,28 @@ export default {
       }); var _this = this
     },
     receiveEvent(e) {
-      this.href = e.detail.href
+      this.href = e.detail.link.url
       this.token = e.detail.token
-      this.file = e.detail.title + '.zip'
+      var filename = this.href.substring(this.href.lastIndexOf('/') + 1)
+      var regex = new RegExp('/\.[^.]+$/')
+      if (filename.match(/\.[^.]+$/)) {
+        this.file = filename
+      } else if (e.detail.link.mimeType) {
+        console.log(e.detail.link.mimeType)
+        switch(e.detail.link.mimeType.toLowerCase())  {
+	        case 'application/zip':
+	          this.file = e.detail.title + '.zip'
+	          break
+	        default:
+	          this.file = null
+	          this.href= null
+	          this.token = null
+        }
+      } else {
+        this.file = null
+        this.href= null
+        this.token = null
+      }
     },
     removeTooltip ()
     {

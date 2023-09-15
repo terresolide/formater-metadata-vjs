@@ -144,7 +144,7 @@
     </div>
     <!--  command line -->
      <div v-if="download && download.length === 1 && type === 'cartouche' &&token && token !==-1 && canDownload"
-       :title="$t('command_line')" @click="commandLine(download[0].url, token)">
+       :title="$t('command_line')" @click="commandLine(download[0], token)">
         <span class="mtdt-related-type fa fa-terminal">
         </span>
      </div>
@@ -477,10 +477,10 @@
        changePlatform (newvalue) {
     	   this.platformAdded = newvalue
        },
-       commandLine (url, token) {
+       commandLine (download, token) {
          var event = new CustomEvent('fmt:commandEvent', {detail: {
            title: this.title,
-           href: url,
+           link: download,
            token: token
          }})
          document.dispatchEvent(event)
