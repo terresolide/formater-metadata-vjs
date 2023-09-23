@@ -139,8 +139,8 @@ export default {
           response => { this.treatmentError(response, url, depth); })
     },
     treatmentError (response, url, depth) {
-      
-      if (response && this.$store.state.env === 'development' && this.$store.state.proxy.url) {
+     if (response && this.$store.state.proxy.url) {   
+     // if (response && this.$store.state.env === 'development' && this.$store.state.proxy.url) {
         var url = this.$store.state.proxy.url + '?url=' + encodeURIComponent(url)
         this.$http.get(url)
         .then(
