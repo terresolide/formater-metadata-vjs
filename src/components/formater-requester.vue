@@ -6,7 +6,15 @@
  * @see http://www.opensearch.org/Home
  * 
  */
- 
+<i18n>{
+  "fr": {
+    "SERVICE_UNAVAILABLE": "Le service est indisponible. Veuillez revenir plus tard!"
+  },
+  "en": {
+     "SERVICE_UNAVAILABLE": "The service is unavailable. Please come back later!"
+  }
+}
+</i18n>
 <template></template>
 <script>
 
@@ -362,7 +370,7 @@ export default {
     treatmentError (response, url) {
       switch(response.status) {
       case 0:
-        this.$store.commit('setError', 'Maybe CORS ERROR, try with proxy')
+        this.$store.commit('setError', this.$i18n.t('SERVICE_UNAVAILABLE'))
         break;
       case 403:
         this.$store.commit('setError', 'SERVER RESPONSE FOR ' + url + ' : ACCESS DENIED')
