@@ -99,11 +99,15 @@ export default {
       }
       if (data.success) {
         this.success = true
+        this.$store.commit('charters/addSigned', this.id )
         var _this = this
         data.roles.forEach(function (role) {
-          var partrole = role.split('.')
-          _this.newRoles.push(partrole[1])
-          // _this.$store.commit('roles/setStatus', {client: partrole[0], name: partrole[1], status: 'ACCEPTED'})
+          // var partrole = role.split('.')
+          if (role.status === 'ACCEPTED') {
+            _this.newRoles.push(role.name)
+          }
+          
+          _this.$store.commit('roles/setStatus', role)
         })
       }
       
@@ -143,11 +147,15 @@ export default {
         return
       }
       this.searching = true
+      var location = this.$custURL(window.location.href)
       var url = this.$store.state.checkSSO + '/charters/sign' 
        this.$http.post(url, {
          userId: this.user.id, 
          email: this.email, 
+         app: 'catalog',
+         realm: this.$store.getters['user/realm'],
          charterId: this.$route.params.id, 
+         domain: location.base + '#/',
          lang: this.$store.state.lang, 
          url: window.location.href
        }, {emulateJSON: true})

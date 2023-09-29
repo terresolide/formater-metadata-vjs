@@ -17,8 +17,14 @@ export default {
     }
   },
   mutations: {
+    addSigned (state, charterId) {     
+      if (state.signed.indexOf(charterId) < 0) {
+        state.signed.push(charterId)
+      }
+    },
     setSigned (state, charters) {
       state.signed = charters
     }
+   
   }
 }

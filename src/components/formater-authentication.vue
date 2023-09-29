@@ -203,6 +203,7 @@ export default {
          if (!this.user.organization) {
            this.$store.commit('user/toggleShow', {client: null, access: null})
          }
+         this.getUserRoles()
          var expires = resp.body.expires_in - 50
          var _this = this
          var next = function () {
