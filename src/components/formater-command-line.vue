@@ -53,6 +53,8 @@ export default {
       this.href = null
       this.token = null
       this.file = null
+      this.cds = null
+      this.id = null
     },
     copy2clipboard (e) {
       console.log('copy to clipboard')
@@ -66,11 +68,38 @@ export default {
         }, 6000)
       }, function() {
         alert(_this.$i18n.t('unauthorized_clipboard'))
-      }); var _this = this
+      });
+      this.record()
+    },
+    record (url) {
+      if (!this.$store.state.recordUrl) {
+        return
+      }
+      var data = {
+          email: this.$store.getters['user/email'],
+          cds: this.cds,
+          app: this.$store.state.app,
+          domain: window.location.hostname,
+          fullpath: this.$route.fullPath,
+          path: this.$route.path,
+          uuid: this.id,
+          link: this.href,
+          type: 'commandLine',
+          orgtype: this.$store.getters['user/type']
+      }
+     
+      this.$http.post(this.$store.state.recordUrl, data, {emulateJSON: true})
+      .then(
+          resp => { e.target.nextElementSibling.click()},
+          resp => { e.target.nextElementSibling.click()}
+      )
+     
     },
     receiveEvent(e) {
       this.href = e.detail.link.url
       this.token = e.detail.token
+      this.cds = e.detail.cds
+      this.id = e.detail.id
       var filename = this.href.substring(this.href.lastIndexOf('/') + 1)
       var regex = new RegExp('/\.[^.]+$/')
       if (filename.match(/\.[^.]+$/)) {

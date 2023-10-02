@@ -68,6 +68,12 @@ export default {
         return null
       }
     },
+    type (state, getters) {
+      if (state.user && state.user.organizationType) {
+        return state.user.organizationType
+      }
+      return null
+    },
     get (state, getters) {
       if (state.user && state.user.email) {
         return state.user

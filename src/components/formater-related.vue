@@ -481,14 +481,19 @@
        commandLine (download, token) {
          var event = new CustomEvent('fmt:commandEvent', {detail: {
            title: this.title,
+           cds: this.cds,
+           uuid: this.id,
            link: download,
            token: token
          }})
          document.dispatchEvent(event)
+         
        },
        record (url, type, e) {
          if (!this.$store.state.recordUrl) {
-           e.target.nextElementSibling.click()
+           if (e) {
+             e.target.nextElementSibling.click()
+           }
            return
          }
          var data = {
@@ -500,7 +505,8 @@
              path: this.$route.path,
              uuid: this.id,
              link: url,
-             type: type
+             type: type,
+             orgtype: this.$store.getters['user/type']
          }
         
          this.$http.post(this.$store.state.recordUrl, data, {emulateJSON: true})
