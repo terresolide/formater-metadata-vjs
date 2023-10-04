@@ -71,7 +71,7 @@ export default {
       });
       this.record()
     },
-    record (url) {
+    record () {
       if (!this.$store.state.recordUrl) {
         return
       }
