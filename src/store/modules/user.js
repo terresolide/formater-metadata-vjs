@@ -10,6 +10,7 @@ export default {
       familyName: null,
       givenName: null,
       email: null,
+      identityProvider:null,
       roles: []
     },
     show: null,
@@ -287,6 +288,12 @@ export default {
           }
         }
         state.strRoles = strRoles.join(',')
+        var idp = null
+        if (obj.identity_provider) {
+          idp = obj.identity_provider
+        } else if (obj.persistent_id) {
+          idp = 'EDUGAIN'
+        }
         state.user = {
             id: obj.sub,
             email: obj.email,
@@ -295,6 +302,7 @@ export default {
             name: obj.name,
             givenName: obj.given_name,
             roles: roles,
+            identityProvider: idp,
             organization: obj.fmt_organization,
             organizationId: obj.fmt_organization_id,
             organizationType: obj.fmt_organization_type

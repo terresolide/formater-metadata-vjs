@@ -13,6 +13,7 @@
     "firstname": "First Name",
     "formater_data": "ForM@Ter data",
     "lastname": "Last Name",
+    "need_idp": "For any access request, you must connect with one of the identity providers (Orcid or Edugain)",
     "organization": "Organization",
     "organization_type": "Organization type",
     "preview": "Preview",
@@ -35,6 +36,7 @@
     "firstname": "Prénom",
     "formater_data": "Données ForM@Ter",
     "lastname": "Nom",
+    "need_idp": "Pour toute demande d'accès, vous devez vous connecter avec l'un des fournisseurs d'identité (Orcid ou Edugain)",
     "organization": "Organisme",
     "organization_type": "Type d'organisme",
     "preview": "Visualisation",
@@ -99,6 +101,10 @@
 	     </form>
 	   </div>
 	  </div>
+	  <div v-if="!identityProvider" class="warning">
+	    <i class="fa fa-exclamation-triangle" ></i>
+	    <span>{{$t('need_idp')}}</span>
+	  </div>
 	  <h3 style="font-weight: 700;" :style="{color:$store.state.style.primary, paddingTop: '10px'}">
 	     <span class="fa fa-key"></span> {{$t('access_rights')}} <span v-if="show && show.client">{{$t('to_collection')}}</span>
 	  </h3>
@@ -149,7 +155,7 @@
 	     </div>
 	     <textarea style="width:100%" v-model="message" :placeholder="$t('add_message')"></textarea>
 	   </div>
-	   <span  class="fmt-button" :class="{disabled: uncompleteUser || checkedRoles.length === 0 || asking}" :style="{background: $store.state.style.primary}" @click="accessRequest">{{$t('access_request')}}</span>
+	   <span  class="fmt-button" :class="{disabled: !identityProvider || uncompleteUser || checkedRoles.length === 0 || asking}" :style="{background: $store.state.style.primary}" @click="accessRequest">{{$t('access_request')}}</span>
 	   </div>
 	   <p v-if="displayWait" v-html="$t('wait_validation')" style="font-size:0.9em;color:green;line-height:1;"></p>
 	   <p v-if="errorAsk" style="color:darkred;">Erreur : {{errorAsk}}</p>
@@ -176,6 +182,12 @@ export default {
   computed: {
     user () {
       return this.$store.getters['user/get']
+    },
+    identityProvider () {
+      if (!this.user) {
+        return null
+      }
+      return this.user.identityProvider
     },
     hasCheckSSO () {
       return this.$store.state.checkSSO ? true: false
@@ -477,7 +489,25 @@ export default {
   }
 }
 </script>
-
+<style scoped>
+div.warning {
+  border: 2px solid darkred;
+  border-radius: 5px;
+  padding: 10px;
+  color: darkred;
+  font-weight:700;
+  margin-left:10px;
+}
+div.warning span {
+  display:inline-block;
+  width:calc(100% - 60px);
+  margin-left:10px;
+}
+.mtdt-user div.warning i {
+  vertical-align:top;
+  margin-top:5px;
+}
+</style>
 <style >
 
 form.form-organization input:invalid {

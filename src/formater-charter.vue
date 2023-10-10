@@ -5,6 +5,7 @@
    "en":{
      "accept": "I accept the terms of use by signing &laquo;{charter}&raquo;",
      "already_signed": "You have already signed &laquo;{charter}&raquo;!",
+     "need_idp": "For sign a charter, you must connect with one of the identity providers (Orcid or Edugain)",
      "need_log": "You must login to access this page!",
      "new_roles": "New roles have been assigned to you: {newroles}<br>Log out/log in for them to take effect!",
      "no_charter": "No charter match!",
@@ -14,6 +15,7 @@
    "fr":{
      "accept": "J'accepte les conditions d'utilisation en signant  &laquo;{charter}&raquo;",
      "already_signed": "Vous avez déjà signé &laquo;{charter}&raquo;!",
+     "need_idp": "Pour signer cette charte, vous devez vous connecter avec l'un des fournisseurs d'identité (Orcid ou Edugain)",
      "need_log": "Vous devez vous connecter pour accéder à cette page!",
      "new_roles": "De nouveaux roles vous ont été attribués: {newroles}<br>Déconnectez-vous/reconnectez-vous pour qu'ils soient pris en compte!",
      "no_charter": "Aucune charte ne correspond!",
@@ -34,15 +36,18 @@
           <a :href="src" target="_blank"><i class="fa fa-file"></i> {{title}}</a>
       </div>
       <formater-pdf-viewer :src="src" :lang="$store.state.lang" :fa="true"></formater-pdf-viewer>
-      
+      <div v-if="!identityProvider && !alreadySigned" class="warning">
+          <i class="fa fa-exclamation-triangle" ></i>
+           <span>{{$t('need_idp')}}</span>
+      </div>
       <div class="form-charter">
         <div v-if="alreadySigned" style="color:darkred;" v-html="$t('already_signed', {charter: title})"></div>
-          <input type="checkbox" v-model="accept" :disabled="alreadySigned || searching || success" required /> 
+          <input type="checkbox" v-model="accept" :disabled="!identityProvider || alreadySigned || searching || success" required /> 
         <span v-html="$t('accept', {charter: title})"></span> 
         <div v-if="success" style="color:green;" v-html="$t('sign_saved', {charter: title})"></div>
         <div v-if="success & newRoles.length > 0" style="color:green;" v-html="$t('new_roles', {newroles: newRoles.join(',')})"></div>
         <div style="margin:20px;text-align:right;">
-             <input type="button" value="Enregistrer" :disabled="alreadySigned || searching || success" @click="send"/>
+             <input type="button" value="Enregistrer" :disabled="!identityProvider || alreadySigned || searching || success" @click="send"/>
         </div>
       </div>
    </div>
@@ -76,6 +81,12 @@ export default {
     },
     user () {
       return this.$store.getters['user/get']
+    },
+    identityProvider ()  {
+      if (!this.user) {
+        return null
+      }
+      return this.user.identityProvider
     },
     id () {
       return this.$route.params.id
@@ -172,6 +183,24 @@ export default {
 }
 </script>
 <style scoped>
+div.warning {
+  border: 2px solid darkred;
+  border-radius: 5px;
+  padding: 10px;
+  color: darkred;
+  font-weight:700;
+  margin: 10px 0;
+}
+div.warning span {
+  display:inline-block;
+  width:calc(100% - 60px);
+  margin-left:10px;
+}
+div.warning i {
+  vertical-align:top;
+  margin-top:5px;
+}
+
 .blurry-background{
    background: url('./assets/img/background-sign.png') no-repeat center center fixed;
    width:100%;
