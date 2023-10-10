@@ -106,11 +106,13 @@
 		                  </span>
                  </span>
                  <span v-else-if="(Object.keys(role.parameters).length === 0 || !role.parameters.charter)">
-			              <input  type="checkbox" :value="name + '.' + role.name"
+			              <input  type="checkbox" :value="name + '.' + role.name" 
 		              :checked="checkedRoles.indexOf(name + '.' + role.name) >= 0" @click="changeRole($event)" />
 		             </span>
 		             <span v-else-if="role.charterId" :title="$t('CONDITION')" >
-		                 <i class="fa fa-pencil"></i>
+		                  <router-link :to="{name:'Charter', params: {id: role.charterId}}">
+                               <i class="fa fa-pencil" ></i>
+                       </router-link>
 		             </span>
 		            </div>
 		            <div class="fmt-center">
@@ -149,7 +151,7 @@
              </span>
            <span v-else="!role.status">
               <input v-if="index === 1 || checkedRoles.indexOf(name + '.' + group[1].name) < 0" type="checkbox" :value="name + '.' + role.name" 
-              :checked="checkedRoles.indexOf(name + '.' + role.name) >= 0" @click="changeRole($event)"/>
+              :checked="checkedRoles.indexOf(name + '.' + role.name) >= 0" @click="changeRole($event)" />
               <input v-if="index === 0 && checkedRoles.indexOf(name + '.' + group[1].name) >=0"  type="checkbox"  :checked="true" disabled value="no" />
 
            </span>
@@ -209,6 +211,14 @@ export default {
        }
        return {view: canAskView, download: canAskDownload}
     },
+//     disabled () {
+      
+//       var user = this.$store.getters['user/get']
+//       if (!user) {
+//         return null
+//       }
+//       return !user.identityProvider
+//     },
     lang () {
       return this.$store.state.lang
     },

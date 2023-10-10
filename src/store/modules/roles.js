@@ -63,7 +63,7 @@ export default {
        }
        var roles = []
        // où on récupère les roles du client  si ils sont dans neededRoles
-       console.log(client.roles)
+       // console.log(client.roles)
        for(var coll in client.groups) {
          roles = roles.concat(client.groups[coll].filter(g => neededRoles.indexOf(g.name) >= 0))
        }

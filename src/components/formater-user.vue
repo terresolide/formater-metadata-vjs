@@ -13,7 +13,7 @@
     "firstname": "First Name",
     "formater_data": "ForM@Ter data",
     "lastname": "Last Name",
-    "need_idp": "For any access request, you must connect with one of the identity providers (Orcid or Edugain)",
+    "need_idp": "For certain access request, you must connect with one of the identity providers (Orcid or Edugain)",
     "organization": "Organization",
     "organization_type": "Organization type",
     "preview": "Preview",
@@ -36,7 +36,7 @@
     "firstname": "Prénom",
     "formater_data": "Données ForM@Ter",
     "lastname": "Nom",
-    "need_idp": "Pour toute demande d'accès, vous devez vous connecter avec l'un des fournisseurs d'identité (Orcid ou Edugain)",
+    "need_idp": "Pour certaine demande d'accès, vous devez vous connecter avec l'un des fournisseurs d'identité (Orcid ou Edugain)",
     "organization": "Organisme",
     "organization_type": "Type d'organisme",
     "preview": "Visualisation",
@@ -155,7 +155,7 @@
 	     </div>
 	     <textarea style="width:100%" v-model="message" :placeholder="$t('add_message')"></textarea>
 	   </div>
-	   <span  class="fmt-button" :class="{disabled: !identityProvider || uncompleteUser || checkedRoles.length === 0 || asking}" :style="{background: $store.state.style.primary}" @click="accessRequest">{{$t('access_request')}}</span>
+	   <span  class="fmt-button" :class="{disabled: uncompleteUser || checkedRoles.length === 0 || asking}" :style="{background: $store.state.style.primary}" @click="accessRequest">{{$t('access_request')}}</span>
 	   </div>
 	   <p v-if="displayWait" v-html="$t('wait_validation')" style="font-size:0.9em;color:green;line-height:1;"></p>
 	   <p v-if="errorAsk" style="color:darkred;">Erreur : {{errorAsk}}</p>
