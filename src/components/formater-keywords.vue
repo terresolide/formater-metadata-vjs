@@ -2,7 +2,7 @@
 <template>
   <span class="mtdt-keywords" >
   <span>
-    <span :class="{disable: (!cat || !name || selected===item)}" class="mtdt-keyword" v-for="(item, key) in words" @click="input(item)">{{item.split('|')[0]}}</span>
+    <span :class="{disable: (!name || selected===item)}" class="mtdt-keyword" v-for="(item, key) in words" @click="input(item)">{{item.split('|')[0]}}</span>
 
   </span>
   </span>

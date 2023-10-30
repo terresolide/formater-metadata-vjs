@@ -20,11 +20,13 @@
 </i18n>
 <template>
  <div class="mtdt-metadata mtdt-capsule" :class="{'fmt-free': depth === -1}">
-    <formater-requester  v-if="depth >= 0 && !describe" :depth="depth"  ></formater-requester>
+    <formater-requester  v-if="depth >= 0 && !protocol" :depth="depth"  ></formater-requester>
       
-      <formater-opensearch v-if="depth >= 0 && describe" :access="access" :service="service" :cds="metadata.cds" :describe="describe" :uuid="uuid" :depth="depth"
+      <formater-opensearch v-if="depth >= 0 && describe && protocol.toLowerCase()==='opensearch' " :access="access"
+      :service="service" :cds="metadata.cds" :describe="describe" :uuid="uuid" :depth="depth"
        @parametersChange="setParameters" @failed="removeDescribe"></formater-opensearch>
-    
+      <formater-sensorthings v-if="depth > 0 && protocol.toLowerCase()==='sensorthings'" 
+      :access="access" :service="service" :cds="metadata.cds" :api="describe" :uuid="uuid" :depth="depth"></formater-sensorthings>
    <span v-if="metadata && !metadata.appRoot && !isRoot" class="mtdt-metadata-close fa fa-close" @click="close"></span>
    <div v-if="metadata">
       <h1 class="mtdt-metadata-header" :style="{color:$store.state.style.primary}">
@@ -86,6 +88,7 @@ const FormaterPaging = () => import('./formater-paging.vue')
 const FormaterListMetadata = () => import('./formater-list-metadata.vue')
 const FormaterRequester = () => import('./formater-requester.vue')
 const FormaterOpensearch = () => import('./formater-opensearch.vue')
+const FormaterSensorthings = () => import('./formater-sensorthings.vue')
 // const FormaterService = () => import('./formater-service.vue')
 // const FormaterFullMetadata = () => import('./formater-full-metadata.vue')
 // import FormaterRelated from './formater-related.vue';
@@ -100,11 +103,12 @@ export default {
     FormaterPaging,
     FormaterListMetadata,
     FormaterOpensearch,
-    FormaterRequester,
   //  FormaterService,
   //  FormaterRelated,
   //  FormaterFullMetadata ,
-    FormaterMetadataContent
+    FormaterMetadataContent,
+    FormaterRequester,
+    FormaterSensorthings
    // FormaterParameters
   },
   props: {
@@ -158,6 +162,7 @@ export default {
      popstateListener: null,
      keydownListener: null,
      describe: null,
+     protocol: null,
      serviceId: -1,
      service: null,
      type: 'geonetwork',
@@ -220,9 +225,11 @@ export default {
       },
       computeHasChild (val) {
         if (val.api) {
+           console.log(val.api)
            if (!this.hasChild) {
            // case child from a custom api opensearch
               this.describe = val.api.http
+              this.protocol = val.api.protocol
               this.access = val.api.access
            }
          }

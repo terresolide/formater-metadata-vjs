@@ -377,10 +377,12 @@ const GeonetworkPlugin = {
                case 'OpenSearch':
                case 'Opensearch':
                case 'opensearch':
+               case 'SensorThings':
                  var access =  _this.extractAccessFromDescription(description)
                  metadata.api = {
                    http: url,
                    name: name,
+                   protocol: protocol,
                    access: access
                  }
                  break;
