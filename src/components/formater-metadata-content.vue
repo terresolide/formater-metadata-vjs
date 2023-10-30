@@ -27,8 +27,6 @@
      "underDevelopment": "Under development",
      "credit": "Credit",
      "purpose": "Purpose"
-     
-
    },
    "fr":{
      "date": "Date | Dates",
