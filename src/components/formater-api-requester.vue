@@ -307,15 +307,17 @@ export default {
         properties.images = [['', properties.quicklook, '']]
         delete properties.quicklook
       }
-      if (properties.license) {
+      if (properties.license && !this.isFlatsim) {
         // @todo a effacer
-        if (properties.license.licenseId === 'unlicensed' && this.isFlatsim) {
-          properties.legalConstraints = ['license: https://creativecommons.org/licenses/by-nc/4.0/']
-        } else {
+//         if (properties.license.licenseId === 'unlicensed' && this.isFlatsim) {
+//           properties.legalConstraints = ['license: https://creativecommons.org/licenses/by-nc/4.0/']
+//         } else {
           properties.legalConstraints = [properties.license.licenseId]
-        }
-        delete properties.license
+       // }
+       // delete properties.license
       }
+     
+
       properties.osParameters = []
       properties.mapping = []
       if (properties.services) {
@@ -357,7 +359,6 @@ export default {
              href: properties.offering.operation['@href'],
              type: 'GetMap'
          })
-         console.log(properties.layers)
       }
       // @todo Flatsim cas particulier des LIENS D'EXPORT qui se trouve dans link
       if (properties.links) {
@@ -441,6 +442,17 @@ export default {
           properties.keyword.push(keyword.name)
         })
         delete properties.keywords
+      }
+      if (properties.categories) {
+        var keyword = []
+        properties.categories.forEach(function (kw) {
+          if (kw['@term']) {
+            keyword.push(kw['@term'])
+          }
+        })
+        if (keyword.length > 0) {
+          properties.keyword = keyword
+        }
       }
       if (!properties.keyword) {
         properties.keyword = []

@@ -145,12 +145,18 @@
   <dt :style="dtStyle()"><i class="fa fa-warning"></i>{{$t('constraint')}}</dt>
   <dd :style="{borderColor: $store.state.style.primary}" style="border: 1px solid grey;border-radius:3px;padding: 3px 5px; margin: 0 -5px;">
      <div v-for="key in $store.state.constraintList" v-if="metadata[key]">
-
        <div v-for="line in metadata[key]" style="line-height:1;margin-bottom:5px;">{{line}}</div>
      </div>
   </dd>
 </dl>
-     
+<dl v-else-if="countParentConstraint > 0" class="mtdt-main-parameter large">
+  <dt :style="dtStyle()"><i class="fa fa-warning"></i>{{$t('constraint')}}</dt>
+  <dd :style="{borderColor: $store.state.style.primary}" style="border: 1px solid grey;border-radius:3px;padding: 3px 5px; margin: 0 -5px;">
+     <div v-for="key in $store.state.constraintList" v-if="$parent.$parent.metadata[key]">
+       <div v-for="line in $parent.$parent.metadata[key]" style="line-height:1;margin-bottom:5px;">{{line}}</div>
+     </div>
+  </dd>
+</dl>   
  <dl>         <hr /> </dl>
  <h1 :style="{color:$store.state.style.primary}">{{$t('about_metadata')}}</h1>
  <dl class="mtdt-main-parameter large"><dt :style="dtStyle()">{{$t('identifier')}}</dt><dd>{{metadata.id}}</dd></dl>
@@ -243,6 +249,19 @@ export default {
       })
       return n
     },
+    countParentConstraint () {
+      var n = 0
+      if (!this.$parent || ! this.$parent.$parent || !this.$parent.$parent.metadata) {
+        return 0
+      }
+      var meta = this.$parent.$parent.metadata
+      this.$store.state.constraintList.forEach(function (key) {
+        if (meta.hasOwnProperty(key)) {
+          n++
+        }
+      })
+      return n
+    },
     hasRelated () {
       return this.metadata.download || this.metadata.layers || this.metadata.links || this.metadata.related || this.metadata.order
     }
@@ -255,6 +274,7 @@ export default {
     }
   },
   created () {
+    
     if (this.metadata.access) {
       this.access = this.metadata.access
     }
