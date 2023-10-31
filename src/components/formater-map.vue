@@ -668,11 +668,15 @@ export default {
      var options = this.getOptionsLayer(0)
      for(var i in this.selected) {
        this.selected[i].eachLayer(function (lr) {
-         lr.setStyle({
-           color: options.color, 
-           fillColor: options.fillColor,
-           fillOpacity: options.fillOpacity
-         })
+         if (lr.setSyle) {
+	         lr.setStyle({
+	           color: options.color, 
+	           fillColor: options.fillColor,
+	           fillOpacity: options.fillOpacity
+	         })
+         } else {
+           console.log(lr)
+         }
        })
 //        this.selected[i].setStyle(
 //            {
@@ -818,7 +822,11 @@ export default {
      this.selected.push(layer)
      var selectedOptions = this.selectedOptions
      layer.eachLayer(function (lr) {
-       lr.setStyle(selectedOptions)
+       if (lr.setStyle) {
+         lr.setStyle(selectedOptions)
+       } else if (lr.setIcon){
+         // lr.setIcon(this.redIcon)
+       }
      })
      // layer.setStyle(this.selectedOptions)
    },
