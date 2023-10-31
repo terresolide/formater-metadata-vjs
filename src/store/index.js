@@ -91,7 +91,7 @@ export default function makeStore( config ) {
         },
         metadata: {
           identifier: ['productIdentifier', 'productType'],
-          quality: [ 'imageQualityStatus', 'productQualityStatus', 'resolution', 'representation', 'format', 'nbCols', 'nbRows', 'waterCover', 'snowCover', 'cloudCover', 'productValidity'],
+          quality: [ 'fillRate', 'imageQualityStatus', 'productQualityStatus', 'resolution', 'representation', 'format', 'nbCols', 'nbRows', 'waterCover', 'snowCover', 'cloudCover', 'productValidity'],
           acquisition: [ 'ellipsoid', 'refFrame', 'networks', 'constellation', 'acquisitionType', 'statusSubType', 'platform', 'instrument','sensorMode', 'polarisation', 
             'orbitNumber', 'relativeOrbitNumber', 'orbitDirection', 'subswath'],
           process: ['analysisCentre', 'software', 'processingDate', 'processingLevel', 'processingMode', 'processingContext',  'correction', 'version']

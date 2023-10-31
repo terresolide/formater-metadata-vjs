@@ -121,13 +121,13 @@ export default {
       var contents = { type: 'sensorthings'}
       data.value.forEach(function (value) {
         var feature = value.Thing.Locations[0].location
-        feature.id = value['@iot.id']
+        feature.id = value['@iot.id'] + ''
         feature.title = value.Thing.Locations[0].name
         if (!feature.properties) {
           feature.properties = {}
         }
         feature.properties.title = value.Thing.name
-        feature.properties.id = value['@iot.id']
+        feature.properties.id = value['@iot.id'] + ''
         features.push(feature)
         metadatas[value['@iot.id']] = self.mapToGeonetwork(value)
         metadatas[value['@iot.id']].feature = feature
@@ -148,6 +148,7 @@ export default {
     },
     mapToGeonetwork (value) {
       var properties = value.properties
+      properties.id = value['@iot.id'] + ''
       properties.title = value.name
       properties.description = value.description
       var temp = value.phenomenonTime.split('/')
@@ -156,6 +157,7 @@ export default {
       properties.type = 'dataset'
       properties.cds = this.cds
       properties.networks = value.Thing.networks
+      properties.keyword = []
       var time = value.resultTime.split('/')
       properties.creationDate = time[0]
       properties.updated = time[1]

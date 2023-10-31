@@ -476,7 +476,9 @@ export default {
          this.single.bounds = bounds
        }
        this.single.bbox.addTo(this.map)
-       this.map.fitBounds(this.single.bounds)
+       if (this.single.bounds) {
+        this.map.fitBounds(this.single.bounds)
+       }
        
    },
    receiveMetadata(event) {
