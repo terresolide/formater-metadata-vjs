@@ -155,8 +155,10 @@ export default {
       properties.tempExtentEnd = temp[1]
       properties.type = 'dataset'
       properties.cds = this.cds
+      properties.networks = value.Thing.networks
       if (value.properties.img) {
-        properties.images = [['', value.properties.img, '']]
+        properties.images = [['Browse', value.properties.img, '']]
+        properties.thumbnail = value.properties.img
         delete properties.img
       }
       if (properties.file) {

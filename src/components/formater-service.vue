@@ -170,7 +170,7 @@ export default {
   },
   computed: {
     email () {
-      if (this.service.type === 'internal') {
+      if (this.service.type === 'internal' || this.service.type === 'session') {
         this.$store.commit('services/setToken', {id: this.service.id, token: this.$store.getters['user/token']})
       }
       return this.$store.getters['user/email']

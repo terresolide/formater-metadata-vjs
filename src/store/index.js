@@ -87,14 +87,14 @@ export default function makeStore( config ) {
           identifier: ['productIdentifier', 'productType'],
           quality: ['fillRate', 'resolution', 'representation', 'format', 'productValidity'],
           acquisition:  ['ellipsoid', 'refFrame', 'constellation', 'platform', 'instrument', 'sensorMode', 'polarisation',  'relativeOrbitNumber', 'orbitDirection', 'subswath'],
-          process:  ['analysisCenter', 'software', 'processingLevel', 'processingMode',  'correction', 'version']
+          process:  ['analysisCentre', 'software', 'processingLevel', 'processingMode',  'correction', 'version']
         },
         metadata: {
           identifier: ['productIdentifier', 'productType'],
           quality: [ 'imageQualityStatus', 'productQualityStatus', 'resolution', 'representation', 'format', 'nbCols', 'nbRows', 'waterCover', 'snowCover', 'cloudCover', 'productValidity'],
           acquisition: [ 'ellipsoid', 'refFrame', 'constellation', 'acquisitionType', 'statusSubType', 'platform', 'instrument','sensorMode', 'polarisation', 
             'orbitNumber', 'relativeOrbitNumber', 'orbitDirection', 'subswath'],
-          process: ['analysisCenter', 'software', 'processingDate', 'processingLevel', 'processingMode', 'processingContext',  'correction', 'version']
+          process: ['analysisCentre', 'software', 'processingDate', 'processingLevel', 'processingMode', 'processingContext',  'correction', 'version']
         }
       },
       // default date & constraint list

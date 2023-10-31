@@ -127,10 +127,17 @@
         <a style="display:none;"  :href="download[0].url" target="_blank" ></a>
       </span>
        <!--  case CNES EOST (token=true)-->
-       <span v-else-if="token && token !== -1 && canDownload" 
+       <span v-else-if="token && token !== -1 && canDownload && serviceType !== 'session'" 
        :class="{disabled:download[0].disabled}"   :title="$t('download_data')" >
         <span class="mtdt-related-type fa fa-download" :style="{backgroundColor: primary}" @click="record(download[0].url, 'download', $event)"></span>
           <a style="display:none;" :href="download[0].url + '?_bearer=' + token" >
+          </a>
+      </span>
+      <!--  case geodesy-plotter -->
+       <span v-else-if="token && token !== -1 && canDownload && serviceType === 'session'" 
+       :class="{disabled:download[0].disabled}"   :title="$t('download_data')" >
+        <span class="mtdt-related-type fa fa-download" :style="{backgroundColor: primary}" @click="record(download[0].url, 'download', $event)"></span>
+          <a style="display:none;" :href="download[0].url" >
           </a>
       </span>
       <!-- case CNES and user not authenticate on flatsim -->
@@ -144,7 +151,7 @@
       </span> 
     </div>
     <!--  command line -->
-     <div v-if="download && download.length === 1 && type === 'cartouche' &&token && token !==-1 && canDownload"
+     <div v-if="download && download.length === 1 && type === 'cartouche' &&token && token !==-1 && canDownload && serviceType !== 'session'"
        :title="$t('command_line')" @click="commandLine(download[0], token)">
         <span class="mtdt-related-type fa fa-terminal">
         </span>
@@ -355,6 +362,9 @@
       },
       token () {
         return this.$store.getters['services/token']
+      },
+      serviceType () {
+        return this.$store.getters['services/type']
       },
 //       isFormater () {
 //         return this.$store.getters['user/isFormater']
