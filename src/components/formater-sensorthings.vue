@@ -132,7 +132,6 @@ export default {
         metadatas[value['@iot.id']] = self.mapToGeonetwork(value)
         metadatas[value['@iot.id']].feature = feature
       })
-      console.log(features)
       contents.properties = {
         totalResults: data.value.length,
         itemsPerPage: this.parameters.top,

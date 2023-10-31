@@ -304,7 +304,7 @@ export default {
 .mtdt-cartouche-metadata div.mtdt-description img {
   position: relative;
    max-width: 110px;
-   max-height:80px;
+   max-height:180px;
    display:block;
    background: #ddd;
    margin: 0px 15px 3px 0;
