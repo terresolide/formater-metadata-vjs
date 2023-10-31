@@ -387,7 +387,9 @@ export default {
    },
    hideBboxLayers () {
      //for (var i in this.bboxLayer){
-       this.bboxLayer.remove()
+       if (this.bboxLayer) {
+         this.bboxLayer.remove()
+       }
     // }
    },
    showBboxLayers () {
@@ -433,6 +435,7 @@ export default {
        this.hideBboxLayers()
        
      // SHOW SINGLE BBOX 
+       console.log(event.detail.meta)
        if (event.detail.meta.geoBox) {
          this.single.bbox = L.polygon(
              this.$gn.bboxString2Array(event.detail.meta.geoBox),
@@ -441,6 +444,24 @@ export default {
          this.single.bounds = this.single.bbox.getBounds()
 //          this.single.bbox.addTo(this.map)
 //          console.log(this.single.bbox)
+       } else if (event.detail.meta.feature) {
+          this.single.bbox = L.geoJSON(event.detail.meta.feature, {style: this.getOptionsLayer(1)})
+          var bounds = null
+          this.single.bbox.eachLayer(function (layer) {
+            if (layer.getBounds) {
+	            if (!bounds) {
+	              bounds = layer.getBounds()
+	            } else {
+	              bounds.extend(layer.getBounds())
+	            }
+            }
+          })
+          if (bounds) {
+	          this.single.bounds = bounds
+	          this.map.fitBounds(this.single.bounds)
+          }
+          this.single.bbox.addTo(this.map)
+          
        } else if (event.detail.meta.id) {
          // this.single.bbox = L.geoJSON(event.detail.feature, {style:this.getOptionsLayer()}) 
          this.single.bbox = this.findBboxById(event.detail.meta.id)

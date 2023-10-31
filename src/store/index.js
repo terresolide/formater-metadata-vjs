@@ -86,13 +86,13 @@ export default function makeStore( config ) {
         cartouche: {
           identifier: ['productIdentifier', 'productType'],
           quality: ['fillRate', 'resolution', 'representation', 'format', 'productValidity'],
-          acquisition:  ['ellipsoid', 'refFrame', 'constellation', 'platform', 'instrument', 'sensorMode', 'polarisation',  'relativeOrbitNumber', 'orbitDirection', 'subswath'],
+          acquisition:  ['ellipsoid', 'refFrame', 'networks', 'constellation', 'platform', 'instrument', 'sensorMode', 'polarisation',  'relativeOrbitNumber', 'orbitDirection', 'subswath'],
           process:  ['analysisCentre', 'software', 'processingLevel', 'processingMode',  'correction', 'version']
         },
         metadata: {
           identifier: ['productIdentifier', 'productType'],
           quality: [ 'imageQualityStatus', 'productQualityStatus', 'resolution', 'representation', 'format', 'nbCols', 'nbRows', 'waterCover', 'snowCover', 'cloudCover', 'productValidity'],
-          acquisition: [ 'ellipsoid', 'refFrame', 'constellation', 'acquisitionType', 'statusSubType', 'platform', 'instrument','sensorMode', 'polarisation', 
+          acquisition: [ 'ellipsoid', 'refFrame', 'networks', 'constellation', 'acquisitionType', 'statusSubType', 'platform', 'instrument','sensorMode', 'polarisation', 
             'orbitNumber', 'relativeOrbitNumber', 'orbitDirection', 'subswath'],
           process: ['analysisCentre', 'software', 'processingDate', 'processingLevel', 'processingMode', 'processingContext',  'correction', 'version']
         }

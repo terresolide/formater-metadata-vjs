@@ -130,6 +130,7 @@ export default {
         feature.properties.id = value['@iot.id']
         features.push(feature)
         metadatas[value['@iot.id']] = self.mapToGeonetwork(value)
+        metadatas[value['@iot.id']].feature = feature
       })
       console.log(features)
       contents.properties = {
@@ -156,6 +157,9 @@ export default {
       properties.type = 'dataset'
       properties.cds = this.cds
       properties.networks = value.Thing.networks
+      var time = value.resultTime.split('/')
+      properties.creationDate = time[0]
+      properties.updated = time[1]
       if (value.properties.img) {
         properties.images = [['Browse', value.properties.img, '']]
         properties.thumbnail = value.properties.img
@@ -167,7 +171,7 @@ export default {
           url: properties.file
         }]
       }
-      console.log(properties.file)
+      properties.exportLinks= {json: value.properties['@iot.selfLink']}
       properties.contacts = {metadata: {}, resource: {}}
       return properties
     }
