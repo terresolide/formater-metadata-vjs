@@ -62,6 +62,13 @@ export default {
      } else {
        return null
      }
+   },
+   type (state, getters) {
+     if (state.current >=0) {
+       return state.services[state.current].type
+     } else {
+       return null
+     }
    }
   },
   mutations: {

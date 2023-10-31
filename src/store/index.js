@@ -84,17 +84,17 @@ export default function makeStore( config ) {
       },
       osFields: {
         cartouche: {
-          identifier: ['productType'],
-          quality: ['resolution', 'representation', 'format', 'productValidity'],
-          acquisition:  ['platform', 'instrument', 'sensorMode', 'polarisation',  'relativeOrbitNumber', 'orbitDirection', 'subswath'],
-          process:  ['processingLevel', 'processingMode',  'correction', 'version']
+          identifier: ['productIdentifier', 'productType'],
+          quality: ['fillRate', 'resolution', 'representation', 'format', 'productValidity'],
+          acquisition:  ['ellipsoid', 'refFrame', 'constellation', 'platform', 'instrument', 'sensorMode', 'polarisation',  'relativeOrbitNumber', 'orbitDirection', 'subswath'],
+          process:  ['analysisCenter', 'software', 'processingLevel', 'processingMode',  'correction', 'version']
         },
         metadata: {
           identifier: ['productIdentifier', 'productType'],
           quality: [ 'imageQualityStatus', 'productQualityStatus', 'resolution', 'representation', 'format', 'nbCols', 'nbRows', 'waterCover', 'snowCover', 'cloudCover', 'productValidity'],
-          acquisition: [ 'acquisitionType', 'statusSubType', 'platform', 'instrument','sensorMode', 'polarisation', 
+          acquisition: [ 'ellipsoid', 'refFrame', 'constellation', 'acquisitionType', 'statusSubType', 'platform', 'instrument','sensorMode', 'polarisation', 
             'orbitNumber', 'relativeOrbitNumber', 'orbitDirection', 'subswath'],
-          process: ['processingDate', 'processingLevel', 'processingMode', 'processingContext',  'correction', 'version']
+          process: ['analysisCenter', 'software', 'processingDate', 'processingLevel', 'processingMode', 'processingContext',  'correction', 'version']
         }
       },
       // default date & constraint list

@@ -231,6 +231,12 @@ export default {
               this.describe = val.api.http
               this.protocol = val.api.protocol
               this.access = val.api.access
+              if (this.protocol.toLowerCase() === 'sensorthings') {
+                var url = new URL(val.api.http)
+                this.$store.commit('services/add', {domain: url.hostname, api: val.api.http, access: this.access, uuid: this.uuid})
+                this.serviceId = this.$store.getters['services/current']
+                this.service = this.$store.getters['services/byId'](this.serviceId)
+              }
            }
          }
       },

@@ -218,8 +218,10 @@
           </li>
           </ul>    
       </div> 
+      
         <hr v-if="type === 'metadata'" /> 
     </div>
+
   <!--  <div v-if="related && (related.children || related.parent)" style="position:relative;">
    <div class="mtdt-related-type fa fa-code-fork" :style="{backgroundColor:primary}">
       <span class="fa fa-caret-down"></span>
