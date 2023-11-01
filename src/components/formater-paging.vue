@@ -1,6 +1,7 @@
 <i18n>{
    "en":{
-     "results": "Results: {from} to {to} among {notExactly}{count}",
+     "results": "Results: <strong>{from}</strong> to <strong>{to}</strong> among {notExactly}{count}",
+     "results_simple": "Results: <strong>{from}</strong> to <strong>{to}</strong>",
      "title": "Title",
      "relevance": "Relevance",
      "changeDate": "Change date",
@@ -10,6 +11,8 @@
    },
    "fr":{
      "results":  "Résultats: <strong>{from}</strong> à <strong>{to}</strong> sur {notExactly}{count}",
+     "results_simple":  "Résultats: <strong>{from}</strong> à <strong>{to}</strong>",
+    
      "title": "Titre",
      "relevance": "Pertinence",
      "changeDate": "Mise à jour",
@@ -26,11 +29,13 @@
   	<span class="fa fa-angle-double-left" @click="goToFirst()"></span>
   	<span class="fa fa-angle-left" @click="changePage(-1)" ></span>
   </span>
-  <span style="margin: 0 10px;" v-html="$tc('results', count, {from: (count === 0) ? 0 : from, to: to, notExactly: notExactly, count: count})"></span>
+  <span v-if="hasTotal" style="margin: 0 10px;" v-html="$tc('results', count, {from: (count === 0) ? 0 : from, to: to, notExactly: notExactly, count: count})"></span>
+   <span v-else style="margin: 0 10px;" v-html="$t('results_simple',  {from: from, to: to})"></span>
+  
    (<formater-select name="recordPerPage" :options="recordsPerPage" :defaut="recordPerPage + ''" type="associative" @input="nbRecordChange" color="#ffffff"></formater-select>)
    <span :class="{disabled: (!notExactly && (currentPage===nbPage || count=== 0) ? 'disabled': ''), 'mtdt-navigation':true}">
 	   <span class="fa fa-angle-right " @click="changePage(1)" ></span>
-	   <span class="fa fa-angle-double-right" @click="goToLast()"></span>
+	   <span v-if="hasTotal" class="fa fa-angle-double-right" @click="goToLast()"></span>
   </span>
   <div style="float:right;display:inline-block;" v-if="orders.length > 0">
     {{$t('sortBy')}} <formater-select :options="options" name="sortBy" type="associative" :defaut="orderBy" @input="sortChange" color="#ffffff"></formater-select>
@@ -144,6 +149,7 @@ export default {
       from: 1,
       to: 24,
       notExactly: '',
+      hasTotal: true,
       options: {},
       metadataListListener: null,
       searchEventListener: null
@@ -155,6 +161,7 @@ export default {
 //      if (event.detail.depth !=  this.depth ){
 //        return;
 //      }
+     console.log(event)
      if (!event.detail.metadata) {
        this.count = 0
        this.from = 1
@@ -178,6 +185,10 @@ export default {
 	         if (typeof event.detail.properties.exactCount !== 'undefined') {
 	           this.notExactly = (event.detail.properties.exactCount ? '': '~')
 	         }
+         }
+       case 'sensorthings':
+         if (event.detail.properties) {
+           this.hasTotal = false
          }
          break
      }

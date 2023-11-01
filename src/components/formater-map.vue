@@ -460,7 +460,6 @@ export default {
        this.hideBboxLayers()
        
      // SHOW SINGLE BBOX 
-       console.log(event.detail.meta)
        if (event.detail.meta.geoBox) {
          this.single.bbox = L.polygon(
              this.$gn.bboxString2Array(event.detail.meta.geoBox),
@@ -470,22 +469,47 @@ export default {
 //          this.single.bbox.addTo(this.map)
 //          console.log(this.single.bbox)
        } else if (event.detail.meta.feature) {
-          this.single.bbox = L.geoJSON(event.detail.meta.feature, {style: this.getOptionsLayer(1)})
+          this.single.bbox = L.geoJSON(event.detail.meta.feature, 
+            {
+              style: this.getOptionsLayer(1),
+              pointToLayer: function(geoJsonPoint, latlng) {
+                 return L.marker(latlng, {title: geoJsonPoint.title, icon: _this.icons['red']});
+              }
+//           onEachFeature (feature, layer) {
+//             var bounds = layer.getBounds()
+//             style.border = 'triangle'
+//             layer.addFramed(style)
+//             // layer.buildFramed()
+//           }
+          }).bindPopup(function(layer) {
+				      var txt = '<h3>' + layer.options.title +'</h3>'
+				      for( var prop in layer.feature.properties) {
+				        txt += '<div><b>' + prop + '</b>: ' + layer.feature.properties[prop] + '</div>'
+				      }
+				      return txt
+				  }) 
           var bounds = null
+          var markers = []
           this.single.bbox.eachLayer(function (layer) {
             if (layer.getBounds) {
 	            if (!bounds) {
 	              bounds = layer.getBounds()
 	            } else {
 	              bounds.extend(layer.getBounds())
-	            }
+	            } 
+            } else if (layer.getLatLng) {
+	              markers.push(layer)
             }
           })
+          
           if (bounds) {
 	          this.single.bounds = bounds
 	          this.map.fitBounds(this.single.bounds)
+          } else if (markers.length === 1) {
+            this.map.panTo(markers[0].getLatLng())
           }
           this.single.bbox.addTo(this.map)
+          this.single.bbox.fire('click')
           
        } else if (event.detail.meta.id) {
          // this.single.bbox = L.geoJSON(event.detail.feature, {style:this.getOptionsLayer()}) 
@@ -614,7 +638,6 @@ export default {
 //              // layer.buildFramed()
 //            }
      }).bindPopup(function(layer) {
-       console.log(layer)
        var txt = '<h3>' + layer.options.title +'</h3>'
        for( var prop in layer.feature.properties) {
          txt += '<div><b>' + prop + '</b>: ' + layer.feature.properties[prop] + '</div>'
@@ -819,6 +842,7 @@ export default {
      var self = this
      var bounds = null
      var bboxLayer = this.findBboxById(id)
+     bboxLayer.fire('click')
 //      if (this.bboxLayer[this.depth]) {
 //         this.bboxLayer[this.depth].eachLayer(function(layer) {
 //           if (layer.options.id === id || (layer.feature && layer.feature.id === id)) {
@@ -833,8 +857,12 @@ export default {
 //           }
 //         })
 //      }
+   
      this.setSelected(bboxLayer)
+    
      var bounds = null
+     var markers = []
+     
      bboxLayer.eachLayer(function (layer) {
        if (layer.getBounds)  {
 	       var bds = layer.getBounds()
@@ -843,13 +871,22 @@ export default {
 	       } else {
 	         bounds.extend(bds)
 	       }
-       } else if (layer.getCenter) {
+       } else if (layer.getLatLng){
         // bounds = [layer.getCenter()]
-        console.log(layer.getCenter())
+         markers.push(layer)
        }
      })
      if (bounds) {
-      self.map.fitBounds(bounds, {animate: true, duration:100, padding: [50,50]})
+       this.map.fitBounds(bounds, {animate: true, duration:100, padding: [50,50]})
+     } else if (markers.length === 1) {
+       this.map.panTo(markers[0].getLatLng())
+       this.bboxLayer.fire('click', {latlng: markers[0].getLatLng()})
+       var ft = markers[0].feature
+       var txt = '<h3>' + ft.title +'</h3>'
+       for( var prop in ft.properties) {
+           txt += '<div><b>' + prop + '</b>: ' + ft.properties[prop] + '</div>'
+       }
+       this.bboxLayer.getPopup().setContent(txt)
      }
      if (temporaly) {
          setTimeout(() => {
@@ -865,16 +902,28 @@ export default {
      this.selected.push(layer)
      var selectedOptions = this.selectedOptions
      var icon = this.icons['red']
+     var self = this
      layer.eachLayer(function (lr) {
        
        if (lr.setStyle) {
          lr.setStyle(selectedOptions)
          lr.bringToFront()
        } else if (lr.setIcon){
+         lr.fire('click')
          lr.setIcon(icon)
          lr.options.oldZIndex = lr.options.zIndexOffset
          // lr.openPopup()
+//          var popup = L.popup()
+//          var txt = '<h3>' + lr.title +'</h3>'
+//          for( var prop in lr.feature.properties) {
+//            txt += '<div><b>' + prop + '</b>: ' + lr.feature.properties[prop] + '</div>'
+//          }
+//          popup.setLatLng(lr.getLatLng())
+//          popup.setContent(txt)
+//          popup.openOn(self.map)
          lr.setZIndexOffset(2000)
+        
+         // self.map.fireEvent('click', {latlng: lr.getLatLng()})
        }
      })
      // layer.setStyle(this.selectedOptions)
