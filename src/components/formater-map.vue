@@ -22,6 +22,12 @@ L.Control.Reset = require('../modules/leaflet.control.reset.js')
 L.Control.Fullscreen = require('formater-commons-components-vjs/src/leaflet/leaflet.control.fullscreen.js')
 L.Control.Legend = require('formater-commons-components-vjs/src/leaflet//leaflet.control.legend.js')
 
+
+L.Marker.prototype.options.icon = L.icon({
+  iconUrl: require('../assets/img/marker-icon-orange.png').default,
+  shadowUrl: require('leaflet/dist/images/marker-shadow.png').default,
+  iconRetinaUrl: require('../assets/img/marker-icon-2x-orange.png').default,
+});
 const getReader = () => import('../modules/capabilities-reader.js')
 // const getProj4 = () => import('proj4')
 
@@ -121,6 +127,8 @@ export default {
          weight:1
      },
      colors: ['orange', 'purple', 'green'],
+     markerColors: ['orange', 'blue', 'red'],
+     icons:  [],
      controlLayer: null,
      resetControl: null,
      legendControl: null,
@@ -153,6 +161,19 @@ export default {
        this.reader = reader; 
        this.reader.init(this.$http, this.$store.state.proxy)})
  		
+       for (var i in this.markerColors) {
+        this.icons[this.markerColors[i]] = new L.Icon({
+         // iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
+          iconUrl: require('../assets/img/marker-icon-' + this.markerColors[i] + '.png').default,
+          shadowUrl: require('leaflet/dist/images/marker-shadow.png').default,
+          iconRetinaUrl: require('../assets/img/marker-icon-2x-' + this.markerColors[i]+ '.png').default,
+         // shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+          iconSize: [25, 41],
+          iconAnchor: [12, 41],
+          popupAnchor: [1, -34],
+          shadowSize: [41, 41]
+        });
+      }
 //    L.tileLayer('//server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
 // 			{
 // 		     attribution: 'Tiles © <a href="https://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer">ArcGIS</a>',
@@ -579,12 +600,19 @@ export default {
      var style = this.getOptionsLayer(0)
      this.bboxLayer = L.geoJSON(event.detail.features, {
            style: style,
+           pointToLayer: function(geoJsonPoint, latlng) {
+             console.log(geoJsonPoint)
+             return L.marker(latlng, {title: geoJsonPoint.title});
+           }
 //            onEachFeature (feature, layer) {
 //              var bounds = layer.getBounds()
 //              style.border = 'triangle'
 //              layer.addFramed(style)
 //              // layer.buildFramed()
 //            }
+     }).bindPopup(function(layer) {
+       console.log(layer)
+       return '<h3>' + layer.title +'</h3>'
      })  
      
      //}
@@ -666,16 +694,19 @@ export default {
    unselectBbox () {
      var self = this
      var options = this.getOptionsLayer(0)
+     var icon = this.icons['orange']
      for(var i in this.selected) {
        this.selected[i].eachLayer(function (lr) {
-         if (lr.setSyle) {
+        
+         if (lr.setStyle) {
 	         lr.setStyle({
 	           color: options.color, 
 	           fillColor: options.fillColor,
 	           fillOpacity: options.fillOpacity
 	         })
-         } else {
-           console.log(lr)
+         } else if (lr.setIcon){
+           lr.setIcon(icon)
+            lr.setZIndexOffset(1000)
          }
        })
 //        this.selected[i].setStyle(
@@ -798,11 +829,15 @@ export default {
      this.setSelected(bboxLayer)
      var bounds = null
      bboxLayer.eachLayer(function (layer) {
-       var bds = layer.getBounds()
-       if (!bounds) {
-         bounds = bds
-       } else {
-         bounds.extend(bds)
+       if (layer.getBounds)  {
+	       var bds = layer.getBounds()
+	       if (!bounds) {
+	         bounds = bds
+	       } else {
+	         bounds.extend(bds)
+	       }
+       } else if (layer.getCenter) {
+        // bounds = [layer.getCenter()]
        }
      })
      if (bounds) {
@@ -821,11 +856,15 @@ export default {
    setSelected (layer) {
      this.selected.push(layer)
      var selectedOptions = this.selectedOptions
+     var icon = this.icons['red']
      layer.eachLayer(function (lr) {
+       
        if (lr.setStyle) {
          lr.setStyle(selectedOptions)
+         lr.bringToFront()
        } else if (lr.setIcon){
-         // lr.setIcon(this.redIcon)
+         lr.setIcon(icon)
+         lr.setZIndexOffset(2000)
        }
      })
      // layer.setStyle(this.selectedOptions)

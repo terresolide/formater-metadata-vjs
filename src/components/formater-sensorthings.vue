@@ -148,6 +148,7 @@ export default {
     },
     mapToGeonetwork (value) {
       var properties = value.properties
+      console.log(value)
       properties.id = value['@iot.id'] + ''
       properties.title = value.name
       properties.description = value.description
@@ -156,7 +157,7 @@ export default {
       properties.tempExtentEnd = temp[1]
       properties.type = 'dataset'
       properties.cds = this.cds
-      properties.networks = value.Thing.networks
+      properties.networks = value.Thing.properties.networks
       properties.keyword = []
       var time = value.resultTime.split('/')
       properties.creationDate = time[0]

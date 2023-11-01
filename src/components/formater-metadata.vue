@@ -22,10 +22,10 @@
  <div class="mtdt-metadata mtdt-capsule" :class="{'fmt-free': depth === -1}">
     <formater-requester  v-if="depth >= 0 && !protocol" :depth="depth"  ></formater-requester>
       
-      <formater-opensearch v-if="depth >= 0 && describe && protocol.toLowerCase()==='opensearch' " :access="access"
+      <formater-opensearch v-if="depth >= 0 && describe && protocol && protocol.toLowerCase()==='opensearch' " :access="access"
       :service="service" :cds="metadata.cds" :describe="describe" :uuid="uuid" :depth="depth"
        @parametersChange="setParameters" @failed="removeDescribe"></formater-opensearch>
-      <formater-sensorthings v-if="depth > 0 && protocol.toLowerCase()==='sensorthings'" 
+      <formater-sensorthings v-if="depth > 0 && protocol && protocol.toLowerCase()==='sensorthings'" 
       :access="access" :service="service" :cds="metadata.cds" :api="describe" :uuid="uuid" :depth="depth"></formater-sensorthings>
    <span v-if="metadata && !metadata.appRoot && !isRoot" class="mtdt-metadata-close fa fa-close" @click="close"></span>
    <div v-if="metadata">

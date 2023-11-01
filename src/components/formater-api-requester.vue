@@ -457,7 +457,6 @@ export default {
       if (!properties.keyword) {
         properties.keyword = []
       }
-      console.log(properties)
       return properties
     },
     // @todo DEPLACER DANS FORM VOIR MÊME DANS formater-dimension-block/ formater-facet-block!!
