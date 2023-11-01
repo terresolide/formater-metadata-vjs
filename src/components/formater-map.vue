@@ -27,6 +27,10 @@ L.Marker.prototype.options.icon = L.icon({
   iconUrl: require('../assets/img/marker-icon-orange.png').default,
   shadowUrl: require('leaflet/dist/images/marker-shadow.png').default,
   iconRetinaUrl: require('../assets/img/marker-icon-2x-orange.png').default,
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41]
 });
 const getReader = () => import('../modules/capabilities-reader.js')
 // const getProj4 = () => import('proj4')
@@ -601,7 +605,6 @@ export default {
      this.bboxLayer = L.geoJSON(event.detail.features, {
            style: style,
            pointToLayer: function(geoJsonPoint, latlng) {
-             console.log(geoJsonPoint)
              return L.marker(latlng, {title: geoJsonPoint.title});
            }
 //            onEachFeature (feature, layer) {
@@ -612,7 +615,11 @@ export default {
 //            }
      }).bindPopup(function(layer) {
        console.log(layer)
-       return '<h3>' + layer.title +'</h3>'
+       var txt = '<h3>' + layer.options.title +'</h3>'
+       for( var prop in layer.feature.properties) {
+         txt += '<div><b>' + prop + '</b>: ' + layer.feature.properties[prop] + '</div>'
+       }
+       return txt
      })  
      
      //}
@@ -684,7 +691,7 @@ export default {
        id = event.detail.meta.id
      } 
      if (id) {
-       bounds =this.selectBboxById(id, event.detail.temporaly)
+       bounds = this.selectBboxById(id, event.detail.temporaly)
        this.metadataBoundsList.push(bounds)
      }
      return bounds
@@ -705,8 +712,8 @@ export default {
 	           fillOpacity: options.fillOpacity
 	         })
          } else if (lr.setIcon){
-           lr.setIcon(icon)
-            lr.setZIndexOffset(1000)
+            lr.setIcon(icon)
+            lr.setZIndexOffset(lr.options.oldZIndex)
          }
        })
 //        this.selected[i].setStyle(
@@ -838,6 +845,7 @@ export default {
 	       }
        } else if (layer.getCenter) {
         // bounds = [layer.getCenter()]
+        console.log(layer.getCenter())
        }
      })
      if (bounds) {
@@ -864,6 +872,8 @@ export default {
          lr.bringToFront()
        } else if (lr.setIcon){
          lr.setIcon(icon)
+         lr.options.oldZIndex = lr.options.zIndexOffset
+         // lr.openPopup()
          lr.setZIndexOffset(2000)
        }
      })
@@ -1012,5 +1022,14 @@ div[id="fmtMap"].mtdt-small .leaflet-control a{
  }
  div[id="fmtMap"].mtdt-fullscreen a.leaflet-control-layers{
    border-radius: 2px;
+ }
+ div[id="fmtMap"] .leaflet-popup-content {
+   font-size:12px;
+ }
+ div[id="fmtMap"] .leaflet-popup-content h3 {
+   font-size:14px;
+ }
+ div[id="fmtMap"] .leaflet-popup-content div {
+   line-height:1.1;
  }
 </style>

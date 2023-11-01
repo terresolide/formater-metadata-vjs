@@ -114,7 +114,6 @@ export default {
       }
     },
     treatmentJson (data) {
-      console.log(data)
       var metadatas = {}
       var features = []
       var self = this
@@ -126,8 +125,9 @@ export default {
         if (!feature.properties) {
           feature.properties = {}
         }
-        feature.properties.title = value.Thing.name
-        feature.properties.id = value['@iot.id'] + ''
+        feature.properties = Object.assign(feature.properties, value.Thing.properties)
+       // feature.properties.title = value.Thing.name
+       // feature.properties.id = value['@iot.id'] + ''
         features.push(feature)
         metadatas[value['@iot.id']] = self.mapToGeonetwork(value)
         metadatas[value['@iot.id']].feature = feature
@@ -148,7 +148,6 @@ export default {
     },
     mapToGeonetwork (value) {
       var properties = value.properties
-      console.log(value)
       properties.id = value['@iot.id'] + ''
       properties.title = value.name
       properties.description = value.description

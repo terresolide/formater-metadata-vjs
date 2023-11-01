@@ -56,17 +56,16 @@ export default{
     }
   },
   created () {
-    console.log(this.metadata)
     if (this.metadata['geonet:info']) {
       this.uuid = this.metadata['geonet:info'].uuid
       this.metaType = 'geonetwork'
-   } else {
+    } else {
       this.uuid = this.metadata.id
       this.metaType = 'opensearch'
-   }
-   if (Array.isArray(this.metadata.productType)) {
-     this.metadata.productType = this.metadata.productType[0]
-   }
+    }
+    if (Array.isArray(this.metadata.productType)) {
+      this.metadata.productType = this.metadata.productType[0]
+    }
   },
   data () {
     return {
