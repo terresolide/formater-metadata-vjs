@@ -159,9 +159,12 @@ export default {
         }
       }
       if (query.start) {
-        filters.push('date(phenomenonTime) gt date(' + query.start + ')')
+        var now = new Date()
+        console.log(now.toJSON())
+        var end = query.end ? query.end + 'T23:59:00Z' : now.toJSON()
+        filters.push('overlaps(phenomenonTime,' + query.start + 'T00:00:00Z/' + end + ')')
       }
-      if (query.end) {
+      if (query.end && !query.start) {
         filters.push('date(phenomenonTime) le date(' + query.end + ')')
       }
       if (filters.length > 0) {
