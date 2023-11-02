@@ -22,6 +22,20 @@ const ToolsPlugin = {
         this.params = params
         this.authParams = authParams
         return this
+      },
+      Vue.prototype.$box2sql = function (box)  {
+        var tab = box.split(',')
+        if (tab.length < 4) {
+          return null
+        }
+        var points = [
+          tab[0] + ' ' + tab[1],
+          tab[0] + ' ' + tab[3],
+          tab[2] + ' ' + tab[3],
+          tab[2] + ' ' + tab[1],
+          tab[0] + ' ' + tab[1]
+        ]
+        return 'POLYGON((' + points.join(',') + '))'
       }
     }
 }

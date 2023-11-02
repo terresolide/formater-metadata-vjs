@@ -14,7 +14,7 @@ export default {
   components: {
   },
   props: {
-    api: {
+    url: {
       type: String,
       default: null
     },
@@ -44,6 +44,7 @@ export default {
     }
   },
   created () {
+    this.extractParameters()
     this.initParameters()
     this.getRecords(this.$route)
   },
@@ -55,8 +56,7 @@ export default {
   data () {
     return {
       parameters: {},
-      fixedParameters: {},
-
+      fixedFilters: [],
       // associative array of: parameter name in this application => name in the SensorThings api
       // for the predefined parameters like box, temporalExtent, and paging (common for all api)
       mappingParameters: [],
@@ -68,26 +68,58 @@ export default {
   methods: {
     initParameters () {
       this.parameters = {
-        skip: 0,
-        top: this.$store.state.size.nbRecord
+        $skip: 0,
+        $top: this.$store.state.size.nbRecord,
+        $expand: 'Thing($expand=Locations($top=1)),Sensor,ObservedProperty'
       }
     }, 
-     extractParameters (api) {
-       var tab = describe.split('?')
-       var fixedParameters = {}
-       if (tab.length > 1) {
-         var params = tab[1].split('&')
-         params.forEach(function (param) {
-           var x = param.split('=')
-           fixedParameters[x[0]] = x[1]
-         })
-       }
-       this.fixedParameters = fixedParameters
-       return tab[0]
+     extractParameters () {
+          console.log(this.url)
+          this.api = this.url
+          var url = new URL(this.url)
+          var filterParams = url.searchParams.get('$filter')
+          var filters = null
+          if (filterParams) {
+             filters = filterParams.split('and')
+             filters = filters.map(fl => {
+               return fl.trim()
+               var tab = fl.split(/\s+/)
+               if (tab.length === 3) {
+	               return {
+	                 prop: tab[0],
+	                 compare: tab[1],
+	                 value: tab[2]
+	               }
+               } else {
+                 return fl
+               }
+             })
+          }
+          this.fixedFilters = filters
+          console.log(this.fixedFilters)
+          
+          this.api = url.protocol + '//' + url.host + url.pathname 
+//        var tab = describe.split('?')
+//        var fixedParameters = {}
+//        if (tab.length > 1) {
+//          var params = tab[1].split('&')
+//          params.forEach(function (param) {
+//            var x = param.split('=')
+//            fixedParameters[x[0]] = x[1]
+//          })
+//        }
+//        this.fixedParameters = fixedParameters
+//        return tab[0]
      },
      getRecords(route) {
        this.$store.commit('searchingChange', true)
-       this.$http.get(this.api + '&$skip=0&$top=' + this.$store.state.size.nbRecord )
+       this.prepareParameters(route)
+       var url = this.api + '?'
+       var parameters = Object.assign({}, this.parameters)
+       url += Object.keys(parameters).map(function (prop) {
+        return prop + '=' + encodeURIComponent(parameters[prop])
+      }).join('&');
+       this.$http.get(url )
        .then(
            response => { this.treatmentJson(response.body)},
            response => { 
@@ -113,6 +145,36 @@ export default {
         this.$emit('failed')
       }
     },
+    prepareFilters (query) {
+      console.log(query)
+      var filters = []
+      filters = filters.concat(this.fixedFilters)
+      if (query.any) {
+        filters.push("substringof('" + query.any + "', name)")
+      }
+      if (query.box) {
+        var polygon = this.$box2sql(query.box)
+        if (polygon) {
+          filters.push("geo.intersects(Thing/Locations/location,geography'" + polygon + "')")
+        }
+      }
+      if (filters.length > 0) {
+        this.parameters.$filter = filters.join(' and ')
+      } 
+      console.log(filters)
+    },
+    prepareParameters (newvalue) {
+      var query = newvalue.query
+      if (query.from) {
+        this.parameters.$skip = parseInt(query.from) - 1
+        if (query.to) {
+          this.parameters.$top = parseInt(query.to) - parseInt(query.from) + 1
+        }
+      }
+      
+      this.prepareFilters(query)
+      
+    },
     treatmentJson (data) {
       var metadatas = {}
       var features = []
@@ -129,14 +191,14 @@ export default {
        // feature.properties.title = value.Thing.name
        // feature.properties.id = value['@iot.id'] + ''
         features.push(feature)
-        metadatas[value['@iot.id']] = self.mapToGeonetwork(value)
-        metadatas[value['@iot.id']].feature = feature
+        metadatas[value['@iot.id'] + ''] = self.mapToGeonetwork(value)
+        metadatas[value['@iot.id'] + ''].feature = feature
       })
       contents.properties = {
-        totalResults: data.value.length,
-        itemsPerPage: this.parameters.top,
-        startIndex: this.skip,
-        next: data['@iot.nextLink']
+        count: data.value.length,
+        itemsPerPage: this.parameters.$top,
+        startIndex: this.parameters.$skip + 1,
+        next: data['@iot.nextLink'] ? data['@iot.nextLink'] : null
       }
       
       contents.depth = this.depth
@@ -149,6 +211,7 @@ export default {
     mapToGeonetwork (value) {
       var properties = value.properties
       properties.id = value['@iot.id'] + ''
+      properties.metaId = value['@iot.selfLink']
       properties.title = value.name
       properties.description = value.description
       var temp = value.phenomenonTime.split('/')
@@ -156,7 +219,7 @@ export default {
       properties.tempExtentEnd = temp[1]
       properties.type = 'dataset'
       properties.cds = this.cds
-      properties.networks = value.Thing.properties.networks
+     // properties.networks = value.Thing.properties.networks
       properties.keyword = []
       var time = value.resultTime.split('/')
       properties.creationDate = time[0]
@@ -168,11 +231,11 @@ export default {
       }
       if (properties.file) {
         properties.download = [{
-          mimeType: 'csv/txt',
+          mimeType: 'application/octet-stream',
           url: properties.file
         }]
       }
-      properties.exportLinks= {json: value.properties['@iot.selfLink']}
+      properties.exportLinks= {json: value['@iot.selfLink']}
       properties.contacts = {metadata: {}, resource: {}}
       return properties
     }

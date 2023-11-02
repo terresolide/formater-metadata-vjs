@@ -157,7 +157,7 @@
 </dl>   
  <dl>         <hr /> </dl>
  <h1 :style="{color:$store.state.style.primary}">{{$t('about_metadata')}}</h1>
- <dl class="mtdt-main-parameter large"><dt :style="dtStyle()">{{$t('identifier')}}</dt><dd>{{metadata.id}}</dd></dl>
+ <dl class="mtdt-main-parameter large"><dt :style="dtStyle()">{{$t('identifier')}}</dt><dd>{{metadata.metaId || metadata.id}}</dd></dl>
  <dl v-if="countMetadataDate > 0" class="mtdt-main-parameter large">
    <dt :style="dtStyle()">{{$tc('date', countDate)}} </dt>
    <dd>

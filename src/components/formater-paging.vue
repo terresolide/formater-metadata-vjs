@@ -123,7 +123,7 @@ export default {
     
   },
   mounted () {
-    this.handleTheme()
+    // this.handleTheme()
   },
   destroyed () {
     document.removeEventListener('fmt:metadataListEvent', this.metadataListListener);
@@ -148,6 +148,7 @@ export default {
       nbPage: 0,
       from: 1,
       to: 24,
+      nextLink: null,
       notExactly: '',
       hasTotal: true,
       options: {},
@@ -175,6 +176,8 @@ export default {
 	         this.to = parseInt(event.detail['@to'])
 	         this.currentPage = (this.from - 1) / this.recordPerPage + 1
 	         this.nbPage = Math.ceil(event.detail.summary['@count'] / this.recordPerPage) 
+	         this.hasTotal = true
+           this.nextLink = true
          }
          break
        case 'opensearch':
@@ -185,10 +188,18 @@ export default {
 	         if (typeof event.detail.properties.exactCount !== 'undefined') {
 	           this.notExactly = (event.detail.properties.exactCount ? '': '~')
 	         }
+	         this.hasTotal = true
+	         this.nextLink = true
          }
+         break
        case 'sensorthings':
          if (event.detail.properties) {
+           console.log(event.detail)
            this.hasTotal = false
+           this.nextLink = event.detail.properties.next
+           this.from = event.detail.properties.startIndex
+           this.to = this.from + event.detail.properties.count - 1
+           this.currentPage = (this.from - 1) / this.recordPerPage + 1
          }
          break
      }
@@ -251,13 +262,13 @@ export default {
      	event.detail.sortBy = this.sortBy
      }
    },
-   handleTheme () {
-     var nodes = this.$el.querySelectorAll('.mtdt-paging span.mtdt-navigation span')
-     var self = this
-     nodes.forEach( function (node) {
-       node.style.backgroundColor = self.$store.state.style.primary
-     })
-   },
+//    handleTheme () {
+//      var nodes = this.$el.querySelectorAll('.mtdt-paging span.mtdt-navigation span')
+//      var self = this
+//      nodes.forEach( function (node) {
+//        node.style.backgroundColor = self.$store.state.style.primary
+//      })
+//    },
    changePage(sens) {
      if (sens < 0 && this.currentPage === 1 ){
        return
