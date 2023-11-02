@@ -84,17 +84,17 @@ export default function makeStore( config ) {
       },
       osFields: {
         cartouche: {
-          identifier: ['productIdentifier', 'productType'],
-          quality: ['fillRate', 'resolution', 'representation', 'format', 'productValidity'],
+          identifier: ['doi', 'productIdentifier', 'productType'],
+          quality: [ 'resolution', 'representation', 'format', 'productValidity'],
           acquisition:  ['ellipsoid', 'refFrame', 'networks', 'constellation', 'platform', 'instrument', 'sensorMode', 'polarisation',  'relativeOrbitNumber', 'orbitDirection', 'subswath'],
-          process:  ['analysisCentre', 'software', 'processingLevel', 'processingMode',  'correction', 'version']
+          process:  ['analysisCentre', 'software', 'samplingPeriod', 'fillRate','processingLevel', 'processingMode',  'correction', 'version']
         },
         metadata: {
-          identifier: ['productIdentifier', 'productType'],
-          quality: [ 'fillRate', 'imageQualityStatus', 'productQualityStatus', 'resolution', 'representation', 'format', 'nbCols', 'nbRows', 'waterCover', 'snowCover', 'cloudCover', 'productValidity'],
+          identifier: ['doi', 'productIdentifier', 'productType'],
+          quality: ['imageQualityStatus', 'productQualityStatus', 'resolution', 'representation', 'format', 'nbCols', 'nbRows', 'waterCover', 'snowCover', 'cloudCover', 'productValidity'],
           acquisition: [ 'ellipsoid', 'refFrame', 'networks', 'constellation', 'acquisitionType', 'statusSubType', 'platform', 'instrument','sensorMode', 'polarisation', 
             'orbitNumber', 'relativeOrbitNumber', 'orbitDirection', 'subswath'],
-          process: ['analysisCentre', 'software', 'processingDate', 'processingLevel', 'processingMode', 'processingContext',  'correction', 'version']
+          process: ['analysisCentre', 'software', 'samplingPeriod', 'fillRate','processingDate', 'processingLevel', 'processingMode', 'processingContext',  'correction', 'version']
         }
       },
       // default date & constraint list
