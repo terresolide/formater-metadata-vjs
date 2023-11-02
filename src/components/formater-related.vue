@@ -6,7 +6,8 @@
      "download_data": "Download data",
      "download_forbidden": "Forbidden download",
      "platform": "Platform | Platforms",
-     "order_data": "Order data"
+     "order_data": "Order data",
+     "sensor": "Sensor or method"
    },
    "fr":{
      "localize": "Localiser sur la carte, cliquer pour garder la position",
@@ -15,7 +16,8 @@
      "download_data": "Télécharger les données",
      "download_forbidden": "Téléchargement interdit",
      "platform": "Plateforme | Plateformes",
-     "order_data": "Commander les données"
+     "order_data": "Commander les données",
+     "sensor": "Capteur ou méthode"
    }
 }
 </i18n>
@@ -108,6 +110,25 @@
 
    
     <!--  siblings -->
+     <div v-if="sensor" >
+       <a :href="sensor" target="_blank" :style="{pointerEvents: type === 'metadata' ? 'none': 'auto'}" >
+	       <div class="mtdt-related-type fa fa-tachometer"  :style="{backgroundColor: primary}" :title="$t('sensor')">
+	      </div> 
+      </a>
+      <div v-if="type === 'metadata'"></div>
+      <div v-if="type === 'metadata'"></div>
+      <div v-if="type === 'metadata'" class="mtdt-expand mtdt-links" >
+            <ul >
+              <li>
+               <a :href="sensor" target="_blank" class="sensor-link">
+              {{$t('sensor')}}
+              </a>
+              
+              </li>
+           </ul>    
+       </div> 
+      <hr v-if="type === 'metadata'" /> 
+    </div>
      <div v-if="platforms && platforms.length > 0">
        <div class="mtdt-related-type fa fa-map-marker"  :style="{backgroundColor: platformAdded ? '#8c0209' : primary}" :title="$tc('platform', platforms.length)">
          <span v-if="type === 'cartouche'" class="fa fa-caret-down"></span>
@@ -294,6 +315,10 @@
       },
       links: {
         type: Array,
+        default: null
+      },
+      sensor: {
+        type: String,
         default: null
       },
       cds: {
@@ -762,6 +787,7 @@
 .mtdt-links span {
   padding: 1px 3px;
   cursor:pointer;
+  color: black;
   display: inline-block;
   width: 100%;
 }

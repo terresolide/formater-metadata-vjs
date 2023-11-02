@@ -65,7 +65,7 @@
        </div>
        <formater-related type="cartouche" :title="meta.title" :access="access" :id="meta.id" :cds="dataCenter" 
        :download="meta.download" :order="meta.order" :has-bbox-layer="hasBboxLayer" :layers="meta.layers" 
-       :links="meta.links" :related="meta.related"></formater-related>
+       :links="meta.links" :related="meta.related" :sensor="meta.sensor"></formater-related>
      </div>
  </div>
 </template>

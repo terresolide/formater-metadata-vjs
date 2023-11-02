@@ -244,6 +244,10 @@ export default {
           url: properties.file
         }]
       }
+      if (value.Sensor) {
+        console.log(value.Sensor)
+        properties.sensor = value.Sensor.metadata
+      }
       properties.exportLinks= {json: value['@iot.selfLink']}
       properties.contacts = {metadata: {}, resource: {}}
       return properties
