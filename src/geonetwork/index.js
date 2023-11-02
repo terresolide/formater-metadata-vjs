@@ -528,6 +528,8 @@ const GeonetworkPlugin = {
                if ((!local && link.length > 6) || (link.length === 6 && local )) {
                switch (link[3]) {
                  case 'OpenSearch':
+                 case 'SensorThings':
+                 case 'Sensorthings':
                    response.api = {}
                    response.api.http = link[2]
                    response.api.name = link[0].length > 0 ? link[0] : link[1]

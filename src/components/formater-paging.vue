@@ -33,7 +33,7 @@
    <span v-else style="margin: 0 10px;" v-html="$t('results_simple',  {from: from, to: to})"></span>
   
    (<formater-select name="recordPerPage" :options="recordsPerPage" :defaut="recordPerPage + ''" type="associative" @input="nbRecordChange" color="#ffffff"></formater-select>)
-   <span :class="{disabled: (!notExactly && (currentPage===nbPage || count=== 0) ? 'disabled': ''), 'mtdt-navigation':true}">
+   <span :class="{disabled: (!notExactly && !nextLink && (currentPage===nbPage || count=== 0) ? 'disabled': ''), 'mtdt-navigation':true}">
 	   <span class="fa fa-angle-right " @click="changePage(1)" ></span>
 	   <span v-if="hasTotal" class="fa fa-angle-double-right" @click="goToLast()"></span>
   </span>
@@ -168,7 +168,7 @@ export default {
        this.from = 1
        this.to = 0
      }
-     switch (this.type) {
+     switch (event.detail.type) {
        case 'geonetwork':
          if (event.detail.summary) {
 	         this.count = parseInt(event.detail.summary['@count'])
@@ -199,11 +199,12 @@ export default {
            this.nextLink = event.detail.properties.next
            this.from = event.detail.properties.startIndex
            this.to = this.from + event.detail.properties.count - 1
-           this.currentPage = (this.from - 1) / this.recordPerPage + 1
+           this.currentPage = (event.detail.properties.startIndex - 1) / this.recordPerPage + 1
+           this.count = 0
          }
          break
      }
-     if (this.count === 0) {
+     if (this.count === 0 && this.hasTotal) {
        this.from = 1
        this.currentPage = 1
      }

@@ -158,6 +158,12 @@ export default {
           filters.push("geo.intersects(Thing/Locations/location,geography'" + polygon + "')")
         }
       }
+      if (query.start) {
+        filters.push('date(phenomenonTime) gt date(' + query.start + ')')
+      }
+      if (query.end) {
+        filters.push('date(phenomenonTime) le date(' + query.end + ')')
+      }
       if (filters.length > 0) {
         this.parameters.$filter = filters.join(' and ')
       } 
