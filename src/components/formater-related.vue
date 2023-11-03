@@ -787,7 +787,7 @@
 .mtdt-links span {
   padding: 1px 3px;
   cursor:pointer;
-  color: #555;
+  color: #333;
   display: inline-block;
   width: 100%;
 }
