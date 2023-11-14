@@ -33,7 +33,7 @@
    <span v-else style="margin: 0 10px;" v-html="$t('results_simple',  {from: from, to: to})"></span>
   
    (<formater-select name="recordPerPage" :options="recordsPerPage" :defaut="recordPerPage + ''" type="associative" @input="nbRecordChange" color="#ffffff"></formater-select>)
-   <span :class="{disabled: (!notExactly && !nextLink && (currentPage===nbPage || count=== 0) ? 'disabled': ''), 'mtdt-navigation':true}">
+   <span :class="{disabled: (!nextLink ? 'disabled': ''), 'mtdt-navigation':true}">
 	   <span class="fa fa-angle-right " @click="changePage(1)" ></span>
 	   <span v-if="hasTotal" class="fa fa-angle-double-right" @click="goToLast()"></span>
   </span>
@@ -148,7 +148,7 @@ export default {
       nbPage: 0,
       from: 1,
       to: 24,
-      nextLink: null,
+      nextLink: true,
       notExactly: '',
       hasTotal: true,
       options: {},
@@ -177,7 +177,11 @@ export default {
 	         this.currentPage = (this.from - 1) / this.recordPerPage + 1
 	         this.nbPage = Math.ceil(event.detail.summary['@count'] / this.recordPerPage) 
 	         this.hasTotal = true
-           this.nextLink = true
+	         if (this.currentPage=== this.nbPage || this.count=== 0) {
+	           this.nextLink = false
+	         } else {
+             this.nextLink = true
+	         }
          }
          break
        case 'opensearch':
@@ -189,7 +193,11 @@ export default {
 	           this.notExactly = (event.detail.properties.exactCount ? '': '~')
 	         }
 	         this.hasTotal = true
-	         this.nextLink = true
+	         if (!this. notExactly && (this.currentPage=== this.nbPage || this.count=== 0)) {
+             this.nextLink = false
+           } else {
+             this.nextLink = true
+           }
          }
          break
        case 'sensorthings':

@@ -47,5 +47,13 @@
       "fr": "ISDeform",
       "en": "ISDeform"
     }
+  },
+   "https://w3id.org/formater/data-center/UGA": {
+    "logo": "https://catalogue-terresolide.ipgp.fr/geonetwork/images/harvesting/logo_bleu_uga.png",
+    "href": "https://www.univ-grenoble-alpes.fr/",
+    "title": {
+      "fr": "UGA - Université Grenoble Alpes",
+      "en": "UGA - Université Grenoble Alpes"
+    }
   }
 }
