@@ -140,6 +140,7 @@ export default {
     metadata: {
       immediate: true,
       handler (newvalue) {
+        console.log(newvalue)
         this.setHasChild(false)
         this.computeHasChild(newvalue)
       }
@@ -410,7 +411,7 @@ export default {
 }
 .mtdt-metadata .mtdt-group-logo img{
   max-width:100px; 
-  height:40px;
+  max-height:40px;
 }
 .mtdt-metadata .mtdt-contacts h3{
     margin-bottom:0;

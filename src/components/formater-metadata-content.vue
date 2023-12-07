@@ -65,7 +65,7 @@
 <h1 :style="{color:$store.state.style.primary}">{{$t('about_resource')}}</h1>
  <div style="float:right;background:#eee;margin-left:5px;max-width:300px;min-width:200px;width:25%;" v-if="hasRelated">
  <formater-related type="metadata" :depth="depth" :access="access" :download="metadata.download" :id="metadata.id"
-    :cds="metadata.cds" :layers="metadata.layers" :links="metadata.links" :related="metadata.related"
+    :cds="metadata.cds" :layers="metadata.layers" :links="metadata.links" :relatedLinks="metadata.relatedLinks" :related="metadata.related"
      :order="metadata.order" :siblings="metadata.siblings" :sensor="metadata.sensor"></formater-related>
     
 </div>

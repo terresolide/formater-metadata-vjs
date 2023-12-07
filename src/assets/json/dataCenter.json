@@ -32,6 +32,14 @@
       "en": "ISGI - International Service of Geomagnetic Indices"
     }
   }, 
+  "https://w3id.org/formater/data-center/IPGP": {
+    "logo": "https://catalogue-terresolide.ipgp.fr/geonetwork/images/harvesting/last-logo-ipgp-up.png",
+    "href": "https://www.ipgp.fr/",
+    "title": {
+      "fr": "IPGP",
+      "en": "IPGP"
+    }
+  }, 
    "https://w3id.org/formater/data-center/SHOM": {
     "logo": "https://catalogue-terresolide.ipgp.fr/geonetwork/images/harvesting/shom-data.png",
     "href": "https://data.shom.fr/",

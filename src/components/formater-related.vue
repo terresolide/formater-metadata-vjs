@@ -5,6 +5,7 @@
      "display_layer": "Display the layer on the map",
      "download_data": "Download data",
      "download_forbidden": "Forbidden download",
+     "further_details": "Further details",
      "platform": "Platform | Platforms",
      "order_data": "Order data",
      "sensor": "Sensor or method"
@@ -15,6 +16,7 @@
      "display_layer": "Afficher sur la carte",
      "download_data": "Télécharger les données",
      "download_forbidden": "Téléchargement interdit",
+     "further_details": "Pour aller plus loin",
      "platform": "Plateforme | Plateformes",
      "order_data": "Commander les données",
      "sensor": "Capteur ou méthode"
@@ -107,6 +109,7 @@
        </div> 
          <hr v-if="type === 'metadata'" /> 
    </div>
+
 
    
     <!--  siblings -->
@@ -249,7 +252,21 @@
       
         <hr v-if="type === 'metadata'" /> 
     </div>
-
+    <!-- RELATED LINKS -->
+   <div v-if="relatedLinks">
+      <div class="mtdt-related-type fa fa-asterisk" :style="{backgroundColor: primary}" :title="$t('further_details')">
+          <span v-if="type === 'cartouche'" class="fa fa-caret-down" ></span>
+       </div>
+       <div v-if="type === 'metadata'"></div>
+       <div class="mtdt-expand mtdt-links">
+            <ul >
+            <li v-for="(link, index) in relatedLinks" :key="index" v-if="link">
+             <a :href="link.href" target="_blank" :title="link.description">{{link.title}}</a>
+           </li>
+           </ul>    
+       </div> 
+         <hr v-if="type === 'metadata'" /> 
+   </div>
   <!--  <div v-if="related && (related.children || related.parent)" style="position:relative;">
    <div class="mtdt-related-type fa fa-code-fork" :style="{backgroundColor:primary}">
       <span class="fa fa-caret-down"></span>
@@ -314,6 +331,10 @@
         default: null
       },
       links: {
+        type: Array,
+        default: null
+      },
+      relatedLinks: {
         type: Array,
         default: null
       },
@@ -787,7 +808,7 @@
 .mtdt-links span {
   padding: 1px 3px;
   cursor:pointer;
-  color: #333;
+  color: #444;
   display: inline-block;
   width: 100%;
 }
@@ -862,12 +883,23 @@ display: table-cell;
 font-size: 1.1em;
 }
 
+.mtdt-related-cartouche .mtdt-expand ul:not(.mtdt-layers)  li:before {
+  content: "-";
+  vertical-align:top;
+  padding: 0 5px;
+display: table-cell;
+}
 .mtdt-related-metadata .mtdt-expand ul:not(.mtdt-layers)  li a,
 .mtdt-related-metadata .mtdt-expand ul:not(.mtdt-layers)  li span,
 .mtdt-related-metadata .mtdt-expand ul:not(.mtdt-layers)  li div{
 
 display: table-cell;
 max-width:92%;
+}
+.mtdt-related-cartouche .mtdt-expand ul:not(.mtdt-layers)  li > a,
+.mtdt-related-cartouche .mtdt-expand ul:not(.mtdt-layers)  li > span{
+   display: table-cell;
+   max-width:300px;
 }
  .mtdt-related ul.mtdt-layers{
   list-style-type: none;

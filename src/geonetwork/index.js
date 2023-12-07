@@ -410,10 +410,14 @@ const GeonetworkPlugin = {
                    metadata.layers.push(link)
                  break;
                case 'application/vnd.google-earth.kml+xml':
+               case 'WWW:DOWNLOAD-1.0-ftp--download':
+                   // @todo
+                   break;
                  break;
                case 'WWW:DOWNLOAD-1.0-link--download':
                case 'telechargement':
                case 'download':
+               case 'WWW:DOWNLOAD-1.0-http--download':
                  if (!metadata.download) {
                    metadata.download = []
                  }
@@ -430,10 +434,16 @@ const GeonetworkPlugin = {
                  delete link.title
                  metadata.order.push(link)
                  break;
-               
+               case 'WWW:LINK-1.0-http--related':
+                 if (!metadata.relatedLinks) {
+                   metadata.relatedLinks = []
+                 }
+                 link.href = link.url
+                 delete link.url
+                 metadata.relatedLinks.push(link)
+                 break;
                case 'WWW:LINK-1.0-http--link':
                case 'WWW:LINK-1.0-http--partners':
-               case 'WWW:LINK-1.0-http--related':
                case 'DOI':
                default:
                  if (!metadata.links) {
@@ -551,13 +561,19 @@ const GeonetworkPlugin = {
                      response.layers.push(self.linkToLayer(link, id))
                     }
                    break;
+                 case 'WWW:DOWNLOAD-1.0-ftp--download':
+                   // @todo
+                   break;
                  case 'application/vnd.google-earth.kml+xml':
                    break;
                  case 'WWW:DOWNLOAD-1.0-link--download':
+                 case 'WWW:DOWNLOAD-1.0-http--download':
+                 case 'download':
                  case 'telechargement':
                    if (!response.download) {
                      response.download = []
                    }
+                   
                    response.download.push(self.linkToDownload(link))
                    break;
                  case 'WWW:DOWNLOAD-1.0-link--order':
@@ -574,6 +590,12 @@ const GeonetworkPlugin = {
                      response.api.http = link[2]
                      response.api.name = link[0].length > 0 ? link[0] : link[1]
                    }
+                   break;
+                 case 'WWW:LINK-1.0-http--related':
+                   if (!response.relatedLinks) {
+                     response.relatedLinks = []
+                   }
+                   response.relatedLinks.push(self.linkToLink(link))
                    break;
                  case 'WWW:LINK-1.0-http--link':
                  default:

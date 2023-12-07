@@ -243,6 +243,7 @@ export default {
           response => {  
             var data = response.body
             var uuid = data['geonet:info'].uuid
+            console.log(data)
             var meta = this.$gn.treatmentMetadata(data, uuid);
             // var feature = self.$gn.extractBbox(data.geoBox, uuid)
             meta.appRoot = true
