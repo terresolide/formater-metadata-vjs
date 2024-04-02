@@ -37,6 +37,7 @@ if (!config.lang) {
 } else {
   locale = config.lang
 }
+console.log(process.env)
 if (!config.checkSSO) {
   config.checkSSO = process.env.CHECK_SSO
 }

@@ -86,15 +86,15 @@ export default function makeStore( config ) {
         cartouche: {
           identifier: ['doi', 'productIdentifier', 'productType'],
           quality: [ 'resolution', 'representation', 'format', 'productValidity'],
-          acquisition:  ['ellipsoid', 'refFrame', 'networks', 'constellation', 'platform', 'instrument', 'sensorMode', 'polarisation',  'relativeOrbitNumber', 'orbitDirection', 'subswath'],
-          process:  ['analysisCentre', 'software', 'samplingPeriod', 'fillRate','processingLevel', 'processingMode',  'correction', 'version']
+          acquisition:  ['ellipsoid', 'refFrame', 'networks', 'constellation', 'antennaSide', 'sensor', 'platform', 'instrument', 'sensorMode', 'polarisation',  'relativeOrbitNumber', 'orbitDirection', 'subswath'],
+          process:  ['analysisCentre', 'software', 'softwareVersion', 'processingId', 'samplingPeriod', 'fillRate','processingLevel', 'processingMode',  'correction', 'version']
         },
         metadata: {
           identifier: ['doi', 'productIdentifier', 'productType'],
           quality: ['imageQualityStatus', 'productQualityStatus', 'resolution', 'representation', 'format', 'nbCols', 'nbRows', 'waterCover', 'snowCover', 'cloudCover', 'productValidity'],
-          acquisition: [ 'ellipsoid', 'refFrame', 'networks', 'constellation', 'acquisitionType', 'statusSubType', 'platform', 'instrument','sensorMode', 'polarisation', 
+          acquisition: [ 'ellipsoid', 'refFrame', 'networks', 'antennaSide', 'sensor', 'constellation', 'acquisitionType', 'statusSubType', 'platform', 'instrument','sensorMode', 'polarisation', 
             'orbitNumber', 'relativeOrbitNumber', 'orbitDirection', 'subswath'],
-          process: ['analysisCentre', 'software', 'samplingPeriod', 'fillRate','processingDate', 'processingLevel', 'processingMode', 'processingContext',  'correction', 'version']
+          process: ['analysisCentre', 'software', 'softwareVersion', 'samplingPeriod', 'fillRate','processingId', 'processingDate', 'processingLevel', 'processingMode', 'processingContext',  'correction', 'version']
         }
       },
       // default date & constraint list

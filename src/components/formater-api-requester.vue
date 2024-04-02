@@ -280,7 +280,7 @@ export default {
           properties.tempExtentEnd = dates[1]
         }
       }
-     
+      
       // case Flatsim
       if (properties.productIdentifier) {
         properties.renameProperty('productIdentifier', 'identifier')
@@ -312,7 +312,11 @@ export default {
 //         if (properties.license.licenseId === 'unlicensed' && this.isFlatsim) {
 //           properties.legalConstraints = ['license: https://creativecommons.org/licenses/by-nc/4.0/']
 //         } else {
-          properties.legalConstraints = [properties.license.licenseId]
+          if (properties.license.licenseId) {
+             properties.legalConstraints = [properties.license.licenseId]
+          } else {
+            properties.legalConstraints = ['License: ' + properties.license]
+          }
        // }
        // delete properties.license
       }
@@ -406,13 +410,47 @@ export default {
             properties.links.splice(i,1)
             continue
           }
+          
         }
         if (properties.links.length === 0) {
           delete properties.links
         }
         // 
       }
+      // case gdm-sar-in
+      if (properties.links && properties.links.data) {
+        if (!properties.download) {
+            properties.download = []
+         }
+         properties.links.data.forEach(function (link) {
+            properties.download.push({
+              url: link.href,
+              mimeType: link.type,
+              name: link.title
+            })
+         })
+         delete properties.links.closeMetadataListener
+      }
+      if (properties.links && properties.links.preview) {
+           if (!properties.images) {
+              properties.images = []
+           }
+           properties.links.preview.forEach(function (link) {
+              properties.images.push([link.title, link.href, ''])
+              properties.thumbnail = link.href
+           })
+           delete properties.links.preview
+      }
 
+      if (properties.links && properties.links.alternates) {
+        properties.links.alternates.forEach(function (link) {
+          properties.exportLinks.json = link.href
+        })
+        delete properties.links.alternates
+        delete properties.links.via
+        delete properties.links
+      }
+     
       if (!properties.contacts) {
         properties.contacts = {metadata: {}, resource: {}}
         if (properties.organisationName) {

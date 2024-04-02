@@ -273,6 +273,7 @@ export default {
 //      console.log(obj1)
       var obj = jwt_decode(tokens.id_token)
       // console.log(obj)
+      console.log(obj)
       if (obj.nonce === state.nonce) {
         var roles = [ ]
         for (var client in obj.client_roles)

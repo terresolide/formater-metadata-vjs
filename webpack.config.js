@@ -102,12 +102,15 @@ module.exports = {
   },
   devServer: {
     // https: true,
+    static: {
+      directory: path.join(__dirname, './public'),
+    },
     historyApiFallback: true,
-    headers: {
-      "Access-Control-Allow-Origin": "http://localhost:8080",
-      "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
-      "Access-Control-Allow-Headers": "X-Requested-With, content-type, Authorization"
-    }
+//    headers: {
+//      "Access-Control-Allow-Origin": "http://localhost:8080",
+//      "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
+//      "Access-Control-Allow-Headers": "X-Requested-With, content-type, Authorization"
+//    }
   },
   performance: {
     hints: false
