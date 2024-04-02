@@ -160,7 +160,6 @@ export default {
       }
       if (query.start) {
         var now = new Date()
-        console.log(now.toJSON())
         var end = query.end ? query.end + 'T23:59:00Z' : now.toJSON()
         filters.push('overlaps(phenomenonTime,' + query.start + 'T00:00:00Z/' + end + ')')
       }
