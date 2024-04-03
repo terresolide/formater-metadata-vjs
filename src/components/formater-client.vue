@@ -62,7 +62,7 @@
 
        <div :class="{'client-content': (client.groups && Object.keys(client.groups).length > 1) || (client.roles && client.roles.length > 1) }">
 		     <div class="role-line" v-if="showRole(null) && client.groups && Object.keys(client.groups).length > 1">
-				     <div>
+				   <!--  <div>
 		         <span style="font-size:1.2rem;">{{$t('select_all')}}</span>
 		        </div>
 		        <div class="fmt-center" style="clear:both;">
@@ -81,7 +81,7 @@
 		           <input :disabled="!canAskClient.download" type="checkbox"
 		             v-model="selectedClients" :title="$t('select_all')" @change="toggleAll($event)" :value="name + '.1'"/>
 		          </span>
-		        </div>
+		        </div>-->
 		     </div>
 		     <div  class="role-line"  v-for="(role, index) in client.roles" v-show='showRole(role.name)'>
 		            <div>{{title(role)}}</div>

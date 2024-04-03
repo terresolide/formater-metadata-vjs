@@ -320,8 +320,18 @@ export default {
        // }
        // delete properties.license
       }
-     
-
+     if (properties.created) {
+      properties.creationDate = properties.created
+     }
+     if (properties.parameters) {
+      var props =  ['rlooksIn', 'rlooksUnw', 'digitalElevationModel', 'unwrapMethod', 'swath']
+      props.forEach(function (key) {
+        if (properties.parameters[key]) {
+          properties[key] = properties.parameters[key]
+        }
+      })
+     }
+     console.log(properties.rlooksIn)
       properties.osParameters = []
       properties.mapping = []
       if (properties.services) {

@@ -94,7 +94,7 @@ export default function makeStore( config ) {
           quality: ['imageQualityStatus', 'productQualityStatus', 'resolution', 'representation', 'format', 'nbCols', 'nbRows', 'waterCover', 'snowCover', 'cloudCover', 'productValidity'],
           acquisition: [ 'ellipsoid', 'refFrame', 'networks', 'antennaSide', 'sensor', 'constellation', 'acquisitionType', 'statusSubType', 'platform', 'instrument','sensorMode', 'polarisation', 
             'orbitNumber', 'relativeOrbitNumber', 'orbitDirection', 'subswath'],
-          process: ['analysisCentre', 'software', 'softwareVersion', 'samplingPeriod', 'fillRate','processingId', 'processingDate', 'processingLevel', 'processingMode', 'processingContext',  'correction', 'version']
+          process: ['analysisCentre', 'software', 'softwareVersion', 'samplingPeriod', 'fillRate','processingId', 'rlooksIn', 'rlooksUnw', 'digitalElevationModel', 'unwrapMethod', 'swath', 'processingDate', 'processingLevel', 'processingMode', 'processingContext',  'correction', 'version']
         }
       },
       // default date & constraint list

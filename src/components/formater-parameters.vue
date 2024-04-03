@@ -123,7 +123,7 @@ dl.mtdt-simple-parameter:parent{
 }
 .mtdt-content .mtdt-parameters-metadata  dl.mtdt-simple-parameter dt{
   font-weight:500;
-  width: 168px;
+  width: 170px;
   padding-left: 10px;
   line-height:1;
 }

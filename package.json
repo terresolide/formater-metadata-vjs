@@ -1,6 +1,6 @@
 {
   "name": "formater-metadata-vjs",
-  "version": "8.4.4",
+  "version": "8.4.5",
   "description": "Component to display metadata from Geonetwork Object ISO19139",
   "preproduction": {
     "url": "https://localhost:8080"

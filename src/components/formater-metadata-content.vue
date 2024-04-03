@@ -167,6 +167,14 @@
       </div>
    </dd>
 </dl>
+<dl v-if="metadata.metadataUpdate" class="mtdt-main-parameter large">
+     <dt :style="dtStyle()">Date </dt>
+     <dd>
+        
+             {{date2str(metadata.metadataUpdate)}} ({{$t('changeDate')}})
+    
+     </dd>
+  </dl>
  <dl v-if="Object.keys(metadata.contacts.metadata).length > 0" class="mtdt-main-parameter large">
    <dt :style="dtStyle()">Contacts</dt>
    <dd>
