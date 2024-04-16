@@ -6,7 +6,7 @@
     <div v-for="(image, index) in images" :key="index" :class="{'selected': selected === index}">
 
       <img :src="image[1]" :alt="image[2].substring(0, 50)" />
-      <div style="max-height:34px; padding:3px;margin:0;line-height:1">{{image[2].substring(0,100)}}</div>
+      <div style="max-height:34px; max-width:230px;padding:3px;margin:0;line-height:1;word-wrap:break-word;">{{image[2].substring(0,100)}}</div>
     </div>
 	</div>
  </span>

@@ -29,8 +29,10 @@ const GeonetworkPlugin = {
              var description = this.extractFromLangs(
                  JSONPATH.query(json, "$..['gmd:abstract']"),
                  idLang)
-             if (Array.isArray(description)) {
+             if (description && Array.isArray(description)) {
                description = description[0]
+             } else if (!description) {
+                description = ''
              }
              metadata.description = description.replace(/(?:\\[rn]|[\r\n])/g, '<br />')
              metadata.credit = this.extractFromLangs(json['gmd:credit'], idLang)
@@ -41,7 +43,9 @@ const GeonetworkPlugin = {
              metadata.status = JSONPATH.query(json,"$..['gmd:status']['gmd:MD_ProgressCode']['@codeListValue']")[0]
              metadata.identifier = JSONPATH.query(json, "$..['gmd:identifier']..['gco:CharacterString']['#text']")[0]
             // metadata.dataCenter =
+            if (json['gmd:topicCategory']) {
              metadata.topicCat = json['gmd:topicCategory']['gmd:MD_TopicCategoryCode']
+             }
              this.extractKeywords(metadata, json['gmd:descriptiveKeywords'], idLang)
              metadata.images = this.extractImages(json['gmd:graphicOverview'], idLang)
              var constraints = this.extractConstraints(
@@ -295,9 +299,11 @@ const GeonetworkPlugin = {
                json = [json]
              }
              json.forEach(function (image) {
+              if (image['gmd:MD_BrowseGraphic']['gmd:fileName']['gco:CharacterString']) {
                var file = image['gmd:MD_BrowseGraphic']['gmd:fileName']['gco:CharacterString']['#text']
                var description = _this.extractFromLangs(image['gmd:MD_BrowseGraphic']['gmd:fileDescription'], idLang)
                images.push(['overview', file, description ? description : ''])
+               }
              })
              return images
            },
@@ -305,6 +311,7 @@ const GeonetworkPlugin = {
 
              var keywords = []
              var _this = this
+             if (json) 
              json.forEach(function (keynode) {
                var list = keynode['gmd:MD_Keywords']['gmd:keyword']
                var thesaurus = keynode['gmd:thesaurusName']

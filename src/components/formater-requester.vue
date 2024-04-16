@@ -343,6 +343,7 @@ export default {
       }
       // this.$router.push({name: 'FormaterCatalogue', query:this.parameters})
       // this.parameters.sortOrder =  this.parameters.sortBy === 'title' ? 'ordering': 'reverse';
+      console.log(this.srv)
       var url = this.srv + 'q?' + Object.keys(this.parameters).map(function (prop) {
         return prop + '=' + self.parameters[prop]
       }).join('&');
