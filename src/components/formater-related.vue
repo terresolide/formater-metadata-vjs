@@ -838,6 +838,8 @@
     box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.5);
     width:auto;
     text-align:left;
+    max-height: 230px;
+    overflow-y:scroll;
 }
 .mtdt-related-cartouche .mtdt-expand:hover {
   display: block;

@@ -9,6 +9,8 @@
      "formaterVariable": "Variables",
      "formaterDiscipline": "Disciplines",
      "formaterPlatform": "Platforms",
+     "formaterFoi": "Feature of interest",
+     "formaterProduct": "Product types",
      "parameters": "Parameters"
    },
    "fr":{
@@ -21,6 +23,8 @@
       "formaterVariable": "Variables",
       "formaterDiscipline": "Disciplines",
       "formaterPlatform": "Plateformes",
+      "formaterFoi": "Objets d'intérêt",
+      "formaterProduct": "Types de produit",
       "parameters": "Paramètres"
    }
 }
@@ -99,6 +103,10 @@ var iconClass = {
     facetPlatformFre: 'fa fa-rocket',
     facetDiscipline: 'fa fa-graduation-cap',
     facetDisciplineFre: 'fa fa-graduation-cap',
+    facetFoi: 'fa fa-map-marker',
+    facetFoiFre: 'fa fa-map-marker',
+    facetProduct: 'fa fa-file-image-o', 
+    facetProductFre: 'fa fa-file-image-o', 
     facetInstrument: 'fa fa-calculator'
 }
 // import {FormaterSearchBox} from 'formater-commons-components-vjs'
