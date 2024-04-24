@@ -393,6 +393,7 @@ const GeonetworkPlugin = {
                    access: access
                  }
                  break;
+               case 'GetMap':
                case 'WTS':
                case 'WMTS':
                case 'XYZ-Tile-Service':
@@ -418,10 +419,9 @@ const GeonetworkPlugin = {
                  break;
                case 'application/vnd.google-earth.kml+xml':
                case 'WWW:DOWNLOAD-1.0-ftp--download':
-                   // @todo
-                   break;
-                 break;
+                  break;
                case 'WWW:DOWNLOAD-1.0-link--download':
+               
                case 'telechargement':
                case 'download':
                case 'WWW:DOWNLOAD-1.0-http--download':
@@ -551,6 +551,7 @@ const GeonetworkPlugin = {
                    response.api.http = link[2]
                    response.api.name = link[0].length > 0 ? link[0] : link[1]
                    break;
+                 case 'GetMap':
                  case 'WTS':
                  case 'OGC:WMS': 
                  case 'OGC:WFS':
@@ -568,11 +569,13 @@ const GeonetworkPlugin = {
                      response.layers.push(self.linkToLayer(link, id))
                     }
                    break;
-                 case 'WWW:DOWNLOAD-1.0-ftp--download':
+                 
                    // @todo
                    break;
                  case 'application/vnd.google-earth.kml+xml':
                    break;
+                 case 'WWW:DOWNLOAD-1.0-ftp--download':
+                    break;
                  case 'WWW:DOWNLOAD-1.0-link--download':
                  case 'WWW:DOWNLOAD-1.0-http--download':
                  case 'download':

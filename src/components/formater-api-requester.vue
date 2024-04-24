@@ -331,7 +331,7 @@ export default {
         }
       })
      }
-     console.log(properties.rlooksIn)
+    
       properties.osParameters = []
       properties.mapping = []
       if (properties.services) {
