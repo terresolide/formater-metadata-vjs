@@ -1,6 +1,6 @@
 {
 
-  "https://w3id.org/formater/data-center/CDGP": {
+  "https://catalogue-terresolide.ipgp.fr/geonetwork/srv/api/registries/vocabularies/local.dataCentre.distributor#cdgp": {
     "logo": "https://cdgp.u-strasbg.fr/img/logo_cdgp.png",
     "href": "https://cdgp.u-strasbg.fr/",
     "title": {
@@ -8,7 +8,7 @@
       "en": "CDGP - Data Center for Deep Geothermal Energy"
     }
   }, 
-  "https://w3id.org/formater/data-center/CNES": {
+  "https://catalogue-terresolide.ipgp.fr/geonetwork/srv/api/registries/vocabularies/local.dataCentre.distributor#cnes": {
     "logo": "https://catalogue-terresolide.ipgp.fr/geonetwork/images/harvesting/200px-CNES.png",
     "href": "https://cnes.fr/",
     "title": {
@@ -16,7 +16,7 @@
       "en": "CNES - Centre National d'Etudes Spatiales"
     }
   },
-  "https://w3id.org/formater/data-center/EOST": {
+  "https://catalogue-terresolide.ipgp.fr/geonetwork/srv/api/registries/vocabularies/local.dataCentre.distributor#eost": {
     "logo": "https://catalogue-terresolide.ipgp.fr/geonetwork/images/harvesting/eost.png",
     "href": "https://eost.unistra.fr/",
     "title": {
@@ -32,7 +32,7 @@
       "en": "ISGI - International Service of Geomagnetic Indices"
     }
   }, 
-  "https://w3id.org/formater/data-center/IPGP": {
+  "https://catalogue-terresolide.ipgp.fr/geonetwork/srv/api/registries/vocabularies/local.dataCentre.distributor#ipgp": {
     "logo": "https://catalogue-terresolide.ipgp.fr/geonetwork/images/harvesting/last-logo-ipgp-up.png",
     "href": "https://www.ipgp.fr/",
     "title": {
@@ -40,7 +40,7 @@
       "en": "IPGP"
     }
   }, 
-   "https://w3id.org/formater/data-center/SHOM": {
+   "https://catalogue-terresolide.ipgp.fr/geonetwork/srv/api/registries/vocabularies/local.dataCentre.distributor#shom": {
     "logo": "https://catalogue-terresolide.ipgp.fr/geonetwork/images/harvesting/shom-data.png",
     "href": "https://data.shom.fr/",
     "title": {
@@ -48,7 +48,7 @@
       "en": "SHOM - Hydrographic and Oceanographic Service of the French Marine"
     }
   },
-    "https://w3id.org/formater/data-center/ISDeform": {
+    "https://catalogue-terresolide.ipgp.fr/geonetwork/srv/api/registries/vocabularies/local.dataCentre.distributor#isdeform": {
     "logo": "https://catalogue-terresolide.ipgp.fr/geonetwork/images/harvesting/cropped-Logo_IsDeform_v8.png",
     "href": "https://www.isdeform.fr/",
     "title": {
@@ -56,7 +56,7 @@
       "en": "ISDeform"
     }
   },
-   "https://w3id.org/formater/data-center/UGA": {
+   "https://catalogue-terresolide.ipgp.fr/geonetwork/srv/api/registries/vocabularies/local.dataCentre.distributor#uga": {
     "logo": "https://catalogue-terresolide.ipgp.fr/geonetwork/images/harvesting/logo_bleu_uga.png",
     "href": "https://www.univ-grenoble-alpes.fr/",
     "title": {

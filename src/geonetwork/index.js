@@ -318,7 +318,7 @@ const GeonetworkPlugin = {
                var isDataCenter = false
                if (keynode['gmd:MD_Keywords']['gmd:thesaurusName']) {
                  var name = JSONPATH.query(keynode['gmd:MD_Keywords']['gmd:thesaurusName'], "$..['gmd:title']..['#text']")
-                 if (name && name[0] && name[0].indexOf('Data Center') >= 0) {
+                 if (name && name[0] && name[0].indexOf('Distributor') >= 0) {
                    isDataCenter = true
                  }
                }
@@ -368,7 +368,12 @@ const GeonetworkPlugin = {
              }
              var _this = this
              links.forEach(function (online, index) {
-               var protocol = online['gmd:protocol']['gco:CharacterString'] ? online['gmd:protocol']['gco:CharacterString']['#text'] : online['gmd:protocol']['gmx:Anchor']['#text']
+              var protocol = 'WWW:LINK-1.0-http--link'
+              if (online['gmd:protocol']['gmx:Anchor']) {
+                var protocol = online['gmd:protocol']['gmx:Anchor']['#text']
+              } else if (online['gmd:protocol']['gco:CharacterString'] ) {
+               var protocol = online['gmd:protocol']['gco:CharacterString']['#text'] 
+              }
                var url = online['gmd:linkage']['gmd:URL']
                var name = _this.extractFromLangs(online['gmd:name'], idLang)
                var description = _this.extractFromLangs(online['gmd:description'], idLang)
