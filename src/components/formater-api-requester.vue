@@ -371,7 +371,7 @@ export default {
              name: properties.title,
              description: '',
              href: properties.offering.operation['@href'],
-             type: 'GetMap'
+             type: 'WMTS'
          })
       }
       // @todo Flatsim cas particulier des LIENS D'EXPORT qui se trouve dans link

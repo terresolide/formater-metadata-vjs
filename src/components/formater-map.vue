@@ -228,6 +228,7 @@ export default {
      var zoom = event.detail.zoom
      var bounds = this.searchBboxBoundsById(metaId)
      var newLayer = null
+
      switch (layer.type) {
      case 'WMS':
      case 'OGC:WMS':
@@ -266,11 +267,14 @@ export default {
        }
        this.addWMSLayer(layer, metaId, zoom)
        break
+     case 'WMTS':
      case 'WTS':
-       layer.options = {
-         id: layer.id,
-         service: 'WTS',
-         layers: layer.name,
+     if (!layer.options) {
+         layer.options = {
+           id: layer.id,
+           service: 'WTS',
+           layers: layer.name,
+         }
        }
        this.addWTSLayer(layer, metaId)
        break;
@@ -335,10 +339,11 @@ export default {
      this.reader.loadInfo(layer, {opacity:0.5, zoom: zoom} , metaId, this.addWMSLayer)
    },
    addWTSLayer (layer, metaId) {
-     var tileLayer = L.tileLayer(layer.href, {opacity: 0.3})
-     this.addLayerToMap(layer.options.id, metaId, tileLayer)
+     var tileLayer = L.tileLayer(layer.href, {opacity: 0.5})
+     this.addLayerToMap(layer.options.id, metaId, tileLayer, true)
    },
    addWMSLayer(layerObj, metaId, zoom) {
+
      // add bearer if necessary
      // layerObj.options._bearer = 'mon bearer'
      var newLayer = L.tileLayer.wms(layerObj.href, layerObj.options)
@@ -360,10 +365,12 @@ export default {
 //        }
        this.layers.set(id, newLayer)
        var bounds = this.searchBboxBoundsById(groupId)
+       console.log(bounds)
+       console.log(groupId)
        if (newLayer._kml) {
          bounds = newLayer.getBounds()
        }
-       if( bounds && zoom) { 
+       if( bounds && zoom)  { 
          this.map.fitBounds(bounds, {animate: true,  padding: [30,30]})
        }
      }
