@@ -401,6 +401,7 @@ const GeonetworkPlugin = {
                case 'GetMap':
                case 'WTS':
                case 'WMTS':
+               case 'OGC API - Tiles':
                case 'XYZ-Tile-Service':
                case 'OGC:WMS': 
                case 'OGC:WFS':
@@ -564,6 +565,7 @@ const GeonetworkPlugin = {
                  case 'OGC:KML':
                  case 'OGC:OWS':
                  case 'OGC:OWS-C':
+                 case 'OGC API - Tiles':
                  case 'OGC Web Map Service':
                  case 'GLG:KML-2.0-http-get-map':
                     if ((!local && link.length >=7) || (local && link.length === 6)) {

@@ -268,6 +268,7 @@ export default {
        this.addWMSLayer(layer, metaId, zoom)
        break
      case 'WMTS':
+     case 'OGC API - Tiles':
      case 'WTS':
      if (!layer.options) {
          layer.options = {
