@@ -475,7 +475,9 @@ const GeonetworkPlugin = {
              }
              var dist = JSONPATH.query(json, "$..['gco:Distance']")
              if (dist.length > 0) {
-               metadata.resolution = dist[0]['#text'] + ' ' + dist[0]['@uom']
+                var list = dist.map(d => d['#text'] + ' ' + d['@uom'] )
+                metadata.resolution = list.join(', ')
+             
              } else {
                var denominator = JSONPATH.query(json, "$..['gmd:denominator']['gco:Integer']")
                if (denominator.length > 0) {
@@ -694,7 +696,7 @@ const GeonetworkPlugin = {
              }
              delete meta.responsibleParty
              meta.contacts = contacts
-             
+             console.log(meta.contacts.metadata)
              if (!meta.link) {
                return meta;
              }

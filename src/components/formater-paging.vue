@@ -162,7 +162,6 @@ export default {
 //      if (event.detail.depth !=  this.depth ){
 //        return;
 //      }
-     console.log(event)
      if (!event.detail.metadata) {
        this.count = 0
        this.from = 1
@@ -202,7 +201,6 @@ export default {
          break
        case 'sensorthings':
          if (event.detail.properties) {
-           console.log(event.detail)
            this.hasTotal = false
            this.nextLink = event.detail.properties.next
            this.from = event.detail.properties.startIndex

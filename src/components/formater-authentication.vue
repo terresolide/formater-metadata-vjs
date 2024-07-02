@@ -5,14 +5,14 @@
     "login": "Sign in",
     "logout": "Sign out",
     "limited_access":"Limited access",
-    "not_logout_sso": "You are logged out of the application.<br />But you are not logged out of &laquo;ForM@Ter SSO&raquo;."
+    "not_logout_sso": "You are logged out of the application.<br />But you are not logged out of &laquo;FormaTerre SSO&raquo;."
   },
   "fr": {
     "cancel": "Annuler",
     "login": "Se connecter",
     "logout": "Se déconnecter",
     "limited_access":"Accès limité",
-    "not_logout_sso": "Vous êtes déconnecté de l'application.<br />Mais vous n'êtes pas déconnecté du &laquo;SSO ForM@Ter&raquo;."
+    "not_logout_sso": "Vous êtes déconnecté de l'application.<br />Mais vous n'êtes pas déconnecté du &laquo;SSO FormaTerre&raquo;."
   }
 }
 </i18n>

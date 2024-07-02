@@ -264,7 +264,7 @@ export default {
            metadata.type = data[key]['gmd:MD_ScopeCode']['@codeListValue']
            break
          case 'gmd:contact':
-           var contacts = this.$gn.extractContacts(data[key]['gmd:CI_ResponsibleParty'], 'metadata', _idLang)
+           var contacts = this.$gn.extractContacts(JSONPATH.query(data[key], "$..['gmd:CI_ResponsibleParty']"), 'metadata', _idLang)
            contacts.forEach (function (contact) {
              if (metadata.contacts.metadata[contact[0]]) {
                  metadata.contacts.metadata[contact[0]].push(contact)

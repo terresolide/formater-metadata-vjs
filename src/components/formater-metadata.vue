@@ -140,7 +140,6 @@ export default {
     metadata: {
       immediate: true,
       handler (newvalue) {
-        console.log(newvalue)
         this.setHasChild(false)
         this.computeHasChild(newvalue)
       }
@@ -226,7 +225,6 @@ export default {
       },
       computeHasChild (val) {
         if (val.api) {
-           console.log(val.api)
            if (!this.hasChild) {
            // case child from a custom api opensearch
               this.describe = val.api.http
