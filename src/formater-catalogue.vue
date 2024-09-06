@@ -14,7 +14,7 @@
  <div class="mtdt-catalogue">
  <div>{{metaDisplayed}}</div>
   <!-- components not visible  -->
- <formater-requester  :depth="0" ></formater-requester>
+ <formater-elasticsearch-requester  :depth="0" ></formater-elasticsearch-requester>
   <!-- component to draw bbox -->
   <formater-draw-bbox ></formater-draw-bbox>
 
@@ -62,8 +62,7 @@ import FormaterListMetadata from './components/formater-list-metadata.vue';
 const FormaterMetadata = () => import('./components/formater-metadata.vue')
 import FormaterPaging from './components/formater-paging.vue';
 import FormaterDrawBbox from './components/formater-draw-bbox.vue';
-// import AerisTheme from 'aeris-commons-components-vjs/src/aeris-theme/aeris-theme.vue'
-import FormaterRequester from './components/formater-requester.vue'
+import FormaterElasticsearchRequester from './components/formater-elasticsearch-requester.vue'
 
 // prevent previous and next page for browser
 // function disableBack() { window.history.forward() }
@@ -80,7 +79,7 @@ export default {
     FormaterListMetadata,
     FormaterMetadata,
     FormaterPaging,
-    FormaterRequester
+    FormaterElasticsearchRequester
   },
  
   data() {

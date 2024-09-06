@@ -46,6 +46,17 @@ export default function makeStore( config ) {
         step1: 'details',
         step2: 'details'
       },
+      aggregations: {
+        step1: {
+          group: {
+            terms: {
+              field: 'groupOwner',
+              order: {_key: 'asc'},
+              size: 50
+            }
+          }
+        }
+      },
       checkSSO: null,
       group: [],
      // isSameStep: isSameStep,
