@@ -54,6 +54,20 @@ export default function makeStore( config ) {
               order: {_key: 'asc'},
               size: 50
             }
+          },
+          discipline: {
+            terms:{
+              field: 'th_formater-discipline_tree.key',
+              order: {_key: 'asc'},
+              size: 50
+            }
+          },
+          platform: {
+            terms: {
+              field: 'th_formater-platform-gn_tree.key',
+              order: {_key: 'asc'},
+              size: 50
+            }
           }
         }
       },

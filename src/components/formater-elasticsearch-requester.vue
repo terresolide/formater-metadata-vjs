@@ -75,6 +75,9 @@ export default {
         this.parameters = {
           from: 0,
           size: this.$store.state.size.nbRecord,
+          _source: {
+            includes: ["uuid", "id", "groupOwner", "logo", "cl_status", "geom", "resourceTitle*", "resourceAbstract*","overview","link"]
+          },
           sort: [{changeDate: "desc"}, {popularity: "desc"}],
           query: {
             bool: {
@@ -304,7 +307,11 @@ export default {
         return prop + '=' + self.parameters[prop]
       }).join('&');
       this.$http.post(this.srv, this.parameters, {headers: headers}).then(
-        response => { this.treatmentGeonetwork(response.body, 0);},
+        response => { 
+          console.log(response.body)
+          this.treatmentElasticsearch(response.body, 0)
+          return
+          this.treatmentGeonetwork(response.body, 0);},
         response => { this.treatmentError(response, url); })
     },
 //     requestApiOpensearch (depth) {
@@ -363,6 +370,24 @@ export default {
 //       this.fill({ type: 'opensearch', properties: data.properties, features: features, metadata:metadatas}, depth)
 //       this.$store.commit('searchingChange', false)
 //     },
+    treatmentElasticsearch (data, depth) {
+       this.treatmentAggregations(data.aggregations)
+       var metadatas = {}
+       var features = []
+       if (data.hits ) {
+         data.hits.forEach( function (meta, index) {
+             var uuid = meta.uuid
+             metadatas[uuid] = self.$gn.treatmentMetaElasticsearch(meta ,uuid)
+              var feature = {
+                uuid: uuid,
+                geomety: meta.geom
+              }
+              if (feature) {
+                    features.push(feature)
+              }
+           })
+       }
+    },
     treatmentGeonetwork (data, depth) {
       var metadatas = {}
       this.treatmentDimension(data.summary.dimension)
@@ -394,6 +419,9 @@ export default {
       this.$store.commit('searchingChange', false)
       this.searchGnStep2Parameters(data.summary.dimension)
       // this.searchRelated()
+    },
+    treatmentAggregations (aggs) {
+
     },
     // remove groupOwner if only one group choose in app parameters
     treatmentDimension (dimensions) {
