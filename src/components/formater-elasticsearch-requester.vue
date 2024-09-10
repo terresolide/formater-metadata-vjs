@@ -76,7 +76,7 @@ export default {
           from: 0,
           size: this.$store.state.size.nbRecord,
           _source: {
-            includes: ["uuid", "id", "groupOwner", "logo", "cl_status", "geom", "resourceTitle*", "resourceAbstract*","overview","link"]
+            includes: ["uuid", "id","logo", "groupOwner", "cl_status", "geom", "resourceTitle*", "resourceAbstract*","overview","link"]
           },
           sort: [{changeDate: "desc"}, {popularity: "desc"}],
           query: {
@@ -374,19 +374,25 @@ export default {
        this.treatmentAggregations(data.aggregations)
        var metadatas = {}
        var features = []
-       if (data.hits ) {
-         data.hits.forEach( function (meta, index) {
-             var uuid = meta.uuid
+       var self = this
+       if (data.hits && data.hits.hits) {
+         data.hits.hits.forEach( function (meta, index) {
+             var uuid = meta._id
              metadatas[uuid] = self.$gn.treatmentMetaElasticsearch(meta ,uuid)
               var feature = {
                 uuid: uuid,
-                geomety: meta.geom
+                geometry: meta.geom
               }
               if (feature) {
                     features.push(feature)
               }
            })
        }
+       data.metadata = metadatas
+      data.type = 'geonetwork'
+      data.features = features
+      this.fill(data, depth)
+       this.$store.commit('searchingChange', false)
     },
     treatmentGeonetwork (data, depth) {
       var metadatas = {}

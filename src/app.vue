@@ -75,7 +75,8 @@ export default {
       }
     },
     created () {
-     // this.$gn.init(this.$i18n.locale, this.$store.state.geonetwork, this.$http, this.$store)
+      console.log('CREATION APP')
+      this.$gn.init2(this.$i18n.locale, this.$store.state.geonetwork, this.$http, this.$store)
       this.resizeListener = this.resize.bind(this)
       window.addEventListener('resize', this.resizeListener);
       this.$store.commit('dataCenters/init', dataCenter)

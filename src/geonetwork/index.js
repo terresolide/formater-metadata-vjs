@@ -13,6 +13,16 @@ const GeonetworkPlugin = {
              this.getTranslation()
 
            },
+           init2: function (locale, server, http, store) {
+            console.log('initialize')
+            console.log(store)
+            this.$http = http
+            this.$store = store
+            this.geonetwork = server
+            // this.setLocale(locale)
+            // this.getTranslation()
+
+          },
            lang: {},
            locale: null,
            done: false,
@@ -628,6 +638,27 @@ const GeonetworkPlugin = {
 
              })
              return response
+           },
+           treatmentMetaElasticsearch(meta, uuid) {
+              meta.id = uuid
+              if (this.$store.state.geonetwork) {
+                if (meta.logo) {
+                  meta.logo = this.$store.state.geonetwork + meta.logo.replace(/^\//, '')
+                }
+                meta.exportLinks = {
+                    xml: this.$store.state.geonetwork + 'srv/api/records/'+ uuid + '/formatters/xml?attachment=true',
+                    pdf: this.$store.state.geonetwork + 'srv/api/records/'+ uuid + '/formatters/xsl-view?root=div&output=pdf'
+                }
+              }
+              if (meta._source.resourceAbstractObject) {
+                meta.abstract = meta._source.resourceAbstractObject.default.replace(/(?:\\[rn]|[\r\n])/g, '<br />');
+              }
+              meta.description = meta.abstract
+              if (meta._source.overview) {
+                meta.thumbnail = meta._source.overview[0].url
+              }
+              meta.title = 'todo'
+              return meta
            },
            treatmentMetadata (meta, uuid) {
              meta.id = uuid
