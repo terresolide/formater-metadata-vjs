@@ -670,16 +670,12 @@ const GeonetworkPlugin = {
               if (meta._source.overview) {
                 meta.thumbnail = meta._source.overview[0].url
               }
-              var dates = []
-              meta._source.resourceTemporalDateRange.forEach(
-                x => {
-                  dates = dates.concat(Object.values(meta._source.resourceTemporalDateRange))
-                }
-              )
-              console.log(dates)
-              dates.sort()
-              meta.tempExtentBegin = dates[0]
-              meta.tempExtentEnd = dates.pop()
+              if ( meta._source.resourceTemporalExtentDetails) {
+                console.log(meta._source.resourceTemporalExtentDetails.start)
+                meta.tempExtentBegin = meta._source.resourceTemporalExtentDetails[0].start.date
+                meta.tempExtentEnd = meta._source.resourceTemporalExtentDetails[0].end.date
+              }
+              
               meta.status = meta._source.cl_status[0].key
               meta.type = meta._source.cl_hierarchyLevel[0].key
               return meta

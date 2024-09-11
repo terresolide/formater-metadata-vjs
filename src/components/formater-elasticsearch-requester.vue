@@ -76,7 +76,7 @@ export default {
           from: 0,
           size: this.$store.state.size.nbRecord,
           _source: {
-            includes: ["uuid", "id","logo", "groupOwner", "cl_status", "cl_hierarchyLevel", "geom", "resourceTitle*", "resourceTemporalDateRange", "resourceAbstract*","overview","link"]
+            includes: ["uuid", "id","logo", "groupOwner", "cl_status", "cl_hierarchyLevel", "geom", "resourceTitle*", "resourceTemporalExtentDetails", "resourceAbstract*","overview","link"]
           },
           sort: [{changeDate: "desc"}, {popularity: "desc"}],
           query: {
