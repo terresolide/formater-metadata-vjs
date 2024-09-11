@@ -76,7 +76,7 @@ export default {
           from: 0,
           size: this.$store.state.size.nbRecord,
           _source: {
-            includes: ["uuid", "id","logo", "groupOwner", "cl_status", "geom", "resourceTitle*", "resourceAbstract*","overview","link"]
+            includes: ["uuid", "id","logo", "groupOwner", "cl_status", "cl_hierarchyLevel", "geom", "resourceTitle*", "resourceTemporalDateRange", "resourceAbstract*","overview","link"]
           },
           sort: [{changeDate: "desc"}, {popularity: "desc"}],
           query: {
@@ -381,51 +381,57 @@ export default {
              metadatas[uuid] = self.$gn.treatmentMetaElasticsearch(meta ,uuid)
               var feature = {
                 uuid: uuid,
-                geometry: meta.geom
+                geometry: meta._source.geom
               }
               if (feature) {
                     features.push(feature)
               }
            })
        }
+       data.summary = {
+        from: this.parameters.from + 1,
+        to: this.parameters.from + features.length,
+        total: data.hits.total.value
+       }
        data.metadata = metadatas
       data.type = 'geonetwork'
       data.features = features
       this.fill(data, depth)
-       this.$store.commit('searchingChange', false)
-    },
-    treatmentGeonetwork (data, depth) {
-      var metadatas = {}
-      this.treatmentDimension(data.summary.dimension)
-      var features = []
-      var self = this
-      if (!data.metadata){
-        var metadatas = null
-      } else if (data.metadata && !data.metadata.forEach) {
-        var uuid = data.metadata['geonet:info'].uuid
-        metadatas[uuid] = self.$gn.treatmentMetadata(data.metadata ,uuid)
-        var feature = self.$gn.extractBbox(data.metadata.geoBox, uuid)
-        if (feature) {
-            features.push(feature)
-        }
-      } else {
-           data.metadata.forEach( function (meta, index) {
-             var uuid = meta['geonet:info'].uuid
-             metadatas[uuid] = self.$gn.treatmentMetadata(meta ,uuid)
-              var feature = self.$gn.extractBbox(meta.geoBox, uuid)
-              if (feature) {
-                    features.push(feature)
-              }
-           })
-      }
-      data.metadata = metadatas
-      data.type = 'geonetwork'
-      data.features = features
-      this.fill(data, depth)
       this.$store.commit('searchingChange', false)
-      this.searchGnStep2Parameters(data.summary.dimension)
-      // this.searchRelated()
     },
+   
+    // treatmentGeonetwork (data, depth) {
+    //   var metadatas = {}
+    //   this.treatmentDimension(data.summary.dimension)
+    //   var features = []
+    //   var self = this
+    //   if (!data.metadata){
+    //     var metadatas = null
+    //   } else if (data.metadata && !data.metadata.forEach) {
+    //     var uuid = data.metadata['geonet:info'].uuid
+    //     metadatas[uuid] = self.$gn.treatmentMetadata(data.metadata ,uuid)
+    //     var feature = self.$gn.extractBbox(data.metadata.geoBox, uuid)
+    //     if (feature) {
+    //         features.push(feature)
+    //     }
+    //   } else {
+    //        data.metadata.forEach( function (meta, index) {
+    //          var uuid = meta['geonet:info'].uuid
+    //          metadatas[uuid] = self.$gn.treatmentMetadata(meta ,uuid)
+    //           var feature = self.$gn.extractBbox(meta.geoBox, uuid)
+    //           if (feature) {
+    //                 features.push(feature)
+    //           }
+    //        })
+    //   }
+    //   data.metadata = metadatas
+    //   data.type = 'geonetwork'
+    //   data.features = features
+    //   this.fill(data, depth)
+    //   this.$store.commit('searchingChange', false)
+    //   this.searchGnStep2Parameters(data.summary.dimension)
+    //   // this.searchRelated()
+    // },
     treatmentAggregations (aggs) {
 
     },

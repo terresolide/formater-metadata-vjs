@@ -54,7 +54,7 @@
      <div class="mtdt-resource" v-if="depth > 0 && meta.related && meta.related.onlines">
        <!--   <formater-online v-for="(item, index) in meta.related.onlines" :key="index" :online="item"></formater-online> -->
      </div>
-     <div class="mtdt-footer"  v-if="">
+     <div class="mtdt-footer" >
        <div class="mtdt-group" v-if="depth === 0">
          <a v-if="meta.groupWebsite" :href="meta.groupWebsite" :title="$gn.t('group-'+ meta.groupOwner)" target="_blank" class="mtdt-group-logo">
              <img :src="meta.logo"/>

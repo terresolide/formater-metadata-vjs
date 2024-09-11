@@ -650,14 +650,38 @@ const GeonetworkPlugin = {
                     pdf: this.$store.state.geonetwork + 'srv/api/records/'+ uuid + '/formatters/xsl-view?root=div&output=pdf'
                 }
               }
+              var lang = this.$store.state.lang === 'fr' ? 'fre': 'eng'
+              meta.description = ''
               if (meta._source.resourceAbstractObject) {
-                meta.abstract = meta._source.resourceAbstractObject.default.replace(/(?:\\[rn]|[\r\n])/g, '<br />');
+                if (meta._source.resourceAbstractObject['lang' + lang]) {
+                  meta.description = meta._source.resourceAbstractObject['lang' + lang].replace(/(?:\\[rn]|[\r\n])/g, '<br />');
+                } else {
+                  meta.description = meta._source.resourceAbstractObject.default.replace(/(?:\\[rn]|[\r\n])/g, '<br />');
+                }
               }
-              meta.description = meta.abstract
+              meta.title = ''
+              if (meta._source.resourceTitleObject) {
+                if (meta._source.resourceTitleObject['lang' + lang]) {
+                  meta.title = meta._source.resourceTitleObject['lang' + lang].replace(/(?:\\[rn]|[\r\n])/g, '<br />');
+                } else {
+                  meta.title = meta._source.resourceTitleObject.default.replace(/(?:\\[rn]|[\r\n])/g, '<br />');
+                }
+              }
               if (meta._source.overview) {
                 meta.thumbnail = meta._source.overview[0].url
               }
-              meta.title = 'todo'
+              var dates = []
+              meta._source.resourceTemporalDateRange.forEach(
+                x => {
+                  dates = dates.concat(Object.values(meta._source.resourceTemporalDateRange))
+                }
+              )
+              console.log(dates)
+              dates.sort()
+              meta.tempExtentBegin = dates[0]
+              meta.tempExtentEnd = dates.pop()
+              meta.status = meta._source.cl_status[0].key
+              meta.type = meta._source.cl_hierarchyLevel[0].key
               return meta
            },
            treatmentMetadata (meta, uuid) {

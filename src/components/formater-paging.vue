@@ -170,11 +170,11 @@ export default {
      switch (event.detail.type) {
        case 'geonetwork':
          if (event.detail.summary) {
-	         this.count = parseInt(event.detail.summary['@count'])
-	         this.from = parseInt(event.detail['@from'])
-	         this.to = parseInt(event.detail['@to'])
+	         this.count = parseInt(event.detail.summary['total'])
+	         this.from = parseInt(event.detail.summary['from'])
+	         this.to = parseInt(event.detail.summary['to'])
 	         this.currentPage = (this.from - 1) / this.recordPerPage + 1
-	         this.nbPage = Math.ceil(event.detail.summary['@count'] / this.recordPerPage) 
+	         this.nbPage = Math.ceil(event.detail.summary['total'] / this.recordPerPage) 
 	         this.hasTotal = true
 	         if (this.currentPage=== this.nbPage || this.count=== 0) {
 	           this.nextLink = false
