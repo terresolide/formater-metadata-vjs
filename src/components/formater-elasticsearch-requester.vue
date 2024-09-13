@@ -395,7 +395,7 @@ export default {
         total: data.hits.total.value
        }
        
-       data.metadata = metadatas
+      data.metadata = metadatas
       data.type = 'geonetwork'
       data.features = {
         type: 'FeatureCollection',

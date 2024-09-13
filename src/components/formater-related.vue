@@ -684,7 +684,6 @@
            }, 2000);
        },
        selectBbox (e, temporaly) {
-         console.log(this.id)
          var event = new CustomEvent('fmt:selectBboxEvent', {detail: {id: this.id, temporaly: temporaly ? true: false}})
          document.dispatchEvent(event)
        },

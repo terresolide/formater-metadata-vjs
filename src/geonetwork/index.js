@@ -5,25 +5,26 @@ const GeonetworkPlugin = {
        Vue.prototype.$gn = {
            $http: null,
            $store: null,
-           init: function (locale, server, http, store) {
-             this.$http = http
-             this.$store = store
-             this.geonetwork = server
-             this.setLocale(locale)
-             this.getTranslation()
+          //  init: function (locale, server, http, store) {
+          //    this.$http = http
+          //    this.$store = store
+          //    this.geonetwork = server
+          //    this.setLocale(locale)
+          //    this.getTranslation()
 
-           },
-           init2: function (locale, server, http, store) {
+          //  },
+           init: function (locale, server, http, store) {
             console.log('initialize')
             console.log(store)
             this.$http = http
             this.$store = store
             this.geonetwork = server
             // this.setLocale(locale)
-            // this.getTranslation()
+            this.getTranslation()
 
           },
            lang: {},
+           groups: {},
            locale: null,
            done: false,
            facets: ['inspireThemeURI', 'mdActions', 'sourceCatalog', 'spatialRepresentationType', 'maintenanceAndUpdateFrequency', 'status'],
@@ -505,42 +506,82 @@ const GeonetworkPlugin = {
              }
            },
            getTranslation () {
-             if (!this.geonetwork) {
-               return
-             }
-             var json = this.geonetwork + 'catalog/locales/' + this.locale + '-search.json'
-             this.$http.get(json).then(
-                  response => { this.lang = Object.assign(this.lang, response.body)}
-              )
+            if (!this.geonetwork) {
+              return
+            }
+            console.log(this)
+            var json = this.geonetwork + 'srv/api/groups?withReservedGroup=false'
+            this.$http.get(json , {headers: {'Accept': 'application/json'}})
+            .then(
+                 response => { 
+                  var self = this
+                  response.body.forEach(function (g) {
+                    var group = {
+                      logo: g.logo ? self.geonetwork + 'images/harvesting/' + g.logo : null,
+                      url: g.website,
+                      label: {
+                        fr: g.label.fre,
+                        en: g.label.eng
+                      }
+                    }
+                    self.groups[g.id] = group
+                 })
+            })
+            
+            //  // default topic categories
+            //  var json = this.geonetwork + 'srv/api/0.1/standards/iso19139/codelists/gmd:MD_TopicCategoryCode'
+            //  this.$http.get(json, {
+            //    headers: {
+            //      'Accept': 'application/json, text/plain, */*',
+            //      'Accept-Language': this.locale === 'fr' ? 'fre': 'eng'
+            //    }
+            //  }).then( response => { this.lang = Object.assign(this.lang,response.body)})
+            // // group name
+            //  var json = this.geonetwork + 'srv/api/0.1/tools/i18n/db?type=Group'
+            //  this.$http.get(json, {
+            //    headers: {
+            //      'Accept': 'application/json, text/plain, */*',
+            //      'Accept-Language': this.locale === 'fr' ? 'fre': 'eng'
+            //    }
+            //  }).then( response => { this.lang = Object.assign(this.lang,response.body)})
+          },
+          //  getTranslationOld () {
+          //    if (!this.geonetwork) {
+          //      return
+          //    }
+          //    var json = this.geonetwork + 'catalog/locales/' + this.locale + '-search.json'
+          //    this.$http.get(json).then(
+          //         response => { this.lang = Object.assign(this.lang, response.body)}
+          //     )
              
-              // default topic categories
-              var json = this.geonetwork + 'srv/api/0.1/standards/iso19139/codelists/gmd:MD_TopicCategoryCode'
-              this.$http.get(json, {
-                headers: {
-                  'Accept': 'application/json, text/plain, */*',
-                  'Accept-Language': this.locale === 'fr' ? 'fre': 'eng'
-                }
-              }).then( response => { this.lang = Object.assign(this.lang,response.body)})
-             // group name
-              var json = this.geonetwork + 'srv/api/0.1/tools/i18n/db?type=Group'
-              this.$http.get(json, {
-                headers: {
-                  'Accept': 'application/json, text/plain, */*',
-                  'Accept-Language': this.locale === 'fr' ? 'fre': 'eng'
-                }
-              }).then( response => { this.lang = Object.assign(this.lang,response.body)})
-           },
-           setLocale: function (lang) {
-             if (!this.geonetwork || !this.$http) {
-               return
-             }
-             if (['en', 'fr'].indexOf(lang) >=0) {
-               if (this.locale !== lang) {
-                 this.locale = lang
-                 this.getTranslation()
-               }
-             }
-           },
+          //     // default topic categories
+          //     var json = this.geonetwork + 'srv/api/0.1/standards/iso19139/codelists/gmd:MD_TopicCategoryCode'
+          //     this.$http.get(json, {
+          //       headers: {
+          //         'Accept': 'application/json, text/plain, */*',
+          //         'Accept-Language': this.locale === 'fr' ? 'fre': 'eng'
+          //       }
+          //     }).then( response => { this.lang = Object.assign(this.lang,response.body)})
+          //    // group name
+          //     var json = this.geonetwork + 'srv/api/0.1/tools/i18n/db?type=Group'
+          //     this.$http.get(json, {
+          //       headers: {
+          //         'Accept': 'application/json, text/plain, */*',
+          //         'Accept-Language': this.locale === 'fr' ? 'fre': 'eng'
+          //       }
+          //     }).then( response => { this.lang = Object.assign(this.lang,response.body)})
+          //  },
+          //  setLocale: function (lang) {
+          //    if (!this.geonetwork || !this.$http) {
+          //      return
+          //    }
+          //    if (['en', 'fr'].indexOf(lang) >=0) {
+          //      if (this.locale !== lang) {
+          //        this.locale = lang
+          //        this.getTranslation()
+          //      }
+          //    }
+          //  },
            uuidToDomId (uuid) {
              // first character must be letter and character other than "_" and "-" are forbidden
              return 'i' + uuid.toLowerCase().replace(/[^a-z0-9\-_]+/, '')
@@ -675,7 +716,7 @@ const GeonetworkPlugin = {
                 meta.tempExtentBegin = meta._source.resourceTemporalExtentDetails[0].start.date
                 meta.tempExtentEnd = meta._source.resourceTemporalExtentDetails[0].end.date
               }
-              
+              meta.group = meta._source.groupOwner
               meta.status = meta._source.cl_status[0].key
               meta.type = meta._source.cl_hierarchyLevel[0].key
               return meta

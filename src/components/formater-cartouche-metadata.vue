@@ -56,11 +56,11 @@
      </div>
      <div class="mtdt-footer" >
        <div class="mtdt-group" v-if="depth === 0">
-         <a v-if="meta.groupWebsite" :href="meta.groupWebsite" :title="$gn.t('group-'+ meta.groupOwner)" target="_blank" class="mtdt-group-logo">
-             <img :src="meta.logo"/>
+         <a v-if="group && group.url" :href="group.url" :title="group.label[this.$store.state.lang]" target="_blank" class="mtdt-group-logo">
+             <img :src="group.logo"/>
           </a>
-          <a v-else href="#" :alt="$gn.t('group-'+ meta.groupOwner)" :title="$gn.t('group-'+ meta.groupOwner)" class="mtdt-group-logo">
-              <img :src="meta.logo"  />
+          <a v-else href="#" :alt="group.label[this.$store.state.lang]" :title="group.label[this.$store.state.lang]" class="mtdt-group-logo">
+              <img :src="group.logo"  />
           </a>
        </div>
        <formater-related type="cartouche" :title="meta.title" :access="access" :id="meta.id" :cds="dataCenter" 
@@ -116,6 +116,14 @@ export default {
     },
     emphasis() {
       return this.$store.state.style.emphasis
+    },
+    group () {
+      console.log(this.$gn.groups)
+      console.log(this.metadata)
+      if (this.metadata && this.$gn.groups[this.metadata.group]) {
+        return this.$gn.groups[this.metadata.group]
+      }
+      return false
     }
   },
   data() {
