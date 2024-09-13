@@ -380,7 +380,8 @@ export default {
              var uuid = meta._id
              metadatas[uuid] = self.$gn.treatmentMetaElasticsearch(meta ,uuid)
               var feature = {
-                uuid: uuid,
+                type: 'Feature',
+                id: uuid,
                 geometry: meta._source.geom
               }
               if (feature) {
@@ -393,9 +394,13 @@ export default {
         to: this.parameters.from + features.length,
         total: data.hits.total.value
        }
+       
        data.metadata = metadatas
       data.type = 'geonetwork'
-      data.features = features
+      data.features = {
+        type: 'FeatureCollection',
+        features: features
+      }
       this.fill(data, depth)
       this.$store.commit('searchingChange', false)
     },

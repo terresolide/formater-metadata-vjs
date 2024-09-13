@@ -52,7 +52,7 @@
  </formater-search-box>
 <!--  end opensearch -->
 <!-- step1 only dimension -->
-<div v-for="(key, index) in $store.state.gnParameters.step1" :disable="depth > 0">
+<!-- <div v-for="(key, index) in $store.state.gnParameters.step1" :disable="depth > 0">
 <formater-search-box  v-if="dimensions[nameToIndex[key]] && dimensions[nameToIndex[key]].category" 
 :color="$store.state.style.primary" :header-icon-class="facetToIcon(key)" open-icon-class="fa fa-caret-right" :title="titleDimension(key)"  
 :disable-level="depth > 0 ? 1 : 0" type="empty">
@@ -61,8 +61,9 @@
   :disable="depth > 0" :defaut="facets[key]"></formater-facet-block>
  </formater-search-box>
 </div>
-
+-->
 <!-- step 1 and step 2 -->
+ <!--
 <div v-for="(key, index) in $store.state.gnParameters.step1step2" >
 <formater-search-box  v-if="dimensions[nameToIndex[key]] && dimensions[nameToIndex[key]].category" 
 :color="$store.state.style.primary" :header-icon-class="facetToIcon(key)" open-icon-class="fa fa-caret-right" :title="titleDimension(key)"
@@ -82,6 +83,7 @@
   :name="key" :defaut="facets[key]"></formater-facet-block>
  </formater-search-box>
 </div>
+-->
 <!--  <div v-for="(dim, k) in dimensions" v-if="k <= depth">
 <formater-search-box v-if="dimension.category" :header-icon-class="facetToIcon(k, index)" open-icon-class="fa fa-caret-right" :disable-level="dimension.disableLevel" :title="titleDimension(k, index)" type="empty" v-for="(dimension, index) in dim" :key="index">
   <formater-dimension-block v-if="!isFacet(k, index)"  :summary-type="dimension.step" :dimension="dimension.category" :name="dimensions[k][index]['@name']" :disable="dimension.disableLevel > 0"></formater-dimension-block>
@@ -314,13 +316,13 @@ export default {
         this.first = false
         return
       }
-      var  newdimensions = this.initializeDimensions(e.detail.summary.dimension)
-      this.updateDimensions(this.dimensions, newdimensions, true)  
-      if (e.detail.depth === 0) {
-        // remove all step2 dimension
-        this.removeStep2Dimensions()
-      }
-      this.reverseKeyDimensions()
+      // var  newdimensions = this.initializeDimensions(e.detail.summary.dimension)
+      // this.updateDimensions(this.dimensions, newdimensions, true)  
+      // if (e.detail.depth === 0) {
+      //   // remove all step2 dimension
+      //   this.removeStep2Dimensions()
+      // }
+      // this.reverseKeyDimensions()
     },
     removeStep2Dimensions() {
       for(var i=this.dimensions.length - 1; i >= 0; i--) {

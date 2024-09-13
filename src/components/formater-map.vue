@@ -632,6 +632,7 @@ export default {
 //        // this.depth = event.detail.depth;
 //      }
      this.type = event.detail.type
+     console.log(event.detail.features)
      // this.filterBboxWithSelectedBounds(event.detail.features)
      var style = this.getOptionsLayer(0)
      this.bboxLayer = L.geoJSON(event.detail.features, {

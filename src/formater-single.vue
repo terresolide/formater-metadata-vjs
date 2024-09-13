@@ -186,9 +186,9 @@ export default {
       this.metadata = null
       // curl -X GET "http://localhost:8280/geonetwork/srv/api/0.1/records/86a28260-dc26-4b40-8433-9d06e9b9e628/formatters/json?withInfo=true&attachment=false" -H  "accept: application/json;charset=utf-8" -H  "Accept: application/json" -H  "X-XSRF-TOKEN: null"
       var headers =  {
-          'accept': 'application/json;charset=utf-8',
+          'accept': 'application/json',
       }
-      var url = this.$store.state.geonetwork +  'srv/api/0.1/records/' + this.uuid + '/formatters/json?withInfo=true&attachment=false'
+      var url = this.$store.state.geonetwork +  'srv/api/records/' + this.uuid
       this.$http.get(url, {headers: headers}).then(
           response => { this.treatmentFull(response.body)},
           response => { console.log(response.body)})
@@ -236,9 +236,9 @@ export default {
       }
       var langs = {}
       var result = JSONPATH.query(data, '$..["gmd:language"]["gmd:LanguageCode"]')
-      metadata['geonet:info'] = data['geonet:info']
-      metadata['geonet:info'].uuid = this.uuid
-      delete data['geonet:info']
+     // metadata['geonet:info'] = data['geonet:info']
+      metadata['geonet:info'] = {uuid: this.uuid}
+     // delete data['geonet:info']
       metadata.id = this.uuid
       // search main language code
       var _locale = data['gmd:language']['gmd:LanguageCode']['@codeListValue']
