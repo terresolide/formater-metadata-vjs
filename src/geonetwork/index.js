@@ -509,7 +509,6 @@ const GeonetworkPlugin = {
             if (!this.geonetwork) {
               return
             }
-            console.log(this)
             var json = this.geonetwork + 'srv/api/groups?withReservedGroup=false'
             this.$http.get(json , {headers: {'Accept': 'application/json'}})
             .then(
