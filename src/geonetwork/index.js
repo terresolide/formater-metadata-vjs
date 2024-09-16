@@ -19,7 +19,7 @@ const GeonetworkPlugin = {
             this.$http = http
             this.$store = store
             this.geonetwork = server
-            // this.setLocale(locale)
+            this.setLocale(locale)
             this.getTranslation()
 
           },
@@ -570,17 +570,18 @@ const GeonetworkPlugin = {
           //       }
           //     }).then( response => { this.lang = Object.assign(this.lang,response.body)})
           //  },
-          //  setLocale: function (lang) {
-          //    if (!this.geonetwork || !this.$http) {
-          //      return
-          //    }
-          //    if (['en', 'fr'].indexOf(lang) >=0) {
-          //      if (this.locale !== lang) {
-          //        this.locale = lang
-          //        this.getTranslation()
-          //      }
-          //    }
-          //  },
+           setLocale: function (lang) {
+             if (['en', 'fr'].indexOf(lang) >=0) {
+               if (this.locale !== lang) {
+                 this.locale = lang
+               }
+             }
+             if (this.locale === 'fr') {
+              this.lang = 'fre'
+             } else {
+              this.lang = 'eng'
+             }
+           },
            uuidToDomId (uuid) {
              // first character must be letter and character other than "_" and "-" are forbidden
              return 'i' + uuid.toLowerCase().replace(/[^a-z0-9\-_]+/, '')
@@ -593,92 +594,173 @@ const GeonetworkPlugin = {
                return null
              }
            },
-           treatmentLinks (metaId, linkArr, local) {
-             var links = this.strToArray(linkArr)
+           translateObj (obj) {
+             if (obj['lang' + this.lang]) {
+              return obj['lang' + this.lang]
+             }
+             return obj.default
+           },
+           treatmentLinks (meta) {
+             delete meta.download
+             var lang = this.locale
              var self = this
-             var response = {}
-             // keep length 7 if 
-             links.forEach(function (link, index) {
-               // length === 7 for the translation
-               if ((!local && link.length > 6) || (link.length === 6 && local )) {
-               switch (link[3]) {
-                 case 'OpenSearch':
-                 case 'SensorThings':
-                 case 'Sensorthings':
-                   response.api = {}
-                   response.api.http = link[2]
-                   response.api.name = link[0].length > 0 ? link[0] : link[1]
-                   break;
-                 case 'GetMap':
-                 case 'WTS':
-                 case 'OGC:WMS': 
-                 case 'OGC:WFS':
-                 case 'OGC:WFS-G':
-                 case 'OGC:KML':
-                 case 'OGC:OWS':
-                 case 'OGC:OWS-C':
-                 case 'OGC API - Tiles':
-                 case 'OGC Web Map Service':
-                 case 'GLG:KML-2.0-http-get-map':
-                    if ((!local && link.length >=7) || (local && link.length === 6)) {
-                     if (!response.layers) {
-                       response.layers = []
-                     }
-                     var id = metaId + '_' + index
-                     response.layers.push(self.linkToLayer(link, id))
+             meta._source.link.forEach(lk => {
+             switch(lk.protocol) {
+                case 'OpenSearch':
+                case 'SensorThings':
+                case 'Sensorthings':
+                  meta.api = {}
+                  meta.api.http = lk.urlObject.default
+                  meta.api.name = self.translateObj(lk.nameObject)
+                  break;
+                case 'GetMap':
+                case 'WTS':
+                case 'OGC:WMS': 
+                case 'OGC:WFS':
+                case 'OGC:WFS-G':
+                case 'OGC:KML':
+                case 'OGC:OWS':
+                case 'OGC:OWS-C':
+                case 'OGC API - Tiles':
+                case 'OGC Web Map Service':
+                case 'GLG:KML-2.0-http-get-map':
+                    if (meta.layers) {
+                      meta.layers = []
                     }
+                     var id = meta.id + '_' + index
+                     meta.layers.push(self.linkToLayer(link, id))
                    break;
-                 
-                   // @todo
+                case 'application/vnd.google-earth.kml+xml':
                    break;
-                 case 'application/vnd.google-earth.kml+xml':
-                   break;
-                 case 'WWW:DOWNLOAD-1.0-ftp--download':
+                case 'WWW:DOWNLOAD-1.0-ftp--download':
                     break;
-                 case 'WWW:DOWNLOAD-1.0-link--download':
-                 case 'WWW:DOWNLOAD-1.0-http--download':
-                 case 'download':
-                 case 'telechargement':
-                   if (!response.download) {
-                     response.download = []
+                case 'WWW:DOWNLOAD-1.0-link--download':
+                case 'WWW:DOWNLOAD-1.0-http--download':
+                case 'download':
+                case 'telechargement':
+                   if (!meta.download) {
+                     meta.download = []
                    }
                    
-                   response.download.push(self.linkToDownload(link))
+                   meta.download.push(self.linkToDownload(lk))
                    break;
-                 case 'WWW:DOWNLOAD-1.0-link--order':
-                 case 'order':
-                   if (!response.order) {
-                     response.order = []
+                case 'WWW:DOWNLOAD-1.0-link--order':
+                case 'order':
+                   if (!meta.order) {
+                     meta.order = []
                    }
-                   response.order.push(self.linkToDownload(link))
+                   meta.order.push(self.linkToDownload(lk))
                    break;
-                 case 'UKST':
+                case 'UKST':
                   
-                   if (link[6] && link[6].toLowerCase() === 'opensearch') {
-                     response.api = {}
-                     response.api.http = link[2]
-                     response.api.name = link[0].length > 0 ? link[0] : link[1]
-                   }
+                  //  if (link[6] && link[6].toLowerCase() === 'opensearch') {
+                  //    response.api = {}
+                  //    response.api.http = link[2]
+                  //    response.api.name = link[0].length > 0 ? link[0] : link[1]
+                  //  }
                    break;
-                 case 'WWW:LINK-1.0-http--related':
-                   if (!response.relatedLinks) {
-                     response.relatedLinks = []
+                case 'WWW:LINK-1.0-http--related':
+                   if (!meta.relatedLinks) {
+                     meta.relatedLinks = []
                    }
-                   response.relatedLinks.push(self.linkToLink(link))
+                   meta.relatedLinks.push(self.linkToLink(lk))
                    break;
-                 case 'WWW:LINK-1.0-http--link':
-                 default:
-                   if (!response.links) {
-                     response.links = []
+                case 'WWW:LINK-1.0-http--link':
+                default:
+                   if (!meta.links) {
+                     meta.links = []
                    }
-                   response.links.push(self.linkToLink(link))
+                   meta.links.push(self.linkToLink(lk))
                    break;
-               }
-               }
-
+              }
              })
-             return response
            },
+          //  treatmentLinks2 (metaId, linkArr, local) {
+          //    var links = this.strToArray(linkArr)
+          //    var self = this
+          //    var response = {}
+          //    // keep length 7 if 
+          //    links.forEach(function (link, index) {
+          //      // length === 7 for the translation
+          //      if ((!local && link.length > 6) || (link.length === 6 && local )) {
+          //      switch (link[3]) {
+          //        case 'OpenSearch':
+          //        case 'SensorThings':
+          //        case 'Sensorthings':
+          //          response.api = {}
+          //          response.api.http = link[2]
+          //          response.api.name = link[0].length > 0 ? link[0] : link[1]
+          //          break;
+          //        case 'GetMap':
+          //        case 'WTS':
+          //        case 'OGC:WMS': 
+          //        case 'OGC:WFS':
+          //        case 'OGC:WFS-G':
+          //        case 'OGC:KML':
+          //        case 'OGC:OWS':
+          //        case 'OGC:OWS-C':
+          //        case 'OGC API - Tiles':
+          //        case 'OGC Web Map Service':
+          //        case 'GLG:KML-2.0-http-get-map':
+          //           if ((!local && link.length >=7) || (local && link.length === 6)) {
+          //            if (!response.layers) {
+          //              response.layers = []
+          //            }
+          //            var id = metaId + '_' + index
+          //            response.layers.push(self.linkToLayer(link, id))
+          //           }
+          //          break;
+                 
+          //          // @todo
+          //          break;
+          //        case 'application/vnd.google-earth.kml+xml':
+          //          break;
+          //        case 'WWW:DOWNLOAD-1.0-ftp--download':
+          //           break;
+          //        case 'WWW:DOWNLOAD-1.0-link--download':
+          //        case 'WWW:DOWNLOAD-1.0-http--download':
+          //        case 'download':
+          //        case 'telechargement':
+          //          if (!response.download) {
+          //            response.download = []
+          //          }
+                   
+          //          response.download.push(self.linkToDownload(link))
+          //          break;
+          //        case 'WWW:DOWNLOAD-1.0-link--order':
+          //        case 'order':
+          //          if (!response.order) {
+          //            response.order = []
+          //          }
+          //          response.order.push(self.linkToDownload(link))
+          //          break;
+          //        case 'UKST':
+                  
+          //          if (link[6] && link[6].toLowerCase() === 'opensearch') {
+          //            response.api = {}
+          //            response.api.http = link[2]
+          //            response.api.name = link[0].length > 0 ? link[0] : link[1]
+          //          }
+          //          break;
+          //        case 'WWW:LINK-1.0-http--related':
+          //          if (!response.relatedLinks) {
+          //            response.relatedLinks = []
+          //          }
+          //          response.relatedLinks.push(self.linkToLink(link))
+          //          break;
+          //        case 'WWW:LINK-1.0-http--link':
+          //        default:
+          //          if (!response.links) {
+          //            response.links = []
+          //          }
+          //          response.links.push(self.linkToLink(link))
+          //          break;
+          //      }
+          //      }
+
+          //    })
+          //    return response
+          //  },
            treatmentMetaElasticsearch(meta, uuid) {
               meta.id = uuid
               if (this.$store.state.geonetwork) {
@@ -718,6 +800,7 @@ const GeonetworkPlugin = {
               meta.group = meta._source.groupOwner
               meta.status = meta._source.cl_status[0].key
               meta.type = meta._source.cl_hierarchyLevel[0].key
+              this.treatmentLinks(meta)
               return meta
            },
            treatmentMetadata (meta, uuid) {
@@ -852,35 +935,33 @@ const GeonetworkPlugin = {
              }
              return myArray;
            },
-           linkToLayer (arr, id) {
+           linkToLayer (obj, id) {
 
              var layer = {
                  id: id,
-                 name: arr[0],
-                 description: arr[1],
-                 href: arr[2],
-                 type: arr[3],
+                 name: this.translateObj(obj.nameObject),
+                 description: this.translateObj(obj.descriptionObject),
+                 href:  this.translateObj(obj.urlObject),
+                 type: obj.protocol,
                  checked: false
              }
              return layer
            },
-           linkToDownload (arr, id) {
+           linkToDownload (obj) {
              var download = {
-                 id: id,
-                 name: arr[0],
-                 description: arr[1],
-                 url: arr[2],
-                 type: arr[3]
+                 name: this.translateObj(obj.nameObject),
+                 description: this.translateObj(obj.descriptionObject),
+                 url: this.translateObj(obj.urlObject),
+                 type: obj.protocol
              }
              return download;
            },
-           linkToLink (arr, id) {
+           linkToLink (obj) {
              var link = {
-                 id: id,
-                 title: arr[0],
-                 description: arr[1],
-                 href: arr[2],
-                 type: arr[3]
+                 title:  this.translateObj(obj.nameObject),
+                 description: 'éééé', // this.translateObj(obj.descriptionObject),
+                 href:  'xxxx', // this.translateObj(obj.urlObject),
+                 type: obj.protocol
              }
              return link
            },

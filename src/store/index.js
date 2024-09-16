@@ -68,6 +68,13 @@ export default function makeStore( config ) {
               order: {_key: 'asc'},
               size: 50
             }
+          },
+          collection: {
+            terms: {
+              field: 'th_formaterre-collections_tree.default',
+              order: {_key: 'asc'},
+              size: 50
+            }
           }
         }
       },

@@ -118,8 +118,6 @@ export default {
       return this.$store.state.style.emphasis
     },
     group () {
-      console.log(this.$gn.groups)
-      console.log(this.metadata)
       if (this.metadata && this.$gn.groups[this.metadata.group]) {
         return this.$gn.groups[this.metadata.group]
       }
