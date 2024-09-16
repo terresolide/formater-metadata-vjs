@@ -446,21 +446,19 @@ export default {
         aggregations[key] =  this.prepareAggregations(key, aggs[key])
       }
     },
-    addItemToCategory(item, keys, category, toTranslate ) {
-      if (toTranslate.indexOf(keys[i]) < 0) {
-        toTranslate.push(keys[i])
-        category= {
-          '@value': keys[i],
-          '@label': keys[i],
-          '@count': item.doc_count,
-          category: []
-        }
-      } else {
-        category.category.push({
-          '@value': keys[i],
-          '@label': keys[i]
-        })
+    addItemToCategory(item, keys, toTranslate, aggs ) {
+      var cat = category= {
+          '@value': keys[0],
+          '@label': keys[0]
       }
+      if (toTranslate.indexOf(keys[0]) < 0) {
+        toTranslate.push(keys[0])
+        
+      } 
+      if (keys.length = 1) {
+
+      } 
+        
     },
     prepareAggregations(key, agg) {
       var aggregation = {
@@ -468,19 +466,22 @@ export default {
         '@label': key,
         category: []
       }
-      agg.buckets.forEach(function (item) {
+
+      var toTranslate = []
+      var buckets = agg.buckets
+      buckets.forEach(function (item, index) {
         var keys = item.key.split('^')
-        var depth = keys.length
-        var key1 = keys[0]
-        var toTranslate = []
-        var category= aggregation.category
-        for(var i=0; i < depth; i++) {
-          
-          category = category.category
-        }
-        aggregation.category = category
+        buckets[index].length = keys.length
+       
       })
-      console.log(aggregation)
+      buckets.sort(function (a , b) {
+        if (a.length - b.length < 0) {
+          return -1
+        } else {
+          return 1
+        }
+      })
+      console.log(buckets)
     },
     // remove groupOwner if only one group choose in app parameters
     treatmentDimension (dimensions) {
