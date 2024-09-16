@@ -793,7 +793,6 @@ const GeonetworkPlugin = {
                 meta.thumbnail = meta._source.overview[0].url
               }
               if ( meta._source.resourceTemporalExtentDetails) {
-                console.log(meta._source.resourceTemporalExtentDetails.start)
                 meta.tempExtentBegin = meta._source.resourceTemporalExtentDetails[0].start.date
                 meta.tempExtentEnd = meta._source.resourceTemporalExtentDetails[0].end.date
               }
@@ -801,6 +800,7 @@ const GeonetworkPlugin = {
               meta.status = meta._source.cl_status[0].key
               meta.type = meta._source.cl_hierarchyLevel[0].key
               this.treatmentLinks(meta)
+              delete meta._source
               return meta
            },
            treatmentMetadata (meta, uuid) {

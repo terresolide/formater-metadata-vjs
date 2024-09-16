@@ -76,7 +76,7 @@ export default {
           from: 0,
           size: this.$store.state.size.nbRecord,
           _source: {
-            includes: ["uuid", "id","logo", "groupOwner", "cl_status", "cl_hierarchyLevel", "geom", "resourceTitle*", "resourceTemporalExtentDetails", "resourceAbstract*","overview","link"]
+            includes: ["uuid", "id", "groupOwner", "cl_status", "cl_hierarchyLevel", "geom", "resourceTitle*", "resourceTemporalExtentDetails", "resourceAbstract*", "th_formater-platform-gn", "overview","link"]
           },
           sort: [{changeDate: "desc"}, {popularity: "desc"}],
           query: {
@@ -378,8 +378,7 @@ export default {
        if (data.hits && data.hits.hits) {
          data.hits.hits.forEach( function (meta, index) {
              var uuid = meta._id
-             metadatas[uuid] = self.$gn.treatmentMetaElasticsearch(meta ,uuid)
-              var feature = {
+             var feature = {
                 type: 'Feature',
                 id: uuid,
                 geometry: meta._source.geom
@@ -387,6 +386,9 @@ export default {
               if (feature) {
                     features.push(feature)
               }
+             metadatas[uuid] = self.$gn.treatmentMetaElasticsearch(meta ,uuid)
+             
+             
            })
        }
        data.summary = {
@@ -438,7 +440,47 @@ export default {
     //   // this.searchRelated()
     // },
     treatmentAggregations (aggs) {
-
+      var aggregations = {}
+      console.log(aggs)
+      for(var key in aggs) {
+        aggregations[key] =  this.prepareAggregations(key, aggs[key])
+      }
+    },
+    addItemToCategory(item, keys, category, toTranslate ) {
+      if (toTranslate.indexOf(keys[i]) < 0) {
+        toTranslate.push(keys[i])
+        category= {
+          '@value': keys[i],
+          '@label': keys[i],
+          '@count': item.doc_count,
+          category: []
+        }
+      } else {
+        category.category.push({
+          '@value': keys[i],
+          '@label': keys[i]
+        })
+      }
+    },
+    prepareAggregations(key, agg) {
+      var aggregation = {
+        '@name': key,
+        '@label': key,
+        category: []
+      }
+      agg.buckets.forEach(function (item) {
+        var keys = item.key.split('^')
+        var depth = keys.length
+        var key1 = keys[0]
+        var toTranslate = []
+        var category= aggregation.category
+        for(var i=0; i < depth; i++) {
+          
+          category = category.category
+        }
+        aggregation.category = category
+      })
+      console.log(aggregation)
     },
     // remove groupOwner if only one group choose in app parameters
     treatmentDimension (dimensions) {
