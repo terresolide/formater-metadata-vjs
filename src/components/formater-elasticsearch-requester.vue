@@ -371,7 +371,7 @@ export default {
 //       this.$store.commit('searchingChange', false)
 //     },
     treatmentElasticsearch (data, depth) {
-       this.treatmentAggregations(data.aggregations)
+       data.dimensions = this.treatmentAggregations(data.aggregations)
        var metadatas = {}
        var features = []
        var self = this
@@ -403,6 +403,8 @@ export default {
         type: 'FeatureCollection',
         features: features
       }
+      delete data.hits
+      delete data.aggregations
       this.fill(data, depth)
       this.$store.commit('searchingChange', false)
     },
@@ -440,30 +442,18 @@ export default {
     //   // this.searchRelated()
     // },
     treatmentAggregations (aggs) {
-      var aggregations = {}
-      console.log(aggs)
+      var aggregations = []
       for(var key in aggs) {
-        aggregations[key] =  this.prepareAggregations(key, aggs[key])
+        aggregations.push(this.prepareAggregations(key, aggs[key]))
       }
+      return aggregations
     },
-    addItemToCategory(item, keys, toTranslate, aggs ) {
-      var cat = category= {
-          '@value': keys[0],
-          '@label': keys[0]
-      }
-      if (toTranslate.indexOf(keys[0]) < 0) {
-        toTranslate.push(keys[0])
-        
-      } 
-      if (keys.length = 1) {
-
-      } 
-        
-    },
+    
     prepareAggregations(key, agg) {
+      console.log(agg)
       var aggregation = {
         '@name': key,
-        '@label': key,
+        '@label': agg.meta && agg.meta.label ? agg.meta.label : key,
         category: []
       }
       var dimension = agg.meta && agg.meta.type && agg.meta.type === 'dimension'
@@ -477,14 +467,15 @@ export default {
         // buckets[index].keys = keys
         buckets[index]['@value'] = item.key
         if (dimension) {
-          if (key === 'group') {
+          if (key === 'groupOwner') {
             var label = gnGroups[item.key].label[lang]
           } else {
             var label = item.key
           }
           aggregation.category.push({
             '@name': label,
-            '@value': item.key
+            '@value': item.key,
+            '@count': item.doc_count
           })
         } else {
           var keys = item.key.split('^')
@@ -492,6 +483,10 @@ export default {
           toTranslate.push(uri)
           buckets[index].parent = keys.join('^')
           buckets[index].length = keys.length
+          buckets[index]['@name'] = item.key
+          buckets[index]['@label'] = item.key
+          buckets[index]['@count'] = item.doc_count
+          delete item.doc_count
         }
         
       })
@@ -513,6 +508,7 @@ export default {
       // })
       aggregation.category = category
       console.log(category)
+      return aggregation
       // buckets.forEach(function (item) {
       //   for(var i=0; i < item.length; i++) {
       //     i
@@ -721,6 +717,7 @@ export default {
 //     },
     fill (data, depth) {
       data.depth = this.depth
+      console.log(data)
       var event = new CustomEvent('fmt:metadataListEvent', {detail:  data})
       document.dispatchEvent(event)
     },

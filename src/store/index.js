@@ -48,7 +48,7 @@ export default function makeStore( config ) {
       },
       aggregations: {
         step1: {
-          group: {
+          groupOwner: {
             terms: {
               field: 'groupOwner',
               order: {_key: 'asc'},
@@ -58,19 +58,27 @@ export default function makeStore( config ) {
               type: 'dimension'
             }
           },
-          discipline: {
+          facetDiscipline: {
             terms:{
               field: 'th_formater-discipline_tree.key',
               order: {_key: 'asc'},
               size: 50
+            },
+            meta: {
+              type: 'facet',
+              label: 'facetDiscipline'
             }
           },
-          platform: {
+          facetPlatform: {
             terms: {
               field: 'th_formater-platform-gn_tree.key',
               order: {_key: 'asc'},
               size: 50
-            }
+            }, 
+            meta: {
+              type: 'facet',
+              label: 'facetPlatform'
+            } 
           },
           collection: {
             terms: {
@@ -79,7 +87,11 @@ export default function makeStore( config ) {
               size: 50
             },
             meta: {
-              type: 'dimension'
+              type: 'dimension',
+              label: {
+                fr: 'Collections',
+                en: 'Collections'
+              }
             }
           }
         }
