@@ -472,6 +472,8 @@ export default {
       buckets.forEach(function (item, index) {
         var keys = item.key.split('^')
         buckets[index].length = keys.length
+        buckets[index].keys = keys
+        buckets[index].key = keys.pop()
        
       })
       buckets.sort(function (a , b) {
