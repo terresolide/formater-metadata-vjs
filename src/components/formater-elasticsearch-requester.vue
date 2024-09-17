@@ -466,24 +466,58 @@ export default {
         '@label': key,
         category: []
       }
-
+      var dimension = agg.meta && agg.meta.type && agg.meta.type === 'dimension'
       var toTranslate = []
       var buckets = agg.buckets
+      var categories = {}
+      var gnGroups = this.$gn.groups
+      var lang = this.$store.state.lang
       buckets.forEach(function (item, index) {
-        var keys = item.key.split('^')
-        buckets[index].length = keys.length
-        buckets[index].keys = keys
-        buckets[index].key = keys.pop()
-       
-      })
-      buckets.sort(function (a , b) {
-        if (a.length - b.length < 0) {
-          return -1
+        
+        // buckets[index].keys = keys
+        buckets[index]['@value'] = item.key
+        if (dimension) {
+          if (key === 'group') {
+            var label = gnGroups[item.key].label[lang]
+          } else {
+            var label = item.key
+          }
+          aggregation.category.push({
+            '@name': label,
+            '@value': item.key
+          })
         } else {
-          return 1
+          var keys = item.key.split('^')
+          var uri = keys.pop()
+          toTranslate.push(uri)
+          buckets[index].parent = keys.join('^')
+          buckets[index].length = keys.length
         }
+        
       })
-      console.log(buckets)
+      if (dimension) {
+        return aggregation
+      }
+      const nest = (items, key = '', link = 'parent') =>  
+        items
+        .filter(item => item[link] === key)
+        .map(item => ({ ...item, category: nest(items, item.key) }));
+
+      var category = nest(buckets)
+      // buckets.sort(function (a , b) {
+      //   if (a.length - b.length < 0) {
+      //     return -1
+      //   } else {
+      //     return 1
+      //   }
+      // })
+      aggregation.category = category
+      console.log(category)
+      // buckets.forEach(function (item) {
+      //   for(var i=0; i < item.length; i++) {
+      //     i
+      //   }
+      // })
     },
     // remove groupOwner if only one group choose in app parameters
     treatmentDimension (dimensions) {

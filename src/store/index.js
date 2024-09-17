@@ -53,6 +53,9 @@ export default function makeStore( config ) {
               field: 'groupOwner',
               order: {_key: 'asc'},
               size: 50
+            },
+            meta: {
+              type: 'dimension'
             }
           },
           discipline: {
@@ -74,6 +77,9 @@ export default function makeStore( config ) {
               field: 'th_formaterre-collections_tree.default',
               order: {_key: 'asc'},
               size: 50
+            },
+            meta: {
+              type: 'dimension'
             }
           }
         }
