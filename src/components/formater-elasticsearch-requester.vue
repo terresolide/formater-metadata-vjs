@@ -371,7 +371,7 @@ export default {
 //       this.$store.commit('searchingChange', false)
 //     },
     treatmentElasticsearch (data, depth) {
-       data.dimensions = this.treatmentAggregations(data.aggregations)
+       var dimension = this.treatmentAggregations(data.aggregations)
        var metadatas = {}
        var features = []
        var self = this
@@ -394,7 +394,8 @@ export default {
        data.summary = {
         from: this.parameters.from + 1,
         to: this.parameters.from + features.length,
-        total: data.hits.total.value
+        total: data.hits.total.value,
+        dimension: dimension
        }
        
       data.metadata = metadatas
@@ -403,6 +404,7 @@ export default {
         type: 'FeatureCollection',
         features: features
       }
+      console.log(data)
       delete data.hits
       delete data.aggregations
       this.fill(data, depth)

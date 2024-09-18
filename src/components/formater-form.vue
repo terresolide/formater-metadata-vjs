@@ -52,16 +52,16 @@
  </formater-search-box>
 <!--  end opensearch -->
 <!-- step1 only dimension -->
-<!-- <div v-for="(key, index) in $store.state.gnParameters.step1" :disable="depth > 0">
-<formater-search-box  v-if="dimensions[nameToIndex[key]] && dimensions[nameToIndex[key]].category" 
-:color="$store.state.style.primary" :header-icon-class="facetToIcon(key)" open-icon-class="fa fa-caret-right" :title="titleDimension(key)"  
+ <div v-for="dim in dimensions" :disable="depth > 0">
+<formater-search-box  v-if="dim.category" 
+:color="$store.state.style.primary" :header-icon-class="facetToIcon(key)" open-icon-class="fa fa-caret-right" :title="titleDimension(dim['@name'])"  
 :disable-level="depth > 0 ? 1 : 0" type="empty">
-  <formater-dimension-block v-if="!isFacet(key)"   :dimension="dimensions[nameToIndex[key]].category" :name="key" :disable="depth > 0"></formater-dimension-block>
-  <formater-facet-block v-if="isFacet(key)"   :dimension="dimensions[nameToIndex[key]].category" :name="key" 
-  :disable="depth > 0" :defaut="facets[key]"></formater-facet-block>
+  <formater-dimension-block v-if="!isFacet(dim['@name'])"   :dimension="dim.category" :name="dim['@name']" :disable="depth > 0"></formater-dimension-block>
+  <formater-facet-block v-if="isFacet(dim['@name'])"   :dimension="dim['@name'].category" :name="dim['@name']" 
+  :disable="depth > 0" :defaut="dim['@name']"></formater-facet-block>
  </formater-search-box>
 </div>
--->
+-
 <!-- step 1 and step 2 -->
  <!--
 <div v-for="(key, index) in $store.state.gnParameters.step1step2" >
@@ -316,13 +316,13 @@ export default {
         this.first = false
         return
       }
-      // var  newdimensions = this.initializeDimensions(e.detail.summary.dimension)
-      // this.updateDimensions(this.dimensions, newdimensions, true)  
-      // if (e.detail.depth === 0) {
-      //   // remove all step2 dimension
-      //   this.removeStep2Dimensions()
-      // }
-      // this.reverseKeyDimensions()
+      var  newdimensions = this.initializeDimensions(e.detail.summary.dimension)
+      this.updateDimensions(this.dimensions, newdimensions, true)  
+      if (e.detail.depth === 0) {
+        // remove all step2 dimension
+        this.removeStep2Dimensions()
+      }
+      this.reverseKeyDimensions()
     },
     removeStep2Dimensions() {
       for(var i=this.dimensions.length - 1; i >= 0; i--) {

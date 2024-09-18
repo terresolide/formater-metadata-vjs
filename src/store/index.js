@@ -88,10 +88,7 @@ export default function makeStore( config ) {
             },
             meta: {
               type: 'dimension',
-              label: {
-                fr: 'Collections',
-                en: 'Collections'
-              }
+              label: 'Collections'
             }
           }
         }
