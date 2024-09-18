@@ -471,11 +471,13 @@ export default {
         if (dimension) {
           if (key === 'groupOwner') {
             var label = gnGroups[item.key].label[lang]
+            console.log(label)
           } else {
             var label = item.key
           }
           aggregation.category.push({
             '@name': label,
+            '@label': label,
             '@value': item.key,
             '@count': item.doc_count
           })
@@ -487,20 +489,27 @@ export default {
           buckets[index].length = keys.length
           buckets[index]['@name'] = item.key
           buckets[index]['@label'] = item.key
+          buckets[index]['@value'] = uri
           buckets[index]['@count'] = item.doc_count
           delete item.doc_count
         }
         
       })
+      // translate
       if (dimension) {
         return aggregation
       }
-      const nest = (items, key = '', link = 'parent') =>  
-        items
-        .filter(item => item[link] === key)
-        .map(item => ({ ...item, category: nest(items, item.key) }));
-
-      var category = nest(buckets)
+      
+      const arrayToTree = (arr, parent = '') =>
+        arr.filter(item => item.parent === parent)
+        .map(child => { 
+          var category = arrayToTree(arr, child.key)
+          if (category.length > 0) {
+            child.category = category
+          }
+          return child
+      });
+      var category = arrayToTree(buckets)
       // buckets.sort(function (a , b) {
       //   if (a.length - b.length < 0) {
       //     return -1

@@ -54,7 +54,7 @@
 <!-- step1 only dimension -->
  <div v-for="dim in dimensions" :disable="depth > 0">
 <formater-search-box  v-if="dim.category" 
-:color="$store.state.style.primary" :header-icon-class="facetToIcon(key)" open-icon-class="fa fa-caret-right" :title="titleDimension(dim['@name'])"  
+:color="$store.state.style.primary" :header-icon-class="facetToIcon(dim['@name'])" open-icon-class="fa fa-caret-right" :title="titleDimension(dim['@name'])"  
 :disable-level="depth > 0 ? 1 : 0" type="empty">
   <formater-dimension-block v-if="!isFacet(dim['@name'])"   :dimension="dim.category" :name="dim['@name']" :disable="depth > 0"></formater-dimension-block>
   <formater-facet-block v-if="isFacet(dim['@name'])"   :dimension="dim['@name'].category" :name="dim['@name']" 

@@ -55,7 +55,8 @@ export default function makeStore( config ) {
               size: 50
             },
             meta: {
-              type: 'dimension'
+              type: 'dimension',
+              icon: 'fa fa-object-group'
             }
           },
           facetDiscipline: {
@@ -66,7 +67,8 @@ export default function makeStore( config ) {
             },
             meta: {
               type: 'facet',
-              label: 'facetDiscipline'
+              label: 'formaterDiscipline',
+              icon: 'fa fa-graduation-cap'
             }
           },
           facetPlatform: {
@@ -77,7 +79,8 @@ export default function makeStore( config ) {
             }, 
             meta: {
               type: 'facet',
-              label: 'facetPlatform'
+              label: 'formaterPlatform',
+              icon: 'fa fa-rocket'
             } 
           },
           collection: {
