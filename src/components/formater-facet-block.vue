@@ -65,6 +65,7 @@ export default {
   },
 
   mounted () {
+    console.log(this.dimension)
    	if (this.dimension.length > 0) {
 	  this.dimensions = this.dimension
 // 	  .sort(function compare(a, b) {
@@ -76,9 +77,10 @@ export default {
 // 	   return 0;
 // 	 })
      
-   	} else {
-      this.dimensions = [this.dimension]
-    }
+   	} 
+    // else {
+    //   this.dimensions = [this.dimension]
+    // }
     this.facetChangeListener = this.facetChange.bind(this) 
     document.addEventListener('fmt:facetChangeEvent', this.facetChangeListener);
 //     this.aerisSearchListener = this.handleSearch.bind(this)

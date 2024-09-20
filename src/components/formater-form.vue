@@ -316,13 +316,16 @@ export default {
         this.first = false
         return
       }
+     
       var  newdimensions = this.initializeDimensions(e.detail.summary.dimension)
       this.updateDimensions(this.dimensions, newdimensions, true)  
+      console.log(this.dimensions)
       if (e.detail.depth === 0) {
         // remove all step2 dimension
         this.removeStep2Dimensions()
       }
       this.reverseKeyDimensions()
+      console.log(this.dimensions)
     },
     removeStep2Dimensions() {
       for(var i=this.dimensions.length - 1; i >= 0; i--) {
@@ -359,12 +362,15 @@ export default {
       return dimension
     },
     updateDimensions (dimensions, newdimensions, root) {
+      console.log(dimensions)
+      console.log(newdimensions)
       if (!dimensions) {
         return null
       }
       if (!Array.isArray(newdimensions)) {
         newdimensions = [newdimensions]
       }
+      
       var _this = this
       dimensions.forEach(function (dimension, index) {
         var found = newdimensions.find( function (obj) {
@@ -379,17 +385,19 @@ export default {
         } else {
           _this.$set(dimensions[index], '@count', found['@count'])
         }
-        if (dimensions[index].category || (typeof found !== 'undefined' && found.category)) {
+        if (dimensions[index].category || (typeof found !== 'undefined' && found.category && found.category.length > 0)) {
 	        var subDimension = []
-	        if (typeof found !== 'undefined' && found.category) {
+	        if (typeof found !== 'undefined' && found.category && found.category.length > 0) {
 	          subDimension = found.category
 	        }
-	        if (typeof dimensions[index].category === 'undefined') {
+	        if (typeof dimensions[index].category === 'undefined' || dimensions[index].category.length === 0) {
 	          dimensions[index].category = []
-	        }
-	        dimensions[index].category = _this.updateDimensions(dimensions[index].category, subDimension, false)
+	        } else {
+	          dimensions[index].category = _this.updateDimensions(dimensions[index].category, subDimension, false)
+          }
         } 
       })
+     
       newdimensions.forEach(function (newdimension, index) {
         var found = dimensions.find( function (obj) {
           if (obj['@name']) {
@@ -402,6 +410,8 @@ export default {
           dimensions.push(newdimension)
         } 
       })
+      console.log(dimensions)
+      console.log(newdimensions)
       // order dimension by name
       dimensions.sort(function (a, b) {
         if (a['@label']) {

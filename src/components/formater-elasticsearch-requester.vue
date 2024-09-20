@@ -404,7 +404,7 @@ export default {
         type: 'FeatureCollection',
         features: features
       }
-      console.log(data)
+      console.log(data.summary.dimension)
       delete data.hits
       delete data.aggregations
       this.fill(data, depth)
