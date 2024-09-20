@@ -510,21 +510,11 @@ export default {
           return child
       });
       var category = arrayToTree(buckets)
-      // buckets.sort(function (a , b) {
-      //   if (a.length - b.length < 0) {
-      //     return -1
-      //   } else {
-      //     return 1
-      //   }
-      // })
+
       aggregation.category = category
       console.log(category)
       return aggregation
-      // buckets.forEach(function (item) {
-      //   for(var i=0; i < item.length; i++) {
-      //     i
-      //   }
-      // })
+
     },
     // remove groupOwner if only one group choose in app parameters
     treatmentDimension (dimensions) {
