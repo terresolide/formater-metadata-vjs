@@ -452,18 +452,14 @@ export default {
         aggregations.push(aggs[key]) 
        
       }
-  
       aggregations.sort((a,b) => a.meta.sort - b.meta.sort)
-      console.log(aggregations)
       for(var i in aggregations) {
         promises.push(this.prepareAggregations(aggregations[i]))
       }
       Promise.all(promises)
       .then((values) => {
-        console.log(values)
         var data = { dimension: values}
         data.depth = this.depth
-        console.log(data)
         var event = new CustomEvent('fmt:dimensionEvent', {detail:  data})
         document.dispatchEvent(event)
       })
@@ -498,7 +494,6 @@ export default {
           meta: agg.meta,
           category: []
         }
-        console.log(aggregation)
         var dimension = agg.meta && agg.meta.type && agg.meta.type === 'dimension'
       
         var buckets = agg.buckets
@@ -515,7 +510,6 @@ export default {
           if (dimension) {
             if (agg.key === 'groupOwner') {
               var label = gnGroups[item.key].label[lang]
-              console.log(label)
             } else {
               var label = item.key
             }
@@ -547,13 +541,11 @@ export default {
         }
         self.translate(thesaurus, toTranslate)
         .then(translated => {
-          console.log(translated)
           buckets.forEach(function (item, index) {
             if (translated[item['@value']]) {
               buckets[index]['@label'] = translated[item['@value']]
             }
           })
-          console.log(buckets)
           const arrayToTree = (arr, parent = '') =>
           arr.filter(item => item.parent === parent)
           .map(child => { 
@@ -566,7 +558,6 @@ export default {
           var category = arrayToTree(buckets)
 
           aggregation.category = category
-          console.log(category)
           resolve(aggregation)
         })
         
@@ -642,118 +633,118 @@ export default {
                 
 //       })
 //     },
-    mapToGeonetwork (properties) {
-      console.log(properties)
-      var properties = Object.assign({}, properties)
-      properties.fromOs = true
-      if (properties.productIdentifier) {
-        properties.renameProperty('productIdentifier', 'identifier')
-      }
-      if (properties.startDate) {
-        properties.renameProperty('startDate', 'tempExtentBegin')
-      }
-      if (properties.completionDate) {
-        properties.renameProperty('completionDate', 'tempExtentEnd')
-      }
-      if (properties.updated) {
-        properties.renameProperty('updated', 'revisionDate')
-      }
-      if (properties.published) {
-        properties.renameProperty('published', 'publicationDate')
-      }
-      if (properties.produced) {
-        properties.renameProperty('produced', 'creationDate')
-      }
-      if (!properties.type) {
-        properties.type = 'dataset'
-      }
-      if (properties.quicklook) {
-        properties.images = [['', properties.quicklook, '']]
-        delete properties.quicklook
-      }
-      if (properties.license) {
-       // properties.legalConstraints = [properties.license.licenseId]
-        delete properties.license
-      }
-      properties.osParameters = []
-      properties.mapping = []
-      if (properties.services) {
-        // @todo cas très très particulier de flatsim
-        if(properties.services.browse && properties.services.browse.layers) {
-          properties.layers = []
-          properties.services.browse.layers.forEach(function (flatsimLayer, index) {
-            var type =  flatsimLayer.type
-            var layer = {
-                id: properties.id + '_' + index,
-                name: flatsimLayer.name,
-                description:  flatsimLayer.name,
-                href: flatsimLayer.url,
-                type: flatsimLayer.type,
-                checked: false
-            }
-            properties.layers.push(layer)
-          })
-        }
-        if(properties.services.download && properties.services.download.url) {
-          if (!properties.download) {
-            properties.download = []
-          }
-          properties.download.push(properties.services.download)
+    // mapToGeonetwork (properties) {
+    //   console.log(properties)
+    //   var properties = Object.assign({}, properties)
+    //   properties.fromOs = true
+    //   if (properties.productIdentifier) {
+    //     properties.renameProperty('productIdentifier', 'identifier')
+    //   }
+    //   if (properties.startDate) {
+    //     properties.renameProperty('startDate', 'tempExtentBegin')
+    //   }
+    //   if (properties.completionDate) {
+    //     properties.renameProperty('completionDate', 'tempExtentEnd')
+    //   }
+    //   if (properties.updated) {
+    //     properties.renameProperty('updated', 'revisionDate')
+    //   }
+    //   if (properties.published) {
+    //     properties.renameProperty('published', 'publicationDate')
+    //   }
+    //   if (properties.produced) {
+    //     properties.renameProperty('produced', 'creationDate')
+    //   }
+    //   if (!properties.type) {
+    //     properties.type = 'dataset'
+    //   }
+    //   if (properties.quicklook) {
+    //     properties.images = [['', properties.quicklook, '']]
+    //     delete properties.quicklook
+    //   }
+    //   if (properties.license) {
+    //    // properties.legalConstraints = [properties.license.licenseId]
+    //     delete properties.license
+    //   }
+    //   properties.osParameters = []
+    //   properties.mapping = []
+    //   if (properties.services) {
+    //     // @todo cas très très particulier de flatsim
+    //     if(properties.services.browse && properties.services.browse.layers) {
+    //       properties.layers = []
+    //       properties.services.browse.layers.forEach(function (flatsimLayer, index) {
+    //         var type =  flatsimLayer.type
+    //         var layer = {
+    //             id: properties.id + '_' + index,
+    //             name: flatsimLayer.name,
+    //             description:  flatsimLayer.name,
+    //             href: flatsimLayer.url,
+    //             type: flatsimLayer.type,
+    //             checked: false
+    //         }
+    //         properties.layers.push(layer)
+    //       })
+    //     }
+    //     if(properties.services.download && properties.services.download.url) {
+    //       if (!properties.download) {
+    //         properties.download = []
+    //       }
+    //       properties.download.push(properties.services.download)
           
-        }
-        delete properties.services
-      }
-      if( !properties.exportLinks) {
-        properties.exportLinks = {}
-      }
-      // @todo Flatsim cas particulier des LIENS D'EXPORT qui se trouve dans link
-      if (properties.links) {
-        var i = properties.links.length
-        while (i--) {
-          if (properties.links[i].type === 'application/json' && !properties.exportLinks.json) {
-            properties.exportLinks.json = properties.links[i].href
-            properties.links.splice(i,1)
-          }
-          if (properties.links[i].type === 'application/xml' && !properties.exportLinks.xml) {
-            properties.exportLinks.xml = properties.links[i].href
-            properties.links.splice(i,1)
-          }
-        }
-        delete properties.links
-      }
+    //     }
+    //     delete properties.services
+    //   }
+    //   if( !properties.exportLinks) {
+    //     properties.exportLinks = {}
+    //   }
+    //   // @todo Flatsim cas particulier des LIENS D'EXPORT qui se trouve dans link
+    //   if (properties.links) {
+    //     var i = properties.links.length
+    //     while (i--) {
+    //       if (properties.links[i].type === 'application/json' && !properties.exportLinks.json) {
+    //         properties.exportLinks.json = properties.links[i].href
+    //         properties.links.splice(i,1)
+    //       }
+    //       if (properties.links[i].type === 'application/xml' && !properties.exportLinks.xml) {
+    //         properties.exportLinks.xml = properties.links[i].href
+    //         properties.links.splice(i,1)
+    //       }
+    //     }
+    //     delete properties.links
+    //   }
 
-      if (!properties.contacts) {
-        properties.contacts = {metadata: {}, resource: {}}
-        if (properties.organisationName) {
-          if (typeof properties.organisationName === 'string') {
-            var responsible = new Array(10)
-            responsible[0] = 'Point of contact'
-            responsible[2] = properties.organisationName
-            properties.contacts.metadata['Point of contact'] = [responsible]
-            delete properties.organisationName
-          }
-        }
-      }
-     /* if (properties.keywords) {
-        properties.keywordGroup = {}
-        properties.keywords.forEach(function (keyword) {
-          if (!properties.keywordGroup[keyword.type]) {
-            properties.keywordGroup[keyword.type] = [{value: keyword.name}]
-          } else {
-            properties.keywordGroup[keyword.type].push({value: keyword.name})
-          }
-        })
-        delete properties.keywords
-      }*/
-      if (properties.keywords) {
-        properties.keyword = []
-        properties.keywords.forEach(function (keyword) {
-          properties.keyword.push(keyword.name)
-        })
-        delete properties.keywords
-      }
-      return properties
-    },
+    //   if (!properties.contacts) {
+    //     properties.contacts = {metadata: {}, resource: {}}
+    //     if (properties.organisationName) {
+    //       if (typeof properties.organisationName === 'string') {
+    //         var responsible = new Array(10)
+    //         responsible[0] = 'Point of contact'
+    //         responsible[2] = properties.organisationName
+    //         properties.contacts.metadata['Point of contact'] = [responsible]
+    //         delete properties.organisationName
+    //       }
+    //     }
+    //   }
+    //  /* if (properties.keywords) {
+    //     properties.keywordGroup = {}
+    //     properties.keywords.forEach(function (keyword) {
+    //       if (!properties.keywordGroup[keyword.type]) {
+    //         properties.keywordGroup[keyword.type] = [{value: keyword.name}]
+    //       } else {
+    //         properties.keywordGroup[keyword.type].push({value: keyword.name})
+    //       }
+    //     })
+    //     delete properties.keywords
+    //   }*/
+    //   if (properties.keywords) {
+    //     properties.keyword = []
+    //     properties.keywords.forEach(function (keyword) {
+    //       properties.keyword.push(keyword.name)
+    //     })
+    //     delete properties.keywords
+    //   }
+    //   return properties
+    // },
     // @todo DEPLACER DANS FORM VOIR MÊME DANS formater-dimension-block/ formater-facet-block!!
 //     prepareFacet (e) {
 //       var facet = ''
@@ -775,7 +766,6 @@ export default {
 //     },
     fill (data, depth) {
       data.depth = this.depth
-      console.log(data)
       var event = new CustomEvent('fmt:metadataListEvent', {detail:  data})
       document.dispatchEvent(event)
     },

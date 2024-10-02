@@ -873,7 +873,6 @@ const GeonetworkPlugin = {
              }
              delete meta.responsibleParty
              meta.contacts = contacts
-             console.log(meta.contacts.metadata)
              if (!meta.link) {
                return meta;
              }
@@ -960,7 +959,6 @@ const GeonetworkPlugin = {
              return download;
            },
            linkToLink (obj) {
-            console.log(obj)
              var link = {
                  title:  this.translateObj(obj.nameObject),
                  description:  this.translateObj(obj.descriptionObject),
