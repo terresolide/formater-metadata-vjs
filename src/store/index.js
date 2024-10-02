@@ -67,6 +67,7 @@ export default function makeStore( config ) {
             },
             meta: {
               type: 'facet',
+              thesaurus: 'formater-discipline',
               label: 'formaterDiscipline',
               icon: 'fa fa-graduation-cap'
             }
@@ -79,6 +80,7 @@ export default function makeStore( config ) {
             }, 
             meta: {
               type: 'facet',
+              thesaurus: 'formater-platform-gn',
               label: 'formaterPlatform',
               icon: 'fa fa-rocket'
             } 
@@ -91,6 +93,7 @@ export default function makeStore( config ) {
             },
             meta: {
               type: 'dimension',
+              thesaurus: 'formaterre-collections',
               label: 'Collections'
             }
           }

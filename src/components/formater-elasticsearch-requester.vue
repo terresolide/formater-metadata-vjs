@@ -371,7 +371,7 @@ export default {
 //       this.$store.commit('searchingChange', false)
 //     },
     treatmentElasticsearch (data, depth) {
-       var dimension = this.treatmentAggregations(data.aggregations)
+       this.treatmentAggregations(data.aggregations)
        var metadatas = {}
        var features = []
        var self = this
@@ -395,7 +395,7 @@ export default {
         from: this.parameters.from + 1,
         to: this.parameters.from + features.length,
         total: data.hits.total.value,
-        dimension: dimension
+        dimension: []
        }
        
       data.metadata = metadatas
@@ -445,76 +445,119 @@ export default {
     // },
     treatmentAggregations (aggs) {
       var aggregations = []
+      var promises = []
       for(var key in aggs) {
-        aggregations.push(this.prepareAggregations(key, aggs[key]))
-      }
-      return aggregations
-    },
-    
-    prepareAggregations(key, agg) {
-      console.log(agg)
-      var aggregation = {
-        '@name': key,
-        '@label': agg.meta && agg.meta.label ? agg.meta.label : key,
-        category: []
-      }
-      var dimension = agg.meta && agg.meta.type && agg.meta.type === 'dimension'
-      var toTranslate = []
-      var buckets = agg.buckets
-      var categories = {}
-      var gnGroups = this.$gn.groups
-      var lang = this.$store.state.lang
-      buckets.forEach(function (item, index) {
         
-        // buckets[index].keys = keys
-        buckets[index]['@value'] = item.key
-        if (dimension) {
-          if (key === 'groupOwner') {
-            var label = gnGroups[item.key].label[lang]
-            console.log(label)
-          } else {
-            var label = item.key
-          }
-          aggregation.category.push({
-            '@name': label,
-            '@label': label,
-            '@value': item.key,
-            '@count': item.doc_count
-          })
-        } else {
-          var keys = item.key.split('^')
-          var uri = keys.pop()
-          toTranslate.push(uri)
-          buckets[index].parent = keys.join('^')
-          buckets[index].length = keys.length
-          buckets[index]['@name'] = item.key
-          buckets[index]['@label'] = item.key
-          buckets[index]['@value'] = uri
-          buckets[index]['@count'] = item.doc_count
-          delete item.doc_count
+        promises.push(this.prepareAggregations(key, aggs[key]))
+       
+      }
+      console.log(promises)
+      Promise.all(promises)
+      .then((values) => {
+        var data = { dimension: values}
+        data.depth = this.depth
+      console.log(data)
+      var event = new CustomEvent('fmt:dimensionEvent', {detail:  data})
+      document.dispatchEvent(event)
+      })
+
+    
+    },
+    translate(thesaurus, uris) {
+      var self = this
+      return new Promise(function (resolve, reject) {
+        var id = uris.join(',')
+        var lang = self.$store.state.lang === 'fr' ? 'fre' : 'eng'
+        var url = self.$store.state.geonetwork + 'srv/api/registries/vocabularies/keyword?id=' + encodeURIComponent(id) + '&thesaurus=' + thesaurus + '&lang=' + lang
+        self.$http.get(url, {headers: {'accept': 'application/json'}})
+        .then(resp => {
+          resolve(resp.body)
+        })
+      })
+      
+    },
+    prepareAggregations(key, agg) {
+      var self = this
+      return new Promise(function (resolve, reject) {
+        console.log(agg)
+        var aggregation = {
+          '@name': key,
+          '@label': agg.meta && agg.meta.label ? agg.meta.label : key,
+          category: []
         }
+        var dimension = agg.meta && agg.meta.type && agg.meta.type === 'dimension'
+      
+        var buckets = agg.buckets
+        var categories = {}
+        var gnGroups = self.$gn.groups
+        var lang = self.$store.state.lang
+        var toTranslate = []
+        var thesaurus = agg.meta.thesaurus || null
+      
+        buckets.forEach(function (item, index) {
+
+
+          // buckets[index].keys = keys
+          buckets[index]['@value'] = item.key
+          if (dimension) {
+            if (key === 'groupOwner') {
+              var label = gnGroups[item.key].label[lang]
+              console.log(label)
+            } else {
+              var label = item.key
+            }
+            aggregation.category.push({
+              '@name': label,
+              '@label': label,
+              '@value': item.key,
+              '@count': item.doc_count
+            })
+          } else {
+            var keys = item.key.split('^')
+            var uri = keys.pop()
+            toTranslate.push(uri)
+            buckets[index].parent = keys.join('^')
+            buckets[index].length = keys.length
+            buckets[index]['@name'] = item.key
+            buckets[index]['@label'] = item.key
+            buckets[index]['@value'] = uri
+            buckets[index]['@count'] = item.doc_count
+            delete item.doc_count
+          }
+          
+        })
+        // translate
+
+        if (dimension) {
+          resolve(aggregation)
+          return
+        }
+        self.translate(thesaurus, toTranslate)
+        .then(translated => {
+          console.log(translated)
+          buckets.forEach(function (item, index) {
+            if (translated[item['@value']]) {
+              buckets[index]['@label'] = translated[item['@value']]
+            }
+          })
+          console.log(buckets)
+          const arrayToTree = (arr, parent = '') =>
+          arr.filter(item => item.parent === parent)
+          .map(child => { 
+            var category = arrayToTree(arr, child.key)
+            if (category.length > 0) {
+              child.category = category
+            }
+            return child
+          });
+          var category = arrayToTree(buckets)
+
+          aggregation.category = category
+          console.log(category)
+          resolve(aggregation)
+        })
         
       })
-      // translate
-      if (dimension) {
-        return aggregation
-      }
-      
-      const arrayToTree = (arr, parent = '') =>
-        arr.filter(item => item.parent === parent)
-        .map(child => { 
-          var category = arrayToTree(arr, child.key)
-          if (category.length > 0) {
-            child.category = category
-          }
-          return child
-      });
-      var category = arrayToTree(buckets)
-
-      aggregation.category = category
-      console.log(category)
-      return aggregation
-
     },
     // remove groupOwner if only one group choose in app parameters
     treatmentDimension (dimensions) {

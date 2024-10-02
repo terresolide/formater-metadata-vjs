@@ -57,7 +57,7 @@
 :color="$store.state.style.primary" :header-icon-class="facetToIcon(dim['@name'])" open-icon-class="fa fa-caret-right" :title="titleDimension(dim['@name'])"  
 :disable-level="depth > 0 ? 1 : 0" type="empty">
   <formater-dimension-block v-if="!isFacet(dim['@name'])"   :dimension="dim.category" :name="dim['@name']" :disable="depth > 0"></formater-dimension-block>
-  <formater-facet-block v-if="isFacet(dim['@name'])"   :dimension="dim['@name'].category" :name="dim['@name']" 
+  <formater-facet-block v-if="isFacet(dim['@name'])"   :dimension="dim.category" :name="dim['@name']" 
   :disable="depth > 0" :defaut="dim['@name']"></formater-facet-block>
  </formater-search-box>
 </div>
@@ -158,7 +158,7 @@ export default {
       nameToIndex: [],
       // aerisSearchListener: null,
       // aerisResetListener: null,
-      metadataListListener: null,
+      dimensionListener: null,
       temporalChangedListener: null,
       pageChangedListener: null
      // closeMetadataListener: null
@@ -188,8 +188,8 @@ export default {
 //     document.addEventListener('aerisSearchEvent', this.aerisSearchListener)
 //     this.aerisResetListener = this.handleReset.bind(this)
 //     document.addEventListener('aerisResetEvent', this.aerisResetListener)
-    this.metadataListListener = this.fill.bind(this)
-    document.addEventListener('fmt:metadataListEvent', this.metadataListListener)
+    this.dimensionListener = this.fill.bind(this)
+    document.addEventListener('fmt:dimensionEvent', this.dimensionListener)
   },
   mounted () {
     this.handleTheme()
@@ -204,8 +204,8 @@ export default {
     document.removeEventListener('temporalChangeEvent', this.temporalChangedListener);
     this.temporalChangedListener = null;
 
-    document.removeEventListener('fmt:metadataListEvent', this.metadataListListener)
-    this.metadataListListener = null;
+    document.removeEventListener('fmt:dimensionEvent', this.dimensionListener)
+    this.dimensionListener = null;
   },
 //   beforeRouteUpdate (to, from, next) {
 //     console.log(to)
@@ -312,12 +312,12 @@ export default {
 //     },
 
     fill (e) {
-      if (!e.detail.summary) {
+      if (!e.detail.dimension) {
         this.first = false
         return
       }
      
-      var  newdimensions = this.initializeDimensions(e.detail.summary.dimension)
+      var  newdimensions = this.initializeDimensions(e.detail.dimension)
       this.updateDimensions(this.dimensions, newdimensions, true)  
       console.log(this.dimensions)
       if (e.detail.depth === 0) {
