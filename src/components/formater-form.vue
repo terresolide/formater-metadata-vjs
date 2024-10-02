@@ -188,12 +188,17 @@ export default {
   methods: {
     initFacets (route) {
       // extract facets
+     
       for(var key in route.query) {
         if (['start', 'end', 'any', 'box'].indexOf(key) < 0) {
           this.facets[key] = route.query[key]
         }
       }
-      console.log(this.facets)
+      for(var key in this.facets) {
+         if (!route.query[key]) {
+          this.facets[key] = ''
+         } 
+      }
     },
     initValues (newroute) {
       this.initFacets(newroute)
@@ -282,13 +287,12 @@ export default {
       }
       var  newdimensions = this.initializeDimensions(e.detail.dimension)
       this.updateDimensions(this.dimensions, newdimensions, true)  
-      console.log(this.dimensions)
+
       if (e.detail.depth === 0) {
         // remove all step2 dimension
         this.removeStep2Dimensions()
       }
       this.reverseKeyDimensions()
-      console.log(this.dimensions)
     },
     removeStep2Dimensions() {
       for(var i=this.dimensions.length - 1; i >= 0; i--) {
@@ -325,8 +329,6 @@ export default {
       return dimension
     },
     updateDimensions (dimensions, newdimensions, root) {
-      console.log(dimensions)
-      console.log(newdimensions)
       if (!dimensions) {
         return null
       }
@@ -373,8 +375,6 @@ export default {
           dimensions.push(newdimension)
         } 
       })
-      console.log(dimensions)
-      console.log(newdimensions)
       // order dimension by name
       dimensions.sort(function (a, b) {
         if (a['@label']) {

@@ -452,7 +452,7 @@ export default {
         aggregations.push(aggs[key]) 
        
       }
-      aggregations.sort((a,b) => a.meta.sort - b.meta.sort)
+      aggregations.sort(function (a,b) { return a.meta.sort - b.meta.sort})
       for(var i in aggregations) {
         promises.push(this.prepareAggregations(aggregations[i]))
       }
