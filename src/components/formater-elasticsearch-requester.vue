@@ -446,19 +446,25 @@ export default {
     treatmentAggregations (aggs) {
       var aggregations = []
       var promises = []
+      var aggregations = []
       for(var key in aggs) {
-        
-        promises.push(this.prepareAggregations(key, aggs[key]))
+        aggs[key].key = key
+        aggregations.push(aggs[key]) 
        
       }
-      console.log(promises)
+      console.log(aggregations)
+      aggregations.sort((a,b) => a.meta.sort - b.meta.sort)
+      for(var i in aggregations) {
+        promises.push(this.prepareAggregations(aggregations[i]))
+      }
       Promise.all(promises)
       .then((values) => {
+        console.log(values)
         var data = { dimension: values}
         data.depth = this.depth
-      console.log(data)
-      var event = new CustomEvent('fmt:dimensionEvent', {detail:  data})
-      document.dispatchEvent(event)
+        console.log(data)
+        var event = new CustomEvent('fmt:dimensionEvent', {detail:  data})
+        document.dispatchEvent(event)
       })
 
     
@@ -476,19 +482,25 @@ export default {
       })
       
     },
-    prepareAggregations(key, agg) {
+    prepareAggregations(agg) {
       var self = this
       return new Promise(function (resolve, reject) {
-        console.log(agg)
+        var label = agg.key
+        var lang = self.$store.state.lang
+        if (agg.meta && agg.meta.label) {
+          label = agg.meta.label[lang] ? agg.meta.label[lang] : agg.meta.label
+        }
+       
         var aggregation = {
-          '@name': key,
-          '@label': agg.meta && agg.meta.label ? agg.meta.label : key,
+          '@name': agg.key,
+          label: label,
+          meta: agg.meta,
           category: []
         }
+        console.log(aggregation)
         var dimension = agg.meta && agg.meta.type && agg.meta.type === 'dimension'
       
         var buckets = agg.buckets
-        var categories = {}
         var gnGroups = self.$gn.groups
         var lang = self.$store.state.lang
         var toTranslate = []
@@ -500,7 +512,7 @@ export default {
           // buckets[index].keys = keys
           buckets[index]['@value'] = item.key
           if (dimension) {
-            if (key === 'groupOwner') {
+            if (agg.key === 'groupOwner') {
               var label = gnGroups[item.key].label[lang]
               console.log(label)
             } else {

@@ -100,6 +100,7 @@ export default {
 //     }
   },
   mounted () {
+    console.log(this.value)
     this.name = this.label.split('|').pop()
    if (this.defaut && this.defaut.indexOf(this.value)>=0) {
      this.isChecked = true;
@@ -180,7 +181,7 @@ export default {
       }
     },
     childValue (index) {
-      var val = this.value ? (this.value + '/') : '';
+      var val = this.value ? (this.value + '^') : '';
       val += encodeURIComponent(this.dimension.category[index]['@value'])
       return val;
     }

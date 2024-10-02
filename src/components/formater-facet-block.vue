@@ -115,17 +115,16 @@ export default {
       for (var prop in this.$route.query) {
         query[prop] = this.$route.query[prop]
       }
-	    var facets = {}
-	    // extract all facet if there is some
-	    if (query['facet.q']) {
-	      var tabs = decodeURIComponent(query['facet.q']).split('&')
+	    console.log(e)
+	    if (query[this.name]) {
+	      var tabs = decodeURIComponent(query[this.name]).split('&')
 	      tabs.forEach(function (tab) {
 	        var x = tab.split('/')
 	        facets[x[0]] = x[1]
 	      })
 
 	    }
-      if (e.detail[this.filteredName] !== '') {
+      if (e.detail[this.name] !== '') {
         facets[this.filteredName] =  e.detail[this.filteredName]
       } else {
         delete facets[this.filteredName]

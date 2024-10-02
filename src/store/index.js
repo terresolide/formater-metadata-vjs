@@ -56,10 +56,12 @@ export default function makeStore( config ) {
             },
             meta: {
               type: 'dimension',
-              icon: 'fa fa-object-group'
+              icon: 'fa fa-database',
+              label: {fr: 'Catalogue', en: 'Catalog'},
+              sort: 1
             }
           },
-          facetDiscipline: {
+          discipline: {
             terms:{
               field: 'th_formater-discipline_tree.key',
               order: {_key: 'asc'},
@@ -68,11 +70,12 @@ export default function makeStore( config ) {
             meta: {
               type: 'facet',
               thesaurus: 'formater-discipline',
-              label: 'formaterDiscipline',
-              icon: 'fa fa-graduation-cap'
+              icon: 'fa fa-graduation-cap',
+              label: {fr: 'Disciplines', en: 'Disciplines'},
+              sort: 2
             }
           },
-          facetPlatform: {
+          platform: {
             terms: {
               field: 'th_formater-platform-gn_tree.key',
               order: {_key: 'asc'},
@@ -81,7 +84,8 @@ export default function makeStore( config ) {
             meta: {
               type: 'facet',
               thesaurus: 'formater-platform-gn',
-              label: 'formaterPlatform',
+              label: {fr: 'Platformes', en: 'Platform'},
+              sort: 3,
               icon: 'fa fa-rocket'
             } 
           },
@@ -94,7 +98,8 @@ export default function makeStore( config ) {
             meta: {
               type: 'dimension',
               thesaurus: 'formaterre-collections',
-              label: 'Collections'
+              label: 'Collections',
+              sort:4
             }
           }
         }
