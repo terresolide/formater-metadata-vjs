@@ -58,7 +58,7 @@
 :disable-level="depth > 0 ? 1 : 0" type="empty">
   <formater-dimension-block v-if="dim.meta.type === 'dimension'"   :dimension="dim.category" :name="dim['@name']" :disable="depth > 0"></formater-dimension-block>
   <formater-facet-block v-else   :dimension="dim.category" :name="dim['@name']" 
-  :disable="depth > 0" :defaut="dim['@name']"></formater-facet-block>
+  :disable="depth > 0" :defaut="facets[dim['@name']]"></formater-facet-block>
  </formater-search-box>
 </div>
 
@@ -188,20 +188,15 @@ export default {
   methods: {
     initFacets (route) {
       // extract facets
-      var facets = []
-      if (route.query['facet.q']) {
-        var tabs = decodeURIComponent(route.query['facet.q']).split('&')
-        tabs.forEach(function (tab) {
-          var x = tab.split('/')
-          var key = x[0]
-          x.slice(1)
-          facets[x[0]] = x.join('/')
-        })
+      for(var key in route.query) {
+        if (['start', 'end', 'any', 'box'].indexOf(key) < 0) {
+          this.facets[key] = route.query[key]
+        }
       }
-      this.facets = facets
+      console.log(this.facets)
     },
     initValues (newroute) {
-      this.initFacets(this.$route)
+      this.initFacets(newroute)
       if (!newroute.query.any) {
         this.fulltextSearch = null
       } else {

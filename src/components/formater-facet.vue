@@ -78,6 +78,7 @@ export default {
   },
   watch: {
     defaut (newvalue) {
+        
          // if new facet value is in the item value
 	      if (newvalue && newvalue.indexOf(this.value) >= 0) {
 	        this.isChecked = true
@@ -101,6 +102,8 @@ export default {
   },
   mounted () {
     this.name = this.label.split('|').pop()
+    console.log(this.defaut)
+    console.log(this.value)
    if (this.defaut && this.defaut.indexOf(this.value)>=0) {
      this.isChecked = true;
    } else {

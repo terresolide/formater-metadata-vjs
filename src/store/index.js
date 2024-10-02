@@ -84,7 +84,7 @@ export default function makeStore( config ) {
             meta: {
               type: 'facet',
               thesaurus: 'formater-platform-gn',
-              label: {fr: 'Platformes', en: 'Platform'},
+              label: {fr: 'Plateformes', en: 'Platform'},
               sort: 3,
               icon: 'fa fa-rocket'
             } 
