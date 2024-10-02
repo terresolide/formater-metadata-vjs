@@ -66,23 +66,23 @@
 
 </template>
 <script>
-var iconClass = {
-    type: 'fa fa-object-group',
-    groupOwner: 'fa fa-database',
-    facetGemet: 'fa fa-navicon',
-    facetGemetFre: 'fa fa-navicon',
-    facetVariable: 'fa fa-thermometer-half',
-    facetVariableFre: 'fa fa-thermometer-half',
-    facetPlatform: 'fa fa-rocket',
-    facetPlatformFre: 'fa fa-rocket',
-    facetDiscipline: 'fa fa-graduation-cap',
-    facetDisciplineFre: 'fa fa-graduation-cap',
-    facetFoi: 'fa fa-map-marker',
-    facetFoiFre: 'fa fa-map-marker',
-    facetProduct: 'fa fa-file-image-o', 
-    facetProductFre: 'fa fa-file-image-o', 
-    facetInstrument: 'fa fa-calculator'
-}
+// var iconClass = {
+//     type: 'fa fa-object-group',
+//     groupOwner: 'fa fa-database',
+//     facetGemet: 'fa fa-navicon',
+//     facetGemetFre: 'fa fa-navicon',
+//     facetVariable: 'fa fa-thermometer-half',
+//     facetVariableFre: 'fa fa-thermometer-half',
+//     facetPlatform: 'fa fa-rocket',
+//     facetPlatformFre: 'fa fa-rocket',
+//     facetDiscipline: 'fa fa-graduation-cap',
+//     facetDisciplineFre: 'fa fa-graduation-cap',
+//     facetFoi: 'fa fa-map-marker',
+//     facetFoiFre: 'fa fa-map-marker',
+//     facetProduct: 'fa fa-file-image-o', 
+//     facetProductFre: 'fa fa-file-image-o', 
+//     facetInstrument: 'fa fa-calculator'
+// }
 // import {FormaterSearchBox} from 'formater-commons-components-vjs'
 //  import FormaterTemporalSearch from './formater-temporal-search.vue'
 
@@ -254,9 +254,6 @@ export default {
 			  self.$gn.addFacet(facet)
 		  })
 	  },
-    facetToIcon (key) {
-      return iconClass[key]
-    },
     titleDimension (key) {
       return this.$i18n.t(this.dimensions[this.nameToIndex[key]]['@label'])
     },

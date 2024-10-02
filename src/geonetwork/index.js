@@ -595,6 +595,9 @@ const GeonetworkPlugin = {
              }
            },
            translateObj (obj) {
+             if (!obj) {
+              return  ''
+             }
              if (obj['lang' + this.lang]) {
               return obj['lang' + this.lang]
              }
@@ -957,10 +960,11 @@ const GeonetworkPlugin = {
              return download;
            },
            linkToLink (obj) {
+            console.log(obj)
              var link = {
                  title:  this.translateObj(obj.nameObject),
-                 description: 'éééé', // this.translateObj(obj.descriptionObject),
-                 href:  'xxxx', // this.translateObj(obj.urlObject),
+                 description:  this.translateObj(obj.descriptionObject),
+                 href:  this.translateObj(obj.urlObject),
                  type: obj.protocol
              }
              return link

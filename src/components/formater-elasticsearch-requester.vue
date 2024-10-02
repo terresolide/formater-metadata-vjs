@@ -452,8 +452,9 @@ export default {
         aggregations.push(aggs[key]) 
        
       }
-      console.log(aggregations)
+  
       aggregations.sort((a,b) => a.meta.sort - b.meta.sort)
+      console.log(aggregations)
       for(var i in aggregations) {
         promises.push(this.prepareAggregations(aggregations[i]))
       }
@@ -572,56 +573,56 @@ export default {
       })
     },
     // remove groupOwner if only one group choose in app parameters
-    treatmentDimension (dimensions) {
-      if (this.$store.state.group.length === 1) {
-        if (!dimensions) {
-          dimensions = []
-        } else if (!Array.isArray(dimensions)) {
-          dimensions = [dimensions]
-        }
-        var find = dimensions.findIndex(function (dimension) {
-          return dimension['@name'] === 'groupOwner'
-        })
-        if (find >= 0) {
-          dimensions.splice(find, 1)
-        }
-      }
-    },
-    searchGnStep2Parameters (dimension) {
-      if (this.first) {
-        // register dimension in store
-        if (this.depth === 0) {
-          this.$store.commit('gnParametersChange', {step:1, dimension: dimension})
-        }
-        // this.$store.commit('gnParametersChange', {step:2, dimension:[]})
-        // search summary for all record (including child dataset) for step 2
-        if (this.$store.state.summaryType.step1 !== this.$store.state.summaryType.step2) {
+    // treatmentDimension (dimensions) {
+    //   if (this.$store.state.group.length === 1) {
+    //     if (!dimensions) {
+    //       dimensions = []
+    //     } else if (!Array.isArray(dimensions)) {
+    //       dimensions = [dimensions]
+    //     }
+    //     var find = dimensions.findIndex(function (dimension) {
+    //       return dimension['@name'] === 'groupOwner'
+    //     })
+    //     if (find >= 0) {
+    //       dimensions.splice(find, 1)
+    //     }
+    //   }
+    // },
+    // searchGnStep2Parameters (dimension) {
+    //   if (this.first) {
+    //     // register dimension in store
+    //     if (this.depth === 0) {
+    //       this.$store.commit('gnParametersChange', {step:1, dimension: dimension})
+    //     }
+    //     // this.$store.commit('gnParametersChange', {step:2, dimension:[]})
+    //     // search summary for all record (including child dataset) for step 2
+    //     if (this.$store.state.summaryType.step1 !== this.$store.state.summaryType.step2) {
           
-          // var depth = (typeof this.parameters.depth != 'undefined') ? this.parameters.depth : this.depth
-          var headers =  {
-              'Accept': 'application/json, text/plain, */*',
-              'Accept-Language': this.$store.state.lang === 'fr' ? 'fre': 'eng'
-           }
-          var parameters = {
-              _content_type: 'json',
-              from:1,
-              to: 9,
-              type: 'dataset+or+series+or+publications',
-              resultType: this.$store.state.summaryType.step2
-          }
-          var url = this.srv + 'q?' + Object.keys(parameters).map(function (prop) {
-            return prop + '=' + parameters[prop]
-          }).join('&');
-          this.$http.get(url, {headers: headers}).then(
-            response => {  this.addGnParameters(response.body);}
-          )
-          this.first = false
-        }
-      }
-    },
-    addGnParameters(data) {
-      this.$store.commit('gnParametersChange', {step:2, dimension:data.summary.dimension})
-    },
+    //       // var depth = (typeof this.parameters.depth != 'undefined') ? this.parameters.depth : this.depth
+    //       var headers =  {
+    //           'Accept': 'application/json, text/plain, */*',
+    //           'Accept-Language': this.$store.state.lang === 'fr' ? 'fre': 'eng'
+    //        }
+    //       var parameters = {
+    //           _content_type: 'json',
+    //           from:1,
+    //           to: 9,
+    //           type: 'dataset+or+series+or+publications',
+    //           resultType: this.$store.state.summaryType.step2
+    //       }
+    //       var url = this.srv + 'q?' + Object.keys(parameters).map(function (prop) {
+    //         return prop + '=' + parameters[prop]
+    //       }).join('&');
+    //       this.$http.get(url, {headers: headers}).then(
+    //         response => {  this.addGnParameters(response.body);}
+    //       )
+    //       this.first = false
+    //     }
+    //   }
+    // },
+    // addGnParameters(data) {
+    //   this.$store.commit('gnParametersChange', {step:2, dimension:data.summary.dimension})
+    // },
 //     updateGeonetworkContacts (data) {
 //       data.responsibleParty.forEach( function (contact)  {
 //           var fields = contact.split('|');
@@ -642,6 +643,7 @@ export default {
 //       })
 //     },
     mapToGeonetwork (properties) {
+      console.log(properties)
       var properties = Object.assign({}, properties)
       properties.fromOs = true
       if (properties.productIdentifier) {

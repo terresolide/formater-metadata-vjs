@@ -115,29 +115,13 @@ export default {
       for (var prop in this.$route.query) {
         query[prop] = this.$route.query[prop]
       }
-	    console.log(e)
-	    if (query[this.name]) {
-	      var tabs = decodeURIComponent(query[this.name]).split('&')
-	      tabs.forEach(function (tab) {
-	        var x = tab.split('/')
-	        facets[x[0]] = x[1]
-	      })
-
-	    }
+	    
       if (e.detail[this.name] !== '') {
-        facets[this.filteredName] =  e.detail[this.filteredName]
+        query[this.name] =  e.detail[this.name]
       } else {
-        delete facets[this.filteredName]
+        delete query[this.name]
       }
-      if (Object.keys(facets).length === 0) {
-        delete query['facet.q']
-      } else {
-        // rebuild facet
-        var strFacet = Object.keys(facets).map(function (prop) {
-          return prop + '/' + facets[prop]
-        }).join('&');
-        query['facet.q'] = encodeURIComponent(strFacet)
-      }
+      
       this.$router.push({name: this.$route.name, params: this.$route.params, query: query})
 // 	    var event = new CustomEvent('fmt:dimensionChangeEvent', {detail: e.detail})
 // 	    document.dispatchEvent(event)
