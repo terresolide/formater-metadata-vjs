@@ -607,7 +607,7 @@ const GeonetworkPlugin = {
              delete meta.download
              var lang = this.locale
              var self = this
-             meta._source.link.forEach(lk => {
+             meta._source.link.forEach((lk, index) => {
              switch(lk.protocol) {
                 case 'OpenSearch':
                 case 'SensorThings':
@@ -627,11 +627,11 @@ const GeonetworkPlugin = {
                 case 'OGC API - Tiles':
                 case 'OGC Web Map Service':
                 case 'GLG:KML-2.0-http-get-map':
-                    if (meta.layers) {
+                    if (!meta.layers) {
                       meta.layers = []
                     }
                      var id = meta.id + '_' + index
-                     meta.layers.push(self.linkToLayer(link, id))
+                     meta.layers.push(self.linkToLayer(lk, id))
                    break;
                 case 'application/vnd.google-earth.kml+xml':
                    break;
@@ -800,7 +800,12 @@ const GeonetworkPlugin = {
                 meta.tempExtentEnd = meta._source.resourceTemporalExtentDetails[0].end.date
               }
               meta.group = meta._source.groupOwner
+              if (meta._source.cl_status) {
               meta.status = meta._source.cl_status[0].key
+              } else {
+                meta.status = null
+                console.log('MISSING STATUS ', meta.title)
+              }
               meta.type = meta._source.cl_hierarchyLevel[0].key
               this.treatmentLinks(meta)
               delete meta._source
