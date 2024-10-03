@@ -2,8 +2,8 @@
 <template>
  <div class="mtdt-dimension-block">
       	
-	      	<formater-dimension :ref="filteredName" :disable="disable" :value="item.value" :checked="item.checked"
-	      	 v-for="(item,index) in values" :dimension="item" :key="index" :name="filteredName" @change="change"></formater-dimension>
+	      	<formater-dimension :ref="name" :disable="disable" :value="item.value" :checked="item.checked"
+	      	 v-for="(item,index) in values" :dimension="item" :key="index" :name="name" @change="change"></formater-dimension>
  </div>
 </template>
 <script>
@@ -41,14 +41,6 @@ export default {
   },
   computed: {
 
-    filteredName () {
-      switch (this.name) {
-      case 'groupOwner':
-        return '_' + this.name;
-      default:
-        return this.name
-      }
-    }
   },
   watch:{
     dimension (newvalue) {
@@ -58,8 +50,8 @@ export default {
   methods: {
     fill () {
       var checked = []
-      if (this.$route.query[this.filteredName]) {
-        var param = decodeURIComponent(this.$route.query[this.filteredName])
+      if (this.$route.query[this.name]) {
+        var param = decodeURIComponent(this.$route.query[this.name])
         var checked = param.split('+or+')
       }
       var dimensions = []
@@ -80,7 +72,7 @@ export default {
     },
     change (event) {
       var values = []
-      this.$refs[this.filteredName].forEach(function (dimension) {
+      this.$refs[this.name].forEach(function (dimension) {
         var value = dimension.getValue()
         if (value !== null) {
           values.push(value)
@@ -92,9 +84,9 @@ export default {
         query[prop] = this.$route.query[prop]
       }
       if (values.length > 0) {
-        query[this.filteredName] = values.join('+or+')
+        query[this.name] = values.join('+or+')
       } else {
-        delete query[this.filteredName]
+        delete query[this.name]
       }
       this.$router.push({name: this.$route.name, params: this.$route.params, query: query})
     }

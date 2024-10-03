@@ -178,6 +178,43 @@ export default {
        // this.parameters.isChild = false
        this.parameters.aggregations = this.$store.state.aggregations.step1
       }
+      if (route.query.box) {
+        
+        var tab = route.query.box.split(',')
+        if (tab.length === 4) {
+          this.parameters.query.bool.filter.push({
+            geo_bounding_box: {
+              location: {
+                bottom_left: {
+                  lat: parseFloat(tab[1]),
+                  lon: parseFloat(tab[0])
+                },
+                top_right: {
+                  lat: parseFloat(tab[3]),
+                  lon: parseFloat(tab[2])
+                }
+              }
+            }
+          })
+        }
+      }
+      var aggregations = this.$store.state.aggregations.step1
+      for(var key in aggregations) {
+        if (route.query [key]) {
+          if (aggregations[key].meta.type === 'dimension') {
+            var terms = {}
+            var q = decodeURIComponent(route.query[key])
+            var values = q.split('+or+')
+            terms[aggregations[key].terms.field] = values
+            this.parameters.query.bool.filter.push({terms: terms})
+          } else {
+            var term = {}
+            term[aggregations[key].terms.field] = decodeURIComponent(route.query[key])
+            this.parameters.query.bool.filter.push({term: term})
+          }
+        }
+      }
+      console.log(this.parameters)
 //       if (e.detail.depth > 0) {
 //         // voir plutôt les key à éliminer centre de données, variable, instruments, gemet, types?
 //         for(var key in e.detail) {
@@ -272,6 +309,7 @@ export default {
 
       var self = this
       // parameters according to depth
+     
     //   if (route.name === 'FormaterCatalogue') {
     //  // if (depth === 0) {
     //     // remove all parameters coming from step2 (normally there is not)
@@ -303,9 +341,9 @@ export default {
       // this.$router.push({name: 'FormaterCatalogue', query:this.parameters})
       // this.parameters.sortOrder =  this.parameters.sortBy === 'title' ? 'ordering': 'reverse';
       console.log(this.srv)
-      var url = this.srv + 'q?' + Object.keys(this.parameters).map(function (prop) {
-        return prop + '=' + self.parameters[prop]
-      }).join('&');
+      // var url = this.srv + 'q?' + Object.keys(this.parameters).map(function (prop) {
+      //   return prop + '=' + self.parameters[prop]
+      // }).join('&');
       this.$http.post(this.srv, this.parameters, {headers: headers}).then(
         response => { 
           console.log(response.body)
@@ -404,7 +442,6 @@ export default {
         type: 'FeatureCollection',
         features: features
       }
-      console.log(data.summary.dimension)
       delete data.hits
       delete data.aggregations
       this.fill(data, depth)
@@ -448,9 +485,10 @@ export default {
       var promises = []
       var aggregations = []
       for(var key in aggs) {
-        aggs[key].key = key
-        aggregations.push(aggs[key]) 
-       
+        if (aggs[key].buckets.length > 0) {
+          aggs[key].key = key
+          aggregations.push(aggs[key]) 
+        }
       }
       aggregations.sort(function (a,b) { return a.meta.sort - b.meta.sort})
       for(var i in aggregations) {
@@ -503,7 +541,6 @@ export default {
         var thesaurus = agg.meta.thesaurus || null
       
         buckets.forEach(function (item, index) {
-
 
           // buckets[index].keys = keys
           buckets[index]['@value'] = item.key

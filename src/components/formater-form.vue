@@ -4,13 +4,6 @@
      "reset": "Reset search",
      "time_slot": "Time slot",
      "spatial_extent": "Spatial extent",
-     "groupOwners": "Data center",
-     "gemetKeywords": "Inspire Gemet Keywords",
-     "formaterVariable": "Variables",
-     "formaterDiscipline": "Disciplines",
-     "formaterPlatform": "Platforms",
-     "formaterFoi": "Feature of interest",
-     "formaterProduct": "Product types",
      "parameters": "Parameters"
    },
    "fr":{
@@ -18,13 +11,6 @@
       "reset": "Initialiser",
       "time_slot": "Intervalle temporel",
       "spatial_extent": "Zone géographique",
-      "groupOwners": "Centre de données",
-      "gemetKeywords": "Inspire Gemet Keywords",
-      "formaterVariable": "Variables",
-      "formaterDiscipline": "Disciplines",
-      "formaterPlatform": "Plateformes",
-      "formaterFoi": "Objets d'intérêt",
-      "formaterProduct": "Types de produit",
       "parameters": "Paramètres"
    }
 }
@@ -415,7 +401,7 @@ export default {
           groupOwner += group + '+or+'
         })
         if (groupOwner.length > 4) {
-          e.detail._groupOwner = groupOwner.substr(0, groupOwner.length -4)
+          e.detail.groupOwner = groupOwner.substr(0, groupOwner.length -4)
         }
       }
     },
