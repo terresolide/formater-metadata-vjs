@@ -169,7 +169,7 @@ export default {
 
 //      // delete e.detail.depth
 //       delete e.detail.recordPerPage
-     
+      
       if (route.name === 'Metadata') {
        this.parameters.aggregations = this.$store.state.aggregations.step1
        this.parameters.query.bool.filter.push({ term: {parentUuid: route.params.uuid}})
@@ -178,7 +178,12 @@ export default {
        // this.parameters.isChild = false
        this.parameters.aggregations = this.$store.state.aggregations.step1
       }
-      console.log(route.query.end)
+      if (route.query.from) {
+        this.parameters.from = parseInt(route.query.from) - 1
+      }
+      if (route.query.to) {
+        this.parameters.size = parseInt(route.query.to) - this.parameters.from
+      }
       if (route.query.start || route.query.end) {
         this.parameters.query.bool.filter.push({
           range: {
@@ -434,6 +439,9 @@ export default {
                 geometry: meta._source.geom
               }
               if (feature) {
+                    if (feature.geometry[0]) {
+                      feature.geometry = feature.geometry[0]
+                    }
                     features.push(feature)
               }
              metadatas[uuid] = self.$gn.treatmentMetaElasticsearch(meta ,uuid)
