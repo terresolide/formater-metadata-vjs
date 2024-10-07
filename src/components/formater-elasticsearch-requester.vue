@@ -133,19 +133,19 @@ export default {
 //         break
 //       }
 //     },
-    createGeometry (bbox) {
-      var split = bbox.split(',')
-      var north = split[3]
-      var south = split[1]
-      var east = split[2]
-      var west = split[0]
-      var box = 'POLYGON((' + west + '+' + north + ','
-        box += east + '+' + north + ',';
-        box += east + '+' + south + ',';
-        box += west + '+' + south + ',';
-        box += west + '+' + north + '))';
-      return box;
-    },
+    // createGeometry (bbox) {
+    //   var split = bbox.split(',')
+    //   var north = split[3]
+    //   var south = split[1]
+    //   var east = split[2]
+    //   var west = split[0]
+    //   var box = 'POLYGON((' + west + '+' + north + ','
+    //     box += east + '+' + north + ',';
+    //     box += east + '+' + south + ',';
+    //     box += west + '+' + south + ',';
+    //     box += west + '+' + north + '))';
+    //   return box;
+    // },
     prepareRequest(route) {
       
       this.initParameters()
@@ -183,6 +183,15 @@ export default {
       }
       if (route.query.to) {
         this.parameters.size = parseInt(route.query.to) - this.parameters.from
+      }
+      if (route.query.sortBy) {
+        // this.parameters.sort = [{changeDate: 'desc'}, {popularity: desc}]
+        if (route.query.sortBy === 'popularity') {
+          this.parameters.sort.reverse()
+        } 
+        // else if (route.query.sortBy === 'title') {
+        //   this.parameters.sort.unshift({'resourceTitleObject.fre': {order: 'asc'}})
+        // }
       }
       if (route.query.start || route.query.end) {
         this.parameters.query.bool.filter.push({
