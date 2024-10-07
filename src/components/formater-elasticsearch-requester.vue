@@ -173,7 +173,7 @@ export default {
       if (route.name === 'Metadata') {
        this.parameters.aggregations = this.$store.state.aggregations.step1
        this.parameters.query.bool.filter.push({ term: {parentUuid: route.params.uuid}})
-       delete this.parameters.bool.must_not
+       delete this.parameters.query.bool.must_not
       } else {
        // this.parameters.isChild = false
        this.parameters.aggregations = this.$store.state.aggregations.step1

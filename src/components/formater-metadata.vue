@@ -20,7 +20,7 @@
 </i18n>
 <template>
  <div class="mtdt-metadata mtdt-capsule" :class="{'fmt-free': depth === -1}">
-    <formater-requester  v-if="depth >= 0 && !protocol" :depth="depth"  ></formater-requester>
+    <formater-elasticsearch-requester  v-if="depth >= 0 && !protocol" :depth="depth"  ></formater-elasticsearch-requester>
       
       <formater-opensearch v-if="depth >= 0 && describe && protocol && protocol.toLowerCase()==='opensearch' " :access="access"
       :service="service" :cds="metadata.cds" :describe="describe" :uuid="uuid" :depth="depth"
@@ -86,7 +86,7 @@
 import FormaterExportLinks from './formater-export-links.vue'
 const FormaterPaging = () => import('./formater-paging.vue')
 const FormaterListMetadata = () => import('./formater-list-metadata.vue')
-const FormaterRequester = () => import('./formater-requester.vue')
+const FormaterElasticsearchRequester = () => import('./formater-elasticsearch-requester.vue')
 const FormaterOpensearch = () => import('./formater-opensearch.vue')
 const FormaterSensorthings = () => import('./formater-sensorthings.vue')
 // const FormaterService = () => import('./formater-service.vue')
@@ -107,7 +107,7 @@ export default {
   //  FormaterRelated,
   //  FormaterFullMetadata ,
     FormaterMetadataContent,
-    FormaterRequester,
+    FormaterElasticsearchRequester,
     FormaterSensorthings
    // FormaterParameters
   },
