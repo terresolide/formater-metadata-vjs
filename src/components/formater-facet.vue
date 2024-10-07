@@ -144,8 +144,6 @@ export default {
       
     },
     spreadChange () {
-      console.log('level=', this.level)
-      console.log(this.isChecked)
       if (this.isChecked) {
          // if check a node => new facet value
          var detail = {}

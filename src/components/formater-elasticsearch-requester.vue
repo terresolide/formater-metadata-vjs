@@ -178,6 +178,18 @@ export default {
        // this.parameters.isChild = false
        this.parameters.aggregations = this.$store.state.aggregations.step1
       }
+      console.log(route.query.end)
+      if (route.query.start || route.query.end) {
+        this.parameters.query.bool.filter.push({
+          range: {
+           resourceTemporalExtentDateRange: {
+              from: route.query.start ? route.query.start : null,
+              to: route.query.end ? route.query.end : null,
+              format: 'yyyy-MM-dd'
+            }
+          }
+        })
+      }
       if (route.query.box) {
         
         var tab = route.query.box.split(',')
