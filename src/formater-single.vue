@@ -241,7 +241,12 @@ export default {
      // delete data['geonet:info']
       metadata.id = this.uuid
       // search main language code
-      var _locale = data['gmd:language']['gmd:LanguageCode']['@codeListValue']
+      var _locale = null
+      if (data['gmd:language']['gco:CharacterString']) {
+        _locale = data['gmd:language']['gco:CharacterString']['#text']
+      } else {
+        _locale = data['gmd:language']['gmd:LanguageCode']['@codeListValue']
+      }
       metadata.mdLanguage = [_locale]
       // search if translation
       var others = data['gmd:locale']

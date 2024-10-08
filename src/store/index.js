@@ -102,6 +102,32 @@ export default function makeStore( config ) {
               sort:4
             }
           }
+        }, 
+        step2: {
+          polarisation: {
+            terms: {
+              field: 'th_polarisation.default',
+              order: {_key: 'asc'},
+              size: 4
+            },
+            meta: {
+              type: 'dimension',
+              label: 'Polarisation',
+              sort: 1
+            }
+          },
+          ron: {
+            terms: {
+              field: 'th_ron.default',
+              order: {_key: 'asc'},
+              size: 4
+            },
+            meta: {
+              type: 'dimension',
+              label: {fr: 'Orbite relative', en: 'Relative Orbit'},
+              sort: 2
+            }
+          }
         }
       },
       checkSSO: null,

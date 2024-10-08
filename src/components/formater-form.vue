@@ -38,18 +38,25 @@
  </formater-search-box>
 <!--  end opensearch -->
 <!-- step1 only dimension -->
- <div v-for="dim in dimensions" :disable="depth > 0">
-<formater-search-box  v-if="dim.category" 
-:color="$store.state.style.primary" :header-icon-class="dim.meta.icon" open-icon-class="fa fa-caret-right" :title="dim.label"  
-:disable-level="depth > 0 ? 1 : 0" type="empty">
-  <formater-dimension-block v-if="dim.meta.type === 'dimension'"   :dimension="dim.category" :name="dim['@name']" :disable="depth > 0"></formater-dimension-block>
-  <formater-facet-block v-else   :dimension="dim.category" :name="dim['@name']" 
-  :disable="depth > 0" :defaut="facets[dim['@name']]"></formater-facet-block>
- </formater-search-box>
+ <div v-for="dim in dimensions" v-if="depth ===  0">
+  <formater-search-box  v-if="dim.category" 
+  :color="$store.state.style.primary" :header-icon-class="dim.meta.icon" open-icon-class="fa fa-caret-right" :title="dim.label"  
+  :disable-level="depth > 0 ? 1 : 0" type="empty">
+    <formater-dimension-block v-if="dim.meta.type === 'dimension'"   :dimension="dim.category" :name="dim['@name']" ></formater-dimension-block>
+    <formater-facet-block v-if="dim.meta.type === 'facet'"   :dimension="dim.category" :name="dim['@name']" 
+    :defaut="facets[dim['@name']]"></formater-facet-block>
+  </formater-search-box>
 </div>
+<div v-if="depth > 0">
+<formater-search-box :color="$store.state.style.primary" header-icon-class="fa fa-thermometer-3" v-if="dimensions.length > 0" open-icon-class="fa fa-caret-right" :title="$t('parameters')" :deployed="true" type="empty">
+  <div v-for="dim in dimensions">
+  <label>{{ dim.label }}</label>
+  {{ dim.category }}
+  </div>
+</formater-search-box>
 
  </div>
-
+</div>
 </template>
 <script>
 // var iconClass = {

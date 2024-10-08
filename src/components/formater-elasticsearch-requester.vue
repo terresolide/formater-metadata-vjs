@@ -72,7 +72,7 @@ export default {
   },
   methods: {
     initParameters () {
-        this.parameters = {
+          this.parameters = {
           from: 0,
           size: this.$store.state.size.nbRecord,
           _source: {
@@ -92,6 +92,7 @@ export default {
             }
           }
          }
+        
        
     }, 
     getRecords (event) {
@@ -171,7 +172,7 @@ export default {
 //       delete e.detail.recordPerPage
       
       if (route.name === 'Metadata') {
-       this.parameters.aggregations = this.$store.state.aggregations.step1
+       this.parameters.aggregations = this.$store.state.aggregations.step2
        this.parameters.query.bool.filter.push({ term: {parentUuid: route.params.uuid}})
        delete this.parameters.query.bool.must_not
       } else {

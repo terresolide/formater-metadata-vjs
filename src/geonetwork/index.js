@@ -395,6 +395,7 @@ const GeonetworkPlugin = {
                    url: url,
                    type: protocol
                  }
+                console.log(protocol)
                switch(protocol) {
                case 'UKST':
                case 'OpenSearch':
@@ -415,6 +416,7 @@ const GeonetworkPlugin = {
                case 'OGC API - Tiles':
                case 'XYZ-Tile-Service':
                case 'OGC:WMS': 
+               case 'OGC:WMS-1.1.1-http-get-map':
                case 'OGC:WFS':
                case 'OGC:WFS-G':
                case 'OGC:KML':
@@ -618,7 +620,8 @@ const GeonetworkPlugin = {
                   break;
                 case 'GetMap':
                 case 'WTS':
-                case 'OGC:WMS': 
+                case 'OGC:WMS':
+                case 'OGC:WMS-1.1.1-http-get-map':
                 case 'OGC:WFS':
                 case 'OGC:WFS-G':
                 case 'OGC:KML':
