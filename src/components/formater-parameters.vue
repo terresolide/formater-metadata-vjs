@@ -56,7 +56,6 @@ export default{
     }
   },
   created () {
-    console.log(this.metadata)
     if (this.metadata['geonet:info']) {
       this.uuid = this.metadata['geonet:info'].uuid
       this.metaType = 'geonetwork'

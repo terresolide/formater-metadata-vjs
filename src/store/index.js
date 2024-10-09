@@ -114,7 +114,7 @@ export default function makeStore( config ) {
               size: 4
             },
             meta: {
-              type: 'dimension',
+              type: 'select',
               label: 'Polarisation',
               sort: 1
             }
@@ -126,7 +126,7 @@ export default function makeStore( config ) {
               size: 4
             },
             meta: {
-              type: 'dimension',
+              type: 'select',
               label: {fr: 'Orbite relative', en: 'Relative Orbit'},
               sort: 2
             }

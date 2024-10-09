@@ -172,13 +172,14 @@ export default {
 //       delete e.detail.recordPerPage
       
       if (route.name === 'Metadata') {
-       this.parameters.aggregations = this.$store.state.aggregations.step2
+        var aggregations = this.$store.state.aggregations.step2
        this.parameters.query.bool.filter.push({ term: {parentUuid: route.params.uuid}})
        delete this.parameters.query.bool.must_not
       } else {
        // this.parameters.isChild = false
-       this.parameters.aggregations = this.$store.state.aggregations.step1
+       var aggregations = this.$store.state.aggregations.step1
       }
+      this.parameters.aggregations = aggregations
       if (route.query.from) {
         this.parameters.from = parseInt(route.query.from) - 1
       }
@@ -225,7 +226,7 @@ export default {
           })
         }
       }
-      var aggregations = this.$store.state.aggregations.step1
+      
       for(var key in aggregations) {
         if (route.query [key]) {
           if (aggregations[key].meta.type === 'dimension') {
@@ -562,7 +563,8 @@ export default {
           meta: agg.meta,
           category: []
         }
-        var dimension = agg.meta && agg.meta.type && agg.meta.type === 'dimension'
+        
+        var type = (agg.meta && agg.meta.type) || 'dimension'
       
         var buckets = agg.buckets
         var gnGroups = self.$gn.groups
@@ -570,11 +572,12 @@ export default {
         var toTranslate = []
         var thesaurus = agg.meta.thesaurus || null
       
+
         buckets.forEach(function (item, index) {
 
           // buckets[index].keys = keys
           buckets[index]['@value'] = item.key
-          if (dimension) {
+          if (type === 'dimension') {
             if (agg.key === 'groupOwner') {
               var label = gnGroups[item.key].label[lang]
             } else {
@@ -586,6 +589,10 @@ export default {
               '@value': item.key,
               '@count': item.doc_count
             })
+          } else if (type === 'select') {
+            console.log(label)
+            console.log(item)
+            aggregation.category.push( item['@value'] )
           } else {
             var keys = item.key.split('^')
             var uri = keys.pop()
@@ -602,7 +609,7 @@ export default {
         })
         // translate
 
-        if (dimension) {
+        if (type === 'dimension' || type === 'select') {
           resolve(aggregation)
           return
         }

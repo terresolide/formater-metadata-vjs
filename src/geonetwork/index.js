@@ -821,9 +821,7 @@ const GeonetworkPlugin = {
               meta.parameters = {}
               var self = this
               for(var step in this.$store.state.aggregations) {
-                console.log(step)
                  for (var key in this.$store.state.aggregations[step]) {
-                    console.log(key)
                     if (this.$store.state.aggregations[step][key].meta.thesaurus) {
                      var th = 'th_' + this.$store.state.aggregations[step][key].meta.thesaurus
                   } else {
@@ -832,11 +830,9 @@ const GeonetworkPlugin = {
                     var th =  tab[0]
                     
                   }
-                  console.log(th)
                   if (meta._source[th] && meta._source[th].forEach) {
                     var label = this.$store.state.aggregations[step][key].meta.label
                     var lang = this.locale
-                    console.log(lang)
                     if (this.$store.state.aggregations[step][key].meta.label[lang]) {
                       label = this.$store.state.aggregations[step][key].meta.label[lang]
                     }

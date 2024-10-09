@@ -47,11 +47,12 @@
     :defaut="facets[dim['@name']]"></formater-facet-block>
   </formater-search-box>
 </div>
-<div v-if="depth > 0">
+<div v-if="depth > 0" class="form-select">
 <formater-search-box :color="$store.state.style.primary" header-icon-class="fa fa-thermometer-3" v-if="dimensions.length > 0" open-icon-class="fa fa-caret-right" :title="$t('parameters')" :deployed="true" type="empty">
-  <div v-for="dim in dimensions">
-  <label>{{ dim.label }}</label>
-  {{ dim.category }}
+  <div v-for="dim  in dimensions">
+  <label :style="{color:$store.state.style.primary}" style="text-align:left;">{{ dim.label }}</label>
+  <formater-select v-if="dim.category && dim.category.length > 0" :depth="depth" :name="dim['@name']" width="260px" :options="dim.category" @input="(event) => {selectChange(dim['@name'], event)}" 
+    :color="$store.state.style.emphasis" :defaut="null" :set-value="$route.query[dim['@name']]"></formater-select>
   </div>
 </formater-search-box>
 
@@ -79,7 +80,7 @@
 // import {FormaterSearchBox} from 'formater-commons-components-vjs'
 //  import FormaterTemporalSearch from './formater-temporal-search.vue'
 
-import {FormaterTemporalSearch, FormaterSearchBox} from 'formater-commons-components-vjs'
+import {FormaterTemporalSearch, FormaterSelect, FormaterSearchBox} from 'formater-commons-components-vjs'
 import FormaterSpatialSearch from './formater-spatial-search.vue'
 import FormaterMap from './formater-map.vue'
 import FormaterDimensionBlock from './formater-dimension-block.vue'
@@ -95,6 +96,7 @@ export default {
     FormaterTemporalSearch,
     FormaterSpatialSearch,
     FormaterSearchBox,
+    FormaterSelect,
     FormaterDimensionBlock,
     FormaterFacetBlock,
     FormaterParametersForm
@@ -258,6 +260,22 @@ export default {
         return false;
       }
     },
+    selectChange(name, value) {
+      var query = {}
+      for (var prop in this.$route.query) {
+        query[prop] = this.$route.query[prop]
+      }
+      if (value && value !== '---') {
+        query[name] = value
+      } else {
+        delete query[name]
+      }
+      this.$router.push({
+        name: this.$route.name,
+        params: this.$route.params,
+        query: query
+      })
+    },
 //     isInCurrentLang (key) {
 //       if (!this.isFacet(key)) {
 //         return true;
@@ -288,7 +306,9 @@ export default {
       this.reverseKeyDimensions()
     },
     removeStep2Dimensions() {
+
       for(var i=this.dimensions.length - 1; i >= 0; i--) {
+         
         if (this.$store.state.gnParameters.step2.indexOf(this.dimensions[i]['@name']) >= 0) {
           delete this.nameToIndex[this.dimensions[i]['@name']]
           this.dimensions.splice(i,1)
@@ -316,6 +336,9 @@ export default {
 //         	if (root) {
 //         		dimension[index].disableLevel = 0
 //         	}
+          if (obj.meta.type === 'select') {
+            console.log(obj)
+          }
           dimension[index].category = _this.initializeDimensions(obj.category, false)
         }
       })
@@ -331,31 +354,35 @@ export default {
       
       var _this = this
       dimensions.forEach(function (dimension, index) {
-        var found = newdimensions.find( function (obj) {
-          if (obj['@name']) {
-            return obj['@name'] === dimension['@name'] 
-          } else if (obj['@value']){
-            return obj['@value'] === dimension['@value'] 
-          } 
-        })
-        if (typeof found === 'undefined') {
-          _this.$set(dimensions[index], '@count', 0)
-        } else {
-          _this.$set(dimensions[index], '@count', found['@count'])
-        }
-        if (dimensions[index].category || (typeof found !== 'undefined' && found.category && found.category.length > 0)) {
-	        var subDimension = []
-	        if (typeof found !== 'undefined' && found.category && found.category.length > 0) {
-	          subDimension = found.category
-	        }
-	        if (typeof dimensions[index].category === 'undefined' || dimensions[index].category.length === 0) {
-	          dimensions[index].category = []
-	        } else {
-	          dimensions[index].category = _this.updateDimensions(dimensions[index].category, subDimension, false)
+        
+          var found = newdimensions.find( function (obj) {
+            if (obj['@name']) {
+              return obj['@name'] === dimension['@name'] 
+            } else if (obj['@value']){
+              return obj['@value'] === dimension['@value'] 
+            } 
+          })
+          if (typeof found === 'undefined') {
+            _this.$set(dimensions[index], '@count', 0)
+          } else {
+            _this.$set(dimensions[index], '@count', found['@count'])
           }
-        } 
+          if (dimensions[index].category || (typeof found !== 'undefined' && found.category && found.category.length > 0)) {
+            var subDimension = []
+            if (typeof found !== 'undefined' && found.category && found.category.length > 0) {
+              subDimension = found.category
+            }
+            if (typeof dimensions[index].category === 'undefined' || dimensions[index].category.length === 0) {
+              dimensions[index].category = []
+            } else {
+              dimensions[index].category = _this.updateDimensions(dimensions[index].category, subDimension, false)
+            }
+          } 
+        
       })
-     
+  
+         
+      
       newdimensions.forEach(function (newdimension, index) {
         var found = dimensions.find( function (obj) {
           if (obj['@name']) {
@@ -442,6 +469,15 @@ export default {
 }
 </script>
 <style>
+
+.mtdt-app div, .mtdt-app span {
+  letter-spacing: 0px;
+  box-sizing: content-box;
+}
+
+.form-select .formater-search-box .box-body .content {
+  text-align: left;
+}
 .mtdt-form{
   padding: 0px 0px 30px 0px;
  border: 1px solid #ccc;
