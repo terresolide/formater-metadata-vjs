@@ -49,6 +49,9 @@
       
          <div v-if="meta.description" v-html="meta.description" style="padding:5px 0"></div>
          <formater-parameters type="cartouche" :metadata="meta"></formater-parameters>
+         <div v-for="item in meta.parameters" ><label :style="{color: primary}">{{ item.label }}: </label> 
+          <span v-for="value in item.values">{{ value }}</span>
+        </div>
      </div>
       
      <div class="mtdt-resource" v-if="depth > 0 && meta.related && meta.related.onlines">

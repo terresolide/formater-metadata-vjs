@@ -834,12 +834,16 @@ const GeonetworkPlugin = {
                   }
                   console.log(th)
                   if (meta._source[th] && meta._source[th].forEach) {
-                   
-                    meta.parameters[th] = {label: this.$store.state.aggregations[step][key].meta.label, values: meta._source[th].map(x => self.translateObj(x))}
+                    var label = this.$store.state.aggregations[step][key].meta.label
+                    var lang = this.locale
+                    console.log(lang)
+                    if (this.$store.state.aggregations[step][key].meta.label[lang]) {
+                      label = this.$store.state.aggregations[step][key].meta.label[lang]
+                    }
+                    meta.parameters[th] = {label: label, values: meta._source[th].map(x => self.translateObj(x))}
                   }
                  }
               }
-              console.log(meta.parameters)
            },
            treatmentMetadata (meta, uuid) {
              meta.id = uuid
