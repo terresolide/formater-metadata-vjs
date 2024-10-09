@@ -809,10 +809,37 @@ const GeonetworkPlugin = {
                 meta.status = null
                 console.log('MISSING STATUS ', meta.title)
               }
+              meta.parameters = []
+              
               meta.type = meta._source.cl_hierarchyLevel[0].key
               this.treatmentLinks(meta)
+              this.treatmentThesaurus(meta)
               delete meta._source
               return meta
+           },
+           treatmentThesaurus (meta) {
+              meta.parameters = {}
+              var self = this
+              for(var step in this.$store.state.aggregations) {
+                console.log(step)
+                 for (var key in this.$store.state.aggregations[step]) {
+                    console.log(key)
+                    if (this.$store.state.aggregations[step][key].meta.thesaurus) {
+                     var th = 'th_' + this.$store.state.aggregations[step][key].meta.thesaurus
+                  } else {
+                    var field = this.$store.state.aggregations[step][key].terms.field
+                    var tab = field.split('.')
+                    var th =  tab[0]
+                    
+                  }
+                  console.log(th)
+                  if (meta._source[th] && meta._source[th].forEach) {
+                   
+                    meta.parameters[th] = {label: this.$store.state.aggregations[step][key].meta.label, values: meta._source[th].map(x => self.translateObj(x))}
+                  }
+                 }
+              }
+              console.log(meta.parameters)
            },
            treatmentMetadata (meta, uuid) {
              meta.id = uuid

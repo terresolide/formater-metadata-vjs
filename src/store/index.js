@@ -46,6 +46,9 @@ export default function makeStore( config ) {
         step1: 'details',
         step2: 'details'
       },
+      includes: ["uuid", "id", "groupOwner", "cl_status", "cl_hierarchyLevel", "geom", 
+        "resourceTitle*", "resourceTemporalExtentDetails", "resourceAbstract*", 
+        "th_formater-platform-gn", "th_ron.default", "th_polarisation.default", "overview","link"],
       aggregations: {
         step1: {
           groupOwner: {
@@ -71,7 +74,7 @@ export default function makeStore( config ) {
               type: 'facet',
               thesaurus: 'formater-discipline',
               icon: 'fa fa-graduation-cap',
-              label: {fr: 'Disciplines', en: 'Disciplines'},
+              label: 'Discipline',
               sort: 2
             }
           },
@@ -84,7 +87,7 @@ export default function makeStore( config ) {
             meta: {
               type: 'facet',
               thesaurus: 'formater-platform-gn',
-              label: {fr: 'Plateformes', en: 'Platform'},
+              label: {fr: 'Plateforme', en: 'Platform'},
               sort: 3,
               icon: 'fa fa-rocket'
             } 
@@ -98,7 +101,7 @@ export default function makeStore( config ) {
             meta: {
               type: 'dimension',
               thesaurus: 'formaterre-collections',
-              label: 'Collections',
+              label: 'Collection',
               sort:4
             }
           }
