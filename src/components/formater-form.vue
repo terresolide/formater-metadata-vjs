@@ -336,7 +336,7 @@ export default {
 //         	if (root) {
 //         		dimension[index].disableLevel = 0
 //         	}
-          if (obj.meta.type === 'select') {
+          if (obj.meta && obj.meta.type === 'select') {
             console.log(obj)
           }
           dimension[index].category = _this.initializeDimensions(obj.category, false)
@@ -354,57 +354,65 @@ export default {
       
       var _this = this
       dimensions.forEach(function (dimension, index) {
-        
-          var found = newdimensions.find( function (obj) {
-            if (obj['@name']) {
-              return obj['@name'] === dimension['@name'] 
-            } else if (obj['@value']){
-              return obj['@value'] === dimension['@value'] 
-            } 
-          })
+        var found = newdimensions.find( function (obj) {
+          if (obj['@name']) {
+            return obj['@name'] === dimension['@name'] 
+          } else if (obj['@value']){
+            return obj['@value'] === dimension['@value'] 
+          } 
+        })
+        if (dimension.meta && dimension.meta.type !== 'select') {
           if (typeof found === 'undefined') {
             _this.$set(dimensions[index], '@count', 0)
           } else {
             _this.$set(dimensions[index], '@count', found['@count'])
           }
-          if (dimensions[index].category || (typeof found !== 'undefined' && found.category && found.category.length > 0)) {
-            var subDimension = []
-            if (typeof found !== 'undefined' && found.category && found.category.length > 0) {
-              subDimension = found.category
-            }
-            if (typeof dimensions[index].category === 'undefined' || dimensions[index].category.length === 0) {
-              dimensions[index].category = []
-            } else {
-              dimensions[index].category = _this.updateDimensions(dimensions[index].category, subDimension, false)
-            }
-          } 
-        
+
+        } 
+          
+        if (dimensions[index].category || (typeof found !== 'undefined' && found.category && found.category.length > 0)) {
+          var subDimension = []
+          if (typeof found !== 'undefined' && found.category && found.category.length > 0) {
+            subDimension = found.category
+          }
+          if (typeof dimensions[index].category === 'undefined' || dimensions[index].category.length === 0) {
+            dimensions[index].category = []
+          } else {
+            dimensions[index].category = _this.updateDimensions(dimensions[index].category, subDimension, false)
+          }
+        } 
       })
   
          
       
       newdimensions.forEach(function (newdimension, index) {
-        var found = dimensions.find( function (obj) {
-          if (obj['@name']) {
-            return obj['@name'] === newdimension['@name'] 
-          } else if (obj['@value']){
-            return obj['@value'] === newdimension['@value'] 
+    
+          var found = dimensions.find( function (obj) {
+            if (obj['@name']) {
+              return obj['@name'] === newdimension['@name'] 
+            } else if (obj['@value']){
+              return obj['@value'] === newdimension['@value'] 
+            }  else {
+              // case select
+              return obj === newdimension
+            }
+          })
+          if (!found || (found['@count'] === 'undefined' && root)) {
+            dimensions.push(newdimension)
           } 
+        
+      })
+      if (!root) {
+        dimensions.sort(function (a, b) {
+          if (a['@label']) {
+            return a['@label'] > b['@label'] ? 1 : -1
+          } else if (a['@name']) {
+            return a['@name'] > b['@name'] ? 1 : -1
+          } else if (a['@value']) {
+            return a['@value'] > b['@value'] ? 1 : -1
+          }
         })
-        if (!found || (found['@count'] === 'undefined' && root)) {
-          dimensions.push(newdimension)
-        } 
-      })
-      // order dimension by name
-      dimensions.sort(function (a, b) {
-        if (a['@label']) {
-          return a['@label'] > b['@label'] ? 1 : -1
-        } else if (a['@name']) {
-          return a['@name'] > b['@name'] ? 1 : -1
-        } else if (a['@value']) {
-          return a['@value'] > b['@value'] ? 1 : -1
-        }
-      })
+      }
       return dimensions
     },
     reset () {
