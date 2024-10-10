@@ -68,7 +68,7 @@ export default function makeStore( config ) {
             terms:{
               field: 'th_formater-discipline_tree.key',
               order: {_key: 'asc'},
-              size: 50
+              size: 10
             },
             meta: {
               type: 'facet',
@@ -77,6 +77,34 @@ export default function makeStore( config ) {
               label: 'Discipline',
               sort: 2
             }
+          },
+          foi: {
+            terms: {
+              field: 'th_formater-foi-gn_tree.key',
+              order: {_key: 'asc'},
+              size: 10
+            },
+            meta: {
+              type: 'facet',
+              thesaurus: 'formater-foi-gn',
+              icon: 'fa fa-map-marker',
+              label: {fr: "Objet d'intérêt", en: "Feature of Interest"},
+              sort: 4
+            }
+          },
+          distributor: {
+            terms: {
+              field: 'th_formater-distributor.default',
+              size: 50
+            },
+            meta: {
+              type: 'dimension',
+              thesaurus: 'formater-distributor',
+              icon: 'fa fa-users',
+              label: {fr: 'Distributeur', en: 'Distributor'},
+              sort: 0
+            }
+
           },
           platform: {
             terms: {
@@ -94,7 +122,7 @@ export default function makeStore( config ) {
           },
           collection: {
             terms: {
-              field: 'th_formaterre-collections_tree.default',
+              field: 'th_formaterre-collections.default',
               order: {_key: 'asc'},
               size: 50
             },
