@@ -51,9 +51,8 @@
 <formater-search-box :color="$store.state.style.primary" header-icon-class="fa fa-thermometer-3" v-if="dimensions.length > 0" open-icon-class="fa fa-caret-right" :title="$t('parameters')" :deployed="true" type="empty">
   <div v-for="dim  in dimensions">
   <label :style="{color:$store.state.style.primary}" style="text-align:left;">{{ dim.label }}</label>
-  {{ dim.type }}
-  <formater-select v-if="dim.category && dim.category.length > 0" :depth="depth" :name="dim['@name']" width="260px" :options="dim.category" @input="(event) => {selectChange(dim['@name'], event)}" 
-    :color="$store.state.style.emphasis" :type="dim.type" :defaut="null" :set-value="$route.query[dim['@name']]"></formater-select>
+  <formater-select v-if="dim.category" :depth="depth" :name="dim['@name']" width="260px" :options="dim.category" @input="(event) => {selectChange(dim['@name'], event)}" 
+    :color="$store.state.style.emphasis" :type="dim.type" :defaut="null" :required="false" :set-value="$route.query[dim['@name']]"></formater-select>
   </div>
 </formater-search-box>
 
@@ -81,7 +80,8 @@
 // import {FormaterSearchBox} from 'formater-commons-components-vjs'
 //  import FormaterTemporalSearch from './formater-temporal-search.vue'
 
-import {FormaterTemporalSearch, FormaterSelect, FormaterSearchBox} from 'formater-commons-components-vjs'
+import {FormaterTemporalSearch,  FormaterSearchBox} from 'formater-commons-components-vjs'
+import FormaterSelect from './formater-select.vue'
 import FormaterSpatialSearch from './formater-spatial-search.vue'
 import FormaterMap from './formater-map.vue'
 import FormaterDimensionBlock from './formater-dimension-block.vue'
@@ -357,41 +357,80 @@ export default {
       }
       
       var _this = this
-      dimensions.forEach(function (dimension, index) {
-        var found = newdimensions.find( function (obj) {
-          if (obj['@name']) {
-            return obj['@name'] === dimension['@name'] 
-          } else if (obj['@value']){
-            return obj['@value'] === dimension['@value'] 
-          } 
-        })
+      for(var key in dimensions) {
+        var dimension = dimensions[key]
+        if (dimension instanceof Object && !dimension.type) {
+          var found = newdimensions[key]
+        } else {
+          var found = newdimensions.find( function (obj) {
+            if (obj['@name']) {
+              return obj['@name'] === dimension['@name'] 
+            } else if (obj['@value']){
+              return obj['@value'] === dimension['@value'] 
+            } 
+          })
+        }
+        console.log(found)
         if (dimension.meta && dimension.meta.type !== 'select') {
           if (typeof found === 'undefined') {
-            _this.$set(dimensions[index], '@count', 0)
+            _this.$set(dimensions[key], '@count', 0)
           } else {
-            _this.$set(dimensions[index], '@count', found['@count'])
+            _this.$set(dimensions[key], '@count', found['@count'])
           }
 
         } 
-          
-        if (dimensions[index].category || (typeof found !== 'undefined' && found.category && found.category.length > 0)) {
+        if (dimension.category || (typeof found !== 'undefined' && found.category && found.category.length > 0)) {
           var subDimension = []
           if (typeof found !== 'undefined' && found.category && found.category.length > 0) {
             subDimension = found.category
           }
-          if (typeof dimensions[index].category === 'undefined' || dimensions[index].category.length === 0) {
-            dimensions[index].category = []
+          if (typeof dimension.category === 'undefined' || dimension.category.length === 0) {
+            dimensions[key].category = []
           } else {
-            dimensions[index].category = _this.updateDimensions(dimensions[index].category, subDimension, false)
+            dimensions[key].category = _this.updateDimensions(dimensions[key].category, subDimension, false)
           }
         } 
-      })
+      }
+      // dimensions.forEasch(function (dimension, index) {
+      //   var found = newdimensions.find( function (obj) {
+      //     if (obj['@name']) {
+      //       return obj['@name'] === dimension['@name'] 
+      //     } else if (obj['@value']){
+      //       return obj['@value'] === dimension['@value'] 
+      //     } 
+      //   })
+      //   if (dimension.meta && dimension.meta.type !== 'select') {
+      //     if (typeof found === 'undefined') {
+      //       _this.$set(dimensions[index], '@count', 0)
+      //     } else {
+      //       _this.$set(dimensions[index], '@count', found['@count'])
+      //     }
+
+      //   } 
+          
+      //   if (dimensions[index].category || (typeof found !== 'undefined' && found.category && found.category.length > 0)) {
+      //     var subDimension = []
+      //     if (typeof found !== 'undefined' && found.category && found.category.length > 0) {
+      //       subDimension = found.category
+      //     }
+      //     if (typeof dimensions[index].category === 'undefined' || dimensions[index].category.length === 0) {
+      //       dimensions[index].category = []
+      //     } else {
+      //       dimensions[index].category = _this.updateDimensions(dimensions[index].category, subDimension, false)
+      //     }
+      //   } 
+      // })
   
          
-      
-      newdimensions.forEach(function (newdimension, index) {
-          console.log(newdimension)
-          var found = dimensions.find( function (obj) {
+    for(var key in newdimensions) {
+      var newdimension = newdimensions[key]
+      if (newdimension instanceof Object && !newdimension.type) {
+        var found = dimensions[key]
+        if (!found) {
+          dimensions[key] = newdimensions[key]
+        }
+      } else {
+        var found = dimensions.find( function (obj) {
             if (obj['@name']) {
               return obj['@name'] === newdimension['@name'] 
             } else if (obj['@value']){
@@ -401,21 +440,41 @@ export default {
               return obj === newdimension 
             }
           })
-          if (!found || (found['@count'] === 'undefined' && root)) {
+          if (!found ) {
             dimensions.push(newdimension)
-          } 
-        
-      })
-      if (!root) {
-        dimensions.sort(function (a, b) {
-          if (a['@label']) {
-            return a['@label'] > b['@label'] ? 1 : -1
-          } else if (a['@name']) {
-            return a['@name'] > b['@name'] ? 1 : -1
-          } else if (a['@value']) {
-            return a['@value'] > b['@value'] ? 1 : -1
           }
-        })
+      }
+       
+    } 
+      // newdimensions.forEach(function (newdimension, index) {
+      //     console.log(newdimension)
+      //     var found = dimensions.find( function (obj) {
+      //       if (obj['@name']) {
+      //         return obj['@name'] === newdimension['@name'] 
+      //       } else if (obj['@value']){
+      //         return obj['@value'] === newdimension['@value'] 
+      //       }  else {
+      //         // case select
+      //         return obj === newdimension 
+      //       }
+      //     })
+      //     if (!found || (found['@count'] === 'undefined' && root)) {
+      //       dimensions.push(newdimension)
+      //     } 
+        
+      // })
+      if (!root) {
+        if (dimensions.sort) {
+          dimensions.sort(function (a, b) {
+            if (a['@label']) {
+              return a['@label'] > b['@label'] ? 1 : -1
+            } else if (a['@name']) {
+              return a['@name'] > b['@name'] ? 1 : -1
+            } else if (a['@value']) {
+              return a['@value'] > b['@value'] ? 1 : -1
+            }
+          })
+        }
       }
       return dimensions
     },
