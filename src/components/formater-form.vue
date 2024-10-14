@@ -270,11 +270,12 @@ export default {
       } else {
         delete query[name]
       }
+      console.log(name)
       this.$router.push({
         name: this.$route.name,
         params: this.$route.params,
         query: query
-      })
+      }).catch(error => {console.log(error)})
     },
 //     isInCurrentLang (key) {
 //       if (!this.isFacet(key)) {

@@ -48,7 +48,7 @@ export default function makeStore( config ) {
       },
       includes: ["uuid", "id", "groupOwner", "cl_status", "cl_hierarchyLevel", "geom", 
         "resourceTitle*", "resourceTemporalExtentDetails", "resourceAbstract*", 
-        "th_formater-platform-gn", "th_ron.default", "th_polarisation.default", "overview","link"],
+        "th_formater-platform-gn", "th_formaterre-product-gn", "th_ron.default", "th_polarisation.default", "overview","link"],
       aggregations: {
         step1: {
           groupOwner: {
@@ -61,7 +61,7 @@ export default function makeStore( config ) {
               type: 'dimension',
               icon: 'fa fa-database',
               label: {fr: 'Catalogue', en: 'Catalog'},
-              sort: 1
+              sort: 0
             }
           },
           discipline: {
@@ -102,7 +102,7 @@ export default function makeStore( config ) {
               thesaurus: 'formater-distributor',
               icon: 'fa fa-users',
               label: {fr: 'Distributeur', en: 'Distributor'},
-              sort: 0
+              sort: 1
             }
 
           },
@@ -119,22 +119,21 @@ export default function makeStore( config ) {
               sort: 3,
               icon: 'fa fa-rocket'
             } 
-          },
-          collection: {
-            terms: {
-              field: 'th_formaterre-collections.default',
-              order: {_key: 'asc'},
-              size: 50
-            },
-            meta: {
-              type: 'dimension',
-              thesaurus: 'formaterre-collections',
-              label: 'Collection',
-              sort:4
-            }
           }
         }, 
         step2: {
+          productType: {
+             terms: {
+               field: 'th_formaterre-product-gn.key',
+               order: {_key: 'asc'},
+               size: 10
+             },
+             meta: {
+               type: 'select',
+               label: {fr: 'Type de produit', en: 'Product type'},
+               sort: 0
+             }
+          },
           polarisation: {
             terms: {
               field: 'th_polarisation.default',
