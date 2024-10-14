@@ -221,7 +221,7 @@ export default {
           }
         }
       }
-
+      this.aggregations = aggregations
     },
     searchSimpleMetadata() {
       this.$http.get(this.$store.state.metadata).then(
@@ -321,8 +321,8 @@ export default {
         }
       }
       aggregations.sort(function (a,b) { return a.meta.sort - b.meta.sort})
-      for(var i in aggregations) {
-        promises.push(this.prepareAggregations(aggregations[i]))
+      for(var key in aggregations) {
+        promises.push(this.prepareAggregation(aggregations[key]))
       }
       Promise.all(promises)
       .then((values) => {
@@ -347,7 +347,7 @@ export default {
       })
       
     },
-    prepareAggregations(agg) {
+    prepareAggregation(agg) {
       var self = this
       return new Promise(function (resolve, reject) {
         var label = agg.key
@@ -355,16 +355,19 @@ export default {
         if (agg.meta && agg.meta.label) {
           label = agg.meta.label[lang] ? agg.meta.label[lang] : agg.meta.label
         }
-       
+        var aggStore = self.aggregations[agg.key]
+        var tab = aggStore.terms.field.split('.')
+        var isKey = tab.length > 1 && tab[1] === 'key'
         var aggregation = {
           '@name': agg.key,
+          type: isKey ? 'associative' : 'simple',
           label: label,
           meta: agg.meta,
           category: []
         }
         
         var type = (agg.meta && agg.meta.type) || 'dimension'
-      
+        
         var buckets = agg.buckets
         var gnGroups = self.$gn.groups
         var lang = self.$store.state.lang
@@ -388,7 +391,7 @@ export default {
               '@value': item.key,
               '@count': item.doc_count
             })
-          } else if (type === 'select') {
+          } else if (type === 'select' && !isKey ) {
             console.log(label)
             console.log(item)
             aggregation.category.push( item['@value'] )
@@ -408,7 +411,7 @@ export default {
         })
         // translate
 
-        if (type === 'dimension' || type === 'select') {
+        if (!isKey) {
           resolve(aggregation)
           return
         }
@@ -419,17 +422,23 @@ export default {
               buckets[index]['@label'] = translated[item['@value']]
             }
           })
-          const arrayToTree = (arr, parent = '') =>
-          arr.filter(item => item.parent === parent)
-          .map(child => { 
-            var category = arrayToTree(arr, child.key)
-            if (category.length > 0) {
-              child.category = category
-            }
-            return child
-          });
-          var category = arrayToTree(buckets)
-
+          if (type === 'select') {
+            var category = {}
+            buckets.forEach(function(item) {
+              category[item['@value']] = item['@label']
+            })
+          } else {
+            const arrayToTree = (arr, parent = '') =>
+            arr.filter(item => item.parent === parent)
+            .map(child => { 
+              var category = arrayToTree(arr, child.key)
+              if (category.length > 0) {
+                child.category = category
+              }
+              return child
+            });
+            var category = arrayToTree(buckets)
+          }
           aggregation.category = category
           resolve(aggregation)
         })

@@ -124,12 +124,13 @@ export default function makeStore( config ) {
         step2: {
           productType: {
              terms: {
-               field: 'th_formaterre-product-gn.key',
+               field: 'th_formaterre-product-gn_tree.key',
                order: {_key: 'asc'},
                size: 10
              },
              meta: {
                type: 'select',
+               thesaurus: 'formaterre-product-gn',
                label: {fr: 'Type de produit', en: 'Product type'},
                sort: 0
              }

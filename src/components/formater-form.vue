@@ -51,8 +51,9 @@
 <formater-search-box :color="$store.state.style.primary" header-icon-class="fa fa-thermometer-3" v-if="dimensions.length > 0" open-icon-class="fa fa-caret-right" :title="$t('parameters')" :deployed="true" type="empty">
   <div v-for="dim  in dimensions">
   <label :style="{color:$store.state.style.primary}" style="text-align:left;">{{ dim.label }}</label>
+  {{ dim.type }}
   <formater-select v-if="dim.category && dim.category.length > 0" :depth="depth" :name="dim['@name']" width="260px" :options="dim.category" @input="(event) => {selectChange(dim['@name'], event)}" 
-    :color="$store.state.style.emphasis" :defaut="null" :set-value="$route.query[dim['@name']]"></formater-select>
+    :color="$store.state.style.emphasis" :type="dim.type" :defaut="null" :set-value="$route.query[dim['@name']]"></formater-select>
   </div>
 </formater-search-box>
 
@@ -325,24 +326,26 @@ export default {
     },
 
     initializeDimensions(dimensions){
-      var dimension = null
-      if (dimensions.length > 0) {
-        dimension = dimensions
-      } else {
-        dimension = [dimensions]
-      }
+      var dimension = dimensions
+     
       var _this = this
-      dimension.forEach( function (obj, index){
-        if (obj.category){
-//         	if (root) {
-//         		dimension[index].disableLevel = 0
-//         	}
-          if (obj.meta && obj.meta.type === 'select') {
-            console.log(obj)
+      for (var key in dimension) {
+          if (dimension[key].category) {
+            if (dimension[key].meta && dimension[key].meta.type === 'select' &&
+               dimension[key].type === 'associative') {
+              continue
+            }
+            dimension[key].category = this.initializeDimensions(dimension[key].category, false)
           }
-          dimension[index].category = _this.initializeDimensions(obj.category, false)
-        }
-      })
+      }
+      // dimension.forEach( function (obj, index){
+      //   if (obj.category){
+      //     if (obj.meta && obj.meta.type === 'select') {
+      //       console.log(obj)
+      //     }
+      //     dimension[index].category = _this.initializeDimensions(obj.category, false)
+      //   }
+      // })
       return dimension
     },
     updateDimensions (dimensions, newdimensions, root) {
@@ -350,7 +353,7 @@ export default {
         return null
       }
       if (!Array.isArray(newdimensions)) {
-        newdimensions = [newdimensions]
+        newdimensions = newdimensions
       }
       
       var _this = this
@@ -387,7 +390,7 @@ export default {
          
       
       newdimensions.forEach(function (newdimension, index) {
-    
+          console.log(newdimension)
           var found = dimensions.find( function (obj) {
             if (obj['@name']) {
               return obj['@name'] === newdimension['@name'] 
@@ -395,7 +398,7 @@ export default {
               return obj['@value'] === newdimension['@value'] 
             }  else {
               // case select
-              return obj === newdimension
+              return obj === newdimension 
             }
           })
           if (!found || (found['@count'] === 'undefined' && root)) {
