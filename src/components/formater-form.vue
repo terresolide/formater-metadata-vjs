@@ -298,7 +298,7 @@ export default {
         return
       }
       var  newdimensions = this.initializeDimensions(e.detail.dimension)
-      this.dimensions = this.updateDimensions(this.dimensions, newdimensions, true)  
+      this.updateDimensions(this.dimensions, newdimensions, true)  
 
       if (e.detail.depth === 0) {
         // remove all step2 dimension
@@ -375,7 +375,7 @@ export default {
           if (typeof found === 'undefined') {
             _this.$set(dimensions[key], '@count', 0)
           } else {
-            dimensions[key]['@count'] = found['@count']
+            _this.$set(dimensions[key], '@count',found['@count'])
           }
        } 
         if (dimension.category || (typeof found !== 'undefined' && found.category && found.category.length > 0)) {
@@ -386,6 +386,7 @@ export default {
           if (typeof dimension.category === 'undefined' || dimension.category.length === 0) {
             dimensions[key].category = []
           } else {
+            
             dimensions[key].category = _this.updateDimensions(dimensions[key].category, subDimension, false)
           }
         } 
@@ -426,9 +427,12 @@ export default {
       if (newdimension.meta && newdimension.meta.type === 'select' && newdimension.type === 'associative') {
         var found = dimensions[key]
         if (found) {
-          found.category = Object.assign(found.category, newdimension.category)
-          this.$set(dimensions, key, found)
+          console.log('FOUND')
+          var category = Object.assign(found.category, newdimension.category)
+          this.$set(dimensions[key], 'category', category)
+          console.log(dimensions[key])
         } else {
+          console.log(key)
           dimensions[key] = newdimension
           this.$set(dimensions, key, newdimension)
         }
@@ -451,23 +455,20 @@ export default {
       }
        
     } 
-      // newdimensions.forEach(function (newdimension, index) {
-      //     console.log(newdimension)
-      //     var found = dimensions.find( function (obj) {
-      //       if (obj['@name']) {
-      //         return obj['@name'] === newdimension['@name'] 
-      //       } else if (obj['@value']){
-      //         return obj['@value'] === newdimension['@value'] 
-      //       }  else {
-      //         // case select
-      //         return obj === newdimension 
-      //       }
-      //     })
-      //     if (!found || (found['@count'] === 'undefined' && root)) {
-      //       dimensions.push(newdimension)
-      //     } 
-        
-      // })
+    // order dimension by name
+    if (!root && dimensions.sort) {
+      dimensions.sort(function (a, b) {
+          if (a.meta && a.meta.sort) {
+            return a.meta.sort > b.meta.sort ? 1 : -1
+          } else if (a['@label']) {
+            return a['@label'] > b['@label'] ? 1 : -1
+          } else if (a['@name']) {
+            return a['@name'] > b['@name'] ? 1 : -1
+          } else if (a['@value']) {
+            return a['@value'] > b['@value'] ? 1 : -1
+          }
+        })
+    }
       return dimensions
     },
     reset () {
