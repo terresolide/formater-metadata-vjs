@@ -271,7 +271,6 @@ export default {
       } else {
         delete query[name]
       }
-      console.log(name)
       this.$router.push({
         name: this.$route.name,
         params: this.$route.params,
@@ -299,7 +298,7 @@ export default {
         return
       }
       var  newdimensions = this.initializeDimensions(e.detail.dimension)
-      this.updateDimensions(this.dimensions, newdimensions, true)  
+      this.dimensions = this.updateDimensions(this.dimensions, newdimensions, true)  
 
       if (e.detail.depth === 0) {
         // remove all step2 dimension
@@ -359,28 +358,24 @@ export default {
       var _this = this
       for(var key in dimensions) {
         var dimension = dimensions[key]
-        if (0 && dimension instanceof Object && !dimension.type) {
-          var found = newdimensions[key]
-        } else {
-          var found = newdimensions.find( function (obj) {
-            if (obj.key) {
-              return obj.key === dimension.key
-            } else if (obj['@name']) {
-              return obj['@name'] === dimension['@name'] 
-            } else if (obj['@value']){
-              return obj['@value'] === dimension['@value'] 
-            }  else if (!(obj instanceof Object)){
-              // case select
-             return obj === dimension 
-            }
-          })
-        }
-       if (dimensions[key]['@count']) {
+        var found = newdimensions.find( function (obj) {
+          if (obj.key) {
+            return obj.key === dimension.key
+          } else if (obj['@name']) {
+            return obj['@name'] === dimension['@name'] 
+          } else if (obj['@value']){
+            return obj['@value'] === dimension['@value'] 
+          }  else if (!(obj instanceof Object)){
+            // case select
+            return obj === dimension 
+          }
+        })
+       
+       if (dimensions[key].hasOwnProperty('@count')) {
           if (typeof found === 'undefined') {
             _this.$set(dimensions[key], '@count', 0)
           } else {
-            console.log(dimensions[key])
-            _this.$set(dimensions[key], '@count', found['@count'])
+            dimensions[key]['@count'] = found['@count']
           }
        } 
         if (dimension.category || (typeof found !== 'undefined' && found.category && found.category.length > 0)) {
@@ -428,18 +423,15 @@ export default {
          
     for(var key in newdimensions) {
       var newdimension = newdimensions[key]
-      console.log(newdimension)
-
       if (newdimension.meta && newdimension.meta.type === 'select' && newdimension.type === 'associative') {
-        console.log('case select')
         var found = dimensions[key]
         if (found) {
           found.category = Object.assign(found.category, newdimension.category)
-          dimensions[key] = newdimension
+          this.$set(dimensions, key, found)
         } else {
           dimensions[key] = newdimension
+          this.$set(dimensions, key, newdimension)
         }
-        console.log(dimensions[key])
       } else {
         var found = dimensions.find( function (obj) {
             if (obj.key) {
@@ -453,7 +445,6 @@ export default {
              return obj === newdimension 
             }
           })
-          console.log(found)
           if (!found ) {
             dimensions.push(newdimension)
           }
@@ -477,7 +468,6 @@ export default {
       //     } 
         
       // })
-      this.dimensions = dimensions
       return dimensions
     },
     reset () {
