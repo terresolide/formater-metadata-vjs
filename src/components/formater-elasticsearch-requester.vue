@@ -423,9 +423,9 @@ export default {
             }
           })
           if (type === 'select') {
-            var category = {}
+            var category = []
             buckets.forEach(function(item) {
-              category[item['@value']] = item['@label']
+              category.push({ '@value': item['@value'], '@label': item['@label'] })
             })
           } else {
             const arrayToTree = (arr, parent = '') =>
