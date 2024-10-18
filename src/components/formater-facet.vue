@@ -1,8 +1,8 @@
 
 <template>
- <div class="mtdt-facet" :class="{disable: disable && level===0}" >
-
-         <label  @click="handleChange()" style="vertical-align:top;">
+ <div class="mtdt-facet" :class="{disable: dimension['@count'] === 0 || (disable && level===0)}" >
+      <span @click="handleChange()" class="clickable-name">
+         <label  style="vertical-align:top;">
               <i class="fa fa-check-square-o" v-if="isChecked"></i>
               <i class="fa fa-square-o" v-if="!isChecked"></i>
          </label>
@@ -10,6 +10,7 @@
 	     <div class="mtdt-facet-title">
 	        {{name}}&#8239;{{ strCount }}
 	     </div>
+      </span>
 	     <div :class="{deployed: deployed}" style="float:right" @click="deployed = !deployed" v-if="dimension.category && dimension.category.length > 0">
 	         <i   class="fa fa-plus-square-o" ></i>
 	         <i class="fa fa-minus-square-o"></i>
@@ -196,10 +197,16 @@ export default {
   padding:0px
 
 }
+span.clickable-name {
+  cursor: pointer;
+}
+
 .mtdt-facet.disable{
  opacity: 0.8;
 }
-
+.mtdt-facet.disable {
+  pointer-events:none;
+}
 .mtdt-facet input[type="checkbox"] {
   display: none;
 }

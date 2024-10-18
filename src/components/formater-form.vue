@@ -432,7 +432,7 @@ export default {
         name: this.$route.name,
         params: this.$route.params,
         query: {}
-      })
+      }).catch(error => {console.log(error)})
       // remove all layers
       // this.$store.commit('layers/init')
       var event = new CustomEvent('aerisResetEvent')

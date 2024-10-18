@@ -271,6 +271,10 @@ export default {
       this.$store.commit('searchingChange', false)
     },
     treatmentElasticsearch (data, depth) {
+       if (this.parameters.from === 0 && data.hits && data.hits.hits && data.hits.hits.length === 0) {
+        this.$store.commit('searchingChange', false)
+        return
+       }
        this.treatmentAggregations(data.aggregations)
        var metadatas = {}
        var features = []
