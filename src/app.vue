@@ -23,7 +23,10 @@
     <formater-authentication v-if="authEnabled" ></formater-authentication>
     <!--  <i class="fa fa-shopping-cart" style="font-size:1.5rem;opacity:0.6" :style="{color: $store.state.style.primary}"></i>-->
  </header>      
-
+ <div v-if="message && showMessage" class="catalog-message" @click="showMessage=false">
+  <div style="position:absolute;right:4px;top:-15px;">&times;</div>
+    <div v-html="message"></div>
+ </div>
   <!--     <iframe id="myIframe" style="display:none;"src='' @load="getUrl" ></iframe>
 -->
       <div id="view">
@@ -67,15 +70,18 @@ export default {
       authEnabled () {
         return (this.$store.state.app && this.$route.name !== 'FormaterLogin' &&
             this.$route.name !== 'FormaterLogout' )
+      },
+      message () {
+        return this.$store.state.message
       }
     },
     data () {
       return {
+        showMessage: true,
         resizeListener: null
       }
     },
     created () {
-      console.log('CREATION APP')
       this.$gn.init(this.$i18n.locale, this.$store.state.geonetwork, this.$http, this.$store)
       this.resizeListener = this.resize.bind(this)
       window.addEventListener('resize', this.resizeListener);
@@ -113,7 +119,21 @@ export default {
 <style src="formater-commons-components-vjs/src/assets/css/formater-icon.css"></style>
 
 <style>
-
+.catalog-message {
+  position:absolute;
+  width: 700px;
+  top: 10%;
+  left: calc(50% - 350px);
+  color: darkred;
+  font-size: 2rem;
+  z-index: 1000;
+  background: white;
+  border: 2px solid darkred;
+  text-align:center;
+  border-radius: 10px;
+  padding: 10px;
+  cursor: pointer;
+}
 .mtdt-app {
   margin:auto;
   font-family: inherit;
