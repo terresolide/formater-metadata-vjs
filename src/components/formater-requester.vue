@@ -370,6 +370,10 @@ export default {
 //           response => { this.treatmentError(response, url); })
 //     },
     treatmentError (response, url) {
+      if (this.$store.state.message) {
+        this.$store.commit('searchingChange', false)
+        return
+      }
       switch(response.status) {
       case 0:
         this.$store.commit('setError', this.$i18n.t('SERVICE_UNAVAILABLE'))

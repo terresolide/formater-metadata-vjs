@@ -500,7 +500,8 @@ const GeonetworkPlugin = {
              }
              var json = this.geonetwork + 'catalog/locales/' + this.locale + '-search.json'
              this.$http.get(json).then(
-                  response => { this.lang = Object.assign(this.lang, response.body)}
+                  response => { this.lang = Object.assign(this.lang, response.body)},
+                  response => { console.log('error')}
               )
              
               // default topic categories
@@ -510,7 +511,9 @@ const GeonetworkPlugin = {
                   'Accept': 'application/json, text/plain, */*',
                   'Accept-Language': this.locale === 'fr' ? 'fre': 'eng'
                 }
-              }).then( response => { this.lang = Object.assign(this.lang,response.body)})
+              }).then( response => { this.lang = Object.assign(this.lang,response.body)},
+                       response => {console.log('error')}
+              )
              // group name
               var json = this.geonetwork + 'srv/api/0.1/tools/i18n/db?type=Group'
               this.$http.get(json, {
@@ -518,7 +521,8 @@ const GeonetworkPlugin = {
                   'Accept': 'application/json, text/plain, */*',
                   'Accept-Language': this.locale === 'fr' ? 'fre': 'eng'
                 }
-              }).then( response => { this.lang = Object.assign(this.lang,response.body)})
+              }).then( response => { this.lang = Object.assign(this.lang,response.body)},
+                       response => { console.log('error')})
            },
            setLocale: function (lang) {
              if (!this.geonetwork || !this.$http) {
