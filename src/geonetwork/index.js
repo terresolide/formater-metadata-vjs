@@ -798,6 +798,11 @@ const GeonetworkPlugin = {
               if (meta._source.overview) {
                 meta.thumbnail = meta._source.overview[0].url
               }
+              if (meta._source['th_formater-distributor']) {
+              //   console.log(meta._source.th_formater-distributor)
+                meta.dataCenter = meta._source['th_formater-distributor'][0].link
+                delete meta._source['th_formater-distributor']
+              }
               if ( meta._source.resourceTemporalExtentDetails) {
                 meta.tempExtentBegin = meta._source.resourceTemporalExtentDetails[0].start.date
                 meta.tempExtentEnd = meta._source.resourceTemporalExtentDetails[0].end.date

@@ -47,7 +47,7 @@ export default function makeStore( config ) {
         step2: 'details'
       },
       includes: ["uuid", "id", "groupOwner", "cl_status", "cl_hierarchyLevel", "geom", 
-        "resourceTitle*", "resourceTemporalExtentDetails", "resourceAbstract*", 
+        "resourceTitle*", "resourceTemporalExtentDetails", "resourceAbstract*",  "th_formater-distributor.*",
         "th_formater-platform-gn", "th_formaterre-product-gn", "th_ron.default", "th_polarisation.default", "overview","link"],
       aggregations: {
         step1: {

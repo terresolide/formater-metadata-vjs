@@ -46,7 +46,7 @@
         </div>
          <formater-temporal-extent :start="meta.tempExtentBegin" :end="meta.tempExtentEnd"></formater-temporal-extent>
          <div class="summary" v-html="decodeURIComponent(metadata.summary)" v-if="metadata.summary" style="padding:5px 0"></div>
-      
+          {{ meta.distibutor }}
          <div v-if="meta.description" v-html="meta.description" style="padding:5px 0"></div>
          <formater-parameters type="cartouche" :metadata="meta"></formater-parameters>
          <div v-for="item in meta.parameters" ><label :style="{color: primary}">{{ item.label }}: </label> 
@@ -58,13 +58,12 @@
        <!--   <formater-online v-for="(item, index) in meta.related.onlines" :key="index" :online="item"></formater-online> -->
      </div>
      <div class="mtdt-footer" >
-       <div class="mtdt-group" v-if="depth === 0">
-         <a v-if="group && group.url" :href="group.url" :title="group.label[this.$store.state.lang]" target="_blank" class="mtdt-group-logo">
-             <img :src="group.logo"/>
-          </a>
-          <a v-else href="#" :alt="group.label[this.$store.state.lang]" :title="group.label[this.$store.state.lang]" class="mtdt-group-logo">
-              <img :src="group.logo"  />
-          </a>
+    
+       <div class="mtdt-group" v-if="depth === 0 && dataCenter">
+         <a v-if="dataCenter && dataCenter.href" :href="dataCenter.href" :title="dataCenter.title[$store.state.lang]" target="_blank" class="mtdt-group-logo">
+             <img :src="dataCenter.logo"/>
+         </a>
+         
        </div>
        <formater-related type="cartouche" :title="meta.title" :access="access" :id="meta.id" :cds="dataCenter" 
        :download="meta.download" :order="meta.order" :has-bbox-layer="hasBboxLayer" :layers="meta.layers" 
@@ -121,8 +120,11 @@ export default {
       return this.$store.state.style.emphasis
     },
     group () {
-      if (this.metadata && this.$gn.groups[this.metadata.group]) {
-        return this.$gn.groups[this.metadata.group]
+      return false
+    },
+    dataCenter () {
+      if (this.metadata && this.metadata.dataCenter) {
+        return this.$store.getters['dataCenters/byId'](this.metadata.dataCenter)
       }
       return false
     }
@@ -131,7 +133,6 @@ export default {
     return {
      meta: {},
      uuid: null,
-     dataCenter: null,
      hasBboxLayer: false,
      layerAdded: false
     }
@@ -139,6 +140,7 @@ export default {
   created () {
    moment.locale(this.$i18n.locale)
    this.meta = this.metadata
+   console.log(this.meta)
    if (!this.meta.treatment) {
      this.meta.treatment = {}
    }
@@ -146,13 +148,13 @@ export default {
    if (this.meta.geoBox  || this.meta.id) {
      this.hasBboxLayer = true
    }
-   if (!this.cds) {
-     if (this.metadata.groupOwner) {
-       this.dataCenter = this.$gn.t('group-'+ this.metadata.groupOwner)
-     }
-   } else {
-     this.dataCenter = this.cds
-   }
+  //  if (!this.cds) {
+  //    if (this.metadata.groupOwner) {
+  //      this.dataCenter = this.$gn.t('group-'+ this.metadata.groupOwner)
+  //    }
+  //  } else {
+  //    this.dataCenter = this.cds
+  //  }
   },
   methods: {
     displayMetadata () {

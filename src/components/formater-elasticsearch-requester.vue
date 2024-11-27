@@ -205,7 +205,6 @@ export default {
           })
         }
       }
-      
       for(var key in aggregations) {
         if (route.query [key]) {
           if (aggregations[key].meta.type === 'dimension') {
