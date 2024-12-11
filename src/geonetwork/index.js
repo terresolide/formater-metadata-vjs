@@ -808,6 +808,7 @@ const GeonetworkPlugin = {
                 meta.tempExtentEnd = meta._source.resourceTemporalExtentDetails[0].end.date
               }
               meta.group = meta._source.groupOwner
+              meta.cds = this.groups[meta.group].label.fr.toLowerCase()
               if (meta._source.cl_status) {
               meta.status = meta._source.cl_status[0].key
               } else {

@@ -65,7 +65,7 @@
          </a>
          
        </div>
-       <formater-related type="cartouche" :title="meta.title" :access="access" :id="meta.id" :cds="dataCenter" 
+       <formater-related type="cartouche" :title="meta.title" :access="access" :id="meta.id" :cds="dataCenter ? dataCenter.title.fr.toLowerCase() : null" 
        :download="meta.download" :order="meta.order" :has-bbox-layer="hasBboxLayer" :layers="meta.layers" 
        :links="meta.links" :related="meta.related" :related-links="meta.relatedLinks" :sensor="meta.sensorUrl"></formater-related>
      </div>
@@ -140,7 +140,6 @@ export default {
   created () {
    moment.locale(this.$i18n.locale)
    this.meta = this.metadata
-   console.log(this.meta)
    if (!this.meta.treatment) {
      this.meta.treatment = {}
    }

@@ -24,7 +24,7 @@
       "en": "EOST - École et Observatoire des sciences de la Terre"
     }
   },
-  "https://w3id.org/formater/data-center/ISGI": {
+  "https://catalogue-terresolide.ipgp.fr/geonetwork/srv/api/registries/vocabularies/local.dataCentre.distributor#isgi": {
     "logo": "https://catalogue-terresolide.ipgp.fr/geonetwork/images/harvesting/logo_ISGI_2.png",
     "href": "http://isgi.unistra.fr/",
     "title": {
@@ -49,7 +49,7 @@
     }
   },
     "https://catalogue-terresolide.ipgp.fr/geonetwork/srv/api/registries/vocabularies/local.dataCentre.distributor#isdeform": {
-    "logo": "https://catalogue-terresolide.ipgp.fr/geonetwork/images/harvesting/cropped-Logo_IsDeform_v8.png",
+    "logo": "https://catalogue-terresolide.ipgp.fr/geonetwork/images/harvesting/isdeform.png",
     "href": "https://www.isdeform.fr/",
     "title": {
       "fr": "ISDeform",
