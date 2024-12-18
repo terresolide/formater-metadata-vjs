@@ -19,6 +19,10 @@
 export default {
   name: 'FormaterElasticsearchRequester',
   props: {
+    group: {
+      type: String,
+      default: null
+    },
     depth: {
       type: Number,
       default:0
@@ -206,7 +210,6 @@ export default {
         }
       }
       if (route.query.any) {
-        console.log(route.query.any)
         var words = route.query.any.trim().split(/(\s+)/)
         words = words.filter(function (w) { return w.trim().length > 0;})
         var any = words.join(' AND ')
@@ -218,6 +221,25 @@ export default {
           this.parameters.query.bool.must = []
         }
         this.parameters.query.bool.must.push(term)
+      }
+      if (this.group) {
+        var gnGroups = this.$gn.groups
+        console.log(gnGroups)
+
+        var g = this.group.toLowerCase()
+        console.log(g)
+        var id = null
+        for (var key in gnGroups) {
+          console.log(key)
+          if (gnGroups[key].label.fr.replace(' ', '-').toLowerCase() === g) {
+            id = key
+          }
+        }
+        if (!id) {
+          return
+        } else {
+          this.parameters.query.bool.filter.push({term: {groupOwner: id + ''}})
+        }
       }
       for(var key in aggregations) {
         if (route.query [key]) {
