@@ -30,6 +30,9 @@ export default {
   },
   watch: {
     $route (newroute, old) {
+      // if (newroute.name !== old.name) {
+      //   this.initAggregations()
+      // }
       this.getRecords(newroute)
       
     }
@@ -156,11 +159,11 @@ export default {
       this.initParameters()
       
       if (route.name === 'Metadata') {
-        var aggregations = this.$store.state.aggregations.step2
+        var aggregations = Object.assign(this.$store.state.aggregations.step2)
        this.parameters.query.bool.filter.push({ term: {parentUuid: route.params.uuid}})
        delete this.parameters.query.bool.must_not
       } else {
-       var aggregations = this.$store.state.aggregations.step1
+       var aggregations = Object.assign(this.$store.state.aggregations.step1)
       }
       this.parameters.aggregations = aggregations
       if (route.query.from) {
@@ -222,25 +225,12 @@ export default {
         }
         this.parameters.query.bool.must.push(term)
       }
+     
       if (this.group) {
-        var gnGroups = this.$gn.groups
-        console.log(gnGroups)
-
-        var g = this.group.toLowerCase()
-        console.log(g)
-        var id = null
-        for (var key in gnGroups) {
-          console.log(key)
-          if (gnGroups[key].label.fr.replace(' ', '-').toLowerCase() === g) {
-            id = key
-          }
-        }
-        if (!id) {
-          return
-        } else {
-          this.parameters.query.bool.filter.push({term: {groupOwner: id + ''}})
-        }
+        this.parameters.query.bool.filter.push({term: {groupOwner: this.group }})
+        delete aggregations['groupOwner']
       }
+      
       for(var key in aggregations) {
         if (route.query [key]) {
           if (aggregations[key].meta.type === 'dimension') {

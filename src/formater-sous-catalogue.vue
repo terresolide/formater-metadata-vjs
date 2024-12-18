@@ -13,8 +13,9 @@
 <template>
  <div class="mtdt-catalogue">
  <div>{{metaDisplayed}}</div>
+ 
   <!-- components not visible  -->
- <formater-elasticsearch-requester  :group="$route.params.id" ></formater-elasticsearch-requester>
+ <formater-elasticsearch-requester  :group="group ? group.id : null" ></formater-elasticsearch-requester>
   <!-- component to draw bbox -->
   <formater-draw-bbox ></formater-draw-bbox>
 
@@ -22,9 +23,14 @@
    <!-- components can be view -->
  
    <div class="mtdt-column-left" >
+      <div v-if="group">
+       <img :src="group.logo" style="max-height:30px;" />
+       <span style="vertical-align:middle;line-height:50px;">{{ group.label.fr }}</span>
+      </div>
        <formater-form  :disableLevel="0" :depth="0"></formater-form>
    </div>
    <div class="mtdt-column-right" >
+
         <!-- div where append map when enlarge it -->
         <div id="fmtLargeMap"></div>
         <!-- icon search -->
@@ -99,6 +105,23 @@ export default {
       backListener: null,
       // default temporalExtent
       temporalExtent: {min: '1900-01-01', max: 'now'}
+    }
+  },
+  computed: {
+    group () {
+      var gnGroups = this.$gn.groups
+      var g = this.$route.params.id.toLowerCase()
+      var id = null
+      for (var key in gnGroups) {
+        if (gnGroups[key].label.fr.replace(' ', '-').toLowerCase() === g) {
+          id = key
+        }
+      }
+      if (id) {
+        return gnGroups[id]
+      } else {
+        return null
+      }
     }
   },
   watch: {

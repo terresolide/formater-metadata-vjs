@@ -20,7 +20,7 @@ export default new Router({
       component: FormaterCatalogue
     },
     {
-      path: '/catalog/:id',
+      path: '/grp/:id',
       name: 'FormaterSousCatalogue',
       component: FormaterSousCatalogue
     },

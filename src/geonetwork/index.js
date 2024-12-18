@@ -517,14 +517,12 @@ const GeonetworkPlugin = {
                  response => { 
                   var self = this
                   response.body.forEach(function (g) {
-                    var group = {
-                      logo: g.logo ? self.geonetwork + 'images/harvesting/' + g.logo : null,
-                      url: g.website,
-                      label: {
-                        fr: g.label.fre,
-                        en: g.label.eng
-                      }
-                    }
+                    var group = g
+                    group.logo = g.logo ? self.geonetwork + 'images/harvesting/' + g.logo : null,
+                    group.label.fr = g.label.fre
+                    delete group.label.fre
+                    group.label.en = g.label.eng
+                    delete group.label.eng
                     self.groups[g.id] = group
                  })
             })
