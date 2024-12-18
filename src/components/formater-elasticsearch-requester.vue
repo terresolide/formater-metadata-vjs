@@ -205,6 +205,20 @@ export default {
           })
         }
       }
+      if (route.query.any) {
+        console.log(route.query.any)
+        var words = route.query.any.trim().split(/(\s+)/)
+        words = words.filter(function (w) { return w.trim().length > 0;})
+        var any = words.join(' AND ')
+        var term = {query_string: {
+          fields: ["resourceTitleObject.*", "resourceAbstractObject.*", "lineageObject.*", "tag", "uuid", "resourceIdentifier"],
+          query: any
+        }}
+        if (!this.parameters.query.bool.must) {
+          this.parameters.query.bool.must = []
+        }
+        this.parameters.query.bool.must.push(term)
+      }
       for(var key in aggregations) {
         if (route.query [key]) {
           if (aggregations[key].meta.type === 'dimension') {

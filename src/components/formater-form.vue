@@ -354,7 +354,6 @@ export default {
       // if (!Array.isArray(newdimensions)) {
       //   newdimensions = newdimensions
       // }
-      console.log(dimensions)
       var _this = this
       for(var key in dimensions) {
         var dimension = dimensions[key]
