@@ -422,7 +422,11 @@ export default {
         .then(translated => {
           buckets.forEach(function (item, index) {
             if (translated[item['@value']]) {
-              buckets[index]['@label'] = translated[item['@value']]
+              if (translated[item['@value']].label) {
+                buckets[index]['@label'] = translated[item['@value']].label
+              } else {
+                buckets[index]['@label'] = translated[item['@value']]
+              }
             }
           })
           if (type === 'select') {

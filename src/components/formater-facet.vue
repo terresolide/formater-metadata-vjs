@@ -38,7 +38,7 @@ export default {
       default: ''
     },
     label: {
-      type: String|Object,
+      type: String,
       default: null
     },
     value: {
@@ -102,12 +102,9 @@ export default {
 //     }
   },
   mounted () {
-    console.log(this.label)
-    if (this.label.label) {
-      this.name = this.label.label
-    } else {
-      this.name = this.label.split('|').pop()
-    }
+    
+    this.name = this.label.split('|').pop()
+
    if (this.defaut && this.defaut.indexOf(this.value)>=0) {
      this.isChecked = true;
    } else {

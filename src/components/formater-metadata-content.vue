@@ -144,7 +144,7 @@
   <dt :style="dtStyle()"><i class="fa fa-warning"></i>{{$t('constraint')}}</dt>
   <dd :style="{borderColor: $store.state.style.primary}" style="border: 1px solid grey;border-radius:3px;padding: 3px 5px; margin: 0 -5px;">
      <div v-for="key in $store.state.constraintList" v-if="metadata[key]">
-       <div v-for="line in metadata[key]" style="line-height:1;margin-bottom:5px;">{{line}}</div>
+       <div v-for="line in metadata[key]" style="line-height:1;margin-bottom:5px;"  v-html="line"></div>
      </div>
   </dd>
 </dl>
