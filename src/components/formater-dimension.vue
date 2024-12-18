@@ -49,15 +49,7 @@ export default {
       isChecked: false
     }
   },
-  
   computed: {
-    label () {
-        if (this.dimension['@label'].label) {
-          return this.dimension['@label'].label
-        } else {
-          return this.dimension['@label']
-        }
-    },
     strCount () {
       if (this.dimension['@count'] > 0 ){
         return '(' + this.dimension['@count'] + ')';
