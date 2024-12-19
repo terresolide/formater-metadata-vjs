@@ -508,6 +508,7 @@ const GeonetworkPlugin = {
              }
            },
            getTranslation () {
+
             if (!this.geonetwork) {
               return
             }
@@ -570,6 +571,7 @@ const GeonetworkPlugin = {
           //       }
           //     }).then( response => { this.lang = Object.assign(this.lang,response.body)})
           //  },
+
            setLocale: function (lang) {
              if (['en', 'fr'].indexOf(lang) >=0) {
                if (this.locale !== lang) {
