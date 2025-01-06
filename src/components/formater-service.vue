@@ -318,7 +318,8 @@ export default {
     },
     showUser ()  {
       if (!this.noRole) {
-         this.$store.commit('user/toggleShow', {client: this.clientId, access: this.service.access})
+         var clientId = this.clientId === 'gdh-portal' ? 'flatsim' : this.clientId
+         this.$store.commit('user/toggleShow', {client: clientId, access: this.service.access})
       }
     },
     getClientId () {
