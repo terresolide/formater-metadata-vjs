@@ -37,9 +37,15 @@ export default {
   },
   getters: {
     get: (state) => (client, name) => {
+      if (client === 'geodes') {
+        client = 'flatsim'
+      }
       return state.clients[client].find(role => role.name === name)
     },
     getClient: (state) => (clientName) => {
+      if (clientName === 'geodes')  {
+        clientName = 'flatsim'
+      }
       if (state.clients[clientName]) {
         return state.clients[clientName]
       } else {
@@ -50,6 +56,9 @@ export default {
       return state.clients
     },
     rolesForAccess: (state) => (clientName, access) => {
+       if (clientName === 'geodes') {
+        clientName = 'flatsim'
+       }
        if (!state.clients[clientName]) {
          return []
        }

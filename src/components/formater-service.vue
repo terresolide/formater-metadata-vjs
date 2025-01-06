@@ -355,13 +355,13 @@ export default {
           scope: 'openid',
           state: this.state
       }
-      if (this.type === 'external2') {
+      if (this.service.type === 'external2') {
         params.code_challenge = this.codeChallenge
         params.response_mode = 'fragment'
         params.code_challenge_method = 'S256'
       }
       this.searching = true
-      var url = this.authUrl + '?'
+      var url = (this.service.authUrl || this.authUrl )+ '?'
       var paramsStr = Object.keys(params).map(function (key) {
         return key + '=' + params[key]
       }).join('&')
@@ -371,14 +371,14 @@ export default {
     },
     openPopup (url) {
       this.popup = window.open(url, "_blank", "height=750, width=850, status=yes, toolbar=no, menubar=no, location=no,addressbar=no");
-      var _this = this
-      var loop = setInterval(function() {
-        if (_this.popup.closed) {
-          clearInterval(loop)
-          _this.searching = false
-          _this.popup = null
-        }
-      })
+      // var _this = this
+      // var loop = setInterval(function() {
+      //   if (_this.popup.closed) {
+      //     clearInterval(loop)
+      //     _this.searching = false
+      //     _this.popup = null
+      //   }
+      // })
     },
     getMessage(e) {
       if (e.data.code && e.data.state === this.state) {
@@ -407,12 +407,13 @@ export default {
         return key + '=' + params[key]
       }).join('&')
       url += paramsStr
-      this.iframeUrl = url
+     // this.iframeUrl = url
       // window.postMessage(this.$store.getters['user/clientId'] + ' ' + 'blabla', 'https://sso.aeris-data.fr')
 //       this.$http.get(url, {credentials: true})
 //       .then(resp => console.log(resp), resp => console.log(browser.cookies.get({name: 'KEYCLOAK_IDENTITY' })))
     },
     getToken (code) {
+      console.log(code)
       if (this.service.reject) {
         return
       }
@@ -422,6 +423,16 @@ export default {
         state: this.state,
         clientId: this.clientId,
         redirectUri: this.redirectUri
+      }
+      if (this.service.type === 'external2') {
+        var params = {
+          code: code,
+          grant_type: 'authorization_code',
+          client_id: this.clientId,
+          redirect_uri: this.redirectUri,
+          code_verifier: this.codeVerifier
+        }
+        url = this.service.refreshUrl
       }
       this.$http.post(url, params, 
       {
