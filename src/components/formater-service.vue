@@ -257,7 +257,8 @@ export default {
       iframeUrl: null,
       showTooltip: false,
       codeChallenge: null,
-      codeVerifier: null
+      codeVerifier: null,
+      _refreshToken: null
     }
   },
   created () {
@@ -479,41 +480,86 @@ export default {
           this.timer = setInterval(this.refreshToken, 6000)
           // }
         // }
-      }  else {
+      }  else  if (data.access_token) {
+        this.$store.commit('services/setToken', {id: this.service.id, token: data.access_token})
+        this._refreshToken = data.refresh_token
+        this.$store.commit('roles/setToken', {client: this.service.clientId, token: data.access_token})
+        // if (this.$store.state.metadata) {
+          var obj = jwt_decode(data.access_token)
+          this.identity = obj.data || null
+          var now = new Date()
+          this.time = data.expires_in * 1000
+          this.expire = now.getTime() + this.time // - now.getTime() 
+          
+         // this.time = this.expire - now.getTime()
+          // if (this.expire > 2000) {
+          this.timer = setInterval(this.refreshToken, 6000)
+      } else {
         this.logout()
       }   
     },
     refreshToken () {
       var now = new Date()
       this.time = this.expire - now.getTime()
-      if (this.time < 180000) {
-	      this.$http.get(this.service.refreshUrl,    
-	      // this.$http.get(this.service.refreshUrl + '?_tk=' + this.service.token,
+      if (this.time < 7000) {
+        if (this.service.type === 'external2') {
+          var post = {
+             refresh_token: this._refreshToken,
+             grant_type: 'refresh_token',
+             client_id: this.clientId
+          }
+          this.$http.post(this.service.refreshUrl, post,
 	          {
 	             headers: {
-	               "Authorization": "Bearer " + this.service.token
-	//               'Content-Type': 'application/json',
-	//               'Accept': 'application.json',
+	              'Content-Type': 'application/json',
+	              'Accept': 'application.json',
 	              }
 	          }
-	      )
-	      .then(function (resp) {
-	        if (resp.body.token) {
-	          this.$store.commit('services/setToken', {id: this.service.id, token: resp.body.token})
-	          var obj = jwt_decode(resp.body.token)
-	          var now = new Date()
-	          this.expire = obj.exp * 1000
-	          this.time = this.expire - now.getTime()
-	        } else {
-	          this.hasExpired = true
-	          this.time = 0
-	          this.msg = true
-	          this.logout()
-	        }
-	        if (resp.body.status === 'error') {
-	          
-	        }
-	      }, resp => this.logout())
+          )
+          .then(function (resp) {
+            if (resp.body.access_token) {
+              this.setToken(resp.body)
+            
+            } else {
+              this.hasExpired = true
+              this.time = 0
+              this.msg = true
+              this.logout()
+            }
+            if (resp.body.status === 'error') {
+              
+            }
+          }, resp => this.logout())
+        } else {
+       
+          this.$http.get(this.service.refreshUrl,    
+          // this.$http.get(this.service.refreshUrl + '?_tk=' + this.service.token,
+              {
+                headers: {
+                  "Authorization": "Bearer " + this.service.token
+    //               'Content-Type': 'application/json',
+    //               'Accept': 'application.json',
+                  }
+              }
+          )
+          .then(function (resp) {
+            if (resp.body.token) {
+              this.$store.commit('services/setToken', {id: this.service.id, token: resp.body.token})
+              var obj = jwt_decode(resp.body.token)
+              var now = new Date()
+              this.expire = obj.exp * 1000
+              this.time = this.expire - now.getTime()
+            } else {
+              this.hasExpired = true
+              this.time = 0
+              this.msg = true
+              this.logout()
+            }
+            if (resp.body.status === 'error') {
+              
+            }
+          }, resp => this.logout())
+        }
       }
     },
     validToken () {
