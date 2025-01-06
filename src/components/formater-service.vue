@@ -85,7 +85,7 @@
   -->
   <!--   <iframe v-if="iframeUrl" style="display:none;" :src="iframeUrl" ></iframe>  -->
  <div v-if="email" class="mtdt-service-button" :class="{searching: searching}" v-show="clientId">
-   <span v-if="service.type === 'external'">
+   <span v-if="service.type === 'external' || service.type === 'external2'">
 		   <a v-if="service.token && hasAccess" class="mtdt-menu-item"
 		   @click="logout" :style="{'--color': $store.state.style.primary}">
 		      {{$t('access_to')}} {{service.domain}}
@@ -158,6 +158,7 @@
 </template>
 <script>
 import jwt_decode from 'jwt-decode'
+import {myCrypto} from '../modules/MyCrypto.js'
 export default {
   name: 'FormaterService',
   components: {
@@ -210,6 +211,9 @@ export default {
       return roles.length === 0
     },
     redirectUri () {
+      if (this.service.redirectUri) {
+        return this.service.redirectUri
+      }
       if (this.$store.state.ssoLogin) {
         return this.$store.state.ssoLogin
       }
@@ -251,7 +255,9 @@ export default {
       timer: null,
       needAuthorize: null,
       iframeUrl: null,
-      showTooltip: false
+      showTooltip: false,
+      codeChallenge: null,
+      codeVerifier: null
     }
   },
   created () {
@@ -265,6 +271,14 @@ export default {
       
       return
     }
+    if (this.service.type === 'external2') {
+        this.codeVerifier = myCrypto.generateCodeVerifier()
+        myCrypto.generateCodeChallengeFromVerifier(this.codeVerifier)
+        .then(code => {
+           this.codeChallenge=code
+          }
+        )
+      }
     this.codeListener = this.getMessage.bind(this)
     window.addEventListener('message', this.codeListener) 
   },
@@ -340,6 +354,11 @@ export default {
           client_id: this.clientId,
           scope: 'openid',
           state: this.state
+      }
+      if (this.type === 'external2') {
+        params.code_challenge = this.codeChallenge
+        params.response_mode = 'fragment'
+        params.code_challenge_method = 'S256'
       }
       this.searching = true
       var url = this.authUrl + '?'
