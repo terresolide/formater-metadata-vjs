@@ -154,7 +154,7 @@
        <span v-else-if="token && token !== -1 && canDownload && serviceType !== 'session'" 
        :class="{disabled:download[0].disabled}"   :title="$t('download_data')" >
         <span class="mtdt-related-type fa fa-download" :style="{backgroundColor: primary}" @click="record(download[0].url, 'download', $event)"></span>
-          <a style="display:none;" :href="download[0].url + '?_bearer=' + token" >
+          <a style="display:none;"  @click="triggerDownload(0)" >
           </a>
       </span>
       <!--  case geodesy-plotter -->
@@ -210,7 +210,7 @@
                  <span :title="file.description"  @click="record(file.url, 'download', $event)">
                    {{file.name? file.name: $t('download_data')}}
                  </span>
-                 <a :href="file.url + '?_bearer=' + token" style="display:none;"></a>
+                 <a @click="triggerDownload(index)" style="display:none;"></a>
              </span>
              <!--  case FLATSIM without service authentication but can download -->
              <span v-else-if="!token && canDownload" style="opacity:0.8;" @click="authorize">
@@ -548,7 +548,8 @@
          
        },
        record (url, type, e) {
-         if (!this.$store.state.recordUrl) {
+        console.log(this.$store.state.recordurl)
+         if (!this.$store.state.recordUrl || this.$store.state.recordUrl == 'undefined') {
            if (e) {
              e.target.nextElementSibling.click()
            }
@@ -569,29 +570,31 @@
         
          this.$http.post(this.$store.state.recordUrl, data, {emulateJSON: true})
          .then(
-             resp => { e.target.nextElementSibling.click()},
+             resp => { if (e) {
+                      e.target.nextElementSibling.click()}
+             },
              resp => { e.target.nextElementSibling.click()}
          )
         
        },
        triggerDownload (index) {
-         this.record(this.download[0].url, 'download')
+         this.record(this.download[index].url, 'download')
          if (this.download[index].disabled) {
            return
          }
          var _this = this
    
          
-         var filename = 'download'
-         var localIndex = index
-         if (this.downloadLink[index]) {
-           this.downloadLink[index].click()
-           return
-         }
-         this.$set(this.download[index], 'disabled', true) 
+        //  var filename = 'download'
+        //  var localIndex = index
+        //  if (this.downloadLink[index]) {
+        //    this.downloadLink[index].click()
+        //    return
+        //  }
+        //  this.$set(this.download[index], 'disabled', true) 
          
-         this.downloadLink[index] = document.createElement('a')
-         document.body.appendChild(this.downloadLink[index])
+        //  this.downloadLink[index] = document.createElement('a')
+        //  document.body.appendChild(this.downloadLink[index])
          var downloadProgress = function (e) {
            if (e.total) {
              _this.progress = Math.round(100 * e.loaded / e.total)
@@ -602,12 +605,15 @@
          }
          var _this = this
          var url = this.download[index].url 
+        var  headers = {}
+         url = 'https://geodes-portal.cnes.fr/api/download/URN:FEATURE:DATA:gdh:03684236-bf97-339c-b789-60ff7541893c:V1/files/3fee0d25f8d65705a0af7205342daf14'
          if (this.token && this.token !== -1) {
-           url += '?_bearer=' + this.token
+           // url += '?_bearer=' + this.token
+           headers['Authorization'] = 'Bearer ' + this.token
          }
          // var url = 'http://api.formater/geotiff/abana/iw2/geo_filt_20180518-20180623_sd_4rlks.tif'
          var objUrl = new URL(url)
-         this.$http.get(url, {responseType: 'blob', downloadProgress: downloadProgress} )
+         this.$http.get(url, {headers: headers, responseType: 'blob', downloadProgress: downloadProgress} )
          //this.$http.get('http://api.formater/interface-services/' , {responseType: 'blob', downloadProgress: downloadProgress})
              .then( response => {
                var headerDisposition = response.headers.get('Content-Disposition')

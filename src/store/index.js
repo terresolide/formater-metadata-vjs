@@ -154,6 +154,9 @@ export default function makeStore( config ) {
       previousRoutes: []
   }
   var finalConfig = Object.assign(defaultConfig, config)
+  if (finalConfig.checkSSO) {
+    finalConfig.recordUrl = finalConfig.checkSSO + '/downloads/click'
+  }
   return new Vuex.Store( {
     state: finalConfig,
     mutations: {
