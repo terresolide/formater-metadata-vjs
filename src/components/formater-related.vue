@@ -291,6 +291,13 @@
   <script>
   import ProgressBar from 'vuejs-progress-bar'
   import FormaterPlatformList from './formater-platform-list.vue'
+//   import { WritableStream } from 'web-streams-polyfill/polyfill';
+// import streamSaver  from 'streamsaver';
+// import concatMap from 'concat-map'
+// If the WritableStream is not available (Firefox, Safari), take it from the ponyfill
+if (!window.WritableStream) {
+    streamSaver.WritableStream = WritableStream;
+}
   export default {
     name: 'FormaterRelated',
     components: {
@@ -577,7 +584,7 @@
          )
         
        },
-       triggerDownload (index) {
+     async triggerDownload (index) {
          this.record(this.download[index].url, 'download')
          if (this.download[index].disabled) {
            return
@@ -587,14 +594,15 @@
          
         //  var filename = 'download'
         //  var localIndex = index
-        //  if (this.downloadLink[index]) {
-        //    this.downloadLink[index].click()
-        //    return
-        //  }
-        //  this.$set(this.download[index], 'disabled', true) 
+         if (this.downloadLink[index]) {
+           this.downloadLink[index].click()
+           return
+         }
+         // this.$set(this.download[index], 'disabled', true) 
          
-        //  this.downloadLink[index] = document.createElement('a')
-        //  document.body.appendChild(this.downloadLink[index])
+         this.downloadLink[index] = document.createElement('a')
+         document.body.appendChild(this.downloadLink[index])
+        this.$set(this.download[index], 'disabled', true) 
          var downloadProgress = function (e) {
            if (e.total) {
              _this.progress = Math.round(100 * e.loaded / e.total)
@@ -605,12 +613,54 @@
          }
          var _this = this
          var url = this.download[index].url 
-        var  headers = {}
+         var  headers = {}
+
+
+    
          url = 'https://geodes-portal.cnes.fr/api/download/URN:FEATURE:DATA:gdh:03684236-bf97-339c-b789-60ff7541893c:V1/files/3fee0d25f8d65705a0af7205342daf14'
+         url = 'https://catalog.formater/test.zip'
          if (this.token && this.token !== -1) {
            // url += '?_bearer=' + this.token
            headers['Authorization'] = 'Bearer ' + this.token
+           // headers = {}
          }
+
+    // test telechargmement direct sans succès avec streamSaver et web-stream-polyfill
+    //      const authorization = 'Bearer ' + this.token;
+    // const headers = new Headers({ authorization });
+    // const options = { headers };
+
+    // let response = await fetch(url, options)
+
+    // // if (!streamSaver.supported) {
+    // //     window.WritableStream = streamSaver.WritableStream;
+    // // }
+    // const filestream = streamSaver.createWriteStream('machin');
+    // const writer = filestream.getWriter();
+
+    // if (response.body.pipeTo) {
+    //     writer.releaseLock();
+    //     return response.body.pipeTo(filestream);
+    // }
+
+    // const reader = response.body.getReader();
+
+    // const pump = () =>
+    //     reader
+    //         .read()
+    //         .then(({ value, done }) => (done ? writer.close() : writer.write(value).then(pump)));
+
+    // pump();
+    // return
+
+    // test 2
+//     this.$http.get(url, {headers: headers, responseType: 'blob'}).pipe(
+//   concatMap((response) => {
+//     const fileStream = streamSaver.createWriteStream('test.zip');
+//     return response.body.stream().pipeTo(fileStream);
+//   })
+// );
+// return
          // var url = 'http://api.formater/geotiff/abana/iw2/geo_filt_20180518-20180623_sd_4rlks.tif'
          var objUrl = new URL(url)
          this.$http.get(url, {headers: headers, responseType: 'blob', downloadProgress: downloadProgress} )
@@ -628,6 +678,7 @@
                    var filename = objUrl.pathname.substring(objUrl.pathname.lastIndexOf('/') + 1)
                }
                const url = window.URL.createObjectURL(response.bodyBlob);
+               window.location.assign(url)
 //                const link = document.createElement('a')
 //                // link.setAttribute('download', )
 //                link.href = url
@@ -649,7 +700,7 @@
                      // use direct link
                       this.downloadLink[index].removeAttribute('download')
                       this.downloadLink[index].href = url
-                      this.downloadLink[index].click()
+                     // this.downloadLink[index].click()
                    }
                    break;
                  case 403:

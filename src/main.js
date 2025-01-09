@@ -37,14 +37,12 @@ if (!config.lang) {
 } else {
   locale = config.lang
 }
-console.log(process.env)
-console.log(config)
-if (!config.checkSSO) {
-  config.checkSSO = process.env.CHECK_SSO
-}
-if (!config.recordUrl) {
-  config.recordUrl = process.env.CHECK_SSO + '/downloads/click'
-}
+// if (!config.checkSSO) {
+//   config.checkSSO = process.env.CHECK_SSO
+// }
+// if (!config.recordUrl) {
+//   config.recordUrl = process.env.CHECK_SSO + '/downloads/click'
+// }
 config.env = process.env.NODE_ENV
 // export let keycloak = makeAuth(config.auth)
 

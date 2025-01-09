@@ -24,6 +24,7 @@
     "build": "cross-env NODE_ENV=production webpack --progress"
   },
   "dependencies": {
+    "concat-map": "^0.0.2",
     "easy-promise-queue": "^0.5.7",
     "formater-commons-components-vjs": "github:terresolide/formater-commons-components-vjs",
     "formater-pdf-viewer-vjs": "github:terresolide/formater-pdf-viewer-vjs",
@@ -35,13 +36,15 @@
     "leaflet-kml": "git+https://github.com/windycom/leaflet-kml.git",
     "moment": "^2.29.1",
     "proj4": "^2.6.2",
+    "streamsaver": "^2.0.6",
     "vue": "^2.6.14",
     "vue-custom-element": "^3.2.14",
     "vue-i18n": "7.0.5",
     "vue-resource": "^1.5.0",
     "vue-router": "^3.4.9",
     "vuejs-progress-bar": "^1.2.2",
-    "vuex": "^3.5.1"
+    "vuex": "^3.5.1",
+    "web-streams-polyfill": "^4.1.0"
   },
   "devDependencies": {
     "@babel/core": "7.12.10",
