@@ -352,9 +352,11 @@ export default {
           })
         }
         if(properties.services.download && properties.services.download.url) {
+          properties.services.download.name = properties.identifier + '.zip'
           if (!properties.download) {
             properties.download = []
           }
+         
           properties.download.push(properties.services.download)
           
         }

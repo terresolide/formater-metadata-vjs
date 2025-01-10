@@ -610,7 +610,7 @@ import streamSaver  from 'streamsaver';
          }
          var _this = this
          var url = this.download[index].url 
-         console.log(this.download[index])
+         var name = this.download[index].name
          var  headers = {}
 
 
@@ -622,15 +622,29 @@ import streamSaver  from 'streamsaver';
            headers['Authorization'] = 'Bearer ' + this.token
            // headers = {}
          }
-         const fileStream = streamSaver.createWriteStream('test.zip')
+         var filename = name || url.substring(url.lastIndex('/') + 1) + '.zip'
+        // const fileStream = streamSaver.createWriteStream(name)
 
         fetch(url, {'Authorization': 'Bearer machin'}).then(res => {
+
+          // get filename
+          var headerDisposition = res.headers.get('Content-Disposition')
+          if (headerDisposition) {
+            var match = headerDisposition.match(/filename[^;\n=]*=(\\?\"|'){0,1}([^\\?\"']*)(\\?\"|'){0,1}/i)
+            if (match) {
+              filename = match[2]
+            }
+              
+          }
+          const fileStream = streamSaver.createWriteStream(filename)
           const readableStream = res.body
 
+
+          
           // more optimized
           if (window.WritableStream && readableStream.pipeTo) {
             return readableStream.pipeTo(fileStream)
-              .then(() => {_this.$set(_this.download[index], 'disabled', false)})
+              .then(() => {_this.$set(_this.download[index], 'disabled', false)}, () => {console.log('blabla')})
           }
 
           window.writer = fileStream.getWriter()
