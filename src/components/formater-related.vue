@@ -292,12 +292,9 @@
   import ProgressBar from 'vuejs-progress-bar'
   import FormaterPlatformList from './formater-platform-list.vue'
 //   import { WritableStream } from 'web-streams-polyfill/polyfill';
-// import streamSaver  from 'streamsaver';
+import streamSaver  from 'streamsaver';
 // import concatMap from 'concat-map'
-// If the WritableStream is not available (Firefox, Safari), take it from the ponyfill
-if (!window.WritableStream) {
-    streamSaver.WritableStream = WritableStream;
-}
+
   export default {
     name: 'FormaterRelated',
     components: {
@@ -600,8 +597,8 @@ if (!window.WritableStream) {
          }
          // this.$set(this.download[index], 'disabled', true) 
          
-         this.downloadLink[index] = document.createElement('a')
-         document.body.appendChild(this.downloadLink[index])
+        //  this.downloadLink[index] = document.createElement('a')
+        //  document.body.appendChild(this.downloadLink[index])
         this.$set(this.download[index], 'disabled', true) 
          var downloadProgress = function (e) {
            if (e.total) {
@@ -613,6 +610,7 @@ if (!window.WritableStream) {
          }
          var _this = this
          var url = this.download[index].url 
+         console.log(this.download[index])
          var  headers = {}
 
 
@@ -624,7 +622,29 @@ if (!window.WritableStream) {
            headers['Authorization'] = 'Bearer ' + this.token
            // headers = {}
          }
+         const fileStream = streamSaver.createWriteStream('test.zip')
 
+        fetch(url, {'Authorization': 'Bearer machin'}).then(res => {
+          const readableStream = res.body
+
+          // more optimized
+          if (window.WritableStream && readableStream.pipeTo) {
+            return readableStream.pipeTo(fileStream)
+              .then(() => {_this.$set(_this.download[index], 'disabled', false)})
+          }
+
+          window.writer = fileStream.getWriter()
+
+          const reader = res.body.getReader()
+          const pump = () => reader.read()
+            .then(res => res.done
+              ? writer.close()
+              : writer.write(res.value).then(pump))
+
+          pump()
+        })
+
+    return
     // test telechargmement direct sans succès avec streamSaver et web-stream-polyfill
     //      const authorization = 'Bearer ' + this.token;
     // const headers = new Headers({ authorization });
