@@ -24,7 +24,6 @@
     "build": "cross-env NODE_ENV=production webpack --progress"
   },
   "dependencies": {
-    "concat-map": "^0.0.2",
     "easy-promise-queue": "^0.5.7",
     "formater-commons-components-vjs": "github:terresolide/formater-commons-components-vjs",
     "formater-pdf-viewer-vjs": "github:terresolide/formater-pdf-viewer-vjs",
@@ -43,8 +42,7 @@
     "vue-resource": "^1.5.0",
     "vue-router": "^3.4.9",
     "vuejs-progress-bar": "^1.2.2",
-    "vuex": "^3.5.1",
-    "web-streams-polyfill": "^4.1.0"
+    "vuex": "^3.5.1"
   },
   "devDependencies": {
     "@babel/core": "7.12.10",
