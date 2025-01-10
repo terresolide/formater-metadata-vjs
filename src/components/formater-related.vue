@@ -625,7 +625,7 @@ import streamSaver  from 'streamsaver';
          var filename = name || url.substring(url.lastIndex('/') + 1) + '.zip'
         // const fileStream = streamSaver.createWriteStream(name)
 
-        fetch(url, {'Authorization': 'Bearer machin'}).then(res => {
+        fetch(url, {headers: headers}).then(res => {
 
           // get filename
           var headerDisposition = res.headers.get('Content-Disposition')
@@ -639,14 +639,23 @@ import streamSaver  from 'streamsaver';
           const fileStream = streamSaver.createWriteStream(filename)
           const readableStream = res.body
 
-
-          
           // more optimized
           if (window.WritableStream && readableStream.pipeTo) {
             return readableStream.pipeTo(fileStream)
-              .then(() => {_this.$set(_this.download[index], 'disabled', false)}, () => {console.log('blabla')})
+              .then(() => {_this.$set(_this.download[index], 'disabled', false)}, 
+              () => {_this.$set(_this.download[index], 'disabled', false)})
           }
+          // window.onunload = () => {
+          //   writableStream.abort()
+          //   // also possible to call abort on the writer you got from `getWriter()`
+          //   writer.abort()
+          // }
 
+          // window.onbeforeunload = evt => {
+          //   if (!done) {
+          //     evt.returnValue = `Are you sure you want to leave?`;
+          //   }
+          // }
           window.writer = fileStream.getWriter()
 
           const reader = res.body.getReader()
@@ -656,6 +665,25 @@ import streamSaver  from 'streamsaver';
               : writer.write(res.value).then(pump))
 
           pump()
+        }, res => {
+          switch(res.status) {
+            case 0:
+              //case abort, can retry
+              this.$set(this.download[index], 'disabled', false) 
+              if (this.abort) {
+                this.abort = false   
+              } 
+              break;
+            case 403:
+              console.log('forbidden')
+              this.message = this.$i18n.t('download_forbidden')
+              
+              break
+            case 404:
+              this.message = 'NOT FOUND'
+            default:
+              console.log(res.body);
+          }
         })
 
     return
