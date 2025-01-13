@@ -103,27 +103,30 @@ export default {
       this.$store.commit('sizeChange', this.$el.clientWidth - 10)
 
       // stop les téléchargemenets en cours
-      window.addEventListener('unload', (evt) => {
+      window.onunload =  (evt) => {
         _this.$store.state.writableStreams.forEach((ws) => {
-            ws.close()
-            var w = ws.getWriter()
-            w.abort()
+            ws.abort()
         })
-      })
+        alert('unload')
+        
+      }
       var _this = this
       // message si téléchargement en cours
       window.onbeforeunload = evt => {
         if (_this.$store.state.writableStreams.length > 0) {
           evt.preventDefault()
-          _this.$store.state.writableStreams.forEach((ws) => {
-            ws.abort()
-          })
+          // _this.$store.state.writableStreams.forEach((ws) => {
+          //   ws.abort()
+          // })
           return true
         }
        
       }
     },
     destroyed () {
+      _this.$store.state.writableStreams.forEach((ws) => {
+            ws.abort()
+      })
       window.removeEventListener('resize', this.resizeListener)
       this.resizeListener = null
     },
