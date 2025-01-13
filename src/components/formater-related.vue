@@ -582,6 +582,7 @@ import streamSaver  from 'streamsaver';
         
        },
      async triggerDownload (index) {
+         console.log(window.streamSaver)
          this.record(this.download[index].url, 'download')
          if (this.download[index].disabled) {
            return
@@ -636,7 +637,12 @@ import streamSaver  from 'streamsaver';
             }
               
           }
-          const fileStream = streamSaver.createWriteStream(filename)
+          var options = {}
+          var size = res.headers.get('Content-Length')
+          if (size) {
+            options.size = size
+          }
+          const fileStream = streamSaver.createWriteStream(filename, options)
           const readableStream = res.body
 
           // more optimized
