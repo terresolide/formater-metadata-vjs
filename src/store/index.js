@@ -151,7 +151,8 @@ export default function makeStore( config ) {
       searching: false,
       error: null,
       selectedMetadata: null,
-      previousRoutes: []
+      previousRoutes: [],
+      downloading: 0
   }
   var finalConfig = Object.assign(defaultConfig, config)
   if (finalConfig.checkSSO) {
