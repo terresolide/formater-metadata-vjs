@@ -627,9 +627,11 @@
          }
          var filename = name || url.substring(url.lastIndex('/') + 1) + '.zip'
         // const fileStream = streamSaver.createWriteStream(name)
-
-        fetch(url, {headers: headers, signal: this.$store.state.abortSignal}).then(res => {
-          _this.$store.state.downloading = _this.$store.state.downloading + 1
+        const ac = new AbortController()
+        const signal = ac.signal
+        this.$store.state.writableStreams.push(ac)
+        fetch(url, {headers: headers, signal: signal}).then(res => {
+         
           // get filename
           var headerDisposition = res.headers.get('Content-Disposition')
           if (headerDisposition) {
@@ -637,7 +639,6 @@
             if (match) {
               filename = match[2]
             }
-              
           }
           var options = {}
           var size = res.headers.get('Content-Length')
@@ -646,16 +647,16 @@
           }
           const fileStream = this.$store.state.streamSaver.createWriteStream(filename, options)
           const readableStream = res.body
-
+          
           // more optimized
           if (window.WritableStream && readableStream.pipeTo) {
-            return readableStream.pipeTo(fileStream, {signal: _this.$store.state.abortSignal})
+            return readableStream.pipeTo(fileStream, {signal: signal})
               .then(() => {
                 _this.$set(_this.download[index], 'disabled', false)
-                _this.$store.state.downloading = _this.$store.state.downloading - 1}, 
+                _this.$store.state.writableStreams.pop()}, 
               () => {
                 _this.$set(_this.download[index], 'disabled', false)
-                _this.$store.state.downloading = _this.$store.state.downloading - 1
+                _this.$store.state.writableStreams.pop()
               })
           }
           window.writer = fileStream.getWriter()
@@ -667,7 +668,7 @@
               : writer.write(res.value).then(pump))
           pump()
         }, res => {
-          _this.$store.state.downloading = this.$store.state.downloading - 1
+          _this.$store.state.writableStreams.pop()
           switch(res.status) {
             case 0:
               //case abort, can retry
@@ -687,7 +688,6 @@
               console.log(res.body);
           }
         })
-
     return
     // test telechargmement direct sans succès avec streamSaver et web-stream-polyfill
     //      const authorization = 'Bearer ' + this.token;

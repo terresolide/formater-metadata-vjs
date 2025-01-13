@@ -101,22 +101,26 @@ export default {
       }
       // need soustract 10px because of scroll bar?
       this.$store.commit('sizeChange', this.$el.clientWidth - 10)
-      window.addEventListener('unload', () => {
-        
-        abortController.abort()
-        writableStream.abort()
-        var writer = writableStream.getWriter()
-        // also possible to call abort on the writer you got from `getWriter()`
-        writer.abort()
+
+      // stop les téléchargemenets en cours
+      window.addEventListener('unload', (evt) => {
+        _this.$store.state.writableStreams.forEach((ws) => {
+            ws.close()
+            var w = ws.getWriter()
+            w.abort()
+        })
       })
       var _this = this
+      // message si téléchargement en cours
       window.onbeforeunload = evt => {
-        if (_this.$store.state.downloading) {
+        if (_this.$store.state.writableStreams.length > 0) {
           evt.preventDefault()
-          evt.returnValue = true
-          return evt.returnValue
+          _this.$store.state.writableStreams.forEach((ws) => {
+            ws.abort()
+          })
+          return true
         }
-        
+       
       }
     },
     destroyed () {
