@@ -101,17 +101,20 @@ export default {
       }
       // need soustract 10px because of scroll bar?
       this.$store.commit('sizeChange', this.$el.clientWidth - 10)
-      window.onunload = () => {
+      window.addEventListener('unload', () => {
+        
+        abortController.abort()
         writableStream.abort()
+        var writer = writableStream.getWriter()
         // also possible to call abort on the writer you got from `getWriter()`
         writer.abort()
-      }
+      })
       var _this = this
       window.onbeforeunload = evt => {
         if (_this.$store.state.downloading) {
-        
-          evt.returnValue = 'Are you sure'
-          // return 'ARE YOU SURE'
+          evt.preventDefault()
+          evt.returnValue = true
+          return evt.returnValue
         }
         
       }

@@ -627,8 +627,8 @@
          }
          var filename = name || url.substring(url.lastIndex('/') + 1) + '.zip'
         // const fileStream = streamSaver.createWriteStream(name)
-        
-        fetch(url, {headers: headers}).then(res => {
+
+        fetch(url, {headers: headers, signal: this.$store.state.abortSignal}).then(res => {
           _this.$store.state.downloading = _this.$store.state.downloading + 1
           // get filename
           var headerDisposition = res.headers.get('Content-Disposition')
@@ -649,7 +649,7 @@
 
           // more optimized
           if (window.WritableStream && readableStream.pipeTo) {
-            return readableStream.pipeTo(fileStream)
+            return readableStream.pipeTo(fileStream, {signal: _this.$store.state.abortSignal})
               .then(() => {
                 _this.$set(_this.download[index], 'disabled', false)
                 _this.$store.state.downloading = _this.$store.state.downloading - 1}, 
@@ -658,17 +658,6 @@
                 _this.$store.state.downloading = _this.$store.state.downloading - 1
               })
           }
-          // window.onunload = () => {
-          //   writableStream.abort()
-          //   // also possible to call abort on the writer you got from `getWriter()`
-          //   writer.abort()
-          // }
-
-          // window.onbeforeunload = evt => {
-          //   if (!done) {
-          //     evt.returnValue = `Are you sure you want to leave?`;
-          //   }
-          // }
           window.writer = fileStream.getWriter()
 
           const reader = res.body.getReader()
@@ -676,7 +665,6 @@
             .then(res => res.done
               ? writer.close()
               : writer.write(res.value).then(pump))
-
           pump()
         }, res => {
           _this.$store.state.downloading = this.$store.state.downloading - 1
