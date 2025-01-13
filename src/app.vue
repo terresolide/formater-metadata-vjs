@@ -109,10 +109,9 @@ export default {
       var _this = this
       window.onbeforeunload = evt => {
         if (_this.$store.state.downloading) {
-          evt.stopPropagation()
-          evt.preventDefault()
+        
           evt.returnValue = 'Are you sure'
-          return false
+          // return 'ARE YOU SURE'
         }
         
       }
