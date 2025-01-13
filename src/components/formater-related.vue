@@ -292,7 +292,7 @@
   import ProgressBar from 'vuejs-progress-bar'
   import FormaterPlatformList from './formater-platform-list.vue'
 //   import { WritableStream } from 'web-streams-polyfill/polyfill';
-import streamSaver  from 'streamsaver';
+  import streamSaver  from 'streamsaver';
 // import concatMap from 'concat-map'
 
   export default {
@@ -582,7 +582,9 @@ import streamSaver  from 'streamsaver';
         
        },
      async triggerDownload (index) {
-         console.log(window.streamSaver)
+         if (!this.$store.state.streamSaver) {
+            this.$store.state.streamSaver = streamSaver
+         }
          this.record(this.download[index].url, 'download')
          if (this.download[index].disabled) {
            return
@@ -601,14 +603,14 @@ import streamSaver  from 'streamsaver';
         //  this.downloadLink[index] = document.createElement('a')
         //  document.body.appendChild(this.downloadLink[index])
         this.$set(this.download[index], 'disabled', true) 
-         var downloadProgress = function (e) {
-           if (e.total) {
-             _this.progress = Math.round(100 * e.loaded / e.total)
-            if (_this.abort) {
-               e.srcElement.abort()
-            }
-           }
-         }
+        //  var downloadProgress = function (e) {
+        //    if (e.total) {
+        //      _this.progress = Math.round(100 * e.loaded / e.total)
+        //     if (_this.abort) {
+        //        e.srcElement.abort()
+        //     }
+        //    }
+        //  }
          var _this = this
          var url = this.download[index].url 
          var name = this.download[index].name
@@ -625,9 +627,9 @@ import streamSaver  from 'streamsaver';
          }
          var filename = name || url.substring(url.lastIndex('/') + 1) + '.zip'
         // const fileStream = streamSaver.createWriteStream(name)
-
+        
         fetch(url, {headers: headers}).then(res => {
-
+          _this.$store.state.downloading = _this.$store.state.downloading + 1
           // get filename
           var headerDisposition = res.headers.get('Content-Disposition')
           if (headerDisposition) {
@@ -642,14 +644,19 @@ import streamSaver  from 'streamsaver';
           if (size) {
             options.size = size
           }
-          const fileStream = streamSaver.createWriteStream(filename, options)
+          const fileStream = this.$store.state.streamSaver.createWriteStream(filename, options)
           const readableStream = res.body
 
           // more optimized
           if (window.WritableStream && readableStream.pipeTo) {
             return readableStream.pipeTo(fileStream)
-              .then(() => {_this.$set(_this.download[index], 'disabled', false)}, 
-              () => {_this.$set(_this.download[index], 'disabled', false)})
+              .then(() => {
+                _this.$set(_this.download[index], 'disabled', false)
+                _this.$store.state.downloading = _this.$store.state.downloading - 1}, 
+              () => {
+                _this.$set(_this.download[index], 'disabled', false)
+                _this.$store.state.downloading = _this.$store.state.downloading - 1
+              })
           }
           // window.onunload = () => {
           //   writableStream.abort()
@@ -672,6 +679,7 @@ import streamSaver  from 'streamsaver';
 
           pump()
         }, res => {
+          _this.$store.state.downloading = this.$store.state.downloading - 1
           switch(res.status) {
             case 0:
               //case abort, can retry

@@ -111,8 +111,10 @@ export default {
         if (_this.$store.state.downloading) {
           evt.stopPropagation()
           evt.preventDefault()
+          evt.returnValue = 'Are you sure'
           return false
         }
+        
       }
     },
     destroyed () {
