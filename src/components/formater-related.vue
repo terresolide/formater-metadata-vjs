@@ -611,7 +611,26 @@
         const signal = ac.signal
         this.$store.state.writableStreams.push(ac)
         fetch(url, {headers: headers, signal: signal}).then(res => {
-         
+          if (!res.ok ) {
+            switch (res.status) {
+             
+              case 403:
+              this.message = this.$i18n.t('download_forbidden')
+              
+              break
+              case 404:
+              this.message = 'NOT FOUND'
+              
+              break
+              default:
+                if (res.body.ErrorMessage) {
+                  this.message = res.body.ErrorMessage
+                } else {
+                  this.message = 'An error has occured'
+                }
+            }
+            return res
+          }
           // get filename
           var headerDisposition = res.headers.get('Content-Disposition')
           if (headerDisposition) {
@@ -647,26 +666,6 @@
               ? writer.close()
               : writer.write(res.value).then(pump))
           pump()
-        }, res => {
-          _this.$store.state.writableStreams.pop()
-          switch(res.status) {
-            case 0:
-              //case abort, can retry
-              this.$set(this.download[index], 'disabled', false) 
-              if (this.abort) {
-                this.abort = false   
-              } 
-              break;
-            case 403:
-              console.log('forbidden')
-              this.message = this.$i18n.t('download_forbidden')
-              
-              break
-            case 404:
-              this.message = 'NOT FOUND'
-            default:
-              console.log(res.body);
-          }
         })
     return
         
