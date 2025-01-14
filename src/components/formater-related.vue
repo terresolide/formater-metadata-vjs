@@ -552,7 +552,6 @@
          
        },
        record (url, type, e) {
-        console.log(this.$store.state.recordurl)
          if (!this.$store.state.recordUrl || this.$store.state.recordUrl == 'undefined') {
            if (e) {
              e.target.nextElementSibling.click()
@@ -591,35 +590,16 @@
          }
          var _this = this
    
-         
-        //  var filename = 'download'
-        //  var localIndex = index
-         if (this.downloadLink[index]) {
-           this.downloadLink[index].click()
-           return
-         }
-         // this.$set(this.download[index], 'disabled', true) 
-         
-        //  this.downloadLink[index] = document.createElement('a')
-        //  document.body.appendChild(this.downloadLink[index])
         this.$set(this.download[index], 'disabled', true) 
-        //  var downloadProgress = function (e) {
-        //    if (e.total) {
-        //      _this.progress = Math.round(100 * e.loaded / e.total)
-        //     if (_this.abort) {
-        //        e.srcElement.abort()
-        //     }
-        //    }
-        //  }
+        
          var _this = this
          var url = this.download[index].url 
          var name = this.download[index].name
+
+        // UTILISATION D'UN STREAM WRITER
          var  headers = {}
-
-
-    
-         url = 'https://geodes-portal.cnes.fr/api/download/URN:FEATURE:DATA:gdh:03684236-bf97-339c-b789-60ff7541893c:V1/files/3fee0d25f8d65705a0af7205342daf14'
-         url = 'https://catalog.formater/test.zip'
+        // url = 'https://geodes-portal.cnes.fr/api/download/URN:FEATURE:DATA:gdh:03684236-bf97-339c-b789-60ff7541893c:V1/files/3fee0d25f8d65705a0af7205342daf14'
+        // url = 'https://catalog.formater/test.zip'
          if (this.token && this.token !== -1) {
            // url += '?_bearer=' + this.token
            headers['Authorization'] = 'Bearer ' + this.token
@@ -689,42 +669,25 @@
           }
         })
     return
-    // test telechargmement direct sans succès avec streamSaver et web-stream-polyfill
-    //      const authorization = 'Bearer ' + this.token;
-    // const headers = new Headers({ authorization });
-    // const options = { headers };
+        
+        // DOWNLOADING AVEC UN BLOB
 
-    // let response = await fetch(url, options)
-
-    // // if (!streamSaver.supported) {
-    // //     window.WritableStream = streamSaver.WritableStream;
-    // // }
-    // const filestream = streamSaver.createWriteStream('machin');
-    // const writer = filestream.getWriter();
-
-    // if (response.body.pipeTo) {
-    //     writer.releaseLock();
-    //     return response.body.pipeTo(filestream);
-    // }
-
-    // const reader = response.body.getReader();
-
-    // const pump = () =>
-    //     reader
-    //         .read()
-    //         .then(({ value, done }) => (done ? writer.close() : writer.write(value).then(pump)));
-
-    // pump();
-    // return
-
-    // test 2
-//     this.$http.get(url, {headers: headers, responseType: 'blob'}).pipe(
-//   concatMap((response) => {
-//     const fileStream = streamSaver.createWriteStream('test.zip');
-//     return response.body.stream().pipeTo(fileStream);
-//   })
-// );
-// return
+        // CAS ON A DÉJÀ CHARGÉ LE FICHIER DANS LE NAVIGATEUR
+        if (this.downloadLink[index]) {
+          this.downloadLink[index].click()
+          return
+        }
+        // SINON CRÉATION DU LIEN
+        this.downloadLink[index] = document.createElement('a')
+        document.body.appendChild(this.downloadLink[index])
+        var downloadProgress = function (e) {
+          if (e.total) {
+            _this.progress = Math.round(100 * e.loaded / e.total)
+            if (_this.abort) {
+              e.srcElement.abort()
+            }
+          }
+        }
          // var url = 'http://api.formater/geotiff/abana/iw2/geo_filt_20180518-20180623_sd_4rlks.tif'
          var objUrl = new URL(url)
          this.$http.get(url, {headers: headers, responseType: 'blob', downloadProgress: downloadProgress} )
@@ -777,9 +740,7 @@
                    default:
                      console.log(response);
                  }
-            })
-           // xhr.promise.abort()
-            
+            })  
        },
        handleOver (e) {
          e.target.style.color = this.$store.state.style.over

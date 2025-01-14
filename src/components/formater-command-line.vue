@@ -20,7 +20,7 @@
     <div><b>Archive</b>: {{file}}</div>
     <div><b>{{$t('command_to_execute')}}:</b></div>
 	  <div style="display:inline-block;font-family: monospace;max-height:200px;overflow:scroll;padding:3px;width:calc(100% - 100px);color:#5ddc5d;background:#333;">
-	  curl {{href}}?_bearer={{token}} -o {{file}}
+	  curl -k -L -H "Authorization:Bearer {{token}}" {{href}} -o {{file}}
 	  </div>
 	  <div style="display:inline-block;vertical-align:top;max-width:90px">
 	  <a class="fmt-button fa fa-clipboard" @click="copy2clipboard($event)" :title="$t('copy_clipboard')"> Copier</a>
