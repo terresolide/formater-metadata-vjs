@@ -1,26 +1,16 @@
 /**
- * Tools to read the opensearch describe xml and extract the api and parameters 
+ * Tools to search in stac collection
  * 
  * @author epointal
  *
  **/
  
 <template>
-<formater-api-requester v-if="api" :api="api" :cds="cds" :depth="depth"></formater-api-requester>
+
 </template>
 <script>
-import FormaterApiRequester from '@/components/formater-api-requester.vue'
-function getKeyByValue(object, value) {
-  return Object.keys(object).find(key => {
-    value = value.replace('?', '')
-    return object[key] === value
-  });
-}
 export default {
-  name: 'FormaterOpensearch',
-  components: {
-    FormaterApiRequester
-  },
+  name: 'FormaterStac',
   props: {
     describe: {
       type: String,
@@ -43,19 +33,17 @@ export default {
       default: null
     }
   },
-  watch: {
-    service (newvalue) {
-      if (newvalue.domain.indexOf('flatsim') >= 0) {
-        this.osParameters = this.osParameters.filter(param => param.name !== 'processingLevel')
-        this.$emit('parametersChange', {api: this.api, parameters:this.osParameters, mapping: this.mappingParameters, fixed:this.fixedParameters})
-      }
-    }
-  },
+//   watch: {
+//     service (newvalue) {
+//       if (newvalue.domain.indexOf('flatsim') >= 0) {
+//         this.osParameters = this.osParameters.filter(param => param.name !== 'processingLevel')
+//         this.$emit('parametersChange', {api: this.api, parameters:this.osParameters, mapping: this.mappingParameters, fixed:this.fixedParameters})
+//       }
+//     }
+//   },
   created () {
     console.log('STAC')
-    // this.searchEventListener = this.handleSearch.bind(this) 
-  	// document.addEventListener('aerisSearchEvent', this.searchEventListener);
-    this.load()
+    this.load(this.describe)
   },
   mounted () {
 
@@ -80,22 +68,11 @@ export default {
     }
   },
   methods: {
-     extractFixedParams (describe) {
-       var tab = describe.split('?')
-       var fixedParameters = {}
-       if (tab.length > 1) {
-         var params = tab[1].split('&')
-         params.forEach(function (param) {
-           var x = param.split('=')
-           fixedParameters[x[0]] = x[1]
-         })
-       }
-       this.fixedParameters = fixedParameters
-       return tab[0]
-     },
-     load() {
-       var describe = this.extractFixedParams(this.describe)
+     load(url, index = 0) {
+   
+       var describe = this.describe
        var describe = 'https://geodes-portal.cnes.fr/api/stac/collections/PEPS_S1_L1'
+       describe = 'https://gdm.formater/api/geodes/collections/PEPS_S1_L1'
        this.$http.get(describe)
        .then(
            response => { this.extractDescribeParameters(response.body);},
@@ -105,11 +82,23 @@ export default {
                this.$emit('failed')
                return
              }
-             this.loadWithProxy()
+             if (index === 0) {
+                var tab = describe.split('/')
+                var col = tab.pop()
+                this.load(this.$store.state.proxyGeodes + '/collections/' + col, 1)
+             }
            }
         )
+        this.$http.post('https://gdm.formater/api/geodes/items', { page:1, limit:10, query: {dataType: {in: ['PEPS_S1_L1']}}})
+        .then(
+            resp => {console.log(resp.body)}
+        )
     },
-    loadWithProxy() {
+    loadWithProxy(url) {
+      if (collection) {
+        var url = 'https://gdm.poleterresolide.fr/api/geodes/collections'
+      }
+      url
       if (this.$store.state.proxy.url) {
 	      var url = this.$store.state.proxy.url + '?url=' + encodeURIComponent(this.describe)
 	      this.$http.get(url)
@@ -211,7 +200,12 @@ export default {
       this.$store.commit('setNamespaces', namespaces)
     },
     extractDescribeParameters(json) {
-      console.log(json)
+      this.defaultQuery = {
+        dataType: {in: [json.id]}
+      }
+      if (json.summaries) {
+        // extraction des éléments de recherche
+      }
       return
       var parser = new DOMParser()
       var xml = parser.parseFromString(parametersString, 'text/xml')

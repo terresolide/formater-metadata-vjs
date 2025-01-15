@@ -47,6 +47,7 @@ export default function makeStore( config ) {
         step2: 'details'
       },
       checkSSO: null,
+      proxyGeodes: 'https://gdm.poleterresolide.fr/api/geodes',
       group: [],
      // isSameStep: isSameStep,
       apiVersion: '0.1',
