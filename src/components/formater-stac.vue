@@ -111,6 +111,46 @@ export default {
       }
       // this.mapParameters()
     },
+    treatmentGeojson (data, depth) {
+      var metadatas = {}
+      var self = this
+      var features = []
+      data.features.forEach( function (feature) {
+        if (!feature.id) {
+          feature.id = feature.properties.productIdentifier
+        }
+        feature.properties.id = feature.id
+        metadatas[feature.id] =  self.mapToGeonetwork(feature.properties)
+        features.push({type: feature.type, id: feature.id, geometry: feature.geometry})
+       
+      })
+      if (data.features.length === 0) {
+        metadatas = {}
+      }
+      if (data.context) {
+        var properties = data.context
+      } else {
+        var properties = {}
+      }
+        properties.startIndex = (this.parameters.page - 1 ) * this.parameters.limit
+      
+      if (properties.matched) {
+        properties.totalResults = parseInt(properties.matched)
+      }
+      if (!properties.limit) {
+        properties.itemsPerPage = this.parameters.limit
+      }
+      this.fill({ type: 'stac', properties: properties, features: features, metadata:metadatas}, depth)
+      this.$store.commit('searchingChange', false)
+    },
+    fill (data, depth) {
+      data.depth = this.depth
+      var event = new CustomEvent('fmt:metadataListEvent', {detail:  data})
+      document.dispatchEvent(event)
+    },
+    mapToGeonetwork(properties) {
+       return properties
+    },
     requestApi () {
       if (this.count > 2) {
         return
@@ -121,7 +161,7 @@ export default {
         this.parameters,
        {headers: {'Content-Type': 'application/json'}}
       ).then(
-        resp => {console.log(resp.body)},
+        resp => { this.treatmentGeojson (resp.body, this.depth)},
         resp => {
           switch (resp.status) {
 
