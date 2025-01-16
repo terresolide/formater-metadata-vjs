@@ -117,9 +117,8 @@ export default {
         this.parameters.limit = nb
         this.parameters.page = Math.round((parseInt(newroute.query.from) -1) / nb) + 1
       }
-      console.log(this.parameters)
-      for (var key in newroute.query) {
-       
+      if (newroute.query.box) {
+        this.parameters.bbox = newroute.query.box.split(',')
       }
       // this.mapParameters()
     },
