@@ -111,8 +111,15 @@ export default {
     },
    prepareRequest(newroute) {
       this.initParameters()
-      for (var key in newroute) {
-
+      
+      if (newroute.query.from) {
+        var nb = parseInt(newroute.query.to) - parseInt(newroute.query.from) + 1
+        this.parameters.limit = nb
+        this.parameters.page = Math.round((parseInt(newroute.query.from) -1) / nb) + 1
+      }
+      console.log(this.parameters)
+      for (var key in newroute.query) {
+       
       }
       // this.mapParameters()
     },
@@ -212,7 +219,7 @@ export default {
         }
       }
       this.$emit('parametersChange', {api: this.api, parameters:this.stacParameters, mapping: this.predefined, fixed: []})
-      this.getRecords()
+      this.getRecords(this.$route)
     }
   }
 }
