@@ -132,7 +132,7 @@ export default {
       } else {
         var properties = {}
       }
-        properties.startIndex = (this.parameters.page - 1 ) * this.parameters.limit
+        properties.startIndex = (this.parameters.page - 1 ) * this.parameters.limit + 1
       
       if (properties.matched) {
         properties.totalResults = parseInt(properties.matched)
@@ -140,10 +140,11 @@ export default {
       if (!properties.limit) {
         properties.itemsPerPage = this.parameters.limit
       }
-      this.fill({ type: 'stac', properties: properties, features: features, metadata:metadatas}, depth)
+      console.log(metadatas)
+      this.fill({ type: 'stac', properties: properties, features: features, metadata:metadatas, depth: depth})
       this.$store.commit('searchingChange', false)
     },
-    fill (data, depth) {
+    fill (data) {
       data.depth = this.depth
       var event = new CustomEvent('fmt:metadataListEvent', {detail:  data})
       document.dispatchEvent(event)
