@@ -138,7 +138,7 @@ export default {
           feature.id = feature.properties.productIdentifier
         }
         feature.properties.id = feature.id
-        metadatas[feature.id] =  self.mapToGeonetwork(feature.properties)
+        metadatas[feature.id] =  self.mapToGeonetwork(feature)
         features.push({type: feature.type, id: feature.id, geometry: feature.geometry})
        
       })
@@ -167,14 +167,52 @@ export default {
       var event = new CustomEvent('fmt:metadataListEvent', {detail:  data})
       document.dispatchEvent(event)
     },
-    mapToGeonetwork(properties) {
+    mapToGeonetwork(feature) {
+      var properties = {}
+      properties.fromOs = true
+      properties.cds = this.cds
+      properties.type = 'dataset'
+      
+      if (feature.properties.identifier) {
+        properties.identifier = feature.properties.identifier
+        properties.title = feature.properties.identifier
+      }
+      if (feature.properties['temporal:starDate']) {
+        properties.tempExtentBegin = feature.properties['temporal:starDate']
+      }
+      if (feature.properties['temporal:endDate']) {
+        properties.tempExtentEnd = feature.properties['temporal:endDate']
+      }
+      if (feature.properties.datetime) {
+        properties.revisionDate = feature.properties.datetime
+      }
+      
+      if (properties.quicklook) {
+        properties.images = [['', properties.quicklook, '']]
+        delete properties.quicklook
+      }
+      if (properties.license && !this.isFlatsim) {
+        // @todo a effacer
+//         if (properties.license.licenseId === 'unlicensed' && this.isFlatsim) {
+//           properties.legalConstraints = ['license: https://creativecommons.org/licenses/by-nc/4.0/']
+//         } else {
+          if (properties.license.licenseId) {
+             properties.legalConstraints = [properties.license.licenseId]
+          } else {
+            properties.legalConstraints = ['License: ' + properties.license]
+          }
+       // }
+       // delete properties.license
+      }
+      if (properties.created) {
+        properties.creationDate = properties.created
+      }
        return properties
     },
     requestApi () {
       if (this.count > 2) {
         return
       }
-      console.log(this.searchUrl)
       this.$http.post(
         this.searchUrl,
         this.parameters,
@@ -187,7 +225,6 @@ export default {
           }
           if (this.searchUrl !== this.$store.state.proxyGeodes + '/items') {
             this.searchUrl = this.$store.state.proxyGeodes + '/items'
-            console.log(this.searchUrl)
             this.requestApi()
           }
         }
