@@ -101,6 +101,7 @@ export default {
       this.parameters = {
         page: 1,
         limit: this.$store.state.size.nbRecord,
+        sortBy: [{direction: 'desc', field: 'temporal:startDate'}],
         query: this.defaultQuery
       }
     }, 
@@ -119,6 +120,12 @@ export default {
       }
       if (newroute.query.box) {
         this.parameters.bbox = newroute.query.box.split(',')
+      }
+      if (newroute.query.start) {
+        this.parameters.query['temporal:startDate'] = {gte: newroute.query.start + 'T00:00:00.000Z'}
+      }
+      if (newroute.query.end) {
+        this.parameters.query['temporal:endDate']= {lte: newroute.query.end + 'T23:59:59.999Z'}
       }
       // this.mapParameters()
     },
