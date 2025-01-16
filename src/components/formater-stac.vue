@@ -64,7 +64,9 @@ export default {
          index: "offset",
          page: "page"
        },
-     defaultQuery: {}
+     defaultQuery: {},
+     searchUrl: null,
+     count: 0
     }
   },
   methods: {
@@ -89,10 +91,6 @@ export default {
              }
            }
         )
-        this.$http.post('https://gdm.formater/api/geodes/items', { page:1, limit:10, query: {dataType: {in: ['PEPS_S1_L1']}}})
-        .then(
-            resp => {console.log(resp.body)}
-        )
     },
     initParameters () {
       this.parameters = {
@@ -114,9 +112,35 @@ export default {
       // this.mapParameters()
     },
     requestApi () {
+      if (this.count > 2) {
+        return
+      }
+      console.log(this.searchUrl)
+      this.$http.post(
+        this.searchUrl,
+        this.parameters,
+       {headers: {'Content-Type': 'application/json'}}
+      ).then(
+        resp => {console.log(resp.body)},
+        resp => {
+          switch (resp.status) {
+
+          }
+          if (this.searchUrl !== this.$store.state.proxyGeodes + '/items') {
+            this.searchUrl = this.$store.state.proxyGeodes + '/items'
+            console.log(this.searchUrl)
+            this.requestApi()
+          }
+        }
+      )
 
     },
     extractDescribeParameters(json) {
+      for(var i in json.links) {
+        if (json.links[i].rel === 'root') {
+          this.searchUrl = json.links[i].href + '/search'
+        }
+      }
       this.defaultQuery = {
         dataType: {in: [json.id]}
       }
