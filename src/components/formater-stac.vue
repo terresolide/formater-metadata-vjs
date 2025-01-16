@@ -158,7 +158,7 @@ export default {
       if (!properties.limit) {
         properties.itemsPerPage = this.parameters.limit
       }
-     
+      
       this.fill({ type: 'stac', properties: properties, features: features, metadata:metadatas, depth: depth})
       this.$store.commit('searchingChange', false)
     },
@@ -177,8 +177,8 @@ export default {
         properties.identifier = feature.properties.identifier
         properties.title = feature.properties.identifier
       }
-      if (feature.properties['temporal:starDate']) {
-        properties.tempExtentBegin = feature.properties['temporal:starDate']
+      if (feature.properties['temporal:startDate']) {
+        properties.tempExtentBegin = feature.properties['temporal:startDate']
       }
       if (feature.properties['temporal:endDate']) {
         properties.tempExtentEnd = feature.properties['temporal:endDate']
@@ -186,7 +186,16 @@ export default {
       if (feature.properties.datetime) {
         properties.revisionDate = feature.properties.datetime
       }
-      
+      for (var key in feature.assets) {
+          if (feature.assets[key].roles.indexOf('overview') >=0) {
+            
+            properties.images = [[feature.assets[key].title, feature.assets[key].href, '']]
+            properties.thumbnail = feature.assets[key].href
+
+          } else if (feature.assets[key].roles.indexOf('data') >=0) {
+
+          }
+      }
       if (properties.quicklook) {
         properties.images = [['', properties.quicklook, '']]
         delete properties.quicklook
@@ -204,9 +213,7 @@ export default {
        // }
        // delete properties.license
       }
-      if (properties.created) {
-        properties.creationDate = properties.created
-      }
+      console.log(properties)
        return properties
     },
     requestApi () {
