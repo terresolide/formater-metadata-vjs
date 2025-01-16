@@ -33,6 +33,11 @@ export default {
       default: null
     }
   },
+  watch: {
+    $route (newroute, old) {
+      this.getRecords(newroute)
+    }
+  },
 //   watch: {
 //     service (newvalue) {
 //       if (newvalue.domain.indexOf('flatsim') >= 0) {
@@ -140,7 +145,7 @@ export default {
       if (!properties.limit) {
         properties.itemsPerPage = this.parameters.limit
       }
-      console.log(metadatas)
+     
       this.fill({ type: 'stac', properties: properties, features: features, metadata:metadatas, depth: depth})
       this.$store.commit('searchingChange', false)
     },
