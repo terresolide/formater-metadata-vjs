@@ -85,16 +85,17 @@ export default function makeStore( config ) {
       },
       osFields: {
         cartouche: {
-          identifier: ['doi', 'productIdentifier', 'productType'],
+          identifier: ['dataType', 'doi', 'productIdentifier', 'productType'],
           quality: [ 'resolution', 'representation', 'format', 'productValidity'],
-          acquisition:  ['ellipsoid', 'refFrame', 'networks', 'constellation', 'antennaSide', 'sensor', 'platform', 'instrument', 'sensorMode', 'polarisation',  'relativeOrbitNumber', 'orbitDirection', 'subswath'],
+          acquisition:  ['antennaSide', 'constellation', 'ellipsoid', 'instrument', 'networks', 'orbitID', 'orbitDirection', 'platform', 'polarisation', 'polarization', 'refFrame', 'relativeOrbitNumber', 
+            'satellitePlatform', 'sensor', 'sensorMode',  'subswath'],
           process:  ['analysisCentre', 'software', 'softwareVersion', 'processingId', 'samplingPeriod', 'fillRate','processingLevel', 'processingMode',  'correction', 'version']
         },
         metadata: {
-          identifier: ['doi', 'productIdentifier', 'productType'],
+          identifier: ['dataType', 'doi', 'productIdentifier', 'productType'],
           quality: ['imageQualityStatus', 'productQualityStatus', 'resolution', 'representation', 'format', 'nbCols', 'nbRows', 'waterCover', 'snowCover', 'cloudCover', 'productValidity'],
-          acquisition: [ 'ellipsoid', 'refFrame', 'networks', 'antennaSide', 'sensor', 'constellation', 'acquisitionType', 'statusSubType', 'platform', 'instrument','sensorMode', 'polarisation', 
-            'orbitNumber', 'relativeOrbitNumber', 'orbitDirection', 'subswath'],
+          acquisition: [  'acquisitionType', 'antennaSide', 'constellation', 'ellipsoid',  'instrument', 'networks', 'orbitID', 'orbitDirection', 'orbitNumber', 'platform', 'polarisation', 'polarization', 'refFrame', 
+            'relativeOrbitNumber', 'satellitePlatform', 'sensor', 'sensorMode','statusSubType',  'subswath'],
           process: ['analysisCentre', 'software', 'softwareVersion', 'samplingPeriod', 'fillRate','processingId', 'rlooksIn', 'rlooksUnw', 'digitalElevationModel', 'unwrapMethod', 'swath', 'processingDate', 'processingLevel', 'processingMode', 'processingContext',  'correction', 'version']
         }
       },

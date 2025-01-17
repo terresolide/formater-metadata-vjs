@@ -184,6 +184,9 @@ export default {
       if (feature.properties.datetime) {
         properties.revisionDate = feature.properties.datetime
       }
+      if (feature.properties['spaceborne:keywords']) {
+        properties.keyword = feature.properties['spaceborne:keywords']
+      }
       for (var key in feature.assets) {
           if (feature.assets[key].roles.indexOf('overview') >=0) {
             
@@ -197,20 +200,15 @@ export default {
             properties.download= [feature.assets[key]]
           }
       }
-      
-      if (properties.license && !this.isFlatsim) {
-        // @todo a effacer
-//         if (properties.license.licenseId === 'unlicensed' && this.isFlatsim) {
-//           properties.legalConstraints = ['license: https://creativecommons.org/licenses/by-nc/4.0/']
-//         } else {
-          if (properties.license.licenseId) {
-             properties.legalConstraints = [properties.license.licenseId]
-          } else {
-            properties.legalConstraints = ['License: ' + properties.license]
-          }
-       // }
-       // delete properties.license
+      for (var key in feature.properties) {
+        if (['datetime', 'temporal:starDate', 'temporal:endDate', 'spaceborne:keywords'].indexOf(key) < 0) {
+          var tab = key.split(':')
+          var prop= tab.pop()
+          properties[prop] = feature.properties[key]
+
+        }
       }
+      console.log(properties)
        return properties
     },
     requestApi () {
