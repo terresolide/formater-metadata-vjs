@@ -59,7 +59,7 @@ export default {
     copy2clipboard (e) {
       console.log('copy to clipboard')
       var target = e.target
-      var text = 'curl ' + this.href + '?_bearer=' + this.token + ' -o ' + this.file
+      var text = 'curl -k -L -H "Authorization: Bearer ' + this.token + '" ' + this.href  + ' -o ' + this.file
       navigator.clipboard.writeText(text).then(function() {
         /* clipboard successfully set */
         target.classList.add('tooltip-show')
@@ -69,9 +69,9 @@ export default {
       }, function() {
         alert(_this.$i18n.t('unauthorized_clipboard'))
       });
-      this.record()
+      this.record(e)
     },
-    record () {
+    record (e) {
       if (!this.$store.state.recordUrl) {
         return
       }
@@ -90,21 +90,29 @@ export default {
      
       this.$http.post(this.$store.state.recordUrl, data, {emulateJSON: true})
       .then(
-          resp => { e.target.nextElementSibling.click()},
-          resp => { e.target.nextElementSibling.click()}
+          resp => { if (e) { e.target.nextElementSibling.click()} },
+          resp => { if (e) {e.target.nextElementSibling.click()}}
       )
      
     },
     receiveEvent(e) {
+
       this.href = e.detail.link.url
       this.token = e.detail.token
       this.cds = e.detail.cds
       this.id = e.detail.id
-      var filename = this.href.substring(this.href.lastIndexOf('/') + 1)
+      if (e.detail.link.title) {
+        this.file = e.detail.link.title
+        console.log(this.file)
+        return
+      } else {
+        var filename = this.href.substring(this.href.lastIndexOf('/') + 1)
+      }
+      this.file = filename
       var regex = new RegExp('/\.[^.]+$/')
       if (filename.match(/\.[^.]+$/)) {
         this.file = filename
-      } else if (e.detail.link.mimeType) {
+      } else if (e.detail.link.mimeType ) {
         console.log(e.detail.link.mimeType)
         switch(e.detail.link.mimeType.toLowerCase())  {
 	        case 'application/zip':
@@ -115,11 +123,7 @@ export default {
 	          this.href= null
 	          this.token = null
         }
-      } else {
-        this.file = null
-        this.href= null
-        this.token = null
-      }
+      } 
     },
     removeTooltip ()
     {
