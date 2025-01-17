@@ -24,7 +24,7 @@
       <formater-stac v-if="depth >=0 && describe && protocol && protocol.toLowerCase() === 'opensearch'" :access="access" :service="service" 
         :cds="metadata.cds" :describe="describe" :uuid="uuid" :depth="depth" @parametersChange="setParameters" @failed="removeDescribe">
       </formater-stac>
-     <!-- <formater-opensearch v-if="depth >= 0 && describe && protocol && protocol.toLowerCase()==='opensearch' " :access="access"
+      <!-- <formater-opensearch v-if="depth >= 0 && describe && protocol && protocol.toLowerCase()==='opensearch' " :access="access"
       :service="service" :cds="metadata.cds" :describe="describe" :uuid="uuid" :depth="depth"
        @parametersChange="setParameters" @failed="removeDescribe"></formater-opensearch> -->
       <formater-sensorthings v-if="depth > 0 && protocol && protocol.toLowerCase()==='sensorthings'" 

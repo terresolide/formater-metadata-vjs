@@ -153,9 +153,8 @@
        <!--  case CNES EOST (token=true)-->
        <span v-else-if="token && token !== -1 && canDownload && serviceType !== 'session'" 
        :class="{disabled:download[0].disabled}"   :title="$t('download_data')" >
-        <span class="mtdt-related-type fa fa-download" :style="{backgroundColor: primary}" @click="record(download[0].url, 'download', $event)"></span>
-          <a style="display:none;"  @click="triggerDownload(0)" >
-          </a>
+        <span class="mtdt-related-type fa fa-download" :style="{backgroundColor: primary}" @click="triggerDownload(0)"></span>
+         
       </span>
       <!--  case geodesy-plotter -->
        <span v-else-if="token && token !== -1 && canDownload && serviceType === 'session'" 
@@ -207,10 +206,9 @@
               </span>
               <!--  case FLATSIM -->
               <span  v-else-if="token && token !== -1 && canDownload"  >
-                 <span :title="file.description"  @click="record(file.url, 'download', $event)">
+                 <span :title="file.description"  @click="triggerDownload(index)">
                    {{file.name? file.name: $t('download_data')}}
                  </span>
-                 <a @click="triggerDownload(index)" style="display:none;"></a>
              </span>
              <!--  case FLATSIM without service authentication but can download -->
              <span v-else-if="!token && canDownload" style="opacity:0.8;" @click="authorize">
@@ -479,6 +477,7 @@
       }
     },
     mounted () {
+      console.log(this.download)
       var _this = this
       if (!this.layers) {
         return
@@ -552,6 +551,8 @@
          
        },
        record (url, type, e) {
+         console.log(url)
+         return
          if (!this.$store.state.recordUrl || this.$store.state.recordUrl == 'undefined') {
            if (e) {
              e.target.nextElementSibling.click()
@@ -594,6 +595,7 @@
         
          var _this = this
          var url = this.download[index].url 
+         console.log(url)
          var name = this.download[index].name
 
         // UTILISATION D'UN STREAM WRITER
@@ -605,7 +607,7 @@
            headers['Authorization'] = 'Bearer ' + this.token
            // headers = {}
          }
-         var filename = name || url.substring(url.lastIndex('/') + 1) + '.zip'
+         var filename = name || url.substring(url.lastIndexOf('/') + 1) + '.zip'
         // const fileStream = streamSaver.createWriteStream(name)
         const ac = new AbortController()
         const signal = ac.signal

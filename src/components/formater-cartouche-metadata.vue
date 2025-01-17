@@ -129,7 +129,6 @@ export default {
   },
   created () {
    moment.locale(this.$i18n.locale)
-   console.log(this.metadata)
    this.meta = this.metadata
    if (!this.meta.treatment) {
      this.meta.treatment = {}

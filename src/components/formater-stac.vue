@@ -36,16 +36,14 @@ export default {
   watch: {
     $route (newroute, old) {
       this.getRecords(newroute)
-    }
+    } // ,
+    // service (newvalue) {
+    //   if (newvalue.domain.indexOf('flatsim') >= 0) {
+    //     this.osParameters = this.osParameters.filter(param => param.name !== 'processingLevel')
+    //     this.$emit('parametersChange', {api: this.api, parameters:this.osParameters, mapping: this.mappingParameters, fixed:this.fixedParameters})
+    //   }
+    // }
   },
-//   watch: {
-//     service (newvalue) {
-//       if (newvalue.domain.indexOf('flatsim') >= 0) {
-//         this.osParameters = this.osParameters.filter(param => param.name !== 'processingLevel')
-//         this.$emit('parametersChange', {api: this.api, parameters:this.osParameters, mapping: this.mappingParameters, fixed:this.fixedParameters})
-//       }
-//     }
-//   },
   created () {
     console.log('STAC')
     this.load(this.describe)
@@ -193,13 +191,13 @@ export default {
             properties.thumbnail = feature.assets[key].href
 
           } else if (feature.assets[key].roles.indexOf('data') >=0) {
-
+            // feature.assets[key].renameProperty('href', 'url')
+            feature.assets[key].url = feature.assets[key].href
+            console.log(feature.assets[key])
+            properties.download= [feature.assets[key]]
           }
       }
-      if (properties.quicklook) {
-        properties.images = [['', properties.quicklook, '']]
-        delete properties.quicklook
-      }
+      
       if (properties.license && !this.isFlatsim) {
         // @todo a effacer
 //         if (properties.license.licenseId === 'unlicensed' && this.isFlatsim) {
@@ -213,7 +211,6 @@ export default {
        // }
        // delete properties.license
       }
-      console.log(properties)
        return properties
     },
     requestApi () {
@@ -268,7 +265,7 @@ export default {
 
         }
       }
-      this.$emit('parametersChange', {api: this.api, parameters:this.stacParameters, mapping: this.predefined, fixed: []})
+      this.$emit('parametersChange', {api: this.describe, parameters:this.stacParameters, mapping: this.predefined, fixed: []})
       this.getRecords(this.$route)
     }
   }
