@@ -196,7 +196,6 @@ export default {
           } else if (feature.assets[key].roles.indexOf('data') >=0) {
             // feature.assets[key].renameProperty('href', 'url')
             feature.assets[key].url = feature.assets[key].href
-            console.log(feature.assets[key])
             properties.download= [feature.assets[key]]
           }
       }
@@ -207,6 +206,11 @@ export default {
           properties[prop] = feature.properties[key]
 
         }
+      }
+      properties.exportLinks = {}
+      var lk = feature.links.find(f => f.rel === 'self')
+      if (lk) {
+        properties.exportLinks.json = lk.href
       }
       console.log(properties)
        return properties
