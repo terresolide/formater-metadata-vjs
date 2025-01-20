@@ -57,6 +57,7 @@
      <div class="mtdt-resource" v-if="depth > 0 && meta.related && meta.related.onlines">
        <!--   <formater-online v-for="(item, index) in meta.related.onlines" :key="index" :online="item"></formater-online> -->
      </div>
+
      <div class="mtdt-footer" >
     
        <div class="mtdt-group" v-if="depth === 0 && dataCenter">
@@ -64,6 +65,7 @@
              <img :src="dataCenter.logo"/>
          </a>
          
+
        </div>
        <formater-related type="cartouche" :title="meta.title" :access="access" :id="meta.id" :cds="dataCenter ? dataCenter.title.fr.toLowerCase() : null" 
        :download="meta.download" :order="meta.order" :has-bbox-layer="hasBboxLayer" :layers="meta.layers" 

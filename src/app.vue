@@ -101,11 +101,35 @@ export default {
       }
       // need soustract 10px because of scroll bar?
       this.$store.commit('sizeChange', this.$el.clientWidth - 10)
-      
+
+      var _this = this
+      // stop les téléchargemenets en cours mais ne fonctionne pas
+      window.onunload =  (evt) => {
+        _this.$store.state.writableStreams.forEach((ws) => {
+            ws.abort()
+        })
+        
+      }
+     
+      // message si téléchargement en cours
+      window.onbeforeunload = evt => {
+        if (_this.$store.state.writableStreams.length > 0) {
+          evt.preventDefault()
+          return true
+        }
+      }
+    },
+    beforeDestroy() {
+      this.$store.state.writableStreams.forEach((ws) => ws.abort())
     },
     destroyed () {
+      this.$store.state.writableStreams.forEach((ws) => {
+            ws.abort()
+      })
       window.removeEventListener('resize', this.resizeListener)
       this.resizeListener = null
+      window.onbeforeunload = null
+      window.onuload = null
     },
     methods: {
       resize () {

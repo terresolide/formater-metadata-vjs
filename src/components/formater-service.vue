@@ -85,7 +85,7 @@
   -->
   <!--   <iframe v-if="iframeUrl" style="display:none;" :src="iframeUrl" ></iframe>  -->
  <div v-if="email" class="mtdt-service-button" :class="{searching: searching}" v-show="clientId">
-   <span v-if="service.type === 'external'">
+   <span v-if="service.type === 'external' || service.type === 'external2'">
 		   <a v-if="service.token && hasAccess" class="mtdt-menu-item"
 		   @click="logout" :style="{'--color': $store.state.style.primary}">
 		      {{$t('access_to')}} {{service.domain}}
@@ -158,6 +158,7 @@
 </template>
 <script>
 import jwt_decode from 'jwt-decode'
+import {myCrypto} from '../modules/MyCrypto.js'
 export default {
   name: 'FormaterService',
   components: {
@@ -210,6 +211,9 @@ export default {
       return roles.length === 0
     },
     redirectUri () {
+      if (this.service.redirectUri) {
+        return this.service.redirectUri
+      }
       if (this.$store.state.ssoLogin) {
         return this.$store.state.ssoLogin
       }
@@ -251,7 +255,10 @@ export default {
       timer: null,
       needAuthorize: null,
       iframeUrl: null,
-      showTooltip: false
+      showTooltip: false,
+      codeChallenge: null,
+      codeVerifier: null,
+      _refreshToken: null
     }
   },
   created () {
@@ -265,6 +272,14 @@ export default {
       
       return
     }
+    if (this.service.type === 'external2') {
+        this.codeVerifier = myCrypto.generateCodeVerifier()
+        myCrypto.generateCodeChallengeFromVerifier(this.codeVerifier)
+        .then(code => {
+           this.codeChallenge=code
+          }
+        )
+      }
     this.codeListener = this.getMessage.bind(this)
     window.addEventListener('message', this.codeListener) 
   },
@@ -303,7 +318,8 @@ export default {
     },
     showUser ()  {
       if (!this.noRole) {
-         this.$store.commit('user/toggleShow', {client: this.clientId, access: this.service.access})
+         var clientId = this.clientId === 'gdh-portal' ? 'flatsim' : this.clientId
+         this.$store.commit('user/toggleShow', {client: clientId, access: this.service.access})
       }
     },
     getClientId () {
@@ -341,8 +357,16 @@ export default {
           scope: 'openid',
           state: this.state
       }
+       var url = this.authUrl + '?'
+      if (this.service.type === 'external2') {
+        params.code_challenge = this.codeChallenge
+        params.response_mode = 'fragment'
+        params.code_challenge_method = 'S256'
+        var url = this.service.authUrl
+      }
       this.searching = true
-      var url = this.authUrl + '?'
+   
+     
       var paramsStr = Object.keys(params).map(function (key) {
         return key + '=' + params[key]
       }).join('&')
@@ -352,14 +376,14 @@ export default {
     },
     openPopup (url) {
       this.popup = window.open(url, "_blank", "height=750, width=850, status=yes, toolbar=no, menubar=no, location=no,addressbar=no");
-      var _this = this
-      var loop = setInterval(function() {
-        if (_this.popup.closed) {
-          clearInterval(loop)
-          _this.searching = false
-          _this.popup = null
-        }
-      })
+      // var _this = this
+      // var loop = setInterval(function() {
+      //   if (_this.popup.closed) {
+      //     clearInterval(loop)
+      //     _this.searching = false
+      //     _this.popup = null
+      //   }
+      // })
     },
     getMessage(e) {
       if (e.data.code && e.data.state === this.state) {
@@ -388,12 +412,13 @@ export default {
         return key + '=' + params[key]
       }).join('&')
       url += paramsStr
-      this.iframeUrl = url
+     // this.iframeUrl = url
       // window.postMessage(this.$store.getters['user/clientId'] + ' ' + 'blabla', 'https://sso.aeris-data.fr')
 //       this.$http.get(url, {credentials: true})
 //       .then(resp => console.log(resp), resp => console.log(browser.cookies.get({name: 'KEYCLOAK_IDENTITY' })))
     },
     getToken (code) {
+      console.log(code)
       if (this.service.reject) {
         return
       }
@@ -403,6 +428,16 @@ export default {
         state: this.state,
         clientId: this.clientId,
         redirectUri: this.redirectUri
+      }
+      if (this.service.type === 'external2') {
+        var params = {
+          code: code,
+          grant_type: 'authorization_code',
+          client_id: this.clientId,
+          redirect_uri: this.redirectUri,
+          code_verifier: this.codeVerifier
+        }
+        url = this.service.refreshUrl
       }
       this.$http.post(url, params, 
       {
@@ -449,41 +484,86 @@ export default {
           this.timer = setInterval(this.refreshToken, 6000)
           // }
         // }
-      }  else {
+      }  else  if (data.access_token) {
+        this.$store.commit('services/setToken', {id: this.service.id, token: data.access_token})
+        this._refreshToken = data.refresh_token
+        this.$store.commit('roles/setToken', {client: this.service.clientId, token: data.access_token})
+        // if (this.$store.state.metadata) {
+          var obj = jwt_decode(data.access_token)
+          this.identity = obj.data || null
+          var now = new Date()
+          this.time = data.expires_in * 1000
+          this.expire = now.getTime() + this.time // - now.getTime() 
+          
+         // this.time = this.expire - now.getTime()
+          // if (this.expire > 2000) {
+          this.timer = setInterval(this.refreshToken, 6000)
+      } else {
         this.logout()
       }   
     },
     refreshToken () {
       var now = new Date()
       this.time = this.expire - now.getTime()
-      if (this.time < 180000) {
-	      this.$http.get(this.service.refreshUrl,    
-	      // this.$http.get(this.service.refreshUrl + '?_tk=' + this.service.token,
+      if (this.time < 7000) {
+        if (this.service.type === 'external2') {
+          var post = {
+             refresh_token: this._refreshToken,
+             grant_type: 'refresh_token',
+             client_id: this.clientId
+          }
+          this.$http.post(this.service.refreshUrl, post,
 	          {
 	             headers: {
-	               "Authorization": "Bearer " + this.service.token
-	//               'Content-Type': 'application/json',
-	//               'Accept': 'application.json',
+	              'Content-Type': 'application/json',
+	              'Accept': 'application.json',
 	              }
 	          }
-	      )
-	      .then(function (resp) {
-	        if (resp.body.token) {
-	          this.$store.commit('services/setToken', {id: this.service.id, token: resp.body.token})
-	          var obj = jwt_decode(resp.body.token)
-	          var now = new Date()
-	          this.expire = obj.exp * 1000
-	          this.time = this.expire - now.getTime()
-	        } else {
-	          this.hasExpired = true
-	          this.time = 0
-	          this.msg = true
-	          this.logout()
-	        }
-	        if (resp.body.status === 'error') {
-	          
-	        }
-	      }, resp => this.logout())
+          )
+          .then(function (resp) {
+            if (resp.body.access_token) {
+              this.setToken(resp.body)
+            
+            } else {
+              this.hasExpired = true
+              this.time = 0
+              this.msg = true
+              this.logout()
+            }
+            if (resp.body.status === 'error') {
+              
+            }
+          }, resp => this.logout())
+        } else {
+       
+          this.$http.get(this.service.refreshUrl,    
+          // this.$http.get(this.service.refreshUrl + '?_tk=' + this.service.token,
+              {
+                headers: {
+                  "Authorization": "Bearer " + this.service.token
+    //               'Content-Type': 'application/json',
+    //               'Accept': 'application.json',
+                  }
+              }
+          )
+          .then(function (resp) {
+            if (resp.body.token) {
+              this.$store.commit('services/setToken', {id: this.service.id, token: resp.body.token})
+              var obj = jwt_decode(resp.body.token)
+              var now = new Date()
+              this.expire = obj.exp * 1000
+              this.time = this.expire - now.getTime()
+            } else {
+              this.hasExpired = true
+              this.time = 0
+              this.msg = true
+              this.logout()
+            }
+            if (resp.body.status === 'error') {
+              
+            }
+          }, resp => this.logout())
+        }
       }
     },
     validToken () {

@@ -153,9 +153,8 @@
        <!--  case CNES EOST (token=true)-->
        <span v-else-if="token && token !== -1 && canDownload && serviceType !== 'session'" 
        :class="{disabled:download[0].disabled}"   :title="$t('download_data')" >
-        <span class="mtdt-related-type fa fa-download" :style="{backgroundColor: primary}" @click="record(download[0].url, 'download', $event)"></span>
-          <a style="display:none;" :href="download[0].url + '?_bearer=' + token" >
-          </a>
+        <span class="mtdt-related-type fa fa-download" :style="{backgroundColor: primary}" @click="triggerDownload(0)"></span>
+         
       </span>
       <!--  case geodesy-plotter -->
        <span v-else-if="token && token !== -1 && canDownload && serviceType === 'session'" 
@@ -207,10 +206,9 @@
               </span>
               <!--  case FLATSIM -->
               <span  v-else-if="token && token !== -1 && canDownload"  >
-                 <span :title="file.description"  @click="record(file.url, 'download', $event)">
+                 <span :title="file.description"  @click="triggerDownload(index)">
                    {{file.name? file.name: $t('download_data')}}
                  </span>
-                 <a :href="file.url + '?_bearer=' + token" style="display:none;"></a>
              </span>
              <!--  case FLATSIM without service authentication but can download -->
              <span v-else-if="!token && canDownload" style="opacity:0.8;" @click="authorize">
@@ -291,6 +289,10 @@
   <script>
   import ProgressBar from 'vuejs-progress-bar'
   import FormaterPlatformList from './formater-platform-list.vue'
+//   import { WritableStream } from 'web-streams-polyfill/polyfill';
+  import streamSaver  from 'streamsaver';
+// import concatMap from 'concat-map'
+
   export default {
     name: 'FormaterRelated',
     components: {
@@ -475,6 +477,7 @@
       }
     },
     mounted () {
+      console.log(this.download)
       var _this = this
       if (!this.layers) {
         return
@@ -548,7 +551,9 @@
          
        },
        record (url, type, e) {
-         if (!this.$store.state.recordUrl) {
+         console.log(url)
+         return
+         if (!this.$store.state.recordUrl || this.$store.state.recordUrl == 'undefined') {
            if (e) {
              e.target.nextElementSibling.click()
            }
@@ -569,45 +574,124 @@
         
          this.$http.post(this.$store.state.recordUrl, data, {emulateJSON: true})
          .then(
-             resp => { e.target.nextElementSibling.click()},
+             resp => { if (e) {
+                      e.target.nextElementSibling.click()}
+             },
              resp => { e.target.nextElementSibling.click()}
          )
         
        },
-       triggerDownload (index) {
-         this.record(this.download[0].url, 'download')
+     async triggerDownload (index) {
+         if (!this.$store.state.streamSaver) {
+            this.$store.state.streamSaver = streamSaver
+         }
+         this.record(this.download[index].url, 'download')
          if (this.download[index].disabled) {
            return
          }
          var _this = this
    
-         
-         var filename = 'download'
-         var localIndex = index
-         if (this.downloadLink[index]) {
-           this.downloadLink[index].click()
-           return
-         }
-         this.$set(this.download[index], 'disabled', true) 
-         
-         this.downloadLink[index] = document.createElement('a')
-         document.body.appendChild(this.downloadLink[index])
-         var downloadProgress = function (e) {
-           if (e.total) {
-             _this.progress = Math.round(100 * e.loaded / e.total)
-            if (_this.abort) {
-               e.srcElement.abort()
-            }
-           }
-         }
+        this.$set(this.download[index], 'disabled', true) 
+        
          var _this = this
          var url = this.download[index].url 
+         console.log(url)
+         var name = this.download[index].name
+
+        // UTILISATION D'UN STREAM WRITER
+         var  headers = {}
+        // url = 'https://geodes-portal.cnes.fr/api/download/URN:FEATURE:DATA:gdh:03684236-bf97-339c-b789-60ff7541893c:V1/files/3fee0d25f8d65705a0af7205342daf14'
+        // url = 'https://catalog.formater/test.zip'
          if (this.token && this.token !== -1) {
-           url += '?_bearer=' + this.token
+           // url += '?_bearer=' + this.token
+           headers['Authorization'] = 'Bearer ' + this.token
+           // headers = {}
          }
+         var filename = name || url.substring(url.lastIndexOf('/') + 1) + '.zip'
+        // const fileStream = streamSaver.createWriteStream(name)
+        const ac = new AbortController()
+        const signal = ac.signal
+        this.$store.state.writableStreams.push(ac)
+        fetch(url, {headers: headers, signal: signal}).then(res => {
+          if (!res.ok ) {
+            switch (res.status) {
+             
+              case 403:
+              this.message = this.$i18n.t('download_forbidden')
+              
+              break
+              case 404:
+              this.message = 'NOT FOUND'
+              
+              break
+              default:
+                if (res.body.ErrorMessage) {
+                  this.message = res.body.ErrorMessage
+                } else {
+                  this.message = 'An error has occured'
+                }
+            }
+            return res
+          }
+          // get filename
+          var headerDisposition = res.headers.get('Content-Disposition')
+          if (headerDisposition) {
+            var match = headerDisposition.match(/filename[^;\n=]*=(\\?\"|'){0,1}([^\\?\"']*)(\\?\"|'){0,1}/i)
+            if (match) {
+              filename = match[2]
+            }
+          }
+          var options = {}
+          var size = res.headers.get('Content-Length')
+          if (size) {
+            options.size = size
+          }
+          const fileStream = this.$store.state.streamSaver.createWriteStream(filename, options)
+          const readableStream = res.body
+          
+          // more optimized
+          if (window.WritableStream && readableStream.pipeTo) {
+            return readableStream.pipeTo(fileStream, {signal: signal})
+              .then(() => {
+                _this.$set(_this.download[index], 'disabled', false)
+                _this.$store.state.writableStreams.pop()}, 
+              () => {
+                _this.$set(_this.download[index], 'disabled', false)
+                _this.$store.state.writableStreams.pop()
+              })
+          }
+          window.writer = fileStream.getWriter()
+
+          const reader = res.body.getReader()
+          const pump = () => reader.read()
+            .then(res => res.done
+              ? writer.close()
+              : writer.write(res.value).then(pump))
+          pump()
+        })
+    return
+        
+        // DOWNLOADING AVEC UN BLOB
+
+        // CAS ON A DÉJÀ CHARGÉ LE FICHIER DANS LE NAVIGATEUR
+        if (this.downloadLink[index]) {
+          this.downloadLink[index].click()
+          return
+        }
+        // SINON CRÉATION DU LIEN
+        this.downloadLink[index] = document.createElement('a')
+        document.body.appendChild(this.downloadLink[index])
+        var downloadProgress = function (e) {
+          if (e.total) {
+            _this.progress = Math.round(100 * e.loaded / e.total)
+            if (_this.abort) {
+              e.srcElement.abort()
+            }
+          }
+        }
          // var url = 'http://api.formater/geotiff/abana/iw2/geo_filt_20180518-20180623_sd_4rlks.tif'
          var objUrl = new URL(url)
-         this.$http.get(url, {responseType: 'blob', downloadProgress: downloadProgress} )
+         this.$http.get(url, {headers: headers, responseType: 'blob', downloadProgress: downloadProgress} )
          //this.$http.get('http://api.formater/interface-services/' , {responseType: 'blob', downloadProgress: downloadProgress})
              .then( response => {
                var headerDisposition = response.headers.get('Content-Disposition')
@@ -622,6 +706,7 @@
                    var filename = objUrl.pathname.substring(objUrl.pathname.lastIndexOf('/') + 1)
                }
                const url = window.URL.createObjectURL(response.bodyBlob);
+               window.location.assign(url)
 //                const link = document.createElement('a')
 //                // link.setAttribute('download', )
 //                link.href = url
@@ -643,7 +728,7 @@
                      // use direct link
                       this.downloadLink[index].removeAttribute('download')
                       this.downloadLink[index].href = url
-                      this.downloadLink[index].click()
+                     // this.downloadLink[index].click()
                    }
                    break;
                  case 403:
@@ -656,9 +741,7 @@
                    default:
                      console.log(response);
                  }
-            })
-           // xhr.promise.abort()
-            
+            })  
        },
        handleOver (e) {
          e.target.style.color = this.$store.state.style.over

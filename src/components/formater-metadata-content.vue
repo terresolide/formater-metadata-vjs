@@ -108,7 +108,7 @@
 </dl>
 
 
-<dl v-if="countContactResource > 0 " class="mtdt-main-parameter large">
+<dl v-if="metadata.contacts && countContactResource > 0 " class="mtdt-main-parameter large">
   <dt :style="dtStyle()">{{$tc('contact', countContactResource)}}</dt>
   <dd> <formater-list-contact   :contacts="metadata.contacts.resource" type="resource" ></formater-list-contact></dd>
 </dl>
@@ -175,7 +175,7 @@
     
      </dd>
   </dl>
- <dl v-if="Object.keys(metadata.contacts.metadata).length > 0" class="mtdt-main-parameter large">
+ <dl v-if="metadata.contacts && Object.keys(metadata.contacts.metadata).length > 0" class="mtdt-main-parameter large">
    <dt :style="dtStyle()">Contacts</dt>
    <dd>
            <formater-list-contact   :contacts="metadata.contacts.metadata" type="metadata" ></formater-list-contact>

@@ -162,6 +162,7 @@ export default function makeStore( config ) {
         }
       },
       checkSSO: null,
+      proxyGeodes: 'https://gdm.poleterresolide.fr/api/geodes',
       group: [],
      // isSameStep: isSameStep,
       apiVersion: '0.1',
@@ -199,17 +200,20 @@ export default function makeStore( config ) {
       },
       osFields: {
         cartouche: {
-          identifier: ['doi', 'productIdentifier', 'productType'],
+          identifier: ['dataType', 'doi', 'productIdentifier', 'productType'],
           quality: [ 'resolution', 'representation', 'format', 'productValidity'],
-          acquisition:  ['ellipsoid', 'refFrame', 'networks', 'constellation', 'antennaSide', 'sensor', 'platform', 'instrument', 'sensorMode', 'polarisation',  'relativeOrbitNumber', 'orbitDirection', 'subswath'],
+          acquisition:  ['antennaSide', 'constellation', 'ellipsoid', 'instrument', 'networks', 'orbitID', 'orbitDirection', 'platform', 'polarisation', 'polarization', 'refFrame', 'relativeOrbitNumber', 
+            'satellitePlatform', 'sensor', 'sensorMode',  'subswath'],
           process:  ['analysisCentre', 'software', 'softwareVersion', 'processingId', 'samplingPeriod', 'fillRate','processingLevel', 'processingMode',  'correction', 'version']
         },
         metadata: {
-          identifier: ['doi', 'productIdentifier', 'productType'],
+          identifier: ['dataType', 'doi', 'productIdentifier', 'productType'],
           quality: ['imageQualityStatus', 'productQualityStatus', 'resolution', 'representation', 'format', 'nbCols', 'nbRows', 'waterCover', 'snowCover', 'cloudCover', 'productValidity'],
-          acquisition: [ 'ellipsoid', 'refFrame', 'networks', 'antennaSide', 'sensor', 'constellation', 'acquisitionType', 'statusSubType', 'platform', 'instrument','sensorMode', 'polarisation', 
-            'orbitNumber', 'relativeOrbitNumber', 'orbitDirection', 'subswath'],
-          process: ['analysisCentre', 'software', 'softwareVersion', 'samplingPeriod', 'fillRate','processingId', 'rlooksIn', 'rlooksUnw', 'digitalElevationModel', 'unwrapMethod', 'swath', 'processingDate', 'processingLevel', 'processingMode', 'processingContext',  'correction', 'version']
+          acquisition: ['absoluteOrbitID',  'acquisitionType', 'antennaSide', 'constellation', 'ellipsoid',  'instrument', 'missionTakeId', 'networks', 'orbitID', 'orbitDirection', 'orbitNumber', 'platform', 'polarisation', 'polarization', 
+             'productTimeliness', 'refFrame', 
+            'relativeOrbitNumber', 'satellitePlatform', 'satelliteSensor', 'sensor', 'sensorMode','statusSubType'],
+          process: ['analysisCentre', 'software', 'softwareVersion', 'samplingPeriod', 'fillRate','processingId', 'rlooksIn', 'rlooksUnw', 'digitalElevationModel', 'unwrapMethod', 
+            'subswath', 'swath', 'processingDate', 'processingLevel', 'processingMode', 'processingContext', 'productLevel','correction', 'version']
         }
       },
       // default date & constraint list
@@ -266,9 +270,13 @@ export default function makeStore( config ) {
       searching: false,
       error: null,
       selectedMetadata: null,
-      previousRoutes: []
+      previousRoutes: [],
+      writableStreams: []
   }
   var finalConfig = Object.assign(defaultConfig, config)
+  if (finalConfig.checkSSO) {
+    finalConfig.recordUrl = finalConfig.checkSSO + '/downloads/click'
+  }
   return new Vuex.Store( {
     state: finalConfig,
     mutations: {

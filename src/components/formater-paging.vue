@@ -184,6 +184,7 @@ export default {
          }
          break
        case 'opensearch':
+       case 'stac':
          if (event.detail.properties) {
 	         this.count = event.detail.properties.totalResults
 	         this.to = this.from + Object.keys(event.detail.metadata).length -1
