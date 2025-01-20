@@ -94,9 +94,11 @@ export default function makeStore( config ) {
         metadata: {
           identifier: ['dataType', 'doi', 'productIdentifier', 'productType'],
           quality: ['imageQualityStatus', 'productQualityStatus', 'resolution', 'representation', 'format', 'nbCols', 'nbRows', 'waterCover', 'snowCover', 'cloudCover', 'productValidity'],
-          acquisition: [  'acquisitionType', 'antennaSide', 'constellation', 'ellipsoid',  'instrument', 'networks', 'orbitID', 'orbitDirection', 'orbitNumber', 'platform', 'polarisation', 'polarization', 'refFrame', 
-            'relativeOrbitNumber', 'satellitePlatform', 'sensor', 'sensorMode','statusSubType',  'subswath'],
-          process: ['analysisCentre', 'software', 'softwareVersion', 'samplingPeriod', 'fillRate','processingId', 'rlooksIn', 'rlooksUnw', 'digitalElevationModel', 'unwrapMethod', 'swath', 'processingDate', 'processingLevel', 'processingMode', 'processingContext',  'correction', 'version']
+          acquisition: ['absoluteOrbitID',  'acquisitionType', 'antennaSide', 'constellation', 'ellipsoid',  'instrument', 'missionTakeId', 'networks', 'orbitID', 'orbitDirection', 'orbitNumber', 'platform', 'polarisation', 'polarization', 
+             'productTimeliness', 'refFrame', 
+            'relativeOrbitNumber', 'satellitePlatform', 'satelliteSensor', 'sensor', 'sensorMode','statusSubType'],
+          process: ['analysisCentre', 'software', 'softwareVersion', 'samplingPeriod', 'fillRate','processingId', 'rlooksIn', 'rlooksUnw', 'digitalElevationModel', 'unwrapMethod', 
+            'subswath', 'swath', 'processingDate', 'processingLevel', 'processingMode', 'processingContext', 'productLevel','correction', 'version']
         }
       },
       // default date & constraint list
