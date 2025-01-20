@@ -153,8 +153,9 @@
        <!--  case CNES EOST (token=true)-->
        <span v-else-if="token && token !== -1 && canDownload && serviceType !== 'session'" 
        :class="{disabled:download[0].disabled}"   :title="$t('download_data')" >
-        <span class="mtdt-related-type fa fa-download" :style="{backgroundColor: primary}" @click="triggerDownload(0)"></span>
-         
+        <span class="mtdt-related-type fa fa-download" :style="{backgroundColor: primary}" @click="triggerDownload(0, $event)"></span>
+        <a style="display:none;" :href="download[0].url + '?_bearer=' + token" >
+        </a>
       </span>
       <!--  case geodesy-plotter -->
        <span v-else-if="token && token !== -1 && canDownload && serviceType === 'session'" 
@@ -206,9 +207,10 @@
               </span>
               <!--  case FLATSIM -->
               <span  v-else-if="token && token !== -1 && canDownload"  >
-                 <span :title="file.description"  @click="triggerDownload(index)">
+                 <span :title="file.description"  @click="triggerDownload(index, $event)">
                    {{file.name? file.name: $t('download_data')}}
                  </span>
+                 <a :href="file.url + '?_bearer=' + token" style="display:none;"></a>
              </span>
              <!--  case FLATSIM without service authentication but can download -->
              <span v-else-if="!token && canDownload" style="opacity:0.8;" @click="authorize">
@@ -477,7 +479,6 @@
       }
     },
     mounted () {
-      console.log(this.download)
       var _this = this
       if (!this.layers) {
         return
@@ -545,20 +546,20 @@
            cds: this.cds,
            uuid: this.id,
            link: download,
-           token: token
+           token: token,
+           geodes: this.clientId === 'gdh-portal'
          }})
          document.dispatchEvent(event)
          
        },
        record (url, type, e) {
-         console.log(url)
-         return
          if (!this.$store.state.recordUrl || this.$store.state.recordUrl == 'undefined') {
-           if (e) {
+           if (e && this.clientId !== 'gdh-portal') {
              e.target.nextElementSibling.click()
            }
            return
          }
+         var clientId = this.clientId
          var data = {
              email: this.$store.getters['user/email'],
              cds: this.cds,
@@ -574,18 +575,27 @@
         
          this.$http.post(this.$store.state.recordUrl, data, {emulateJSON: true})
          .then(
-             resp => { if (e) {
-                      e.target.nextElementSibling.click()}
+             resp => { 
+              if (e && clientId !== 'gdh-portal') {
+                e.target.nextElementSibling.click()
+              }
              },
-             resp => { e.target.nextElementSibling.click()}
+             resp => {
+              if (e && clientId !== 'gdh-portal') {
+                e.target.nextElementSibling.click()
+              }
+             }
          )
         
        },
-     async triggerDownload (index) {
+     async triggerDownload (index, event) {
          if (!this.$store.state.streamSaver) {
             this.$store.state.streamSaver = streamSaver
          }
-         this.record(this.download[index].url, 'download')
+         this.record(this.download[index].url, 'download', event)
+         if (this.clientId !== 'gdh-portal') {
+          return
+         }
          if (this.download[index].disabled) {
            return
          }
