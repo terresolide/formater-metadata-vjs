@@ -20,7 +20,8 @@
     <div><b>Archive</b>: {{file}}</div>
     <div><b>{{$t('command_to_execute')}}:</b></div>
 	  <div style="display:inline-block;font-family: monospace;max-height:200px;overflow:scroll;padding:3px;width:calc(100% - 100px);color:#5ddc5d;background:#333;">
-	  curl -k -L -H "Authorization:Bearer {{token}}" {{href}} -o {{file}}
+      <template v-if="isGeodes">curl -k -L -H "Authorization:Bearer {{token}}" {{href}} -o {{file}}</template>
+      <template v-else>curl {{href}}?_bearer={{token}} -o {{file}}</template>
 	  </div>
 	  <div style="display:inline-block;vertical-align:top;max-width:90px">
 	  <a class="fmt-button fa fa-clipboard" @click="copy2clipboard($event)" :title="$t('copy_clipboard')"> Copier</a>
@@ -37,6 +38,7 @@ export default {
       href: null,
       token: null,
       file: null,
+      isGeode: false,
       commandEventListener: null
     }
   },
@@ -55,11 +57,16 @@ export default {
       this.file = null
       this.cds = null
       this.id = null
+      this.isGeodes = false
     },
     copy2clipboard (e) {
       console.log('copy to clipboard')
       var target = e.target
-      var text = 'curl -k -L -H "Authorization: Bearer ' + this.token + '" ' + this.href  + ' -o ' + this.file
+      if (this.isGeodes) {
+        var text = 'curl -k -L -H "Authorization: Bearer ' + this.token + '" ' + this.href  + ' -o ' + this.file
+      } else {
+        var text = 'curl ' + this.href + '?_bearer=' + this.token + ' -o ' + this.file
+      }
       navigator.clipboard.writeText(text).then(function() {
         /* clipboard successfully set */
         target.classList.add('tooltip-show')
@@ -101,6 +108,7 @@ export default {
       this.token = e.detail.token
       this.cds = e.detail.cds
       this.id = e.detail.id
+      this.isGeodes = e.detail.geodes
       if (e.detail.link.title) {
         this.file = e.detail.link.title
         console.log(this.file)
