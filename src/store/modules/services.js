@@ -105,6 +105,8 @@ export default {
        if (state.services.length === 0) {
          state.pre = service
        }
+       console.log(service)
+       
        var index = state.services.findIndex(obj => obj.domain === service.domain)
 //       if (index < 0) {
 //         var url = new URL(service.api)
