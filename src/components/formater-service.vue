@@ -357,13 +357,16 @@ export default {
           scope: 'openid',
           state: this.state
       }
+       var url = this.authUrl + '?'
       if (this.service.type === 'external2') {
         params.code_challenge = this.codeChallenge
         params.response_mode = 'fragment'
         params.code_challenge_method = 'S256'
+        var url = this.service.authUrl
       }
       this.searching = true
-      var url = (this.service.authUrl || this.authUrl )+ '?'
+   
+     
       var paramsStr = Object.keys(params).map(function (key) {
         return key + '=' + params[key]
       }).join('&')
