@@ -67,7 +67,7 @@
          
 
        </div>
-       <formater-related type="cartouche" :title="meta.title" :access="access" :id="meta.id" :cds="dataCenter ? dataCenter.title.fr.toLowerCase() : null" 
+       <formater-related type="cartouche" :title="meta.title" :access="access" :id="meta.id" :cds="cds" 
        :download="meta.download" :order="meta.order" :has-bbox-layer="hasBboxLayer" :layers="meta.layers" 
        :links="meta.links" :related="meta.related" :related-links="meta.relatedLinks" :sensor="meta.sensorUrl"></formater-related>
      </div>

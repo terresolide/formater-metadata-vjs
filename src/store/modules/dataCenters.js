@@ -1,5 +1,5 @@
 /**
- * Global DataCenters
+ * Global DataCenters / Catalogue
  */
 
 export default {

@@ -23,13 +23,13 @@
 
     <formater-elasticsearch-requester  v-if="depth >= 0 && !protocol" :depth="depth"  ></formater-elasticsearch-requester>
     <formater-stac v-if="depth >=0 && describe && protocol && protocol.toLowerCase() === 'stac'" :access="access" :service="service" 
-        :cds="metadata.cds" :describe="describe" :uuid="uuid" :depth="depth" @parametersChange="setParameters" @failed="removeDescribe">
+        :cds="cds" :describe="describe" :uuid="uuid" :depth="depth" @parametersChange="setParameters" @failed="removeDescribe">
     </formater-stac>
     <formater-opensearch v-if="depth >= 0 && describe && protocol && protocol.toLowerCase()==='opensearch' " :access="access"
-      :service="service" :cds="metadata.cds" :describe="describe" :uuid="uuid" :depth="depth"
+      :service="service" :cds="cds" :describe="describe" :uuid="uuid" :depth="depth"
        @parametersChange="setParameters" @failed="removeDescribe"></formater-opensearch> 
     <formater-sensorthings v-if="depth > 0 && protocol && protocol.toLowerCase()==='sensorthings'" 
-      :access="access" :service="service" :cds="metadata.cds" :url="describe" :uuid="uuid" :depth="depth"></formater-sensorthings>
+      :access="access" :service="service" :cds="cds" :url="describe" :uuid="uuid" :depth="depth"></formater-sensorthings>
    <span v-if="metadata && !metadata.appRoot && !isRoot" class="mtdt-metadata-close fa fa-close" @click="close"></span>
    <div v-if="metadata">
       <h1 class="mtdt-metadata-header" :style="{color:$store.state.style.primary}">
@@ -54,7 +54,7 @@
         <div  v-if="depth >= 0 " v-show="currentTab === 'search' && hasChild">
            
            <formater-paging  :uuid="uuid"  :depth="depth" order-by="changeDate" :type="describe ? 'opensearch': 'geonetwork'"></formater-paging>
-           <formater-list-metadata :depth="depth"  :access="access" :cds="metadata.cds" @hasChild="setHasChild"></formater-list-metadata>
+           <formater-list-metadata :depth="depth"  :access="access" :cds="cds" @hasChild="setHasChild"></formater-list-metadata>
       </div>
       <!--  others tab -->
       <div v-if="currentTab === 'main'" style="margin-top:20px;">
@@ -131,6 +131,13 @@ export default {
     }
   },
   computed: {
+    cds () {
+      if (!this.metadata.dataCenter) {
+        return false
+      } 
+      var uri = new URL(this.metadata.dataCenter)
+      return uri.hash.replace('#', '').toUpperCase()
+    },
     dataCenter () {
       if (!this.metadata.dataCenter) {
         return false

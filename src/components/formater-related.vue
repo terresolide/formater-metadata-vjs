@@ -364,6 +364,7 @@
 //       if (this.related && this.related.siblings) {
 //     	  this.siblings = this.related.siblings
 //       }
+      console.log('CDS', this.cds)
       this.checkEmpty()
     },
     destroyed () {
@@ -593,6 +594,7 @@
             this.$store.state.streamSaver = streamSaver
          }
          this.record(this.download[index].url, 'download', event)
+        
          if (this.clientId !== 'gdh-portal') {
           return
          }
