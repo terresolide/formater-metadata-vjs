@@ -53,7 +53,7 @@
         <div  v-if="depth >= 0 " v-show="currentTab === 'search' && hasChild">
            
            <formater-paging  :uuid="uuid"  :depth="depth" order-by="changeDate" :type="describe ? 'opensearch': 'geonetwork'"></formater-paging>
-           <formater-list-metadata :depth="depth"  :access="access" :cds="metadata.cds" @hasChild="setHasChild"></formater-list-metadata>
+           <formater-list-metadata :depth="depth"  :access="access" :cds="cds" @hasChild="setHasChild"></formater-list-metadata>
       </div>
       <!--  others tab -->
       <div v-if="currentTab === 'main'" style="margin-top:20px;">
@@ -130,6 +130,13 @@ export default {
     }
   },
   computed: {
+    cds () {
+      if (!this.metadata.dataCenter) {
+        return false
+      } 
+      var uri = new URL(this.metadata.dataCenter)
+      return uri.hash.replace('#', '').toUpperCase()
+    },
     dataCenter () {
       if (!this.metadata.dataCenter) {
         return false
