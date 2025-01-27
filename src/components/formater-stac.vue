@@ -58,6 +58,7 @@ export default {
   data () {
     return {
      stacParameters: [],
+     mappingParameters: {},
      parameters: {page: 1, limit: 8},
      predefined: {
          start: "start",
@@ -125,7 +126,11 @@ export default {
       if (newroute.query.end) {
         this.parameters.query['temporal:endDate']= {lte: newroute.query.end + 'T23:59:59.999Z'}
       }
-      // this.mapParameters()
+      for(var name in this.mappingParameters) {
+          if (newroute.query[name]){
+            this.parameters.query[this.mappingParameters[name]] = {eq: newroute.query[name]}
+          }
+        }
     },
     treatmentGeojson (data, depth) {
       var metadatas = {}
@@ -246,11 +251,13 @@ export default {
       this.defaultQuery = {
         dataType: {in: [json.id]}
       }
+      json.summaries = {'spaceborne:orbitDirection': ['Ascending', 'Descending']}
       if (json.summaries) {
         // extraction des éléments de recherche
         for (var key in json.summaries) {
           var tab = key.split(':')
-          var obj = {name: key, title: tab.pop()}
+          var name = tab.pop()
+          var obj = {name: name, title: name, label: name}
           // range 
           if (json.summaries[key].minimum ) {
             obj.min = json.summaries[key].minimum
@@ -262,8 +269,10 @@ export default {
             if (json.summaries[key].length <2) {
               continue
             }
+            obj.options = json.summaries[key]
           }
           this.stacParameters.push(obj)
+          this.mappingParameters[name] = key
 
         }
       }
