@@ -196,7 +196,7 @@ export default {
           if (feature.assets[key].roles.indexOf('overview') >=0) {
             
             properties.images = [[feature.assets[key].title, feature.assets[key].href, '']]
-            properties.thumbnail = feature.assets[key].href
+            properties.thumbnail = feature.assets[key].href 
 
           } else if (feature.assets[key].roles.indexOf('data') >=0) {
             // feature.assets[key].renameProperty('href', 'url')
@@ -217,7 +217,6 @@ export default {
       if (lk) {
         properties.exportLinks.json = lk.href
       }
-      console.log(properties)
        return properties
     },
     requestApi () {

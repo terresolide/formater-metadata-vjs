@@ -76,6 +76,7 @@ export default {
       state.sso = ssoname
     },
     initialize (state, clients) {
+      console.log(clients)
       var index = 0
       state.services = []
       clients.forEach(function (client) {

@@ -700,7 +700,6 @@ const GeonetworkPlugin = {
              }
              delete meta.responsibleParty
              meta.contacts = contacts
-             console.log(meta.contacts.metadata)
              if (!meta.link) {
                return meta;
              }
