@@ -26,8 +26,9 @@
       </formater-stac>
    <!-- <formater-opensearch v-if="depth >= 0 && describe && protocol && protocol.toLowerCase()==='opensearch' " :access="access"
       :service="service" :cds="metadata.cds" :describe="describe" :uuid="uuid" :depth="depth"
-       @parametersChange="setParameters" @failed="removeDescribe"></formater-opensearch> --> 
-      <formater-sensorthings v-if="depth > 0 && protocol && protocol.toLowerCase()==='sensorthings'" 
+       @parametersChange="setParameters" @failed="removeDescribe"></formater-opensearch>  
+   -->
+       <formater-sensorthings v-if="depth > 0 && protocol && protocol.toLowerCase()==='sensorthings'" 
       :access="access" :service="service" :cds="metadata.cds" :url="describe" :uuid="uuid" :depth="depth"></formater-sensorthings>
    <span v-if="metadata && !metadata.appRoot && !isRoot" class="mtdt-metadata-close fa fa-close" @click="close"></span>
    <div v-if="metadata">

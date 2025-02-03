@@ -78,7 +78,7 @@ export default {
    
        var describe = this.describe
        var describe = 'https://geodes-portal.cnes.fr/api/stac/collections/PEPS_S1_L1'
-       describe = 'https://gdm.formater/api/geodes/collections/PEPS_S1_L1'
+      // describe = 'https://gdm.formater/api/geodes/collections/PEPS_S1_L1'
        this.$http.get(describe)
        .then(
            response => { this.extractDescribeParameters(response.body);},
