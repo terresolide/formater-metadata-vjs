@@ -38,7 +38,7 @@ export default {
       href: null,
       token: null,
       file: null,
-      isGeode: false,
+      isGeodes: false,
       commandEventListener: null
     }
   },
