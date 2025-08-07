@@ -224,7 +224,7 @@ export default {
         // this.prepareFacet(route)
      
         var _this = this
-
+  
     },
 //     prepareRequestOpensearch(e) {
 //       this.initParameters()

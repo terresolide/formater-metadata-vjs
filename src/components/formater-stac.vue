@@ -58,6 +58,7 @@ export default {
   data () {
     return {
      stacParameters: [],
+     mappingParameters: {},
      parameters: {page: 1, limit: 8},
      predefined: {
          start: "start",
@@ -76,8 +77,8 @@ export default {
      load(url, index = 0) {
    
        var describe = this.describe
-       var describe = 'https://geodes-portal.cnes.fr/api/stac/collections/PEPS_S1_L1'
-       describe = 'https://gdm.formater/api/geodes/collections/PEPS_S1_L1'
+       var describe = 'https://geodes-portal.cnes.fr/api/stac/collections/FLATSIM_MOZAMBIQUE_TIMESERIE_PUBLIC'
+      // describe = 'https://gdm.formater/api/geodes/collections/PEPS_S1_L1'
        this.$http.get(describe)
        .then(
            response => { this.extractDescribeParameters(response.body);},
@@ -99,7 +100,7 @@ export default {
       this.parameters = {
         page: 1,
         limit: this.$store.state.size.nbRecord,
-        sortBy: [{direction: 'desc', field: 'temporal:startDate'}],
+        sortBy: [{direction: 'desc', field: 'start_datetime'}],
         query: this.defaultQuery
       }
     }, 
@@ -120,12 +121,16 @@ export default {
         this.parameters.bbox = newroute.query.box.split(',')
       }
       if (newroute.query.start) {
-        this.parameters.query['temporal:startDate'] = {gte: newroute.query.start + 'T00:00:00.000Z'}
+        this.parameters.query['start_datetime'] = {gte: newroute.query.start + 'T00:00:00.000Z'}
       }
       if (newroute.query.end) {
-        this.parameters.query['temporal:endDate']= {lte: newroute.query.end + 'T23:59:59.999Z'}
+        this.parameters.query['end_datetime']= {lte: newroute.query.end + 'T23:59:59.999Z'}
       }
-      // this.mapParameters()
+      for(var name in this.mappingParameters) {
+          if (newroute.query[name]){
+            this.parameters.query[this.mappingParameters[name]] = {eq: newroute.query[name]}
+          }
+        }
     },
     treatmentGeojson (data, depth) {
       var metadatas = {}
@@ -191,7 +196,7 @@ export default {
           if (feature.assets[key].roles.indexOf('overview') >=0) {
             
             properties.images = [[feature.assets[key].title, feature.assets[key].href, '']]
-            properties.thumbnail = feature.assets[key].href
+            properties.thumbnail = feature.assets[key].href 
 
           } else if (feature.assets[key].roles.indexOf('data') >=0) {
             // feature.assets[key].renameProperty('href', 'url')
@@ -212,13 +217,13 @@ export default {
       if (lk) {
         properties.exportLinks.json = lk.href
       }
-      console.log(properties)
        return properties
     },
     requestApi () {
       if (this.count > 2) {
         return
       }
+
       this.$http.post(
         this.searchUrl,
         this.parameters,
@@ -244,13 +249,15 @@ export default {
         }
       }
       this.defaultQuery = {
-        dataType: {in: [json.id]}
+        dataset: {in: [json.id]}
       }
+      json.summaries = {'spaceborne:orbitDirection': ['Ascending', 'Descending']}
       if (json.summaries) {
         // extraction des éléments de recherche
         for (var key in json.summaries) {
           var tab = key.split(':')
-          var obj = {name: key, title: tab.pop()}
+          var name = tab.pop()
+          var obj = {name: name, title: name, label: name}
           // range 
           if (json.summaries[key].minimum ) {
             obj.min = json.summaries[key].minimum
@@ -262,8 +269,10 @@ export default {
             if (json.summaries[key].length <2) {
               continue
             }
+            obj.options = json.summaries[key]
           }
           this.stacParameters.push(obj)
+          this.mappingParameters[name] = key
 
         }
       }

@@ -21,6 +21,7 @@
 <template>
  <div class="mtdt-metadata mtdt-capsule" :class="{'fmt-free': depth === -1}">
 
+
     <formater-elasticsearch-requester  v-if="depth >= 0 && !protocol" :depth="depth"  ></formater-elasticsearch-requester>
     <formater-stac v-if="depth >=0 && describe && protocol && protocol.toLowerCase() === 'stac'" :access="access" :service="service" 
         :cds="cds" :describe="describe" :uuid="uuid" :depth="depth" @parametersChange="setParameters" @failed="removeDescribe">
@@ -30,6 +31,7 @@
        @parametersChange="setParameters" @failed="removeDescribe"></formater-opensearch> 
     <formater-sensorthings v-if="depth > 0 && protocol && protocol.toLowerCase()==='sensorthings'" 
       :access="access" :service="service" :cds="cds" :url="describe" :uuid="uuid" :depth="depth"></formater-sensorthings>
+
    <span v-if="metadata && !metadata.appRoot && !isRoot" class="mtdt-metadata-close fa fa-close" @click="close"></span>
    <div v-if="metadata">
       <h1 class="mtdt-metadata-header" :style="{color:$store.state.style.primary}">
@@ -242,8 +244,9 @@ export default {
               this.describe = val.api.http
               this.protocol = val.api.protocol
               this.access = val.api.access
-              if (this.protocol.toLowerCase() === 'sensorthings') {
+              if (this.protocol.toLowerCase() === 'sensorthings' || this.protocol.toLowerCase() === 'opensearch') {
                 var url = new URL(val.api.http)
+                console.log(url)
                 this.$store.commit('services/add', {domain: url.hostname, api: val.api.http, access: this.access, uuid: this.uuid})
                 this.serviceId = this.$store.getters['services/current']
                 this.service = this.$store.getters['services/byId'](this.serviceId)

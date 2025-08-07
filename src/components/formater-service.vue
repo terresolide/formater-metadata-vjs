@@ -362,7 +362,7 @@ export default {
         params.code_challenge = this.codeChallenge
         params.response_mode = 'fragment'
         params.code_challenge_method = 'S256'
-        var url = this.service.authUrl
+        var url = this.service.authUrl + '?'
       }
       this.searching = true
    
